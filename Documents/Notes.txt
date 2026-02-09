@@ -1,0 +1,5 @@
+**SQL Credentials
+joboffer_user | jobofferuser@01 | 10.54.4.119
+
+**Blazor App
+joboffer_user | Jobofferuser@01
