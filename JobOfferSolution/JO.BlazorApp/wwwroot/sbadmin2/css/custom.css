@@ -1,0 +1,118 @@
+﻿/* Remove unwanted focus outline for all elements */
+*:focus {
+    outline: none;
+}
+
+/* Optional: make focus visible but styled */
+.nav-link:focus,
+.btn:focus,
+input:focus,
+textarea:focus {
+    box-shadow: none;
+    outline: 2px solid transparent;
+}
+
+/* timeline */
+.timeline {
+    position: relative;
+    padding: 1rem 0;
+    list-style: none;
+}
+
+.timeline:before {
+    position: absolute;
+    left: 40px;
+    top: 0;
+    content: ' ';
+    width: 2px;
+    height: 100%;
+    background-color: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1rem;
+    padding-left: 70px;
+}
+
+.timeline-item:before {
+    content: '\f111';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 32px;
+    background: #fff;
+    border-radius: 50%;
+    border: 2px solid #4e73df;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: #4e73df;
+}
+
+.timeline-date {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #858796;
+}
+
+.timeline-card {
+    background: #fff;
+    border-radius: 0.35rem;
+    padding: 1rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,.15);
+}
+
+.timeline-header {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #4e73df;
+}
+
+.timeline-badge {
+    font-size: 0.75rem;
+}
+
+.role-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+}
+
+/* tooltip */
+.tooltip-inner {
+    background-color: #333;
+    color: #fff;
+    font-size: 14px;
+}
+
+.tooltip-arrow::before {
+    border-top-color: #333 !important;
+}
+
+/* tabs */
+.nav-tabs .nav-link.active {
+    color: #4e73df;
+    background-color: #ffffff;
+    border-color: #dee2e6 #dee2e6 #ffffff;
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: #dee2e6 #dee2e6 #ffffff;
+    color: #2e59d9;
+}
+
+.nav-tabs .nav-link.active {
+    border-bottom: 3px solid #4e73df;
+}
+
+.sb-avatar {
+    font-size: 0.85rem;
+    user-select: none;
+    line-height: 1;
+}
+
