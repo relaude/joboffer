@@ -17,7 +17,8 @@ namespace JO.Service.Services
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IJobOfferUsersRepo _joUserRepo;
-        public ManageUsersService(UserManager<ApplicationUser> userManager,
+        public ManageUsersService(
+            UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             RoleManager<IdentityRole> roleManager,
             IJobOfferUsersRepo joUserRepo)
@@ -64,14 +65,16 @@ namespace JO.Service.Services
             List<string> roles)
         {
             var joUser = await _joUserRepo.GetByIdAsync(userId);
-
-            await UpdateRoles(joUser.AspNetUser_Id, roles);
-
-            await UpdateAspName(joUser.AspNetUser_Id, email);
+            if (isActive)
+            {
+                await UpdateRoles(joUser.AspNetUser_Id, roles);
+                await UpdateAspName(joUser.AspNetUser_Id, email);
+                joUser.Name = name;
+                joUser.Email = email;
+            }
 
             joUser.IsActive = isActive;
-            joUser.Name = name;
-            joUser.Email = email;
+            
             _joUserRepo.Update(joUser);
             return await _joUserRepo.SaveChangesAsync();
         }

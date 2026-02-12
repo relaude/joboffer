@@ -1,11 +1,13 @@
 ﻿@using JO.DataModel.Entity
 @using System.Threading.Tasks
+@using Microsoft.AspNetCore.Authorization
 
 @inject IManageUsersService ManageUsersService
 @inject IUtilitiesService UtilitiesService
 @inject IAlertService AlertService
 
 @attribute [Route(JORoutes.Admin.Users)]
+@attribute [Authorize]
 <div class="card shadow border-left-primary mb-4">
     <div class="card-header py-3">
         <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">

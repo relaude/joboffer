@@ -1,9 +1,11 @@
 ﻿@using JO.BlazorApp.Components.Account.Shared
+@inject NavigationManager Navigation
+
 <Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
             <NotAuthorized>
-                <RedirectToLogin />
+                @{ Navigation.NavigateTo(JORoutes.Public.Denied); }
             </NotAuthorized>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />

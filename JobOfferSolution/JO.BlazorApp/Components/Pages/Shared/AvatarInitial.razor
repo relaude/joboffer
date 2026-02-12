@@ -1,0 +1,51 @@
+﻿<span class="sb-avatar rounded-circle d-inline-flex
+             align-items-center justify-content-center text-white font-weight-bold"
+      style="
+        background-color:@BgColor;
+        width:@($"{Size}px");
+        height:@($"{Size}px");
+        font-size:10px;">
+
+    @Initials
+</span>
+
+@code {
+    [Parameter] public string Email { get; set; }
+    [Parameter] public int Size { get; set; } = 30;
+
+    private string Initials => GetInitialsFromEmail(Email);
+
+    private string GetInitialsFromEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+            return "?";
+
+        var username = email.Split('@')[0].ToLower();
+        string newname = username.Replace("c_", "");
+
+        return newname.Length >= 3
+            ? newname.Substring(0, 3).ToUpper()
+            : newname.ToUpper();
+    }
+
+    private string BgColor
+    {
+        get
+        {
+            var colors = new[]
+            {
+                "#4e73df", // primary
+                "#1cc88a", // success
+                "#36b9cc", // info
+                "#f6c23e", // warning
+                "#e74a3b", // danger
+                "#858796", // secondary
+                "#6f42c1", // purple
+                "#fd7e14"  // orange
+            };
+
+            var hash = Email?.GetHashCode() ?? 0;
+            return colors[Math.Abs(hash) % colors.Length];
+        }
+    }
+}

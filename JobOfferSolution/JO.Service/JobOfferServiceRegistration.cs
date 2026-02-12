@@ -16,6 +16,7 @@ namespace JO.Service
             services.AddScoped<IManageUsersService, ManageUsersService>();
             services.AddScoped<IUtilitiesService, UtilitiesService>();
             services.AddScoped<IAlertService, AlertService>();
+            services.AddScoped<IAccountService, AccountService>();
 
             return services;
         }

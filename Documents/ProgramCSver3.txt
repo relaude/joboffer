@@ -12,23 +12,30 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// -----------------------------
-// Razor Components
-// -----------------------------
+#region ====================== BLAZOR / RAZOR SERVICES ======================
+
+// Add Razor Components with Interactive Server mode
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddControllers();
+
+// Enable cascading authentication state for Blazor
 builder.Services.AddCascadingAuthenticationState();
 
+// Custom identity helpers for Blazor
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-// -----------------------------
-// Database
-// -----------------------------
+#endregion
+
+
+#region ====================== DATABASE CONFIGURATION ======================
+
+// Register application settings
 builder.Services.AddSingleton<IAppSettings, AppSettings>();
 
+// Configure EF Core with dynamic connection string
 builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
 {
     var appSettings = sp.GetRequiredService<IAppSettings>();
@@ -42,9 +49,12 @@ builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
     options.UseSqlServer(connectionString);
 });
 
-// -----------------------------
-// ASP.NET Identity
-// -----------------------------
+#endregion
+
+
+#region ====================== IDENTITY CONFIGURATION ======================
+
+// Configure ASP.NET Identity
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -52,31 +62,42 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+// Configure role claim type
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
 });
 
+// Disable email confirmation sender (No-Op)
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-// -----------------------------
-// Custom Services
-// -----------------------------
+#endregion
+
+
+#region ====================== CUSTOM APPLICATION SERVICES ======================
+
+// Register persistence layer services
 builder.Services.AddPersistenceServices(builder.Configuration);
+
+// Register business logic / job offer services
 builder.Services.AddJobOfferServices(builder.Configuration);
 
+#endregion
 
-// -----------------------------
-// 3rd Party Components
-// -----------------------------
+
+#region ====================== THIRD-PARTY SERVICES ======================
+
+// SweetAlert2 for Blazor
 builder.Services.AddSweetAlert2();
+
+#endregion
+
 
 var app = builder.Build();
 
+#region ====================== HTTP REQUEST PIPELINE ======================
 
-// -----------------------------
-// Pipeline
-// -----------------------------
+// Development vs Production configuration
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -87,19 +108,28 @@ else
     app.UseHsts();
 }
 
+// Custom status code handler (404 etc.)
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+
+// Enforce HTTPS
 app.UseHttpsRedirection();
+
+// Enable antiforgery protection
 app.UseAntiforgery();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
+// Serve static files
 app.MapStaticAssets();
+
+// Map API controllers
 app.MapControllers();
 
+// Map Blazor components with interactive server mode
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+// Map Identity endpoints (login, logout, register, etc.)
 app.MapAdditionalIdentityEndpoints();
+
+#endregion
 
 app.Run();

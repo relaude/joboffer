@@ -3,9 +3,10 @@
     public static class JORoutes
     {
         private const string PrefixAdmin = "/admin/manage";
-        public static class Prototype
+        public static class Public
         {
-            public const string Index = "/prototype";
+            public const string Login = "/login";
+            public const string Denied = "/denied";
         }
 
         public static class Admin

@@ -1,7 +1,54 @@
-﻿@page "/"
+﻿@using Microsoft.AspNetCore.Authorization
 
-<PageTitle>Home</PageTitle>
+@page "/"
 
-<h1>Hello, world!</h1>
+<!-- Welcome Card -->
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <h4 class="font-weight-bold text-primary mb-3">
+            Welcome to the Job Offer Management System
+        </h4>
 
-Welcome to your new app.
+        <p class="text-gray-700">
+            The Job Offer App is designed to streamline the creation, approval,
+            and tracking of employment offers within the organization.
+            It helps HR, Department Heads, and Management efficiently manage
+            candidate job offers from draft to final approval.
+        </p>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-md-4">
+                <h6 class="font-weight-bold text-gray-800">
+                    <i class="fas fa-edit text-primary"></i> Create Offers
+                </h6>
+                <p class="small text-muted">
+                    Generate job offers with position details, salary package,
+                    benefits, and employment terms.
+                </p>
+            </div>
+
+            <div class="col-md-4">
+                <h6 class="font-weight-bold text-gray-800">
+                    <i class="fas fa-check-circle text-success"></i> Approval Workflow
+                </h6>
+                <p class="small text-muted">
+                    Route offers for review and approval by HR and department
+                    managers before final release.
+                </p>
+            </div>
+
+            <div class="col-md-4">
+                <h6 class="font-weight-bold text-gray-800">
+                    <i class="fas fa-chart-line text-info"></i> Track Status
+                </h6>
+                <p class="small text-muted">
+                    Monitor offer progress in real-time — Pending, Approved,
+                    or Rejected.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+

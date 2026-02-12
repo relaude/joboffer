@@ -1,0 +1,59 @@
+﻿@inject IAccountService AccountService
+@inject IUtilitiesService UtilitiesService
+@inject IAlertService AlertService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+@attribute [Route(JORoutes.Public.Login)]
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="col-xl-5 col-lg-6 col-md-8">
+        <div class="card shadow-lg my-5">
+            <div class="card-body p-5">
+                <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                    
+                        <div class="form-group">
+                            <div class="mb-4">
+                                <InputText @bind-Value="email" class="form-control" placeholder="name@example.com" />
+                            </div>
+                        
+                            <button class="btn btn-primary btn-user btn-block"
+                                @onclick="() => LocalLogin()">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string email = "";
+    private InputModel Input { get; set; } = new();
+
+    private async Task LocalLogin()
+    {
+        bool isValidEmail = UtilitiesService.IsValidEmail(email);
+        if (!isValidEmail)
+        {
+            await AlertService.Error("Please enter a valid email address.");
+            return;
+        }
+
+        bool loginSuccess = await JS.InvokeAsync<bool>("auth.login", email);
+        if (!loginSuccess)
+        {
+            await AlertService.Error("Invalid username or password.");
+            return;
+        }
+
+        Navigation.NavigateTo("/");
+    }
+
+    private sealed class InputModel
+    {
+        public string Email { get; set; } = "0";
+    }
+}
