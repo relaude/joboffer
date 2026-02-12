@@ -1,0 +1,284 @@
+﻿@using JO.DataModel.Entity
+@using System.Threading.Tasks
+
+@inject IManageUsersService ManageUsersService
+@inject IUtilitiesService UtilitiesService
+@inject IAlertService AlertService
+
+@attribute [Route(JORoutes.Admin.Users)]
+<div class="card shadow border-left-primary mb-4">
+    <div class="card-header py-3">
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
+            <h6 class="m-0 font-weight-bold text-primary d-flex align-items-center">
+                <i class="fa-solid fa-users fa-fw text-primary mr-2"></i>
+                Job Offer Users
+            </h6>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="d-flex flex-column flex-md-row align-items-start flex-wrap mb-3">
+            <div class="mr-2">
+                <button class="btn btn-sm btn-primary" @onclick="ShowNewUserModal">
+                    New User
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-sm text-nowrap">
+                <thead class="thead-light text-center">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Active</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (usersList.Any())
+                    {
+                        @foreach (var item in usersList)
+                        {
+                            <tr>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-link text-primary p-0 align-baseline"
+                                            style="text-decoration: none;"
+                                            @onclick="() => ShowUserModal(item)">
+                                        @item.Name
+                                    </button>
+
+                                </td>
+                                <td>@item.Email</td>
+                                <td>@(item.IsActive == true ? "Yes" : "No")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">
+                                <i class="fas fa-info-circle mr-1"></i> No records found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<Modal @ref="modalNewUser" Title="New User">
+    <ChildContent>
+        <div class="row">
+            <div class="col-4">
+                <CheckBoxRoleList 
+                    Items="roleList"
+                    @bind-SelectedItems="selectedRoles"/>
+            </div>
+
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-header">Details</div>
+                    <div class="card-body">
+                        <input type="text" class="form-control mb-2" placeholder="Name" @bind="newUserName" />
+                        <input type="email" class="form-control" placeholder="Email" @bind="newUserEmail" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button class="btn btn-primary btn-sm" 
+            @onclick="() => NewUserModalSubmit()">Submit</button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="modalUser">
+    <ChildContent>
+        <div class="row">
+            <div class="col-4">
+                <CheckBoxRoleList 
+                    Items="roleList"
+                    @bind-SelectedItems="selectedRoles" />
+            </div>
+            
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-header">Details</div>
+                    <div class="card-body">
+
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-sm-3 col-form-label">Active</label>
+                            <div class="col-sm-9">
+                                <select class="form-control"
+                                        @bind="isActive">
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-sm-3 col-form-label">Name</label>
+                            <div class="col-sm-9">
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Name"
+                                       @bind="newUserName" />
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center">
+                            <label class="col-sm-3 col-form-label">Email</label>
+                            <div class="col-sm-9">
+                                <input type="email"
+                                       class="form-control"
+                                       placeholder="Email"
+                                       @bind="newUserEmail" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button class="btn btn-primary btn-sm"
+                @onclick="() => UserModalSubmit()">
+            Submit
+        </button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    Modal modalNewUser = default!;
+    Modal modalUser = default!;
+
+    private string newUserName = "";
+    private string newUserEmail = "";
+    private string isActive = "1";
+    private int userId = 0;
+
+    private List<string> selectedRoles = new();
+    private List<string> roleList = new();
+
+    private IEnumerable<JobOfferUsers> usersList = new List<JobOfferUsers>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        roleList = ManageUsersService.GetAllRoles();
+        await GetUsers();
+    }
+
+    private async Task GetUsers()
+    {
+        usersList = await ManageUsersService.GetAllUsersAsync();
+    }
+
+    private void ClearParams()
+    {
+        newUserName = "";
+        newUserEmail = "";
+        isActive = "1";
+        userId = 0;
+
+        selectedRoles.Clear();
+    }
+
+    private void ShowNewUserModal()
+    {
+        ClearParams();
+        modalNewUser.Show();
+    }
+
+    private async Task ShowUserModal(JobOfferUsers user)
+    {
+        ClearParams();
+
+        userId = user.Id;
+        newUserName = user.Name;
+        newUserEmail = user.Email;
+        isActive = user.IsActive == true ? "1" : "0";
+        selectedRoles = (await ManageUsersService.GetUserRoles(user.AspNetUser_Id)).ToList();
+
+        modalUser.Title = user.Name;
+        modalUser.Show();
+    }
+
+    private void OnCheckboxChanged(string roleName, bool isChecked)
+    {
+        if (isChecked)
+            if (!selectedRoles.Contains(roleName))
+                selectedRoles.Add(roleName);
+            else
+                selectedRoles.Remove(roleName);
+    }
+
+    private List<string> CollectErrors(List<string> errors)
+    {
+        bool isValidEmail = UtilitiesService.IsValidEmail(newUserEmail);
+        if (!isValidEmail)
+            errors.Add("Please enter a valid email address.");
+
+        if (string.IsNullOrEmpty(newUserName))
+            errors.Add("Name is required.");
+
+        if (!selectedRoles.Any())
+            errors.Add("Please select a role.");
+
+        return errors;
+    }
+
+    private async Task NewUserModalSubmit()
+    {
+        var errors = CollectErrors(new List<string>());
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        var confirm = await AlertService.Confirm();
+        if (confirm)
+        {
+            await ManageUsersService.NewUserAsync(
+                newUserName, 
+                newUserEmail, 
+                selectedRoles);
+
+            await GetUsers();
+            modalNewUser.Close();
+        }
+    }
+
+    private async Task UserModalSubmit()
+    {
+        var errors = CollectErrors(new List<string>());
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        var confirm = await AlertService.Confirm();
+        if (confirm)
+        {
+            await ManageUsersService.UpdateUserAsync(
+                userId,
+                isActive == "1" ? true : false,
+                newUserName,
+                newUserEmail,
+                selectedRoles
+            );
+            
+            await GetUsers();
+            modalUser.Close();
+        }
+    }
+}
+

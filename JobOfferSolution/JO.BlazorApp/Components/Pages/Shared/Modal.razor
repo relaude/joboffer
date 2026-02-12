@@ -1,0 +1,47 @@
+﻿@if (IsVisible)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-scrollable @ModalSize" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Title</h5>
+                    <button class="btn btn-danger btn-circle btn-sm" @onclick="Close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @ChildContent
+                </div>
+                <div class="modal-footer">
+                    @if (FooterTemplate is not null)
+                    {
+                        @FooterTemplate
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary btn-sm" @onclick="Close">Close</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string Title { get; set; } = "Modal Title";
+    [Parameter] public string ModalSize { get; set; } = "modal-lg"; // "modal-lg" or "modal-sm"
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? FooterTemplate { get; set; }
+
+    public bool IsVisible { get; private set; }
+
+    public void Show()
+    {
+        IsVisible = true;
+    }
+
+    public void Close()
+    {
+        IsVisible = false;
+    }
+}

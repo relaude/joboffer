@@ -3,6 +3,7 @@ using System.Text.Json;
 using JO.BlazorApp.Components.Account.Pages;
 using JO.BlazorApp.Components.Account.Pages.Manage;
 using JO.BlazorApp.Data;
+using JO.DataModel.Identity;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;

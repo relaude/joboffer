@@ -1,4 +1,5 @@
 using JO.BlazorApp.Data;
+using JO.DataModel.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 

@@ -1,3 +1,10 @@
 <Solution>
   <Project Path="JO.BlazorApp/JO.BlazorApp.csproj" />
+  <Project Path="JO.Database/JO.Database.sqlproj" Id="984da9bd-f140-4590-8539-02d38d3001fe">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="JO.DataModel/JO.DataModel.csproj" Id="2135b38d-2ead-457b-ac36-f1b99fa95fae" />
+  <Project Path="JO.Persistence/JO.Persistence.csproj" Id="1720c1ce-ccce-4698-910f-ab394b89c469" />
+  <Project Path="JO.Service/JO.Service.csproj" Id="293b37ed-cf53-4728-acdd-65d3cc62158e" />
 </Solution>

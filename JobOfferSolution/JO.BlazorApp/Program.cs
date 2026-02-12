@@ -1,13 +1,17 @@
+using CurrieTechnologies.Razor.SweetAlert2;
 using JO.BlazorApp.Components;
 using JO.BlazorApp.Components.Account;
 using JO.BlazorApp.Data;
+using JO.DataModel.Identity;
+using JO.Persistence;
+using JO.Service;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -15,28 +19,60 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
+//builder.Services.AddAuthentication(options =>
+//    {
+//        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+//        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+//    })
+//    .AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddSingleton<IAppSettings, AppSettings>();
+builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
+{
+    var appSettings = sp.GetRequiredService<IAppSettings>();
+    var configuration = sp.GetRequiredService<IConfiguration>();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = true;
-        options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
-    })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
+    var connectionStringName = appSettings.GetConnectionStringName();
+    var connectionString = configuration.GetConnectionString(connectionStringName)
+        ?? throw new InvalidOperationException(
+            $"Connection string '{connectionStringName}' not found.");
+
+    options.UseSqlServer(connectionString);
+});
+
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//    options.UseSqlServer(connectionString));
+//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+//Identity
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<ApplicationDbContext>();
+
+//builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+
+//builder.Services.Configure<IdentityOptions>(options =>
+//{
+//    options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
+//});
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
+});
+
+// Custom Services
+builder.Services.AddPersistenceServices(builder.Configuration);
+builder.Services.AddJobOfferServices(builder.Configuration);
+
+// 3rd Party Components
+builder.Services.AddSweetAlert2();
 
 var app = builder.Build();
 

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using JO.BlazorApp.Data;
+using JO.DataModel.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
