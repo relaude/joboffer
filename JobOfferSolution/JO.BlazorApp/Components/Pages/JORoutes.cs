@@ -13,5 +13,10 @@
         {
             public const string Users = PrefixAdmin + "/users";
         }
+
+        public static class Candidate
+        {
+            public const string Index = "/candidate";
+        }
     }
 }

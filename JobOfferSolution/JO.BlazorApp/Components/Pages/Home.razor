@@ -1,8 +1,5 @@
-﻿@using Microsoft.AspNetCore.Authorization
+﻿@page "/"
 
-@page "/"
-
-<!-- Welcome Card -->
 <div class="card shadow mb-4">
     <div class="card-body">
         <h4 class="font-weight-bold text-primary mb-3">
@@ -19,7 +16,7 @@
         <hr />
 
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <h6 class="font-weight-bold text-gray-800">
                     <i class="fas fa-edit text-primary"></i> Create Offers
                 </h6>
@@ -29,7 +26,18 @@
                 </p>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <h6 class="font-weight-bold text-gray-800">
+                    <i class="fas fa-file-upload text-warning"></i> 
+                    <a href="@JORoutes.Candidate.Index">Candidate Submission</a>
+                </h6>
+                <p class="small text-muted">
+                    The candidate submits their <strong>Compensation & Benefits Form</strong>,
+                    resume, and payslip so that the salary offer can be properly evaluated.
+                </p>
+            </div>
+
+            <div class="col-md-3">
                 <h6 class="font-weight-bold text-gray-800">
                     <i class="fas fa-check-circle text-success"></i> Approval Workflow
                 </h6>
@@ -39,7 +47,7 @@
                 </p>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <h6 class="font-weight-bold text-gray-800">
                     <i class="fas fa-chart-line text-info"></i> Track Status
                 </h6>

@@ -1,0 +1,104 @@
+﻿@attribute [Route(JORoutes.Candidate.Index)]
+
+<div class="card border-left-primary mb-4 shadow">
+    <div class="card-header py-3 d-flex align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fa fa-id-card mr-2"></i> Candidate
+        </h6>
+    </div>
+
+    <div class="card-body">
+
+        <form method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="candidateName" class="font-weight-bold text-gray-800">
+                    Name
+                </label>
+                <input type="text"
+                       class="form-control"
+                       id="candidateName"
+                       name="CandidateName"
+                       placeholder="Enter full name"
+                       required />
+            </div>
+
+            <div class="form-group">
+                <label for="candidateEmail" class="font-weight-bold text-gray-800">
+                    Email
+                </label>
+                <input type="email"
+                       class="form-control"
+                       id="candidateEmail"
+                       name="CandidateEmail"
+                       placeholder="Enter email address"
+                       required />
+            </div>
+
+            <hr />
+
+            <h6 class="font-weight-bold text-primary mb-3">
+                <i class="fa fa-file-upload mr-2"></i> File Submission
+            </h6>
+
+            <div class="form-group">
+                <label class="font-weight-bold text-gray-800">
+                    Compensation & Benefits Form
+                </label>
+                <div class="custom-file">
+                    <input type="file"
+                           class="custom-file-input"
+                           id="compBenefitsFile"
+                           name="CompensationBenefitsFile"
+                           required />
+                    <label class="custom-file-label" for="compBenefitsFile">
+                        Choose file...
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="font-weight-bold text-gray-800">
+                    Resume
+                </label>
+                <div class="custom-file">
+                    <input type="file"
+                           class="custom-file-input"
+                           id="resumeFile"
+                           name="ResumeFile"
+                           required />
+                    <label class="custom-file-label" for="resumeFile">
+                        Choose file...
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="font-weight-bold text-gray-800">
+                    Payslip
+                </label>
+                <div class="custom-file">
+                    <input type="file"
+                           class="custom-file-input"
+                           id="payslipFile"
+                           name="PayslipFile"
+                           required />
+                    <label class="custom-file-label" for="payslipFile">
+                        Choose file...
+                    </label>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+    <div class="card-footer text-right mt-4">
+        <button type="submit" class="btn btn-primary btn-sm shadow-sm">
+            <i class="fa fa-paper-plane mr-1"></i> Submit Application
+        </button>
+    </div>
+</div>
+
+
+@code {
+
+}

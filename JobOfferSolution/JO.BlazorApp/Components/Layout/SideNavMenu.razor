@@ -1,6 +1,4 @@
-﻿@using JO.BlazorApp.Components.Pages
-@using Microsoft.AspNetCore.Components.Authorization
-@inject AuthenticationStateProvider AuthenticationStateProvider
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
@@ -8,18 +6,68 @@
     </a>
     <hr class="sidebar-divider my-0">
 
-    <li class="nav-item active">
-        <a class="nav-link" href="#">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span>
-        </a>
-    </li>
+    @if (user.Identity?.IsAuthenticated == true)
+    {
+        @if (user.IsInRole(JOUSerRole.TA))
+        {
+            <li class="nav-item active">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>TA-Dashboard</span>
+                </a>
+            </li>
+        }
 
-    <li class="nav-item active">
-        <a class="nav-link" href="@JORoutes.Admin.Users">
-            <i class="fa-solid fa-user-gear"></i>
-            <span>Users and Roles</span>
-        </a>
-    </li>
+        @if (user.IsInRole(JOUSerRole.HRBP))
+        {
+            <li class="nav-item active">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>HRBP-Dashboard</span>
+                </a>
+            </li>
+        }
+
+        @if (user.IsInRole(JOUSerRole.HROD))
+        {
+            <li class="nav-item active">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>HROD-Dashboard</span>
+                </a>
+            </li>
+        }
+
+        @if (user.IsInRole(JOUSerRole.DH))
+        {
+            <li class="nav-item active">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>DH-Dashboard</span>
+                </a>
+            </li>
+        }
+
+        @if (user.IsInRole(JOUSerRole.Admin))
+        {
+            <li class="nav-item active">
+                <a class="nav-link" href="@JORoutes.Admin.Users">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span>Users and Roles</span>
+                </a>
+            </li>
+        }
+    }
 
 </ul>
+
+@code{
+
+    private ClaimsPrincipal user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+    }
+}

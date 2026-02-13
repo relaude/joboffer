@@ -1,4 +1,5 @@
 ﻿@inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -11,8 +12,9 @@
         <AuthorizeView>
             <Authorized>
                 <li class="nav-item dropdown no-arrow">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" id="userDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                       @onclick="() => LogoutUser()">
                         <span class="mr-2 d-none d-lg-inline text-gray-600 small">@context.User.Identity?.Name</span>
                         
                         <AvatarInitial Email="@context.User.Identity?.Name" />
@@ -38,3 +40,11 @@
         </AuthorizeView>
     </ul>
 </nav>
+
+@code{
+    private async Task LogoutUser()
+    {
+        await JS.InvokeAsync<bool>("auth.logout");
+        Navigation.NavigateTo("/", true);
+    }
+}
