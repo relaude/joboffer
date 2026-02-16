@@ -3,6 +3,7 @@
     public static class JORoutes
     {
         private const string PrefixAdmin = "/admin/manage";
+        private const string PrefixCandidate = "/candidate";
         public static class Public
         {
             public const string Login = "/login";
@@ -16,7 +17,8 @@
 
         public static class Candidate
         {
-            public const string Index = "/candidate";
+            public const string Index = PrefixCandidate;
+            public const string Details = PrefixCandidate + "/details";
         }
     }
 }

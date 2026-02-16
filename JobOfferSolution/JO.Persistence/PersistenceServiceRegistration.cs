@@ -19,7 +19,16 @@ namespace JO.Persistence
             services.AddSingleton<IAppSettings, AppSettings>();
 
             // Register EF DbContext using AppSettings
-            services.AddDbContext<JobOfferDbContext>((serviceProvider, options) =>
+            //services.AddDbContext<JobOfferDbContext>((serviceProvider, options) =>
+            //{
+            //    var appSettings = serviceProvider.GetRequiredService<IAppSettings>();
+
+            //    var connectionStringName = appSettings.GetConnectionStringName();
+            //    var connectionString = configuration.GetConnectionString(connectionStringName);
+
+            //    options.UseSqlServer(connectionString);
+            //});
+            services.AddDbContextFactory<JobOfferDbContext>((serviceProvider, options) =>
             {
                 var appSettings = serviceProvider.GetRequiredService<IAppSettings>();
 
@@ -34,6 +43,13 @@ namespace JO.Persistence
 
             //Repos
             services.AddScoped<IJobOfferUsersRepo, JobOfferUsersRepo>();
+            services.AddScoped<ICandidateRepo, CandidateRepo>();
+            services.AddScoped<IJobOfferTransactionRepo, JobOfferTransactionRepo>();
+            services.AddScoped<ITransactionAttachmentRepo, TransactionAttachmentRepo>();
+
+            //Views
+            services.AddScoped<IVwJobOfferTransactionRepo, VwJobOfferTransactionRepo>();
+            services.AddScoped<IVwTransactionAttachmentRepo, VwTransactionAttachmentRepo>();
 
             return services;
         }

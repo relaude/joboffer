@@ -1,0 +1,40 @@
+﻿@inject ITransactionService TransactionService
+
+<div class="card shadow mb-4 border-left-primary">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-paperclip"></i> Submitted Files
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                    <tr>
+                        <th>File Type</th>
+                        <th>File Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var file in submittedFiles)
+                    {
+                        <tr>
+                            <td>@file.TypeName</td>
+                            <td>@file.FileName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int TransactionId { get; set; }
+    private IEnumerable<VwTransactionAttachments> submittedFiles = new List<VwTransactionAttachments>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        submittedFiles = await TransactionService.GetSubmittedFiles(TransactionId);
+    }
+}

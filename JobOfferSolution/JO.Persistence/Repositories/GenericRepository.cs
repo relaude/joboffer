@@ -1,4 +1,5 @@
-﻿using JO.Persistence.Repositories.Contracts;
+﻿using JO.Persistence.DataAccess;
+using JO.Persistence.Repositories.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace JO.Persistence.Repositories
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected readonly DbContext _context;
+        //protected readonly IDbContextFactory<JobOfferDbContext> _context;
         private readonly DbSet<T> _dbSet;
 
         public GenericRepository(DbContext context)
@@ -17,6 +19,11 @@ namespace JO.Persistence.Repositories
             _context = context;
             _dbSet = _context.Set<T>();
         }
+        //public GenericRepository(IDbContextFactory<JobOfferDbContext> context)
+        //{
+        //    _context = context;
+        //    //_dbSet = _context.Set<T>();
+        //}
 
         public async Task<T> GetByIdAsync(object id) => await _dbSet.FindAsync(id);
 
