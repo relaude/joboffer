@@ -1,7 +1,6 @@
 ﻿using JO.DataModel.Entity;
 using JO.DataModel.View;
 using JO.Persistence.DataAccess;
-using JO.Persistence.Repositories.Contracts;
 using JO.Service.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,9 +18,17 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
+        public async Task<IEnumerable<VwJobOfferTransactions>> GetAllTransaction()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.VwJobOfferTransactions
+                                .AsNoTracking()
+                                .ToListAsync();
+        }
+
         public async Task<VwJobOfferTransactions> GetTransactionDetails(int id)
         {
-            //return await _vwTransaction.GetByIdAsync(id);
             await using var context = await _contextFactory.CreateDbContextAsync();
 
             return await context.VwJobOfferTransactions
@@ -31,12 +38,22 @@ namespace JO.Service.Services
 
         public async Task<IEnumerable<VwTransactionAttachments>> GetSubmittedFiles(int id)
         {
-            //return await _vwAttachment.FindAsync(vw=>vw.Transaction_Id == id);
             await using var context = await _contextFactory.CreateDbContextAsync();
 
             return await context.VwTransactionAttachments
                                 .AsNoTracking()
                                 .Where(x => x.Transaction_Id == id)
+                                .ToListAsync();
+        }
+        
+        public async Task<IEnumerable<JobOfferPackages>> GetPackages(int id)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.JobOfferPackages
+                                .AsNoTracking()
+                                .Where(x => x.Transaction_Id == id)
+                                .OrderBy(x => x.Priority)
                                 .ToListAsync();
         }
     }

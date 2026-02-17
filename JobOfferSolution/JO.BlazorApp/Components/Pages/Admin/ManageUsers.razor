@@ -2,8 +2,9 @@
 @inject IUtilitiesService UtilitiesService
 @inject IAlertService AlertService
 
-@attribute [Route(JORoutes.Admin.Users)]
 @attribute [Authorize(Roles = JOUSerRole.Admin)]
+@attribute [Route(JORoutes.Admin.Users)]
+
 <div class="card shadow border-left-primary mb-4">
     <div class="card-header py-3">
         <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
@@ -215,9 +216,10 @@
                 selectedRoles.Remove(roleName);
     }
 
-    private List<string> CollectErrors(List<string> errors)
+    private async Task<List<string>> CollectErrors(List<string> errors)
     {
         bool isValidEmail = UtilitiesService.IsValidEmail(newUserEmail);
+
         if (!isValidEmail)
             errors.Add("Please enter a valid email address.");
 
@@ -227,12 +229,19 @@
         if (!selectedRoles.Any())
             errors.Add("Please select a role.");
 
+        if (isValidEmail)
+        {
+            bool existingAspUser = await ManageUsersService.IsUserExists(newUserEmail, userId);
+            if (existingAspUser)
+                errors.Add("User already exists.");
+        }
+
         return errors;
     }
 
     private async Task NewUserModalSubmit()
     {
-        var errors = CollectErrors(new List<string>());
+        var errors = await CollectErrors(new List<string>());
 
         if (errors.Any())
         {
@@ -240,22 +249,21 @@
             return;
         }
 
-        var confirm = await AlertService.Confirm();
-        if (confirm)
-        {
-            await ManageUsersService.NewUserAsync(
-                newUserName, 
-                newUserEmail, 
+        if (!await AlertService.Confirm())
+            return;
+        
+        await ManageUsersService.NewUserAsync(
+                newUserName,
+                newUserEmail,
                 selectedRoles);
 
-            await GetUsers();
-            modalNewUser.Close();
-        }
+        await GetUsers();
+        modalNewUser.Close();
     }
 
     private async Task UserModalSubmit()
     {
-        var errors = CollectErrors(new List<string>());
+        var errors = await CollectErrors(new List<string>());
 
         if (errors.Any())
         {
@@ -263,20 +271,24 @@
             return;
         }
 
-        var confirm = await AlertService.Confirm();
-        if (confirm)
+        if (!await AlertService.Confirm())
+            return;
+
+        if (isActive == "0")
+            await ManageUsersService.DeactivateUser(userId);
+        else
         {
             await ManageUsersService.UpdateUserAsync(
                 userId,
-                isActive == "1" ? true : false,
+                true,
                 newUserName,
                 newUserEmail,
                 selectedRoles
             );
-            
-            await GetUsers();
-            modalUser.Close();
         }
+
+        await GetUsers();
+        modalUser.Close();
     }
 }
 

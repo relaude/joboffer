@@ -1,6 +1,7 @@
 ﻿@inject IUtilitiesService UtilitiesService
 @inject IAlertService AlertService
 @inject ICandidateService CandidateService
+@inject IFileUploadService FileUploadService
 @inject NavigationManager Navigation
 
 @attribute [Route(JORoutes.Candidate.Index)]
@@ -144,31 +145,32 @@
             return;
         }
 
-        var confirm = await AlertService.Confirm();
-        if (confirm)
-        {
-            var attachments = new List<AttachmentDto>();
-            attachments.Add(new AttachmentDto { 
-                FileType_Id = JOFileType.CompBen,
-                FileName = compensationFileName,
-                FilePath = compensationFileName
-            });
+        if (!await AlertService.Confirm())
+            return;
+        
+        var attachments = new List<AttachmentDto>();
+        
+        attachments.Add(new AttachmentDto { 
+            FileType_Id = JOFileType.CompBen,
+            FileName = compensationFileName,
+            FileBytes = await FileUploadService.ReadFileAsync(compensationFile)
+        });
 
-            attachments.Add(new AttachmentDto { 
-                FileType_Id = JOFileType.Resume,
-                FileName = resumeFileName,
-                FilePath = resumeFileName
-            });
 
-            attachments.Add(new AttachmentDto { 
-                FileType_Id = JOFileType.Payslip,
-                FileName = payslipFileName,
-                FilePath = payslipFileName
-            });
+        attachments.Add(new AttachmentDto { 
+            FileType_Id = JOFileType.Resume,
+            FileName = resumeFileName,
+            FileBytes = await FileUploadService.ReadFileAsync(resumeFile)
+        });
 
-            var transactionId = await CandidateService.NewTransactionAsync(candidateName, candidateEmail, attachments);
-            Navigation.NavigateTo($"{JORoutes.Candidate.Details}/{transactionId}");
-        }
+        attachments.Add(new AttachmentDto { 
+            FileType_Id = JOFileType.Payslip,
+            FileName = payslipFileName,
+            FileBytes = await FileUploadService.ReadFileAsync(payslipFile)
+        });
+
+        var transactionId = await CandidateService.NewTransactionAsync(candidateName, candidateEmail, attachments);
+        Navigation.NavigateTo($"{JORoutes.Candidate.Details}/{transactionId}");
     }
 }
 

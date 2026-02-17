@@ -1,9 +1,10 @@
 ﻿@inject ITransactionService TransactionService
+@inject IUtilitiesService UtilitiesService
 
 <div class="card shadow mb-4 border-left-primary">
     <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
         <h6 class="m-0 font-weight-bold text-primary">
-            <i class="fas fa-paperclip"></i> Submitted Files
+            <i class="fas fa-paperclip"></i> Files
         </h6>
     </div>
     <div class="card-body">
@@ -20,7 +21,19 @@
                     {
                         <tr>
                             <td>@file.TypeName</td>
-                            <td>@file.FileName</td>
+                            <td>
+                                @if(ReadOnly)
+                                {
+                                    @file.FileName
+                                }
+                                else
+                                {
+                                    <a href="@(UtilitiesService.AttachmentRelativePath(file.FilePath))" 
+                                        target="_blank">
+                                        @file.FileName
+                                    </a>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -31,6 +44,7 @@
 
 @code {
     [Parameter] public int TransactionId { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = true;
     private IEnumerable<VwTransactionAttachments> submittedFiles = new List<VwTransactionAttachments>();
 
     protected override async Task OnInitializedAsync()

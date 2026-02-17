@@ -1,7 +1,6 @@
 ﻿using JO.DataModel.DTOs;
 using JO.DataModel.Entity;
 using JO.Persistence.DataAccess;
-using JO.Persistence.Repositories.Contracts;
 using JO.Service.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -15,9 +14,13 @@ namespace JO.Service.Services
     public class CandidateService : ICandidateService
     {
         private readonly IDbContextFactory<JobOfferDbContext> _contextFactory;
-        public CandidateService(IDbContextFactory<JobOfferDbContext> contextFactory)
+        private readonly IFileUploadService _fileService;
+        public CandidateService(
+            IDbContextFactory<JobOfferDbContext> contextFactory,
+            IFileUploadService fileService)
         {
             _contextFactory = contextFactory;
+            _fileService = fileService;
         }
 
         public async Task<int> NewTransactionAsync(
@@ -34,7 +37,8 @@ namespace JO.Service.Services
                 var candidate = new Candidates
                 {
                     Name = name,
-                    Email = email
+                    Email = email,
+                    CreatedAt = DateTime.Now
                 };
 
                 await context.Candidates.AddAsync(candidate);
@@ -53,20 +57,25 @@ namespace JO.Service.Services
                 await context.SaveChangesAsync();
 
                 //Create Attachments
-                if (attachments != null && attachments.Any())
-                {
-                    var attachmentEntities = attachments.Select(a =>
-                        new TransactionAttachments
-                        {
-                            Transaction_Id = transaction.Id,
-                            FileType_Id = a.FileType_Id,
-                            FileName = a.FileName,
-                            FilePath = a.FilePath
-                        }).ToList();
+                foreach (var item in attachments)
+                    item.FilePath = await _fileService.CreateFilePath(transaction.TransactionNumber, item.FileName);
 
-                    await context.TransactionAttachments.AddRangeAsync(attachmentEntities);
-                    await context.SaveChangesAsync();
-                }
+                var attachmentEntities = attachments.Select(a =>
+                    new TransactionAttachments
+                    {
+                        Transaction_Id = transaction.Id,
+                        FileType_Id = a.FileType_Id,
+                        FileName = a.FileName,
+                        FilePath = a.FilePath,
+                        CreatedAt = DateTime.Now
+                    }).ToList();
+
+                await context.TransactionAttachments.AddRangeAsync(attachmentEntities);
+                await context.SaveChangesAsync();
+                
+                //Upload Files
+                foreach (var item in attachments)
+                    await File.WriteAllBytesAsync(item.FilePath, item.FileBytes);
 
                 await dbTransaction.CommitAsync();
 
@@ -91,6 +100,11 @@ namespace JO.Service.Services
             int nextNumber = lastTransaction == null ? 1 : lastTransaction.Id + 1;
 
             return $"JO-{year}-{nextNumber.ToString().PadLeft(5, '0')}";
+        }
+
+        private async Task UploadFiles(List<AttachmentDto> attachments)
+        {
+
         }
     }
 }

@@ -1,0 +1,207 @@
+﻿@inject IAlertService AlertService
+@inject ITalentAcquisitionService TalentAcquisitionService
+@inject ITransactionService TransactionService
+
+@attribute [Authorize(Roles = JOUSerRole.TA)]
+@attribute [Route(JORoutes.TA.Analysis + "/{transactionId:int}")]
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        Job Offer Analysis
+    </h1>
+</div>
+
+<TransactionHeader TransactionId="@transactionId" />
+
+<ListSubmittedFiles TransactionId="@transactionId" ReadOnly="@false" />
+
+<div class="card shadow mb-4 border-left-primary">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fa-solid fa-boxes-stacked"></i> Packages
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Priority</th>
+                        <th>Name</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (joPackages.Any())
+                    {
+                        @foreach (var item in joPackages)
+                        {
+                            <tr>
+                                <td>@item.Priority</td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-link text-primary p-0 align-baseline"
+                                            style="text-decoration: none;"
+                                            @onclick="() => HandleEditPackage(item)">
+                                        @item.PackageName
+                                    </button>
+                                </td>
+                                <td>@item.PackageAmount</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">
+                                <i class="fas fa-info-circle mr-1"></i> No records found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mb-4">
+    <button class="btn btn-sm btn-success mr-1"
+            @onclick="HandleAddPackage">
+        <i class="fa-solid fa-box"></i> Add Package
+    </button>
+    <button class="btn btn-sm btn-primary mr-1">
+        <i class="fas fa-paperclip"></i> Attach Supporting Docs
+    </button>
+
+    <button class="btn btn-sm btn-primary mr-1">
+        <i class="fas fa-check"></i> Tag As HROD Candidate
+    </button>
+</div>
+
+<Modal @ref="modalPackage">
+    <ChildContent>
+        <div class="form-group">
+            <label class="font-weight-bold">Name</label>
+            <InputText class="form-control"
+                       @bind-Value="packageName" />
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold">Amount</label>
+            <InputNumber class="form-control" min="10000"
+                       @bind-Value="packageAmount" />
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold">Priority</label>
+            <InputNumber class="form-control" min="1"
+                         @bind-Value="priority" />
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button class="btn btn-primary btn-sm"
+                @onclick="() => SubmitNewPackage()">
+            Submit
+        </button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    [Parameter] public int transactionId { get; set; }
+
+    Modal modalPackage = default!;
+
+    private string packageName = "First Package";
+    private decimal packageAmount = 30000;
+    private int priority = 1;
+    private int packageId = 0;
+
+    private IEnumerable<JobOfferPackages> joPackages = new List<JobOfferPackages>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetPackages();
+    }
+
+    private async Task GetPackages()
+    {
+        joPackages = await TransactionService.GetPackages(transactionId);
+    }
+
+    private void HandleAddPackage()
+    {
+        ResetParams();
+
+        modalPackage.Title = "New Package";
+        modalPackage.Show();
+    }
+
+    private void HandleEditPackage(JobOfferPackages item)
+    {
+        ResetParams();
+
+        packageId = item.Id;
+        packageName = item.PackageName;
+        packageAmount = item.PackageAmount;
+        priority = item.Priority;
+
+        modalPackage.Title = item.PackageName;
+        modalPackage.Show();
+    }
+
+    private void ResetParams()
+    {
+        packageName = "First Package";
+        packageAmount = 30000;
+        priority = 1;
+        packageId = 0;
+    }
+
+    private List<string> CollectErrors(List<string> errors)
+    {
+        if (string.IsNullOrEmpty(packageName))
+            errors.Add("Package Name is required.");
+
+        if (packageAmount == 0)
+            errors.Add("Invalid Package Amount.");
+
+        if (priority == 0)
+            errors.Add("Invalid Priority.");
+
+        return errors;
+    }
+
+    private async Task SubmitNewPackage()
+    {
+        var errors = CollectErrors(new List<string>());
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        if (!await AlertService.Confirm())
+            return;
+
+        if(packageId > 0)
+        {
+            await TalentAcquisitionService.UpdatePackage(
+                packageId,
+                packageName,
+                packageAmount,
+                priority);
+        }
+
+        if (packageId == 0)
+        {
+            await TalentAcquisitionService.CreatePackage(
+                transactionId,
+                packageName,
+                packageAmount,
+                priority);
+        }
+        
+        modalPackage.Close();
+        await GetPackages();
+    }
+}

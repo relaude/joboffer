@@ -60,7 +60,7 @@ namespace JO.Service.Services
             if (string.IsNullOrEmpty(fullPath))
                 return string.Empty;
 
-            const string marker = "TransactionUploads";
+            const string marker = "documents";
             int index = fullPath.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
 
             if (index >= 0)
@@ -70,7 +70,7 @@ namespace JO.Service.Services
                 if (!relativePath.StartsWith("\\"))
                     relativePath = "\\" + relativePath;
 
-                relativePath = ($"{marker}/{relativePath}").Replace("\\", "/");
+                relativePath = ($"{marker}{relativePath}").Replace("\\", "/");
                 return relativePath;
             }
 

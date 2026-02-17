@@ -19,6 +19,8 @@ namespace JO.Service
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ICandidateService, CandidateService>();
             services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<IFileUploadService, FileUploadService>();
+            services.AddScoped<ITalentAcquisitionService, TalentAcquisitionService>();
 
             return services;
         }

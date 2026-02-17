@@ -1,8 +1,9 @@
 ﻿using JO.DataModel.Identity;
-using JO.Persistence.Repositories.Contracts;
+using JO.Persistence.DataAccess;
 using JO.Service.Constants;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,25 +14,27 @@ namespace JO.Service.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IJobOfferUsersRepo _joUserRepo;
+        private readonly IDbContextFactory<JobOfferDbContext> _contextFactory;
 
         public AccountService(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IJobOfferUsersRepo joUserRepo)
+            IDbContextFactory<JobOfferDbContext> contextFactory)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _joUserRepo = joUserRepo;
+            _contextFactory = contextFactory;
         }
 
         public async Task<bool> LocalLogIn(string email)
         {
-            var joUser = await _joUserRepo
-                .FirstOrDefaultAsync(
-                    x => x.Email == email 
-                    && x.IsActive == true);
-            
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var joUser = await context.JobOfferUsers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(jo=>jo.Email == email 
+                    && jo.IsActive == true);
+
             if (joUser == null)
                 return false;
 

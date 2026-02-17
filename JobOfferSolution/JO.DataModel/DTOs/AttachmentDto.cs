@@ -9,5 +9,6 @@ namespace JO.DataModel.DTOs
         public int FileType_Id { get; set; }
         public string FileName { get; set; }
         public string FilePath { get; set; }
+        public byte[] FileBytes { get; set; }
     }
 }

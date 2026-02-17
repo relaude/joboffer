@@ -1,0 +1,10 @@
+﻿@attribute [Authorize]
+@attribute [Route(JORoutes.Transaction.Details + "/{transactionId:int}")]
+
+<TransactionHeader TransactionId="@transactionId" />
+
+<ListSubmittedFiles TransactionId="@transactionId" ReadOnly="@false" />
+
+@code {
+    [Parameter] public int transactionId { get; set; }
+}

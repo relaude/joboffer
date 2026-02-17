@@ -1,0 +1,16 @@
+﻿@attribute [Authorize(Roles = JOUSerRole.TA)]
+@attribute [Route(JORoutes.TA.Dashboard)]
+
+<div class="card shadow mb-4 border-left-primary">
+    <div class="card-header py-3 d-flex align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fa-solid fa-grip fa-fw mr-2"></i> TA-Dashboard
+        </h6>
+    </div>
+    
+    <TransactionList RoleName="@JOUSerRole.TA" />
+</div>
+
+@code {
+
+}

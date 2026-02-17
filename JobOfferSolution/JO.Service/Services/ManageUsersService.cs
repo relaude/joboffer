@@ -26,9 +26,15 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
-        // =============================
-        // CREATE USER
-        // =============================
+        public async Task<bool> IsUserExists(string email, int userId = 0)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.JobOfferUsers
+                .AsNoTracking()
+                .AnyAsync(jo => jo.Email == email && (userId == 0 || jo.Id != userId));
+        }
+
         public async Task<int> NewUserAsync(
             string name,
             string email,
@@ -39,16 +45,13 @@ namespace JO.Service.Services
 
             try
             {
-                // 🔹 Check if user already exists
                 var existingAspUser = await _userManager.FindByEmailAsync(email);
                 if (existingAspUser != null)
                     throw new Exception("User already exists.");
 
-                // 🔹 Ensure roles exist
                 foreach (var role in roles)
                     await EnsureRoleExists(role);
 
-                // 🔹 Create ASP.NET Identity User
                 var aspUser = new ApplicationUser
                 {
                     UserName = email,
@@ -68,19 +71,18 @@ namespace JO.Service.Services
                     aspUser,
                     new Claim("Email", email));
 
-                // 🔹 Create JobOfferUsers record
                 var joUser = new JobOfferUsers
                 {
                     AspNetUser_Id = aspUser.Id,
                     Name = name,
                     Email = email,
-                    IsActive = true
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
                 };
 
                 await context.JobOfferUsers.AddAsync(joUser);
                 await context.SaveChangesAsync();
 
-                // 🔹 Add Claim with JO User Id
                 await _userManager.AddClaimAsync(
                     aspUser,
                     new Claim("JobOfferUserId", joUser.Id.ToString()));
@@ -96,9 +98,6 @@ namespace JO.Service.Services
             }
         }
 
-        // =============================
-        // UPDATE USER
-        // =============================
         public async Task<int> UpdateUserAsync(
             int userId,
             bool isActive,
@@ -121,7 +120,6 @@ namespace JO.Service.Services
                 if (aspUser == null)
                     throw new Exception("ASP.NET Identity user not found.");
 
-                // 🔹 Update Identity Info
                 aspUser.Email = email;
                 aspUser.UserName = email;
 
@@ -129,7 +127,6 @@ namespace JO.Service.Services
                 if (!updateResult.Succeeded)
                     throw new Exception("Failed to update Identity user.");
 
-                // 🔹 Update Roles
                 var currentRoles = await _userManager.GetRolesAsync(aspUser);
                 if (currentRoles.Any())
                     await _userManager.RemoveFromRolesAsync(aspUser, currentRoles);
@@ -137,7 +134,6 @@ namespace JO.Service.Services
                 if (roles != null && roles.Any())
                     await _userManager.AddToRolesAsync(aspUser, roles);
 
-                // 🔹 Update JO Table
                 joUser.Name = name;
                 joUser.Email = email;
                 joUser.IsActive = isActive;
@@ -156,9 +152,19 @@ namespace JO.Service.Services
             }
         }
 
-        // =============================
-        // GET USERS
-        // =============================
+        public async Task<int> DeactivateUser(int userId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            
+            var joUser = await context.JobOfferUsers
+                    .FirstOrDefaultAsync(x => x.Id == userId);
+
+            joUser.IsActive = false;
+            context.JobOfferUsers.Update(joUser);
+
+            return await context.SaveChangesAsync();
+        }
+
         public async Task<List<JobOfferUsers>> GetAllUsersAsync()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
@@ -176,9 +182,6 @@ namespace JO.Service.Services
                 : await _userManager.GetRolesAsync(user);
         }
 
-        // =============================
-        // ROLE UTILITIES
-        // =============================
         private async Task EnsureRoleExists(string roleName)
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
@@ -191,6 +194,7 @@ namespace JO.Service.Services
             {
                 JOUSerRole.Admin,
                 JOUSerRole.TA,
+                JOUSerRole.TR,
                 JOUSerRole.HRBP,
                 JOUSerRole.HROD,
                 JOUSerRole.DH
