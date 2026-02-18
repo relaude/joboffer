@@ -3,6 +3,7 @@
     public interface ITalentAcquisitionService
     {
         Task<int> CreatePackage(int transactionId, string packageName, decimal packageAmount, int priority);
+        Task<int> TagAsHrodCandidate(int candidateId, bool isHrod);
         Task<int> UpdatePackage(int id, string packageName, decimal packageAmount, int priority);
     }
 }

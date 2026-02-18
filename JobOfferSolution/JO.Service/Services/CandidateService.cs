@@ -93,7 +93,7 @@ namespace JO.Service.Services
             var year = DateTime.Now.Year;
 
             var lastTransaction = await context.JobOfferTransactions
-                .Where(x => x.CreatedAt.Year == year)
+                .Where(x => x.CreatedAt.Value.Year == year)
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync();
 

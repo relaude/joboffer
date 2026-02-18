@@ -3,7 +3,9 @@
 
 <TransactionHeader TransactionId="@transactionId" />
 
-<ListSubmittedFiles TransactionId="@transactionId" ReadOnly="@false" />
+<ViewPackage TransactionId="@transactionId" />
+
+<CandidateFiles TransactionId="@transactionId" ReadOnly="@false" />
 
 @code {
     [Parameter] public int transactionId { get; set; }

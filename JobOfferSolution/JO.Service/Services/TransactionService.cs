@@ -56,5 +56,16 @@ namespace JO.Service.Services
                                 .OrderBy(x => x.Priority)
                                 .ToListAsync();
         }
+
+        public async Task<int> SetTransactionStatus(int id, int statusId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var joTransaction = await context.JobOfferTransactions.FindAsync(id);
+            joTransaction.MainStatus_Id = statusId;
+
+            context.JobOfferTransactions.Update(joTransaction);
+            return await context.SaveChangesAsync();
+        }
     }
 }

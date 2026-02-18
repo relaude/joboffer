@@ -56,5 +56,16 @@ namespace JO.Service.Services
             context.JobOfferPackages.Update(joPackage);
             return await context.SaveChangesAsync();
         }
+
+        public async Task<int> TagAsHrodCandidate(int candidateId, bool isHrod)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var candidate = await context.Candidates.FindAsync(candidateId);
+            candidate.IsHROD = isHrod;
+
+            context.Candidates.Update(candidate);
+            return await context.SaveChangesAsync();
+        }
     }
 }

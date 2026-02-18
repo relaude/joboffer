@@ -1,4 +1,6 @@
 ﻿@inject ITransactionService TransactionService
+@inject ITalentAcquisitionService TalentAcquisitionService
+@inject IAlertService AlertService
 
 <div class="card shadow mb-4 border-left-primary">
 
@@ -42,18 +44,50 @@
                 HROD Candidate
             </div>
             <div class="col-md-8">
-                @(jobOfferTransactions.IsHROD == true ? "Yes" : "No")
+                <select class="form-control form-control-sm d-inline-block"
+                        style="width: 120px;"
+                        @bind="isHrod">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
             </div>
         </div>
+    </div>
+
+    <div class="card-footer d-flex justify-content-end">
+        <button class="btn btn-sm btn-primary" 
+            @onclick="() => TagHrodCandidate()">
+            <i class="fas fa-floppy-disk mr-1"></i> Save
+        </button>
     </div>
 </div>
 
 @code {
     [Parameter] public int TransactionId { get; set; }
+
     private VwJobOfferTransactions jobOfferTransactions = new();
+    private string isHrod = "0";
 
     protected override async Task OnParametersSetAsync()
     {
+        await GetDetails();
+    }
+
+    private async Task GetDetails()
+    {
         jobOfferTransactions = await TransactionService.GetTransactionDetails(TransactionId);
+        isHrod = jobOfferTransactions.IsHROD == true ? "1" : "0";
+    }
+
+    private async Task TagHrodCandidate()
+    {
+        if (!await AlertService.Confirm())
+            return;
+
+        await TalentAcquisitionService
+            .TagAsHrodCandidate(jobOfferTransactions.Candidate_Id, isHrod == "1");
+
+        await GetDetails();
+        //StateHasChanged();
     }
 }

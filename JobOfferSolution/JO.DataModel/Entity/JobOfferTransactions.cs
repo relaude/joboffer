@@ -10,6 +10,5 @@ namespace JO.DataModel.Entity
         public string TransactionNumber { get; set; }
         public int MainStatus_Id { get; set; }
         public int Candidate_Id { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 }
