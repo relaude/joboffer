@@ -1,12 +1,13 @@
-﻿using JO.DataModel.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace JO.DataModel.Entity
+namespace JO.DataModel.View
 {
-    public class Candidates : BaseEntity
+    public class VwCandidates
     {
+        public int Id { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ContactNumber { get; set; }
@@ -19,5 +20,7 @@ namespace JO.DataModel.Entity
         public int WorkExperience_Id { get; set; }
         public bool? IsHROD { get; set; }
         public bool? IsActive { get; set; }
+        public string EmploymentStatusName { get; set; }
+        public string WorkExperienceName { get; set; }
     }
 }

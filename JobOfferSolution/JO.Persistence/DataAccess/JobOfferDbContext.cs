@@ -21,11 +21,13 @@ namespace JO.Persistence.DataAccess
         //Views
         public DbSet<VwJobOfferTransactions> VwJobOfferTransactions { get; set; }
         public DbSet<VwTransactionAttachments> VwTransactionAttachments { get; set; }
+        public DbSet<VwCandidates> VwCandidates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<VwJobOfferTransactions>().ToView("vw_JobOfferTransactions");
-            modelBuilder.Entity<VwTransactionAttachments>().ToView("vw_TransactionAttachments");
+            modelBuilder.Entity<VwJobOfferTransactions>().HasNoKey().ToView("vw_JobOfferTransactions");
+            modelBuilder.Entity<VwTransactionAttachments>().HasNoKey().ToView("vw_TransactionAttachments");
+            modelBuilder.Entity<VwCandidates>().HasNoKey().ToView("vw_Candidates");
         }
     }
 }

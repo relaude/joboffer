@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Job Offer System - Interactive Prototype</title>
+  <style>
+    :root{
+      --blue:#0b63ce;
+      --blue-dark:#064fa0;
+      --muted:#6b7280;
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --success:#059669;
+      --danger:#dc2626;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    body{ margin:0; background:var(--bg); color:#111827; }
+    .topbar{ background:linear-gradient(90deg,var(--blue),var(--blue-dark)); color:white; padding:16px 24px; display:flex; align-items:center; justify-content:space-between;}
+    .brand{ font-weight:700; font-size:18px; }
+    .container{ padding:24px; max-width:1100px; margin:20px auto;}
+    .grid{ display:grid; grid-template-columns: 1fr 360px; gap:20px; }
+    .card{ background:var(--card); border-radius:8px; padding:18px; box-shadow: 0 2px 6px rgba(15,23,42,0.06); }
+    h2{ margin:0 0 12px 0; font-size:18px; }
+    label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px;}
+    input[type=text], input[type=date], select, textarea{ width:100%; padding:10px 12px; border:1px solid #e6e9ef; border-radius:6px; font-size:14px; box-sizing:border-box; }
+    .muted{ color:var(--muted); font-size:13px; }
+    .btn{ background:var(--blue); color:white; padding:10px 14px; border-radius:6px; border:none; cursor:pointer; font-weight:600;}
+    .btn.secondary{ background:white; color:var(--blue); border:1px solid #dbe7fb; }
+    .btn.danger{ background:var(--danger); }
+    .btn.success{ background:var(--success); }
+    .small{ font-size:13px; padding:8px 10px; }
+    .offer-card{ border-left:4px solid var(--blue); padding:12px; margin-bottom:12px; border-radius:6px; background:#fbfdff;}
+    .offer-actions{ margin-top:10px; display:flex; gap:8px;}
+    .list{ max-height:420px; overflow:auto; }
+    .stepper{ display:flex; gap:8px; margin-bottom:12px; }
+    .step{ padding:8px 10px; border-radius:6px; background:#eef6ff; color:var(--blue); font-weight:600; font-size:13px;}
+    .kbd{ background:#f3f4f6; padding:4px 8px; border-radius:6px; font-size:12px; color:#374151;}
+    .center{ text-align:center; }
+    .tiny{ font-size:12px; color:var(--muted); }
+    .status{ padding:6px 8px; border-radius:6px; font-weight:700; font-size:12px; display:inline-block; }
+    .status.draft{ background:#f3f4f6; color:#374151;}
+    .status.pending{ background:#fff4e6; color:#92400e;}
+    .status.approved{ background:#ecfdf5; color:#065f46;}
+    .status.sent{ background:#eef2ff; color:#3730a3;}
+    .status.signed{ background:#ecfdf5; color:#065f46;}
+    .actions-row{ display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+    .textarea{ min-height:80px; resize:vertical; }
+    footer{ margin-top:18px; color:var(--muted); font-size:13px; text-align:center; }
+    /* responsive */
+    @media(max-width:900px){ .grid{ grid-template-columns: 1fr; } .container{ padding:16px; } .card{ padding:14px; } }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">Acme Corp — Job Offer System (Prototype)</div>
+    <div class="tiny">Corporate Blue & White theme</div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+      <div>
+        <div class="card" id="screen-dashboard">
+          <div class="stepper">
+            <div class="step">Recruiter</div>
+            <div class="step">Approver</div>
+            <div class="step">Candidate</div>
+            <div class="step">Admin</div>
+          </div>
+          <h2>Dashboard</h2>
+          <p class="muted">Interactive prototype simulating create → approval → candidate acceptance → finalization.</p>
+          <div style="display:flex; gap:12px; margin-top:16px;">
+            <button class="btn" onclick="showScreen('create')">Create New Job Offer</button>
+            <button class="btn secondary" onclick="showScreen('offers')">View Offers</button>
+            <button class="btn secondary" onclick="showScreen('approvals')">Approvals Inbox</button>
+            <button class="btn secondary" onclick="showScreen('candidate_portal')">Candidate Portal</button>
+          </div>
+        </div>
+
+        <!-- Create Offer -->
+        <div class="card" id="screen-create" style="display:none;">
+          <h2>Create Job Offer</h2>
+          <p class="muted">Use the form to create one or two offer options for the candidate. Save as Draft or Submit for Approval.</p>
+          <div style="display:flex; gap:12px; margin-top:12px;">
+            <div style="flex:1;">
+              <label>Candidate Full Name</label>
+              <input type="text" id="candidateName" placeholder="e.g., Maria Santos" />
+            </div>
+            <div style="width:220px;">
+              <label>Position Title</label>
+              <input type="text" id="jobTitle" placeholder="e.g., Senior Analyst" />
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:12px;">
+            <div style="flex:1;">
+              <label>Offer Option Label</label>
+              <input type="text" id="offerLabelA" placeholder="Offer A - e.g., Makati (Option A)" />
+              <label style="margin-top:8px;">Base Salary (₱)</label>
+              <input type="text" id="baseA" placeholder="120000" />
+              <label style="margin-top:8px;">Additional Notes (optional)</label>
+              <textarea id="notesA" class="textarea" placeholder="e.g., housing allowance included"></textarea>
+            </div>
+            <div style="flex:1;">
+              <label>Offer Option B Label (optional)</label>
+              <input type="text" id="offerLabelB" placeholder="Offer B - e.g., Cebu (Option B)" />
+              <label style="margin-top:8px;">Base Salary (₱)</label>
+              <input type="text" id="baseB" placeholder="110000" />
+              <label style="margin-top:8px;">Additional Notes (optional)</label>
+              <textarea id="notesB" class="textarea" placeholder="e.g., relocation assistance"></textarea>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:12px;">
+            <div style="flex:1;">
+              <label>Start Date</label>
+              <input type="date" id="startDate" />
+            </div>
+            <div style="width:220px;">
+              <label>Template</label>
+              <select id="templateSelect">
+                <option value="Regular">Regular Employee Template</option>
+                <option value="Contract">Contractor Template</option>
+                <option value="Intern">Intern Template</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="actions-row">
+            <button class="btn secondary" onclick="saveDraft()">Save Draft</button>
+            <button class="btn" onclick="submitForApproval()">Submit for Approval</button>
+          </div>
+          <div class="tiny" style="margin-top:8px;">Saved drafts and offers appear in the Offers list.</div>
+        </div>
+
+        <!-- Offers List -->
+        <div class="card" id="screen-offers" style="display:none;">
+          <h2>Offers</h2>
+          <p class="muted">All offers created in this prototype (local session only).</p>
+          <div class="list" id="offersList" style="margin-top:12px;"></div>
+          <div class="actions-row" style="margin-top:12px;">
+            <button class="btn secondary" onclick="showScreen('create')">Create another</button>
+            <button class="btn" onclick="showScreen('dashboard')">Back to Dashboard</button>
+          </div>
+        </div>
+
+        <!-- Approvals -->
+        <div class="card" id="screen-approvals" style="display:none;">
+          <h2>Approvals Inbox</h2>
+          <p class="muted">Simulate approver actions: Approve / Request Changes / Reject.</p>
+          <div class="list" id="approvalsList" style="margin-top:12px;"></div>
+          <div class="actions-row">
+            <button class="btn secondary" onclick="showScreen('offers')">Back to Offers</button>
+            <button class="btn" onclick="showScreen('dashboard')">Dashboard</button>
+          </div>
+        </div>
+
+        <!-- Candidate Portal -->
+        <div class="card" id="screen-candidate" style="display:none;">
+          <h2>Candidate Portal (Simulated)</h2>
+          <p class="muted">This is the candidate-facing view. You can accept or decline offer options.</p>
+          <div id="candidateOffers" style="margin-top:12px;"></div>
+          <div class="actions-row">
+            <button class="btn secondary" onclick="showScreen('dashboard')">Back to Dashboard</button>
+          </div>
+        </div>
+
+        <!-- Finalize / E-sign -->
+        <div class="card" id="screen-finalize" style="display:none;">
+          <h2>Finalize Offer & E-sign</h2>
+          <p class="muted">After candidate accepts, generate final offer letter and simulate e-signing.</p>
+          <div id="finalizeArea" style="margin-top:12px;"></div>
+          <div class="actions-row">
+            <button class="btn secondary" onclick="showScreen('dashboard')">Back to Dashboard</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right column: Quick actions & activity -->
+      <div>
+        <div class="card">
+          <h2>Quick Actions</h2>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+            <button class="btn small" onclick="showScreen('create')">New Offer</button>
+            <button class="btn small secondary" onclick="showScreen('offers')">Offers</button>
+            <button class="btn small secondary" onclick="showScreen('approvals')">Approvals</button>
+            <button class="btn small secondary" onclick="showScreen('candidate_portal')">Candidate Portal</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <h2>Activity</h2>
+          <div id="activityLog" class="list" style="margin-top:10px; max-height:260px; overflow:auto;"></div>
+          <button class="btn small" style="margin-top:10px;" onclick="clearActivity()">Clear Activity</button>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <h2>Legend</h2>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div><span class="status draft">Draft</span> — Initial draft saved</div>
+            <div><span class="status pending">Pending Approval</span> — Sent for approvals</div>
+            <div><span class="status approved">Approved</span> — Approved by approver</div>
+            <div><span class="status sent">Sent</span> — Sent to candidate</div>
+            <div><span class="status signed">Signed</span> — Candidate signed final letter</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>Prototype stores data locally in your browser session. No data is uploaded.</footer>
+  </div>
+
+<script>
+  // Simple in-memory store for prototype
+  const store = {
+    offers: [], // {id, candidateName, jobTitle, template, startDate, options:[{label,base,notes,status}], status}
+    activity: []
+  };
+
+  // Helpers
+  function logActivity(text){
+    const el = document.getElementById('activityLog');
+    const time = new Date().toLocaleTimeString();
+    const entry = document.createElement('div');
+    entry.className = 'tiny';
+    entry.style.padding='8px';
+    entry.style.borderBottom='1px solid #f3f4f6';
+    entry.innerHTML = `<strong>${time}</strong> — ${text}`;
+    el.prepend(entry);
+    store.activity.unshift({time: Date.now(), text});
+  }
+  function clearActivity(){ document.getElementById('activityLog').innerHTML=''; store.activity = []; }
+
+  // Navigation
+  function showScreen(key){
+    const screens = ['dashboard','create','offers','approvals','candidate','candidate_portal','candidate_view','finalize'];
+    screens.forEach(s => { const el = document.getElementById('screen-'+s); if(el) el.style.display = 'none'; });
+    // map some aliases
+    if(key==='candidate_portal') key='candidate';
+    if(key==='candidate_view') key='candidate';
+    if(key==='finalize') key='finalize';
+    const target = document.getElementById('screen-'+key);
+    if(target) { target.style.display = 'block'; if(key==='offers') renderOffers(); if(key==='approvals') renderApprovals(); if(key==='candidate') renderCandidatePortal(); if(key==='finalize') renderFinalize(); }
+    window.scrollTo(0,0);
+  }
+
+  // Create draft or submit for approval
+  function saveDraft(){
+    const candidateName = document.getElementById('candidateName').value.trim() || 'Unnamed Candidate';
+    const jobTitle = document.getElementById('jobTitle').value.trim() || 'Role';
+    const template = document.getElementById('templateSelect').value;
+    const startDate = document.getElementById('startDate').value;
+    const offerA = {
+      id: 'A',
+      label: document.getElementById('offerLabelA').value || 'Offer A',
+      base: document.getElementById('baseA').value || '',
+      notes: document.getElementById('notesA').value || '',
+      status: 'Draft'
+    };
+    const offerBLabel = document.getElementById('offerLabelB').value.trim();
+    const offerB = offerBLabel ? {
+      id: 'B',
+      label: offerBLabel || 'Offer B',
+      base: document.getElementById('baseB').value || '',
+      notes: document.getElementById('notesB').value || '',
+      status: 'Draft'
+    } : null;
+
+    const id = 'O'+(store.offers.length+1).toString().padStart(3,'0');
+    const newOffer = { id, candidateName, jobTitle, template, startDate, options: offerB ? [offerA, offerB] : [offerA], status:'Draft', history:[] };
+    newOffer.history.push({when:Date.now(),action:'Draft saved',by:'Recruiter'});
+    store.offers.unshift(newOffer);
+    logActivity(`Draft saved: ${id} for ${candidateName}`);
+    alert('Draft saved. You can view it in Offers.');
+    showScreen('offers');
+  }
+
+  function submitForApproval(){
+    // similar to saveDraft, but status pending
+    const candidateName = document.getElementById('candidateName').value.trim() || 'Unnamed Candidate';
+    const jobTitle = document.getElementById('jobTitle').value.trim() || 'Role';
+    const template = document.getElementById('templateSelect').value;
+    const startDate = document.getElementById('startDate').value;
+    const offerA = {
+      id: 'A',
+      label: document.getElementById('offerLabelA').value || 'Offer A',
+      base: document.getElementById('baseA').value || '',
+      notes: document.getElementById('notesA').value || '',
+      status: 'Pending Approval'
+    };
+    const offerBLabel = document.getElementById('offerLabelB').value.trim();
+    const offerB = offerBLabel ? {
+      id: 'B',
+      label: offerBLabel || 'Offer B',
+      base: document.getElementById('baseB').value || '',
+      notes: document.getElementById('notesB').value || '',
+      status: 'Pending Approval'
+    } : null;
+
+    const id = 'O'+(store.offers.length+1).toString().padStart(3,'0');
+    const newOffer = { id, candidateName, jobTitle, template, startDate, options: offerB ? [offerA, offerB] : [offerA], status:'Pending Approval', history:[] };
+    newOffer.history.push({when:Date.now(),action:'Submitted for approval',by:'Recruiter'});
+    store.offers.unshift(newOffer);
+    logActivity(`Offer ${id} submitted for approval (Recruiter: ${candidateName})`);
+    alert('Offer submitted for approval. Check Approvals Inbox to simulate approval.');
+    showScreen('approvals');
+  }
+
+  // Render offers list
+  function renderOffers(){
+    const el = document.getElementById('offersList');
+    el.innerHTML = '';
+    if(store.offers.length===0){ el.innerHTML = '<div class="muted">No offers yet. Create a new offer to get started.</div>'; return; }
+    store.offers.forEach(o => {
+      const div = document.createElement('div');
+      div.className = 'offer-card';
+      let optsHtml = '';
+      o.options.forEach(opt => {
+        optsHtml += `<div style="display:flex; justify-content:space-between; padding:6px 0;"><div><strong>${opt.label}</strong><div class="tiny">${opt.notes || ''}</div></div><div><div class="tiny">₱ ${opt.base || '-'}</div><div class="tiny" style="margin-top:6px;"><span class="status ${statusClass(opt.status)}">${opt.status}</span></div></div></div>`;
+      });
+      div.innerHTML = `<div style="display:flex; justify-content:space-between;"><div><strong>${o.id} — ${o.candidateName}</strong><div class="muted">${o.jobTitle} • ${o.template}</div></div><div>${o.startDate || ''}</div></div>
+        <div style="margin-top:8px;">${optsHtml}</div>
+        <div class="offer-actions">
+          <button class="btn secondary small" onclick="editOffer('${o.id}')">Edit</button>
+          <button class="btn small" onclick="sendForApprovalFromList('${o.id}')">Send for Approval</button>
+          <button class="btn small secondary" onclick="sendToCandidate('${o.id}')">Send to Candidate</button>
+          <button class="btn small secondary" onclick="viewHistory('${o.id}')">View History</button>
+        </div>`;
+      el.appendChild(div);
+    });
+  }
+
+  function statusClass(s){
+    if(!s) return 'draft';
+    if(s.includes('Draft')) return 'draft';
+    if(s.includes('Pending')) return 'pending';
+    if(s.includes('Approved') || s.includes('Signed')) return 'approved';
+    if(s.includes('Sent')) return 'sent';
+    return 'draft';
+  }
+
+  function editOffer(id){
+    alert('Edit in this prototype is not implemented. You can create a new offer to simulate edits.');
+  }
+
+  function sendForApprovalFromList(id){
+    const o = store.offers.find(x => x.id===id);
+    if(!o) return;
+    o.options.forEach(opt => opt.status='Pending Approval');
+    o.status='Pending Approval';
+    o.history.push({when:Date.now(),action:'Submitted for approval (from Offers list)',by:'Recruiter'});
+    logActivity(`Offer ${id} submitted for approval.`);
+    renderApprovals();
+    showScreen('approvals');
+  }
+
+  // Approvals rendering
+  function renderApprovals(){
+    const el = document.getElementById('approvalsList');
+    el.innerHTML = '';
+    const pending = store.offers.filter(o => o.status==='Pending Approval' || o.options.some(op => op.status==='Pending Approval'));
+    if(pending.length===0){ el.innerHTML = '<div class="muted">No items in approvals inbox.</div>'; return;}
+    pending.forEach(o => {
+      const div = document.createElement('div');
+      div.style.padding='12px';
+      div.style.borderBottom='1px solid #f3f4f6';
+      let optsHtml='';
+      o.options.forEach(op => {
+        optsHtml += `<div style="display:flex; justify-content:space-between; padding:6px 0;"><div><strong>${op.label}</strong><div class="tiny">${op.notes || ''}</div></div><div><div class="tiny">₱ ${op.base || '-'}</div><div class="tiny" style="margin-top:6px;"><span class="status pending">${op.status}</span></div></div></div>`;
+      });
+      div.innerHTML = `<div style="display:flex; justify-content:space-between;"><div><strong>${o.id} — ${o.candidateName}</strong><div class="muted">${o.jobTitle}</div></div><div>${o.startDate || ''}</div></div>
+        <div style="margin-top:8px;">${optsHtml}</div>
+        <div style="margin-top:8px; display:flex; gap:8px; justify-content:flex-end;">
+          <button class="btn small secondary" onclick="requestChanges('${o.id}')">Request Changes</button>
+          <button class="btn small" onclick="rejectOffer('${o.id}')">Reject</button>
+          <button class="btn small" onclick="approveOffer('${o.id}')">Approve</button>
+        </div>`;
+      el.appendChild(div);
+    });
+  }
+
+  function requestChanges(id){
+    const reason = prompt('Enter change request details for the recruiter:');
+    if(!reason) return;
+    const o = store.offers.find(x=>x.id===id);
+    o.options.forEach(op => op.status='Draft');
+    o.status='Draft';
+    o.history.push({when:Date.now(),action:'Changes requested by Approver: '+reason, by:'Approver'});
+    logActivity(`Approver requested changes for ${id}`);
+    alert('Change request sent back to recruiter. Offer reverted to Draft.');
+    renderApprovals(); renderOffers();
+    showScreen('offers');
+  }
+
+  function rejectOffer(id){
+    const reason = prompt('Reject reason (will be recorded):');
+    if(!reason) return;
+    const o = store.offers.find(x=>x.id===id);
+    o.options.forEach(op => op.status='Rejected');
+    o.status='Rejected';
+    o.history.push({when:Date.now(),action:'Rejected by Approver: '+reason, by:'Approver'});
+    logActivity(`Offer ${id} rejected by Approver.`);
+    renderApprovals(); renderOffers();
+  }
+
+  function approveOffer(id){
+    const o = store.offers.find(x=>x.id===id);
+    o.options.forEach(op => op.status='Approved');
+    o.status='Approved';
+    o.history.push({when:Date.now(),action:'Approved by Approver', by:'Approver'});
+    logActivity(`Offer ${id} approved.`);
+    alert('Offer approved. You can now send to candidate.');
+    renderApprovals(); renderOffers();
+  }
+
+  // Send to candidate
+  function sendToCandidate(id){
+    const o = store.offers.find(x=>x.id===id);
+    if(!o) { alert('Offer not found'); return; }
+    // only approved offers can be sent; but for prototype allow sending but mark as Sent
+    o.options.forEach(op => { if(op.status==='Approved') op.status='Sent'; });
+    o.status='Sent';
+    o.history.push({when:Date.now(),action:'Sent to Candidate', by:'Recruiter'});
+    logActivity(`Offer ${id} sent to candidate (${o.candidateName}).`);
+    alert('Offer sent to candidate. Use Candidate Portal to view as candidate.');
+    renderOffers(); renderCandidatePortal();
+    showScreen('candidate');
+  }
+
+  function renderCandidatePortal(){
+    const el = document.getElementById('candidateOffers');
+    el.innerHTML = '';
+    // show latest Sent offers
+    const sent = store.offers.filter(o => o.status==='Sent' || o.options.some(op=>op.status==='Sent'));
+    if(sent.length===0){ el.innerHTML = '<div class="muted">No offers have been sent to candidates yet.</div>'; return; }
+    sent.forEach(o => {
+      const card = document.createElement('div');
+      card.className = 'offer-card';
+      let optsHtml='';
+      o.options.forEach((opt, idx) => {
+        optsHtml += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px dashed #eef2ff;">
+          <div>
+            <strong>${opt.label}</strong>
+            <div class="tiny">${opt.notes || ''}</div>
+            <div class="tiny">Base: ₱ ${opt.base || '-'}</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+            <div class="tiny">Status: <span class="status sent">Sent</span></div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn small" onclick="candidateAccept('${o.id}', ${idx})">Accept</button>
+              <button class="btn small secondary" onclick="candidateDecline('${o.id}', ${idx})">Decline</button>
+            </div>
+          </div>
+        </div>`;
+      });
+      card.innerHTML = `<div style="display:flex; justify-content:space-between;"><div><strong>${o.id} — ${o.candidateName}</strong><div class="muted">${o.jobTitle}</div></div><div>${o.startDate || ''}</div></div>
+        <div style="margin-top:8px;">${optsHtml}</div>
+        <div class="tiny" style="margin-top:8px;">You are viewing as the candidate (simulated). Accepting an option finalizes it and withdraws other options.</div>`;
+      el.appendChild(card);
+    });
+  }
+
+  function candidateAccept(offerId, optionIndex){
+    const o = store.offers.find(x=>x.id===offerId);
+    const opt = o.options[optionIndex];
+    // mark selected as AcceptedByCandidate, others as Withdrawn
+    o.options.forEach((op, idx) => {
+      if(idx===optionIndex){ op.status='Accepted by Candidate'; }
+      else { op.status='Withdrawn'; }
+    });
+    o.status='AcceptedByCandidate';
+    o.history.push({when:Date.now(),action:`Candidate accepted ${opt.label}`, by:'Candidate'});
+    logActivity(`Candidate accepted ${offerId} - ${opt.label}`);
+    alert(`Candidate accepted ${opt.label}. Proceeding to finalize and e-sign.`);
+    renderCandidatePortal();
+    // open finalize screen with selected offer
+    setTimeout(()=>{ currentFinalize = {offerId: offerId, optionIndex}; showScreen('finalize'); }, 400);
+  }
+
+  function candidateDecline(offerId, optionIndex){
+    const o = store.offers.find(x=>x.id===offerId);
+    const opt = o.options[optionIndex];
+    opt.status='Declined by Candidate';
+    o.history.push({when:Date.now(),action:`Candidate declined ${opt.label}`, by:'Candidate'});
+    logActivity(`Candidate declined ${offerId} - ${opt.label}`);
+    renderCandidatePortal();
+  }
+
+  function viewHistory(id){
+    const o = store.offers.find(x=>x.id===id);
+    if(!o) return alert('Not found');
+    let output = `Offer ${o.id} — ${o.candidateName}\\n\\nHistory:\\n`;
+    o.history.forEach(h => { output += `- ${new Date(h.when).toLocaleString()}: ${h.action} (by ${h.by})\\n`; });
+    alert(output);
+  }
+
+  // Finalize & E-sign
+  let currentFinalize = null;
+  function renderFinalize(){
+    const area = document.getElementById('finalizeArea');
+    area.innerHTML = '';
+    if(!currentFinalize){ area.innerHTML = '<div class="muted">No accepted offer to finalize yet. Candidate must accept an offer first.</div>'; return; }
+    const {offerId, optionIndex} = currentFinalize;
+    const o = store.offers.find(x=>x.id===offerId);
+    if(!o) return;
+    const opt = o.options[optionIndex];
+    const div = document.createElement('div');
+    div.innerHTML = `<div><strong>Finalizing: ${o.id} — ${o.candidateName} — ${opt.label}</strong><div class="muted">${o.jobTitle}</div></div>
+      <div style="margin-top:12px;">
+        <label>Final Offer Preview</label>
+        <div style="border:1px solid #eef2ff; padding:12px; border-radius:6px; background:#fbfdff;">
+          <h3 style="margin:0 0 6px 0;">${o.jobTitle} — ${opt.label}</h3>
+          <div class="tiny">Start Date: ${o.startDate || '-'}</div>
+          <div style="margin-top:8px;">Base Salary: ₱ ${opt.base || '-'}</div>
+          <div style="margin-top:6px;">Notes: ${opt.notes || '-'}</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <label>Signer Name (candidate)</label>
+        <input type="text" id="signerName" placeholder="${o.candidateName}" value="${o.candidateName}" />
+        <label style="margin-top:8px;">Signer Email</label>
+        <input type="text" id="signerEmail" placeholder="candidate@example.com" />
+        <label style="margin-top:8px;">Message to include in final letter (optional)</label>
+        <textarea id="finalMessage" class="textarea" placeholder="Welcome message, reporting instructions, etc."></textarea>
+      </div>
+      <div class="actions-row" style="margin-top:12px;">
+        <button class="btn secondary small" onclick="downloadFinal('${offerId}', ${optionIndex})">Download Final Offer (HTML)</button>
+        <button class="btn small" onclick="simulateSign('${offerId}', ${optionIndex})">Send for E-sign / Simulate Sign</button>
+      </div>
+      <div id="finalizeStatus" style="margin-top:12px;"></div>
+    `;
+    area.appendChild(div);
+  }
+
+  function downloadFinal(offerId, optionIndex){
+    const o = store.offers.find(x=>x.id===offerId);
+    const opt = o.options[optionIndex];
+    const signerName = document.getElementById('signerName').value || o.candidateName;
+    const finalMessage = document.getElementById('finalMessage').value || '';
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Final Offer - ${o.id}</title></head><body><h2>Final Offer: ${o.jobTitle} — ${opt.label}</h2><p>Candidate: ${o.candidateName}</p><p>Start Date: ${o.startDate || '-'}</p><p>Base Salary: ₱ ${opt.base || '-'}</p><p>Notes: ${opt.notes || '-'}</p><p>${finalMessage}</p><p>Sincerely,<br/>Acme Corp HR</p></body></html>`;
+    const blob = new Blob([html], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${o.id}_FinalOffer_${o.candidateName.replace(/\s+/g,'_')}.html`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    logActivity(`Final offer downloaded: ${o.id}`);
+  }
+
+  function simulateSign(offerId, optionIndex){
+    const o = store.offers.find(x=>x.id===offerId);
+    const opt = o.options[optionIndex];
+    document.getElementById('finalizeStatus').innerHTML = '<div class="tiny">Sending to e-sign provider... (simulated)</div>';
+    // simulate delay + webhook callback
+    setTimeout(()=> {
+      o.options[optionIndex].status = 'Signed';
+      o.status = 'Signed';
+      o.history.push({when:Date.now(), action:'Signed by Candidate (simulated)', by:'E-Sign'});
+      document.getElementById('finalizeStatus').innerHTML = `<div style="padding:10px; background:#ecfdf5; border-radius:6px;"><strong>Signed</strong> — The final offer has been signed (simulated). Onboarding webhook would be triggered now.</div>`;
+      logActivity(`Offer ${offerId} signed (simulated).`);
+      renderOffers();
+    }, 1200);
+  }
+
+  // initial
+  showScreen('dashboard');
+</script>
+</body>
+</html>

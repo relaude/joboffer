@@ -1,0 +1,121 @@
+﻿@inject ICandidateService CandidateService
+
+<div class="row">
+
+    <!-- Personal Information -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-left-primary h-100">
+            <div class="card-header py-2 bg-white">
+                <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                    Personal Information
+                </h6>
+            </div>
+            <div class="card-body small">
+
+                <div class="row mb-2">
+                    <div class="col-5 text-muted">Name</div>
+                    <div class="col-7 font-weight-bold">
+                        @($"{candidate.FirstName} {candidate.LastName}")
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-5 text-muted">Email</div>
+                    <div class="col-7">
+                        @candidate.Email
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-5 text-muted">Contact No.</div>
+                    <div class="col-7">
+                        @candidate.ContactNumber
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Work Information -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-left-success h-100">
+            <div class="card-header py-2 bg-white">
+                <h6 class="m-0 font-weight-bold text-success text-uppercase text-xs">
+                    Work Information
+                </h6>
+            </div>
+            <div class="card-body small">
+
+                <div class="row mb-2">
+                    <div class="col-5 text-muted">Current Employer</div>
+                    <div class="col-7 font-weight-bold">
+                        @candidate.CurrentEmployer
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-5 text-muted">Last Position</div>
+                    <div class="col-7">
+                        @candidate.LastPositionHeld
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-5 text-muted">Employment Status</div>
+                    <div class="col-7">
+                        @candidate.EmploymentStatusName
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-5 text-muted">Experience</div>
+                    <div class="col-7">
+                        @candidate.WorkExperienceName
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Position Information -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-left-warning h-100">
+            <div class="card-header py-2 bg-white">
+                <h6 class="m-0 font-weight-bold text-warning text-uppercase text-xs">
+                    Position Details
+                </h6>
+            </div>
+            <div class="card-body small">
+
+                <div class="row mb-2">
+                    <div class="col-5 text-muted">Position Applied</div>
+                    <div class="col-7 font-weight-bold">
+                        @candidate.PositionAppliedFor
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-5 text-muted">Expected Salary</div>
+                    <div class="col-7 text-success font-weight-bold">
+                        @candidate.ExpectedSalary
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public int CandidateId { get; set; }
+
+    private VwCandidates candidate = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        candidate = await CandidateService.GetCandidate(CandidateId);
+    }
+}

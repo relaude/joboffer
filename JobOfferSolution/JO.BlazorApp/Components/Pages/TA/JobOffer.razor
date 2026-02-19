@@ -1,0 +1,10 @@
+﻿@attribute [Authorize(Roles = JOUSerRole.TA)]
+@attribute [Route(JORoutes.TA.JobOffer + "/{candidateId:int}")]
+
+<CandidateInfo CandidateId="@candidateId" />
+
+<JobOfferForm />
+
+@code {
+    [Parameter] public int candidateId { get; set; }
+}

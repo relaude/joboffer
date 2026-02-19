@@ -33,6 +33,8 @@
         {
             public const string Dashboard = PrefixTA + "/dashboard";
             public const string Analysis = PrefixTA + "/analysis";
+            public const string Candidates = PrefixTA + "/candidates";
+            public const string JobOffer = PrefixTA + "/joboffer";
         }
     }
 }

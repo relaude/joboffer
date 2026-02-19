@@ -1,0 +1,74 @@
+﻿@inject ICandidateService CandidateService
+@inject NavigationManager Navigation
+
+<div class="card small shadow mb-4 border-left-primary">
+    <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">
+            Candidates
+        </h6>
+    </div>
+    <div class="card-body">
+        
+        <div class="d-flex flex-column flex-md-row align-items-start flex-wrap mb-3">
+            <!-- Filter/Search Section -->
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-sm text-nowrap">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Position Applied For</th>
+                        <th>Expected Salary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (candidates.Any())
+                    {
+                        @foreach (var item in candidates)
+                        {
+                            <tr>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-link text-primary p-0 align-baseline"
+                                            style="text-decoration: none;"
+                                            @onclick="() => GoToJobOffer(item.Id)">
+                                        @($"{item.FirstName} {item.LastName}")
+                                    </button>
+                                </td>
+                                <td>@item.Email</td>
+                                <td>@item.PositionAppliedFor</td>
+                                <td>@item.ExpectedSalary</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                <i class="fas fa-info-circle mr-1"></i> No records found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    
+</div>
+
+@code {
+    private IEnumerable<VwCandidates> candidates = new List<VwCandidates>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        candidates = await CandidateService.GetAllCandidates();
+    }
+
+    private void GoToJobOffer(int id)
+    {
+        Navigation.NavigateTo($"{JORoutes.TA.JobOffer}/{id}");
+    }
+}
