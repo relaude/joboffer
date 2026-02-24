@@ -4,8 +4,8 @@
     {
         private const string PrefixTransaction = "/transaction";
         private const string PrefixAdmin = "/admin/manage";
-        private const string PrefixCandidate = "/candidate";
         private const string PrefixTA = "/ta";
+        private const string PrefixJobOffer = "/joboffer";
 
         public static class Public
         {
@@ -16,17 +16,12 @@
         public static class Transaction
         {
             public const string Details = PrefixTransaction + "/details";
+            public const string JobOffer = PrefixJobOffer;
         }
 
         public static class Admin
         {
             public const string Users = PrefixAdmin + "/users";
-        }
-
-        public static class Candidate
-        {
-            public const string Index = PrefixCandidate;
-            public const string Details = PrefixCandidate + "/details";
         }
 
         public static class TA

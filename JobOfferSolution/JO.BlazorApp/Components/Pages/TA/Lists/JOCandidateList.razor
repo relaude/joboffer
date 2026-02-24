@@ -1,10 +1,12 @@
 ﻿@inject ICandidateService CandidateService
+@inject IAlertService AlertService
+@inject IUtilitiesService UtilitiesService
 @inject NavigationManager Navigation
 
 <div class="card small shadow mb-4 border-left-primary">
     <div class="card-header">
         <h6 class="m-0 font-weight-bold text-primary">
-            Candidates
+            Candidates Job Offer Creation
         </h6>
     </div>
     <div class="card-body">
@@ -63,6 +65,11 @@
     private IEnumerable<VwCandidates> candidates = new List<VwCandidates>();
 
     protected override async Task OnParametersSetAsync()
+    {
+        await GetList();
+    }
+
+    private async Task GetList()
     {
         candidates = await CandidateService.GetAllCandidates();
     }

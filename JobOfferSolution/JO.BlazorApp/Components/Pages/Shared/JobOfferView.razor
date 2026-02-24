@@ -1,0 +1,113 @@
+﻿@inject IJobOfferService JobOfferService
+
+<div class="card shadow mb-4 border-left-primary small">
+    <!-- Card Header -->
+    <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-file-contract mr-2"></i> @jobOffer.JobOfferNumber
+        </h6>
+
+        <span class="badge badge-pill badge-info px-3 py-2 shadow-sm">
+            @jobOffer.StatusName
+        </span>
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body">
+
+        <!-- POSITION DETAILS -->
+        <div class="mb-4">
+            <h6 class="text-gray-800 font-weight-bold border-bottom pb-2 mb-3">
+                <i class="fas fa-briefcase mr-2 text-primary"></i>Position Details
+            </h6>
+
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <div class="text-xs text-uppercase text-muted">Position Title</div>
+                    <div class="font-weight-bold text-gray-900">@jobOffer.PositionName</div>
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <div class="text-xs text-uppercase text-muted">Department</div>
+                    <div class="font-weight-bold text-gray-900">@jobOffer.DepartmentName</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPENSATION -->
+        <div class="mb-4">
+            <h6 class="text-gray-800 font-weight-bold border-bottom pb-2 mb-3">
+                <i class="fas fa-money-bill-wave mr-2 text-success"></i>Compensation
+            </h6>
+
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <div class="text-xs text-uppercase text-muted">Basic Salary</div>
+                    <div class="font-weight-bold text-gray-900">
+                        @jobOffer.BasicSalary?.ToString("C")
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-2">
+                    <div class="text-xs text-uppercase text-muted">Allowance</div>
+                    <div class="font-weight-bold text-gray-900">
+                        @jobOffer.Allowance?.ToString("C")
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-2">
+                    <div class="text-xs text-uppercase text-muted">Signing Bonus</div>
+                    <div class="font-weight-bold text-gray-900">
+                        @jobOffer.SigningBonus?.ToString("C")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- OFFER TIMELINE -->
+        <div class="mb-4">
+            <h6 class="text-gray-800 font-weight-bold border-bottom pb-2 mb-3">
+                <i class="fas fa-calendar-alt mr-2 text-warning"></i>Offer Timeline
+            </h6>
+
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <div class="text-xs text-uppercase text-muted">Offer Date</div>
+                    <div class="font-weight-bold text-gray-900">
+                        @jobOffer.OfferDate?.ToString("MMMM dd, yyyy")
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <div class="text-xs text-uppercase text-muted">Proposed Start Date</div>
+                    <div class="font-weight-bold text-gray-900">
+                        @jobOffer.ProposedStartDate?.ToString("MMMM dd, yyyy")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADDITIONAL INFORMATION -->
+        <div>
+            <h6 class="text-gray-800 font-weight-bold border-bottom pb-2 mb-3">
+                <i class="fas fa-sticky-note mr-2 text-info"></i>Additional Information
+            </h6>
+
+            <div class="text-gray-900">
+                @jobOffer.Remarks
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    [Parameter] public int JobOfferId { get; set; }
+
+    private VwJobOffers jobOffer = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        jobOffer = await JobOfferService.GetJobOffer(JobOfferId);
+    }
+}

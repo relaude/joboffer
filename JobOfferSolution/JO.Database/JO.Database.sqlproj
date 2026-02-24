@@ -71,14 +71,18 @@
     <Build Include="dbo\Tables\AspNetUserPasskeys.sql" />
     <Build Include="dbo\Tables\AspNetUserRoles.sql" />
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
-    <Build Include="dbo\Tables\TransactionAttachments.sql" />
     <Build Include="dbo\Tables\MainStatus.sql" />
     <Build Include="dbo\Tables\JobOfferUsers.sql" />
-    <Build Include="dbo\Tables\JobOfferTransactions.sql" />
-    <Build Include="dbo\Tables\JobOfferPackages.sql" />
     <Build Include="dbo\Tables\FileTypes.sql" />
     <Build Include="dbo\Tables\Candidates.sql" />
-    <Build Include="dbo\Views\vw_TransactionAttachments.sql" />
-    <Build Include="dbo\Views\vw_JobOfferTransactions.sql" />
+    <Build Include="dbo\Tables\WorkExperience.sql" />
+    <Build Include="dbo\Tables\JobPositions.sql" />
+    <Build Include="dbo\Tables\JobOffers.sql" />
+    <Build Include="dbo\Tables\EmploymentStatus.sql" />
+    <Build Include="dbo\Tables\Divisions.sql" />
+    <Build Include="dbo\Tables\Departments.sql" />
+    <Build Include="dbo\Tables\Companies.sql" />
+    <Build Include="dbo\Views\vw_JobOffers.sql" />
+    <Build Include="dbo\Views\vw_Candidates.sql" />
   </ItemGroup>
 </Project>

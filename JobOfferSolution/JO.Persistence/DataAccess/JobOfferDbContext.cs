@@ -14,20 +14,18 @@ namespace JO.Persistence.DataAccess
         //Tables
         public DbSet<JobOfferUsers> JobOfferUsers { get; set; }
         public DbSet<Candidates> Candidates { get; set; }
-        public DbSet<JobOfferTransactions> JobOfferTransactions { get; set; }
-        public DbSet<TransactionAttachments> TransactionAttachments { get; set; }
-        public DbSet<JobOfferPackages> JobOfferPackages { get; set; }
+        public DbSet<JobPositions> JobPositions { get; set; }
+        public DbSet<Departments> Departments { get; set; }
+        public DbSet<JobOffers> JobOffers { get; set; }
 
         //Views
-        public DbSet<VwJobOfferTransactions> VwJobOfferTransactions { get; set; }
-        public DbSet<VwTransactionAttachments> VwTransactionAttachments { get; set; }
         public DbSet<VwCandidates> VwCandidates { get; set; }
+        public DbSet<VwJobOffers> VwJobOffers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<VwJobOfferTransactions>().HasNoKey().ToView("vw_JobOfferTransactions");
-            modelBuilder.Entity<VwTransactionAttachments>().HasNoKey().ToView("vw_TransactionAttachments");
             modelBuilder.Entity<VwCandidates>().HasNoKey().ToView("vw_Candidates");
+            modelBuilder.Entity<VwJobOffers>().HasNoKey().ToView("vw_JobOffers");
         }
     }
 }

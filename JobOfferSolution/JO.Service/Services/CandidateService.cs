@@ -24,6 +24,25 @@ namespace JO.Service.Services
             _fileService = fileService;
         }
 
+        public async Task<int> UpdatePersonalInfo(int id,
+            string firstName,
+            string lastName,
+            string email,
+            string contactNumber,
+            bool isHrod)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            var candidate = await context.Candidates.FindAsync(id);
+            candidate.FirstName = firstName;
+            candidate.LastName = lastName;
+            candidate.Email = email;
+            candidate.ContactNumber = contactNumber;
+            candidate.IsHROD = isHrod;
+
+            context.Candidates.Update(candidate);
+            return await context.SaveChangesAsync();
+        }
+
         public async Task<VwCandidates> GetCandidate(int id)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
@@ -38,90 +57,6 @@ namespace JO.Service.Services
             await using var context = await _contextFactory.CreateDbContextAsync();
 
             return await context.VwCandidates.AsNoTracking().ToListAsync();
-        }
-
-        public async Task<int> NewTransactionAsync(
-            string name,
-            string email,
-            List<AttachmentDto> attachments)
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            await using var dbTransaction = await context.Database.BeginTransactionAsync();
-
-            try
-            {
-                //Create Candidate
-                var candidate = new Candidates
-                {
-                    FirstName = name,
-                    Email = email,
-                    CreatedAt = DateTime.Now
-                };
-
-                await context.Candidates.AddAsync(candidate);
-                await context.SaveChangesAsync();
-
-                //Create Job Offer Transaction
-                var transaction = new JobOfferTransactions
-                {
-                    TransactionNumber = await GenerateTransactionNumber(context),
-                    MainStatus_Id = 1,
-                    Candidate_Id = candidate.Id,
-                    CreatedAt = DateTime.Now
-                };
-
-                await context.JobOfferTransactions.AddAsync(transaction);
-                await context.SaveChangesAsync();
-
-                //Create Attachments
-                foreach (var item in attachments)
-                    item.FilePath = await _fileService.CreateFilePath(transaction.TransactionNumber, item.FileName);
-
-                var attachmentEntities = attachments.Select(a =>
-                    new TransactionAttachments
-                    {
-                        Transaction_Id = transaction.Id,
-                        FileType_Id = a.FileType_Id,
-                        FileName = a.FileName,
-                        FilePath = a.FilePath,
-                        CreatedAt = DateTime.Now
-                    }).ToList();
-
-                await context.TransactionAttachments.AddRangeAsync(attachmentEntities);
-                await context.SaveChangesAsync();
-                
-                //Upload Files
-                foreach (var item in attachments)
-                    await File.WriteAllBytesAsync(item.FilePath, item.FileBytes);
-
-                await dbTransaction.CommitAsync();
-
-                return transaction.Id;
-            }
-            catch
-            {
-                await dbTransaction.RollbackAsync();
-                throw;
-            }
-        }
-
-        private async Task<string> GenerateTransactionNumber(JobOfferDbContext context)
-        {
-            var year = DateTime.Now.Year;
-
-            var lastTransaction = await context.JobOfferTransactions
-                .Where(x => x.CreatedAt.Value.Year == year)
-                .OrderByDescending(x => x.Id)
-                .FirstOrDefaultAsync();
-
-            int nextNumber = lastTransaction == null ? 1 : lastTransaction.Id + 1;
-
-            return $"JO-{year}-{nextNumber.ToString().PadLeft(5, '0')}";
-        }
-
-        private async Task UploadFiles(List<AttachmentDto> attachments)
-        {
-
         }
     }
 }

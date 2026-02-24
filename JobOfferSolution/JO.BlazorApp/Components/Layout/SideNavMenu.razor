@@ -10,18 +10,7 @@
     {
         @if (user.IsInRole(JOUSerRole.TA))
         {
-            <li class="nav-item active">
-                <a class="nav-link" href="@JORoutes.TA.Dashboard">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>TA-Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" href="@JORoutes.TA.Candidates">
-                    <i class="fas fa-fw fa-user-tie"></i>
-                    <span>Candidates</span>
-                </a>
-            </li>
+            <TAMenu />
         }
 
         @if (user.IsInRole(JOUSerRole.HRBP))

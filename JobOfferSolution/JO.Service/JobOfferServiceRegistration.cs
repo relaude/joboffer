@@ -18,9 +18,9 @@ namespace JO.Service
             services.AddScoped<IAlertService, AlertService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ICandidateService, CandidateService>();
-            services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<IFileUploadService, FileUploadService>();
-            services.AddScoped<ITalentAcquisitionService, TalentAcquisitionService>();
+            services.AddScoped<IDropDownListService, DropDownListService>();
+            services.AddScoped<IJobOfferService, JobOfferService>();
 
             return services;
         }

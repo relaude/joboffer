@@ -1,0 +1,218 @@
+﻿@inject IDropDownListService DropDownListService
+@inject IAlertService AlertService
+@inject IJobOfferService JobOfferService
+@inject NavigationManager Navigation
+
+<div class="card shadow mb-4 border-left-primary small">
+
+    <!-- Card Header -->
+    <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">
+            Create New Job Offer
+        </h6>
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body">
+        <!-- ================= Position Details ================= -->
+        <div class="mb-4">
+            <h6 class="text-xs font-weight-bold text-uppercase text-gray-500 mb-3 border-bottom pb-2">
+                Position Details
+            </h6>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-gray-600">Position Title</label>
+                    <InputSelect class="form-control form-control-sm" 
+                        @bind-Value="@positionId">
+                        <option value="0">- Please Select -</option>
+                        @foreach(var item in ddPosition)
+                        {
+                            <option value="@item.Id">@item.Value</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-gray-600">Department</label>
+                    <InputSelect class="form-control form-control-sm"
+                                    @bind-Value="@departmentId">
+                        <option value="0">- Please Select -</option>
+                        @foreach (var item in ddDepartment)
+                        {
+                            <option value="@item.Id">@item.Value</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= Compensation ================= -->
+        <div class="mb-4">
+            <h6 class="text-xs font-weight-bold text-uppercase text-gray-500 mb-3 border-bottom pb-2">
+                Compensation Details
+            </h6>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-gray-600">
+                        Basic Salary
+                    </label>
+                    <InputNumber class="form-control form-control-sm"
+                        @bind-Value="basicSalary"
+                        min="10000"
+                        step="10000" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-gray-600">
+                        Allowance
+                    </label>
+                    <InputNumber class="form-control form-control-sm"
+                        @bind-Value="allowance"
+                        min="1000"
+                        step="1000" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-gray-600">
+                        Signing Bonus
+                    </label>
+                    <InputNumber class="form-control form-control-sm"
+                        @bind-Value="signingBonus"
+                        min="1000"
+                        step="1000" />
+                </div>
+
+                <!-- Empty column for balance -->
+                <div class="col-md-6"></div>
+            </div>
+        </div>
+
+        <!-- ================= Offer Timeline ================= -->
+        <div class="mb-4">
+            <h6 class="text-xs font-weight-bold text-uppercase text-gray-500 mb-3 border-bottom pb-2">
+                Offer Timeline
+            </h6>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-gray-600">
+                        Offer Date
+                    </label>
+                    <InputDate class="form-control form-control-sm"
+                                @bind-Value="offerDate" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-gray-600">
+                        Proposed Start Date
+                    </label>
+                    <InputDate class="form-control form-control-sm"
+                                @bind-Value="startDate" />
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= Remarks ================= -->
+        <div class="mb-4">
+            <h6 class="text-xs font-weight-bold text-uppercase text-gray-500 mb-3 border-bottom pb-2">
+                Additional Information
+            </h6>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold text-gray-600">
+                        Remarks
+                    </label>
+                    <InputTextArea class="form-control form-control-sm"
+                                    rows="4"
+                                    @bind-Value="remarks" />
+                </div>
+
+                <!-- Empty column for visual symmetry -->
+                <div class="col-md-6"></div>
+            </div>
+        </div>
+
+        <!-- ================= Actions ================= -->
+        <div class="d-flex justify-content-end border-top pt-3">
+            <button type="button" class="btn btn-outline-secondary btn-sm mr-2"
+                @onclick="HandleCancel">
+                Cancel
+            </button>
+
+            <button type="submit" class="btn btn-primary btn-sm shadow-sm"
+                    @onclick="() => HandleSubmit()">
+                <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
+                Submit
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int CandidateId { get; set; }
+
+    private IEnumerable<DropdownDto> ddPosition = new List<DropdownDto>();
+    private IEnumerable<DropdownDto> ddDepartment = new List<DropdownDto>();
+
+    private int positionId = 0;
+    private int departmentId = 0;
+    private decimal basicSalary = 30000;
+    private decimal allowance = 10000;
+    private decimal signingBonus = 10000;
+    private DateTime offerDate = DateTime.Today;
+    private DateTime startDate = DateTime.Today.AddDays(7);
+    private string remarks = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ddPosition = await DropDownListService.GetJobPositions();
+        ddDepartment = await DropDownListService.GetDepartments();
+    }
+
+    private async Task HandleSubmit()
+    {
+        List<string> errors = CollectErrors(new List<string>());
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        if (!await AlertService.Confirm())
+            return;
+
+        int joId = await JobOfferService.CreateJobOffer(
+            CandidateId,
+            positionId,
+            departmentId,
+            basicSalary,
+            allowance,
+            signingBonus,
+            offerDate,
+            startDate,
+            remarks
+        );
+
+        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{joId}/{CandidateId}");
+    }
+
+    private List<string> CollectErrors(List<string> errors)
+    {
+        if (positionId == 0)
+            errors.Add("Position title is required.");
+
+        if (departmentId == 0)
+            errors.Add("Department is required.");
+
+        return errors;
+    }
+
+    private void HandleCancel()
+    {
+        Navigation.NavigateTo(JORoutes.TA.JobOffer);
+    }
+}

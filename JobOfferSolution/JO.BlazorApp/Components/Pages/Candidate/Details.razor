@@ -1,9 +1,0 @@
-﻿@attribute [Route(JORoutes.Candidate.Details + "/{transactionId:int}")]
-
-<TransactionHeader TransactionId="@transactionId" />
-
-<CandidateFiles TransactionId="@transactionId" />
-
-@code {
-    [Parameter] public int transactionId { get; set; }
-}

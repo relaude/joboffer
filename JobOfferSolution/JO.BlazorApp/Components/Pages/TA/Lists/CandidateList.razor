@@ -1,0 +1,192 @@
+﻿@inject ICandidateService CandidateService
+@inject IAlertService AlertService
+@inject IUtilitiesService UtilitiesService
+@inject NavigationManager Navigation
+
+<div class="card small shadow mb-4 border-left-primary">
+    <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">
+            Manage Candidates
+        </h6>
+    </div>
+    <div class="card-body">
+        
+        <div class="d-flex flex-column flex-md-row align-items-start flex-wrap mb-3">
+            <!-- Filter/Search Section -->
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-sm text-nowrap">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Position Applied For</th>
+                        <th>Expected Salary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (candidates.Any())
+                    {
+                        @foreach (var item in candidates)
+                        {
+                            <tr>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-link text-primary p-0 align-baseline"
+                                            style="text-decoration: none;"
+                                            @onclick="() => ShowModalPersonalInfo(item)">
+                                        @($"{item.FirstName} {item.LastName}")
+                                    </button>
+                                </td>
+                                <td>@item.Email</td>
+                                <td>@item.PositionAppliedFor</td>
+                                <td>@item.ExpectedSalary</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                <i class="fas fa-info-circle mr-1"></i> No records found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    
+</div>
+
+<Modal @ref="modalPersonalInfo">
+    <ChildContent>
+        <div class="form-group">
+            <label class="font-weight-bold text-gray-800">First Name</label>
+            <InputText class="form-control"
+                       @bind-Value="firstName" />
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold text-gray-800">Last Name</label>
+            <InputText class="form-control"
+                       @bind-Value="lastName" />
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold text-gray-800">Email</label>
+            <InputText type="email"
+                       class="form-control"
+                       @bind-Value="email" />
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold text-gray-800">Contact Number</label>
+            <InputText type="email"
+                       class="form-control"
+                       @bind-Value="contactNumber" />
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold text-gray-800">HROD Candidate</label>
+
+            <InputSelect @bind-Value="isHrod" class="form-control">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+            </InputSelect>
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button class="btn btn-primary btn-sm"
+                @onclick="() => UpdatePersonalInfo()">
+            Submit
+        </button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    Modal modalPersonalInfo = default!;
+    private IEnumerable<VwCandidates> candidates = new List<VwCandidates>();
+
+    private int candidateId;
+    private string firstName;
+    private string lastName;
+    private string email;
+    private string contactNumber;
+    private bool isHrod;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await GetList();
+    }
+
+    private async Task GetList()
+    {
+        candidates = await CandidateService.GetAllCandidates();
+    }
+
+    private void ShowModalPersonalInfo(VwCandidates item)
+    {
+        candidateId = item.Id;
+        firstName = item.FirstName;
+        lastName = item.LastName;
+        email = item.Email;
+        contactNumber = item.ContactNumber;
+        isHrod = item.IsHROD == true;
+
+        modalPersonalInfo.Title = $"{firstName} {lastName}";
+        modalPersonalInfo.Show();
+    }
+
+    private async Task<List<string>> CollectErrors(List<string> errors)
+    {
+        bool isValidEmail = UtilitiesService.IsValidEmail(email);
+
+        if (!isValidEmail)
+            errors.Add("Please enter a valid email address.");
+
+        if (string.IsNullOrEmpty(firstName))
+            errors.Add("First Name is required.");
+
+        if (string.IsNullOrEmpty(lastName))
+            errors.Add("Last Name is required.");
+
+        if (string.IsNullOrEmpty(contactNumber))
+            errors.Add("Contact Number is required.");
+
+        return errors;
+    }
+
+    private async Task UpdatePersonalInfo()
+    {
+        var errors = await CollectErrors(new List<string>());
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        if (!await AlertService.Confirm())
+            return;
+
+        await CandidateService.UpdatePersonalInfo(
+            candidateId,
+            firstName,
+            lastName,
+            email,
+            contactNumber,
+            isHrod);
+
+        await GetList();
+        modalPersonalInfo.Close();
+    }
+
+
+    private void GoToJobOffer(int id)
+    {
+        Navigation.NavigateTo($"{JORoutes.TA.JobOffer}/{id}");
+    }
+}

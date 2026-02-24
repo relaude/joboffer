@@ -7,6 +7,6 @@ namespace JO.Service.Services.Contracts
     {
         Task<IEnumerable<VwCandidates>> GetAllCandidates();
         Task<VwCandidates> GetCandidate(int id);
-        Task<int> NewTransactionAsync(string name, string email, List<AttachmentDto> attachments);
+        Task<int> UpdatePersonalInfo(int id, string firstName, string lastName, string email, string contactNumber, bool isHrod);
     }
 }
