@@ -1,0 +1,43 @@
+﻿@inject NavigationManager Navigation
+@inject IAlertService AlertService
+@inject IJobOfferService JobOfferService
+
+@attribute [Authorize(Roles = JOUSerRole.DH)]
+@attribute [Route(JORoutes.DH.Approve + "/{jobOfferId:int}/{candidateId:int}")]
+
+<CandidateInfo CandidateId="@candidateId" />
+
+<JobOfferView JobOfferId="@jobOfferId" />
+
+<div class="d-flex justify-content-end border-top pt-3 mb-4">
+    <button class="btn btn-outline-secondary btn-sm mr-2"
+            @onclick="HandleCancel">
+        Cancel
+    </button>
+    
+    <button class="btn btn-primary btn-sm shadow-sm"
+        @onclick="() => HandleApprove()">
+        <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
+        Approve
+    </button>
+</div>
+
+@code {
+    [Parameter] public int jobOfferId { get; set; }
+    [Parameter] public int candidateId { get; set; }
+
+    private void HandleCancel()
+    {
+        Navigation.NavigateTo(JORoutes.DH.Approvals);
+    }
+
+    private async Task HandleApprove()
+    {
+        if (!await AlertService.Confirm())
+            return;
+
+        await JobOfferService.SetJobOfferStatus(jobOfferId, JOMainStatus.DHApproved);
+
+        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}/{candidateId}");
+    }
+}

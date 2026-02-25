@@ -5,7 +5,7 @@
 @attribute [Authorize(Roles = JOUSerRole.Admin)]
 @attribute [Route(JORoutes.Admin.Users)]
 
-<div class="card shadow border-left-primary mb-4">
+<div class="card shadow border-left-primary mb-4 small">
     <div class="card-header py-3">
         <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
             <h6 class="m-0 font-weight-bold text-primary d-flex align-items-center">
@@ -41,7 +41,7 @@
                             <tr>
                                 <td>
                                     <button type="button"
-                                            class="btn btn-link text-primary p-0 align-baseline"
+                                            class="btn btn-sm btn-link text-primary p-0 align-baseline"
                                             style="text-decoration: none;"
                                             @onclick="() => ShowUserModal(item)">
                                         @item.Name

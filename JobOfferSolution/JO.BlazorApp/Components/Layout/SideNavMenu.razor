@@ -8,44 +8,24 @@
 
     @if (user.Identity?.IsAuthenticated == true)
     {
-        @if (user.IsInRole(JOUSerRole.TA))
+        @if (user.IsInRole(JOUSerRole.TA) == true)
         {
             <TAMenu />
         }
 
-        @if (user.IsInRole(JOUSerRole.HRBP))
+        @if (user.IsInRole(JOUSerRole.HROD) == true)
         {
-            <li class="nav-item active">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>HRBP-Dashboard</span>
-                </a>
-            </li>
+            <HRODMenu />
         }
 
-        @if (user.IsInRole(JOUSerRole.HROD))
+        @if (user.IsInRole(JOUSerRole.DH) == true)
         {
-            <li class="nav-item active">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>HROD-Dashboard</span>
-                </a>
-            </li>
+            <DHMenu />
         }
 
-        @if (user.IsInRole(JOUSerRole.DH))
+        @if (user.IsInRole(JOUSerRole.Admin) == true)
         {
-            <li class="nav-item active">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>DH-Dashboard</span>
-                </a>
-            </li>
-        }
-
-        @if (user.IsInRole(JOUSerRole.Admin))
-        {
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="@JORoutes.Admin.Users">
                     <i class="fa-solid fa-user-gear"></i>
                     <span>Users and Roles</span>

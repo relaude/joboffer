@@ -1,0 +1,11 @@
+﻿@attribute [Authorize(Roles = JOUSerRole.TA)]
+@attribute [Route(JORoutes.TA.Accept)]
+
+<JobOffersByStatus 
+    StatusId="@JOMainStatus.EmailSent"
+    RedirectTo="@JORoutes.TA.Accept"
+    HeaderTitle="Job Offer Accept" />
+
+@code {
+
+}

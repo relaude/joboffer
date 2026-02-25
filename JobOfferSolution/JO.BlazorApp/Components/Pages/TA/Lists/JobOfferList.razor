@@ -1,16 +1,13 @@
-﻿@inject ICandidateService CandidateService
-@inject IAlertService AlertService
-@inject IUtilitiesService UtilitiesService
+﻿@inject IDashboardService DashboardService
 @inject NavigationManager Navigation
 
 <div class="card small shadow mb-4 border-left-primary">
     <div class="card-header">
         <h6 class="m-0 font-weight-bold text-primary">
-            Candidates Job Offer Creation
+            @HeaderTitle
         </h6>
     </div>
     <div class="card-body">
-        
         <div class="d-flex flex-column flex-md-row align-items-start flex-wrap mb-3">
             <!-- Filter/Search Section -->
         </div>
@@ -19,36 +16,40 @@
             <table class="table table-bordered table-hover table-sm text-nowrap">
                 <thead class="thead-light">
                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Position Applied For</th>
-                        <th>Expected Salary</th>
+                        <th>JO No.</th>
+                        <th>Status</th>
+                        <th>Candidate</th>
+                        <th>Position</th>
+                        <th>Department</th>
+                        <th>Offer</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (candidates.Any())
+                    @if (jobOffers.Any())
                     {
-                        @foreach (var item in candidates)
+                        @foreach (var item in jobOffers)
                         {
                             <tr>
                                 <td>
                                     <button type="button"
                                             class="btn btn-sm btn-link text-primary p-0 align-baseline"
                                             style="text-decoration: none;"
-                                            @onclick="() => GoToJobOffer(item.Id)">
-                                        @($"{item.FirstName} {item.LastName}")
+                                            @onclick="() => ViewDetails(item)">
+                                        @item.JobOfferNumber
                                     </button>
                                 </td>
-                                <td>@item.Email</td>
-                                <td>@item.PositionAppliedFor</td>
-                                <td>@item.ExpectedSalary</td>
+                                <td>@item.StatusName</td>
+                                <td>@item.CandidateName</td>
+                                <td>@item.PositionName</td>
+                                <td>@item.DepartmentName</td>
+                                <td>@item.BasicSalary</td>
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center text-muted">
+                            <td colspan="6" class="text-center text-muted">
                                 <i class="fas fa-info-circle mr-1"></i> No records found.
                             </td>
                         </tr>
@@ -56,26 +57,21 @@
                 </tbody>
             </table>
         </div>
-
     </div>
-    
 </div>
 
 @code {
-    private IEnumerable<VwCandidates> candidates = new List<VwCandidates>();
+    [Parameter] public string HeaderTitle { get; set; } = "Job Offers";
+
+    private IEnumerable<VwJobOffers> jobOffers = new List<VwJobOffers>();
 
     protected override async Task OnParametersSetAsync()
     {
-        await GetList();
+        jobOffers = await DashboardService.GetAllJobOffers();
     }
 
-    private async Task GetList()
+    private void ViewDetails(VwJobOffers item)
     {
-        candidates = await CandidateService.GetAllCandidates();
-    }
-
-    private void GoToJobOffer(int id)
-    {
-        Navigation.NavigateTo($"{JORoutes.TA.JobOffer}/{id}", true);
+        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{item.Id}/{item.Candidate_Id}");
     }
 }

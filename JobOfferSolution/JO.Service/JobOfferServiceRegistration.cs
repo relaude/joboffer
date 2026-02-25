@@ -21,6 +21,7 @@ namespace JO.Service
             services.AddScoped<IFileUploadService, FileUploadService>();
             services.AddScoped<IDropDownListService, DropDownListService>();
             services.AddScoped<IJobOfferService, JobOfferService>();
+            services.AddScoped<IDashboardService, DashboardService>();
 
             return services;
         }

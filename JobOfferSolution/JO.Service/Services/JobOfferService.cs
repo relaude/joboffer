@@ -18,6 +18,16 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
+        public async Task<int> SetJobOfferStatus(int id, int statusId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            var jobOffer = await context.JobOffers.FindAsync(id);
+            jobOffer.MainStatus_Id = statusId;
+
+            context.JobOffers.Update(jobOffer);
+            return await context.SaveChangesAsync();
+        }
+
         public async Task<VwJobOffers> GetJobOffer(int id)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();

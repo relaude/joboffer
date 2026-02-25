@@ -7,5 +7,6 @@ namespace JO.Service.Services.Contracts
     {
         Task<int> CreateJobOffer(int candidateId, int positionId, int departmentId, decimal basicSalary, decimal allowance, decimal signingBonus, DateTime offerDate, DateTime startDate, string remarks);
         Task<VwJobOffers> GetJobOffer(int id);
+        Task<int> SetJobOfferStatus(int id, int statusId);
     }
 }
