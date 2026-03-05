@@ -18,6 +18,37 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
+        public async Task<(IEnumerable<VwJobOffers> Data, int TotalCount)>
+        SearchJobOffersAsync(
+            int statusId,
+            string? candidate,
+            int page,
+            int pageSize)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var query = context.VwJobOffers
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (statusId != 0)
+                query = query.Where(jo => jo.MainStatus_Id == statusId);
+
+            if (!string.IsNullOrWhiteSpace(candidate))
+                query = query.Where(jo =>
+                    EF.Functions.Like(jo.CandidateName, $"%{candidate}%"));
+
+            var totalCount = await query.CountAsync();
+
+            var data = await query
+                .OrderBy(jo => jo.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (data, totalCount);
+        }
+
         public async Task<int> SetJobOfferStatus(int id, int statusId)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
@@ -58,7 +89,7 @@ namespace JO.Service.Services
                 Department_Id = departmentId,
                 JobOfferNumber = await GenerateTransactionNumber(context),
                 JobPosition_Id = positionId,
-                MainStatus_Id = JOMainStatus.ForApproval,
+                MainStatus_Id = JOMainStatus.New,
                 OfferDate = offerDate,
                 ProposedStartDate = startDate,
                 Remarks = remarks,

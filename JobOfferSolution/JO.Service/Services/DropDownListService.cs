@@ -17,6 +17,18 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
+        public async Task<IEnumerable<DropdownDto>> GetMainStatus()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.MainStatus
+                .AsNoTracking()
+                .OrderBy(jo => jo.OrderBy)
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = jo.StatusName
+                }).ToListAsync();
+        }
         public async Task<IEnumerable<DropdownDto>> GetJobPositions()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();

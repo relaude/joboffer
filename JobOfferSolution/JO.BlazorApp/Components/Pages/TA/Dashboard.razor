@@ -1,6 +1,8 @@
 ﻿@attribute [Authorize(Roles = JOUSerRole.TA)]
 @attribute [Route(JORoutes.TA.Dashboard)]
 
+<ReportStatusCount />
+
 <JobOfferList HeaderTitle="TA-Dashboard" />
 
 @code {

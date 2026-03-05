@@ -171,7 +171,7 @@
         if (!await AlertService.Confirm())
             return;
 
-        await JobOfferService.SetJobOfferStatus(JobOfferId, JOMainStatus.EmailSent);
+        await JobOfferService.SetJobOfferStatus(JobOfferId, JOMainStatus.Emailed);
 
         Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{JobOfferId}/{jobOffer.Candidate_Id}");
     }

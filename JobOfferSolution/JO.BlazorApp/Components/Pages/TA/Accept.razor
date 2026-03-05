@@ -42,7 +42,7 @@
         if (!await AlertService.Confirm())
             return;
 
-        await JobOfferService.SetJobOfferStatus(jobOfferId, JOMainStatus.Accept);
+        await JobOfferService.SetJobOfferStatus(jobOfferId, JOMainStatus.Accepted);
 
         Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}/{candidateId}");
     }
@@ -52,7 +52,7 @@
         if (!await AlertService.Confirm())
             return;
 
-        await JobOfferService.SetJobOfferStatus(jobOfferId, JOMainStatus.Decline);
+        await JobOfferService.SetJobOfferStatus(jobOfferId, JOMainStatus.Declined);
 
         Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}/{candidateId}");
     }

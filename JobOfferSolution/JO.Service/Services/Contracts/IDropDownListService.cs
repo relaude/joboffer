@@ -6,5 +6,6 @@ namespace JO.Service.Services.Contracts
     {
         Task<IEnumerable<DropdownDto>> GetDepartments();
         Task<IEnumerable<DropdownDto>> GetJobPositions();
+        Task<IEnumerable<DropdownDto>> GetMainStatus();
     }
 }
