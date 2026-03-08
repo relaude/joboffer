@@ -23,6 +23,7 @@ namespace JO.Service
             services.AddScoped<IJobOfferService, JobOfferService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             return services;
         }

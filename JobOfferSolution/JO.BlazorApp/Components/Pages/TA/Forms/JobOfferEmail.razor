@@ -1,5 +1,6 @@
 ﻿@inject IJobOfferService JobOfferService
 @inject IAlertService AlertService
+@inject IUtilitiesService UtilitiesService
 @inject NavigationManager Navigation
 
 <div class="card shadow mb-4 border-left-primary small">
@@ -7,154 +8,199 @@
         <h6 class="m-0 font-weight-bold text-primary">
             <i class="fas fa-file-contract mr-2"></i> @jobOffer.JobOfferNumber
         </h6>
-
-        <span class="badge badge-pill badge-info px-3 py-2 shadow-sm">
-            @jobOffer.StatusName
-        </span>
     </div>
 
     <div class="card-body">
 
-        <!-- POSITION DETAILS -->
-        <div class="mb-4">
-            <h6 class="font-weight-bold text-primary border-bottom pb-2 mb-3">
-                Position Details
-            </h6>
+        <div class="row">
+            <div class="col-md-4 border-right pr-4">
+                <div class="mb-4">
+                    <h6 class="font-weight-bold text-primary border-bottom pb-2 mb-3">
+                        Position Details
+                    </h6>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="text-xs text-uppercase text-muted mb-1">
-                        Position Title
-                    </label>
-                    <div class="form-control form-control-sm bg-light">
-                        @jobOffer.PositionName
+                    <div class="mb-3">
+                        <label class="text-xs text-uppercase text-muted mb-1">
+                            Position Title
+                        </label>
+                        <div class="form-control form-control-sm bg-light">
+                            @jobOffer.PositionName
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-xs text-uppercase text-muted mb-1">
+                            Department
+                        </label>
+                        <div class="form-control form-control-sm bg-light">
+                            @jobOffer.DepartmentName
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label class="text-xs text-uppercase text-muted mb-1">
-                        Department
-                    </label>
-                    <div class="form-control form-control-sm bg-light">
-                        @jobOffer.DepartmentName
+                <div class="mb-4">
+                    <h6 class="font-weight-bold text-warning border-bottom pb-2 mb-3">
+                        Offer Timeline
+                    </h6>
+
+                    <div class="mb-3">
+                        <label class="text-xs text-uppercase text-muted mb-1">
+                            Offer Date
+                        </label>
+                        <div class="form-control form-control-sm bg-light">
+                            @jobOffer.OfferDate?.ToString("MMMM dd, yyyy")
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-xs text-uppercase text-muted mb-1">
+                            Proposed Start Date
+                        </label>
+                        <div class="form-control form-control-sm bg-light">
+                            @jobOffer.ProposedStartDate?.ToString("MMMM dd, yyyy")
+                        </div>
                     </div>
                 </div>
+
             </div>
-        </div>
 
-        <!-- COMPENSATION -->
-        <div class="mb-4">
-            <h6 class="font-weight-bold text-success border-bottom pb-2 mb-3">
-                Compensation
-            </h6>
+            <div class="col-md-8 pl-4">
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label class="text-xs text-uppercase text-muted mb-1">
-                        Basic Salary
-                    </label>
-                    <div class="form-control form-control-sm bg-light">
-                        @jobOffer.BasicSalary?.ToString("C")
+                <div class="mb-4">
+                    <h6 class="font-weight-bold text-success border-bottom pb-2 mb-3">
+                        Compensation
+                    </h6>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="text-xs text-uppercase text-muted mb-1">
+                                Basic Salary
+                            </label>
+                            <div class="form-control form-control-sm bg-light">
+                                @UtilitiesService.ToPeso(jobOffer.BasicSalary)
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="text-xs text-uppercase text-muted mb-1">
+                                Allowance
+                            </label>
+                            <div class="form-control form-control-sm bg-light">
+                                @UtilitiesService.ToPeso(jobOffer.Allowance)
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="text-xs text-uppercase text-muted mb-1">
+                                Signing Bonus
+                            </label>
+                            <div class="form-control form-control-sm bg-light">
+                                @UtilitiesService.ToPeso(jobOffer.SigningBonus)
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-4 mb-3">
-                    <label class="text-xs text-uppercase text-muted mb-1">
-                        Allowance
-                    </label>
-                    <div class="form-control form-control-sm bg-light">
-                        @jobOffer.Allowance?.ToString("C")
+                <div class="mb-4">
+                    <h6 class="font-weight-bold text-info border-bottom pb-2 mb-3">
+                        Additional Information
+                    </h6>
+
+                    <div class="form-control form-control-sm bg-light" style="min-height:80px;">
+                        @jobOffer.Remarks
                     </div>
                 </div>
 
-                <div class="col-md-4 mb-3">
-                    <label class="text-xs text-uppercase text-muted mb-1">
-                        Signing Bonus
-                    </label>
-                    <div class="form-control form-control-sm bg-light">
-                        @jobOffer.SigningBonus?.ToString("C")
+                <div class="mb-4">
+                    <h6 class="font-weight-bold text-dark border-bottom pb-2 mb-3">
+                        Email Message
+                    </h6>
+
+                    <div class="form-group">
+                        <label class="text-xs text-uppercase text-muted">
+                            Email Body
+                        </label>
+                        <BlazoredTextEditor @ref="@QuillHtml">
+                            <ToolbarContent>
+                                <select class="ql-header">
+                                    <option selected=""></option>
+                                    <option value="1"></option>
+                                    <option value="2"></option>
+                                    <option value="3"></option>
+                                    <option value="4"></option>
+                                    <option value="5"></option>
+                                </select>
+
+                                <span class="ql-formats">
+                                    <button class="ql-bold"></button>
+                                    <button class="ql-italic"></button>
+                                    <button class="ql-underline"></button>
+                                    <button class="ql-strike"></button>
+                                </span>
+
+                                <span class="ql-formats">
+                                    <select class="ql-color"></select>
+                                    <select class="ql-background"></select>
+                                </span>
+
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered"></button>
+                                    <button class="ql-list" value="bullet"></button>
+                                </span>
+
+                                <span class="ql-formats">
+                                    <button class="ql-link"></button>
+                                </span>
+                            </ToolbarContent>
+
+                            <EditorContent></EditorContent>
+                        </BlazoredTextEditor>
                     </div>
                 </div>
+
             </div>
-        </div>
 
-        <!-- OFFER TIMELINE -->
-        <div class="mb-4">
-            <h6 class="font-weight-bold text-warning border-bottom pb-2 mb-3">
-                Offer Timeline
-            </h6>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="text-xs text-uppercase text-muted mb-1">
-                        Offer Date
-                    </label>
-                    <div class="form-control form-control-sm bg-light">
-                        @jobOffer.OfferDate?.ToString("MMMM dd, yyyy")
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="text-xs text-uppercase text-muted mb-1">
-                        Proposed Start Date
-                    </label>
-                    <div class="form-control form-control-sm bg-light">
-                        @jobOffer.ProposedStartDate?.ToString("MMMM dd, yyyy")
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ADDITIONAL INFORMATION -->
-        <div class="mb-4">
-            <h6 class="font-weight-bold text-info border-bottom pb-2 mb-3">
-                Additional Information
-            </h6>
-
-            <div class="form-control form-control-sm bg-light" style="min-height:80px;">
-                @jobOffer.Remarks
-            </div>
-        </div>
-
-        <!-- EMAIL MESSAGE -->
-        <div class="mb-4">
-            <h6 class="font-weight-bold text-dark border-bottom pb-2 mb-3">
-                Email Message
-            </h6>
-
-            <div class="form-group">
-                <label class="text-xs text-uppercase text-muted">
-                    Email Body
-                </label>
-                <InputTextArea @bind-Value="emailMessage" 
-                    class="form-control form-control-sm"
-                    rows="5"
-                    placeholder="Enter your email message here...">
-                </InputTextArea>
-            </div>
-        </div>
-
-        <!-- SUBMIT BUTTON -->
-        <div class="text-right">
-            <button class="btn btn-outline-secondary btn-sm mr-2"
-                    @onclick="HandleCancel">
-                Cancel
-            </button>
-            <button class="btn btn-primary btn-sm px-4"
-                    @onclick="() => HandleSubmitEmail()">
-                Submit Email
-            </button>
         </div>
 
     </div>
+    <div class="card-footer text-right">
+        <button class="btn btn-outline-secondary btn-sm mr-1"
+                @onclick="HandleCancel">
+            Cancel
+        </button>
+
+        <button class="btn btn-primary btn-sm mr-1"
+                @onclick="()=> TestEmail()">
+            Test Email
+        </button>
+        <button class="btn btn-primary btn-sm"
+                @onclick="() => HandleSubmitEmail()">
+            <i class="fa-solid fa-paper-plane"></i> Submit Email
+        </button>
+    </div>
 </div>
+
+<Modal @ref="modalInputEmail" ModalSize="modal-sm" Title="Input Email">
+    <ChildContent>
+        <input type="text" class="form-control" placeholder="Email" @bind="testEmail" />
+    </ChildContent>
+    <FooterTemplate>
+        <button class="btn btn-primary btn-sm">
+            Continue
+        </button>
+    </FooterTemplate>
+</Modal>
 
 @code {
     [Parameter] public int JobOfferId { get; set; }
-
     private string emailMessage = "For your acceptance. Please see attached file.";
-
     private VwJobOffers jobOffer = new();
+
+    BlazoredTextEditor QuillHtml;
+    private string QuillHTMLContent;
+    private Modal modalInputEmail = default!;
+    private string testEmail = "";
+    private EmailRequest emailRequest = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -164,6 +210,16 @@
     private void HandleCancel()
     {
         Navigation.NavigateTo(JORoutes.TA.Email);
+    }
+
+    private async Task TestEmail()
+    {
+        emailRequest.Body = await QuillHtml.GetHTML();
+
+        if (string.IsNullOrEmpty(emailRequest.Body) || emailRequest.Body == "<p><br></p>")
+            await AlertService.Error("Message is required.");
+        else
+            modalInputEmail.Show();
     }
 
     private async Task HandleSubmitEmail()

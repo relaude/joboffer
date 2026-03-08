@@ -1,6 +1,7 @@
 ﻿using JO.Service.Services.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -8,6 +9,11 @@ namespace JO.Service.Services
 {
     public class UtilitiesService : IUtilitiesService
     {
+        public string ToPeso(decimal? amount)
+        {
+            return amount?.ToString("C", new CultureInfo("en-PH")) ?? "";
+        }
+
         public bool IsValidEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
