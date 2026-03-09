@@ -18,8 +18,7 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
-        public async Task<(IEnumerable<VwJobOffers> Data, int TotalCount)>
-        SearchJobOffersAsync(
+        public async Task<(IEnumerable<VwJobOffers> Data, int TotalCount)> SearchJobOffersAsync(
             int statusId,
             string? candidate,
             int page,
@@ -80,6 +79,7 @@ namespace JO.Service.Services
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
 
+            //New JO
             var newJO = new JobOffers
             {
                 CreatedAt = DateTime.Now,
@@ -96,7 +96,13 @@ namespace JO.Service.Services
                 SigningBonus = signingBonus
             };
 
+            //Candidate Status
+            var candidate = await context.Candidates.FindAsync(candidateId);
+            candidate.CandidateStatus_Id = JOCandidateStatus.InProgress;
+
+            //Saves
             await context.JobOffers.AddAsync(newJO);
+            context.Candidates.Update(candidate);
             await context.SaveChangesAsync();
 
             return newJO.Id;

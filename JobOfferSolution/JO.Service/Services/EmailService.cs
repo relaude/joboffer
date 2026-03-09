@@ -66,27 +66,15 @@ namespace JO.Service.Services
                     mail.Body = request.Body;
                     mail.IsBodyHtml = true;
 
-                    // Attach files from disk
-                    if (request.AttachmentPaths != null)
+                    // Attach FileStreamDto files
+                    if (request.FileStreams != null)
                     {
-                        foreach (var file in request.AttachmentPaths)
+                        foreach (var file in request.FileStreams)
                         {
-                            if (File.Exists(file))
+                            if (file.Content != null && file.Content.Length > 0)
                             {
-                                mail.Attachments.Add(new Attachment(file));
-                            }
-                        }
-                    }
-
-                    // Attach uploaded files
-                    if (request.Attachments != null)
-                    {
-                        foreach (var file in request.Attachments)
-                        {
-                            if (file.Length > 0)
-                            {
-                                var stream = file.OpenReadStream();
-                                mail.Attachments.Add(new Attachment(stream, file.FileName));
+                                var stream = new MemoryStream(file.Content);
+                                mail.Attachments.Add(new Attachment(stream, file.Name));
                             }
                         }
                     }

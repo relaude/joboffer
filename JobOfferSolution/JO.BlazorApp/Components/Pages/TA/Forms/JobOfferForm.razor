@@ -1,6 +1,7 @@
 ﻿@inject IDropDownListService DropDownListService
 @inject IAlertService AlertService
 @inject IJobOfferService JobOfferService
+@inject ICandidateService CandidateService
 @inject NavigationManager Navigation
 
 <div class="card shadow mb-4 border-left-primary small">
@@ -100,8 +101,9 @@
                     <label class="font-weight-bold text-gray-600">
                         Offer Date
                     </label>
-                    <InputDate class="form-control form-control-sm"
-                                @bind-Value="offerDate" />
+                    <div class="form-control form-control-sm bg-light">
+                        @offerDate.ToString(CommonConstant.DefaultDateFormat)
+                    </div>
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -157,6 +159,8 @@
     private IEnumerable<DropdownDto> ddPosition = new List<DropdownDto>();
     private IEnumerable<DropdownDto> ddDepartment = new List<DropdownDto>();
 
+    private VwCandidates candidate = new();
+
     private int positionId = 0;
     private int departmentId = 0;
     private decimal basicSalary = 30000;
@@ -170,6 +174,10 @@
     {
         ddPosition = await DropDownListService.GetJobPositions();
         ddDepartment = await DropDownListService.GetDepartments();
+
+        candidate = await CandidateService.GetCandidate(CandidateId);
+        positionId = candidate.JobPosition_Id;
+        departmentId = candidate.Department_Id;
     }
 
     private async Task HandleSubmit()

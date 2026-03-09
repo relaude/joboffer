@@ -135,8 +135,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        await ChangePage(1);
         ddStatus = await DropDownListService.GetMainStatus();
+        await ChangePage(1);
     }
 
     private async Task ChangePage(int newPage)

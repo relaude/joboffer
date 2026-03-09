@@ -18,6 +18,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<Departments> Departments { get; set; }
         public DbSet<JobOffers> JobOffers { get; set; }
         public DbSet<MainStatus> MainStatus { get; set; }
+        public DbSet<CandidateStatus> CandidateStatus { get; set; }
 
         //Views
         public DbSet<VwCandidates> VwCandidates { get; set; }

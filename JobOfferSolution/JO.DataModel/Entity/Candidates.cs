@@ -19,5 +19,6 @@ namespace JO.DataModel.Entity
         public int WorkExperience_Id { get; set; }
         public bool? IsHROD { get; set; }
         public bool? IsActive { get; set; }
+        public int? CandidateStatus_Id { get; set; }
     }
 }

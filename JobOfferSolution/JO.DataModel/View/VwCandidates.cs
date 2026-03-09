@@ -22,5 +22,11 @@ namespace JO.DataModel.View
         public bool? IsActive { get; set; }
         public string EmploymentStatusName { get; set; }
         public string WorkExperienceName { get; set; }
+        public int JobPosition_Id { get; set; }
+        public string JobPositionName { get; set; }
+        public int Department_Id { get; set; }
+        public string DepartmentName { get; set; }
+        public int? CandidateStatus_Id { get; set; }
+        public string? CandidateJOStatus { get; set; }
     }
 }

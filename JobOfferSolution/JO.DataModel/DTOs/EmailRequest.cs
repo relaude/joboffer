@@ -12,7 +12,6 @@ namespace JO.DataModel.DTOs
         public string? Bcc { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
-        public List<string>? AttachmentPaths { get; set; }
-        public List<IFormFile>? Attachments { get; set; }
+        public List<FileStreamDto>? FileStreams { get; set; }
     }
 }
