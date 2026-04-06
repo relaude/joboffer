@@ -1,4 +1,5 @@
 ﻿@inject IDashboardService DashboardService
+@inject IUtilitiesService UtilitiesService
 @inject NavigationManager Navigation
 
 <div class="card small shadow mb-4 border-left-primary">
@@ -42,7 +43,7 @@
                                 <td>@item.CandidateName</td>
                                 <td>@item.PositionName</td>
                                 <td>@item.DepartmentName</td>
-                                <td>@item.BasicSalary</td>
+                                <td>@UtilitiesService.ToPeso(item.BasicSalary)</td>
                             </tr>
                         }
                     }

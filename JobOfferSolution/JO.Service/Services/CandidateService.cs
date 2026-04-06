@@ -56,7 +56,7 @@ namespace JO.Service.Services
             int[] validStatus = [
                 JOCandidateStatus.Creation,
                 JOCandidateStatus.InProgress,
-                JOCandidateStatus.Declined];
+                JOCandidateStatus.Withdrawn];
 
             var query = context.VwCandidates
                 .AsNoTracking()

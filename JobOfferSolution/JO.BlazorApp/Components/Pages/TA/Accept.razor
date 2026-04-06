@@ -1,13 +1,14 @@
 ﻿@inject NavigationManager Navigation
 @inject IAlertService AlertService
 @inject IJobOfferService JobOfferService
+@inject IDropDownListService DropDownListService
 
 @attribute [Authorize(Roles = JOUSerRole.TA)]
 @attribute [Route(JORoutes.TA.Accept + "/{jobOfferId:int}/{candidateId:int}")]
 
 <CandidateInfo CandidateId="@candidateId" />
 
-<JobOfferView JobOfferId="@jobOfferId" />
+<JobOfferNoneDeclineView JobOfferId="@jobOfferId" />
 
 <div class="d-flex justify-content-end border-top pt-3 mb-4">
     <button class="btn btn-outline-secondary btn-sm mr-2"
@@ -28,9 +29,54 @@
     </button>
 </div>
 
+<Modal @ref="modalDecline" Title="Decline Reason">
+    <ChildContent>
+        <div class="container-fluid px-0">
+            <div class="form-group mb-3">
+                <label for="declineReason" class="font-weight-semibold mb-2">Select a reason</label>
+                <select id="declineReason" class="form-control" @bind="selectedReason">
+                    @foreach (var item in ddReason)
+                    {
+                        <option value="@item.Id">@item.Value</option>
+                    }
+                </select>
+                <small class="form-text text-muted">Choose the reason that best explains why this offer will be declined.</small>
+            </div>
+
+            @if (selectedReason == 4)
+            {
+                <div class="form-group mb-0">
+                    <label for="otherReason" class="font-weight-semibold mb-2">Additional details</label>
+                    <textarea id="otherReason"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Specify the reason here."
+                              @bind="otherReason"></textarea>
+                </div>
+            }
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button class="btn btn-primary btn-sm" 
+            @onclick="() => ContinueDecline()">
+            Continue
+        </button>
+    </FooterTemplate>
+</Modal>
+
 @code {
     [Parameter] public int jobOfferId { get; set; }
     [Parameter] public int candidateId { get; set; }
+
+    Modal modalDecline = default!;
+    int selectedReason = 1;
+    string otherReason = string.Empty;
+    IEnumerable<DropdownDto> ddReason = new List<DropdownDto>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ddReason = await DropDownListService.GetDeclineReasons();
+    }
 
     private void HandleCancel()
     {
@@ -49,10 +95,18 @@
 
     private async Task HandleDecline()
     {
-        if (!await AlertService.Confirm())
-            return;
+        modalDecline.Show();
+    }
 
-        await JobOfferService.SetJobOfferStatus(jobOfferId, JOMainStatus.Declined);
+    private async Task ContinueDecline()
+    {
+        if (selectedReason == 4 && string.IsNullOrEmpty(otherReason))
+        {
+            await AlertService.Error("Please provide a reason.");
+            return;
+        }
+        
+        await JobOfferService.DeclineJobOffer(jobOfferId, JOMainStatus.Declined, selectedReason, otherReason);
 
         Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}/{candidateId}");
     }

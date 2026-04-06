@@ -7,17 +7,23 @@
 
 <CandidateInfo CandidateId="@candidateId" />
 
-<JobOfferView JobOfferId="@jobOfferId" />
+<JobOfferNoneDeclineView JobOfferId="@jobOfferId" />
 
 <div class="d-flex justify-content-end border-top pt-3 mb-4">
     <button class="btn btn-outline-secondary btn-sm mr-2"
-            @onclick="HandleCancel">
-        Cancel
+            @onclick="GoBack">
+        Go Back
     </button>
     
+    <button class="btn btn-secondary btn-sm shadow-sm mr-2"
+        @onclick="() => HandleApprove()">
+        <i class="fa-solid fa-arrow-rotate-left fa-sm text-white-50"></i>
+        Return to TA
+    </button>
+
     <button class="btn btn-primary btn-sm shadow-sm"
         @onclick="() => HandleApprove()">
-        <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
+        <i class="fas fa-save fa-sm text-white-50"></i>
         Approve
     </button>
 </div>
@@ -26,7 +32,7 @@
     [Parameter] public int jobOfferId { get; set; }
     [Parameter] public int candidateId { get; set; }
 
-    private void HandleCancel()
+    private void GoBack()
     {
         Navigation.NavigateTo(JORoutes.HROD.Approvals);
     }

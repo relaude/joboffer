@@ -1,6 +1,7 @@
 ﻿@inject IDashboardService DashboardService
 @inject IJobOfferService JobOfferService
 @inject IDropDownListService DropDownListService
+@inject IUtilitiesService UtilitiesService
 
 @inject NavigationManager Navigation
 
@@ -90,7 +91,7 @@
                                 <td>@item.CandidateName</td>
                                 <td>@item.PositionName</td>
                                 <td>@item.DepartmentName</td>
-                                <td>@item.BasicSalary?.ToString("C")</td>
+                                <td>@UtilitiesService.ToPeso(item.BasicSalary)</td>
                             </tr>
                         }
                     }

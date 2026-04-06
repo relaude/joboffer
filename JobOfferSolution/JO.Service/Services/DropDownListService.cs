@@ -65,5 +65,29 @@ namespace JO.Service.Services
                     Value = jo.DepartmentName
                 }).ToListAsync();
         }
+
+        public async Task<IEnumerable<DropdownDto>> GetDeclineReasons()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.DeclineReasons
+                .AsNoTracking()
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = jo.Reason
+                }).ToListAsync();
+        }
+
+        public async Task<IEnumerable<DropdownDto>> GetReturnReasons()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.ReturnReasons
+                .AsNoTracking()
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = jo.Reason
+                }).ToListAsync();
+        }
     }
 }

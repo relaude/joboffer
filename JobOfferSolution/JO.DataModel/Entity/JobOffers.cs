@@ -18,5 +18,7 @@ namespace JO.DataModel.Entity
         public DateTime? ProposedStartDate { get; set; }
         public string? Remarks { get; set; }
         public int? MainStatus_Id { get; set; }
+        public int? DeclineReason_Id { get; set; }
+        public string? OtherDeclineReason { get; set; }
     }
 }

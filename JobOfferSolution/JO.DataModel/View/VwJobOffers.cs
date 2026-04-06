@@ -19,9 +19,12 @@ namespace JO.DataModel.View
         public DateTime? ProposedStartDate { get; set; }
         public string? Remarks { get; set; }
         public int? MainStatus_Id { get; set; }
+        public int? DeclineReason_Id { get; set; }
+        public string? OtherDeclineReason { get; set; }
         public string? CandidateName { get; set; }
         public string? PositionName { get; set; }
         public string? DepartmentName { get; set; }
         public string? StatusName { get; set; }
+        public string? DeclineReason { get; set; }
     }
 }
