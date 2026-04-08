@@ -1,33 +1,32 @@
-﻿@inject IDropDownListService DropDownListService
+﻿@inject IJobOfferService JobOfferService
+@inject IDropDownListService DropDownListService
 @inject IAlertService AlertService
-@inject IJobOfferService JobOfferService
-@inject ICandidateService CandidateService
 @inject NavigationManager Navigation
 
-<div class="card shadow mb-4 border-left-primary small">
+@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.Return + "/{jobOfferId:int}/{candidateId:int}")]
 
-    <!-- Card Header -->
+<ReturnLogs JobOfferId="@jobOfferId" />
+
+<div class="card shadow mb-4 border-left-primary small">
     <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">
-            Create New Job Offer
+            @jobOffer.JobOfferNumber
         </h6>
     </div>
-
-    <!-- Card Body -->
+    
     <div class="card-body">
-        <!-- ================= Position Details ================= -->
         <div class="mb-4">
             <h6 class="text-xs font-weight-bold text-uppercase text-gray-500 mb-3 border-bottom pb-2">
                 Position Details
             </h6>
-
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="font-weight-bold text-gray-600">Position Title</label>
-                    <InputSelect class="form-control form-control-sm" 
-                        @bind-Value="@positionId">
+                    <InputSelect class="form-control form-control-sm"
+                                 @bind-Value="@jobOffer.JobPosition_Id">
                         <option value="0">- Please Select -</option>
-                        @foreach(var item in ddPosition)
+                        @foreach (var item in ddPosition)
                         {
                             <option value="@item.Id">@item.Value</option>
                         }
@@ -37,7 +36,7 @@
                 <div class="col-md-6 mb-3">
                     <label class="font-weight-bold text-gray-600">Department</label>
                     <InputSelect class="form-control form-control-sm"
-                                    @bind-Value="@departmentId">
+                                 @bind-Value="@jobOffer.Department_Id">
                         <option value="0">- Please Select -</option>
                         @foreach (var item in ddDepartment)
                         {
@@ -47,22 +46,20 @@
                 </div>
             </div>
         </div>
-
-        <!-- ================= Compensation ================= -->
+    
         <div class="mb-4">
             <h6 class="text-xs font-weight-bold text-uppercase text-gray-500 mb-3 border-bottom pb-2">
                 Compensation Details
             </h6>
-
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="font-weight-bold text-gray-600">
                         Basic Salary
                     </label>
                     <InputNumber class="form-control form-control-sm"
-                        @bind-Value="basicSalary"
-                        min="10000"
-                        step="10000" />
+                                 @bind-Value="jobOffer.BasicSalary"
+                                 min="10000"
+                                 step="10000" />
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -70,9 +67,9 @@
                         Allowance
                     </label>
                     <InputNumber class="form-control form-control-sm"
-                        @bind-Value="allowance"
-                        min="1000"
-                        step="1000" />
+                                 @bind-Value="jobOffer.Allowance"
+                                 min="1000"
+                                 step="1000" />
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -80,17 +77,16 @@
                         Signing Bonus
                     </label>
                     <InputNumber class="form-control form-control-sm"
-                        @bind-Value="signingBonus"
-                        min="1000"
-                        step="1000" />
+                                 @bind-Value="jobOffer.SigningBonus"
+                                 min="1000"
+                                 step="1000" />
                 </div>
 
                 <!-- Empty column for balance -->
                 <div class="col-md-6"></div>
             </div>
         </div>
-
-        <!-- ================= Offer Timeline ================= -->
+    
         <div class="mb-4">
             <h6 class="text-xs font-weight-bold text-uppercase text-gray-500 mb-3 border-bottom pb-2">
                 Offer Timeline
@@ -102,7 +98,7 @@
                         Offer Date
                     </label>
                     <div class="form-control form-control-sm bg-light">
-                        @offerDate.ToString(CommonConstant.DefaultDateFormat)
+                        @(jobOffer.OfferDate.HasValue ? jobOffer.OfferDate.Value.ToString(CommonConstant.DefaultDateFormat) : "")
                     </div>
                 </div>
 
@@ -111,33 +107,12 @@
                         Proposed Start Date
                     </label>
                     <InputDate class="form-control form-control-sm"
-                                @bind-Value="startDate" />
+                               @bind-Value="jobOffer.ProposedStartDate" />
                 </div>
-            </div>
-        </div>
-
-        <!-- ================= Remarks ================= -->
-        <div class="mb-4">
-            <h6 class="text-xs font-weight-bold text-uppercase text-gray-500 mb-3 border-bottom pb-2">
-                Additional Information
-            </h6>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="font-weight-bold text-gray-600">
-                        Remarks
-                    </label>
-                    <InputTextArea class="form-control form-control-sm"
-                                    rows="4"
-                                    @bind-Value="remarks" />
-                </div>
-
-                <!-- Empty column for visual symmetry -->
-                <div class="col-md-6"></div>
             </div>
         </div>
     </div>
-
+    
     <div class="card-footer d-flex justify-content-end">
         <button type="button" class="btn btn-outline-secondary btn-sm mr-2"
                 @onclick="GoBack">
@@ -145,7 +120,7 @@
         </button>
 
         <button type="submit" class="btn btn-primary btn-sm shadow-sm"
-                @onclick="() => HandleSubmit()">
+                @onclick="() => Submit()">
             <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
             Submit
         </button>
@@ -153,33 +128,26 @@
 </div>
 
 @code {
-    [Parameter] public int CandidateId { get; set; }
+    [Parameter] public int jobOfferId { get; set; }
+    [Parameter] public int candidateId { get; set; }
 
     private IEnumerable<DropdownDto> ddPosition = new List<DropdownDto>();
     private IEnumerable<DropdownDto> ddDepartment = new List<DropdownDto>();
-
-    private VwCandidates candidate = new();
-
-    private int positionId = 0;
-    private int departmentId = 0;
-    private decimal basicSalary = 30000;
-    private decimal allowance = 10000;
-    private decimal signingBonus = 10000;
-    private DateTime offerDate = DateTime.Today;
-    private DateTime startDate = DateTime.Today.AddDays(7);
-    private string remarks = "";
+    VwJobOffers jobOffer = new();
 
     protected override async Task OnParametersSetAsync()
     {
         ddPosition = await DropDownListService.GetJobPositions();
         ddDepartment = await DropDownListService.GetDepartments();
-
-        candidate = await CandidateService.GetCandidate(CandidateId);
-        positionId = candidate.JobPosition_Id;
-        departmentId = candidate.Department_Id;
+        jobOffer = await JobOfferService.GetJobOffer(jobOfferId);
     }
 
-    private async Task HandleSubmit()
+    private void GoBack()
+    {
+        Navigation.NavigateTo(JORoutes.TA.Return);
+    }
+
+    private async Task Submit()
     {
         List<string> errors = CollectErrors(new List<string>());
 
@@ -189,37 +157,17 @@
             return;
         }
 
-        if (!await AlertService.Confirm())
-            return;
-
-        int joId = await JobOfferService.CreateJobOffer(
-            CandidateId,
-            positionId,
-            departmentId,
-            basicSalary,
-            allowance,
-            signingBonus,
-            offerDate,
-            startDate,
-            remarks
-        );
-
-        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{joId}/{CandidateId}");
+        if (!await AlertService.Confirm()) return;
     }
 
     private List<string> CollectErrors(List<string> errors)
     {
-        if (positionId == 0)
+        if (jobOffer.JobPosition_Id == 0)
             errors.Add("Position title is required.");
 
-        if (departmentId == 0)
+        if (jobOffer.Department_Id == 0)
             errors.Add("Department is required.");
 
         return errors;
-    }
-
-    private void GoBack()
-    {
-        Navigation.NavigateTo(JORoutes.TA.JobOffer);
     }
 }

@@ -116,3 +116,34 @@ textarea:focus {
     line-height: 1;
 }
 
+/* return logs */
+.return-logs-table th,
+.return-logs-table td {
+    vertical-align: middle;
+}
+
+.return-logs-table th:nth-child(1),
+.return-logs-table td:nth-child(1) {
+    width: 18%;
+}
+
+.return-logs-table th:nth-child(2),
+.return-logs-table td:nth-child(2) {
+    width: 20%;
+}
+
+.return-logs-table th:nth-child(3),
+.return-logs-table td:nth-child(3) {
+    width: 18%;
+}
+
+.return-logs-table th:nth-child(4),
+.return-logs-table td:nth-child(4) {
+    width: 44%;
+}
+
+.return-logs-table textarea[readonly] {
+    min-width: 260px;
+    resize: none;
+    background-color: #fff;
+}

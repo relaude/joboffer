@@ -8,22 +8,22 @@
 
     @if (user.Identity?.IsAuthenticated == true)
     {
-        @if (user.IsInRole(JOUSerRole.TA) == true)
+        @if (user.IsInRole(JOUserRole.TA) == true)
         {
             <TAMenu />
         }
 
-        @if (user.IsInRole(JOUSerRole.HROD) == true)
+        @if (user.IsInRole(JOUserRole.HROD) == true)
         {
             <HRODMenu />
         }
 
-        @if (user.IsInRole(JOUSerRole.DH) == true)
+        @if (user.IsInRole(JOUserRole.DH) == true)
         {
             <DHMenu />
         }
 
-        @if (user.IsInRole(JOUSerRole.Admin) == true)
+        @if (user.IsInRole(JOUserRole.Admin) == true)
         {
             <li class="nav-item">
                 <a class="nav-link" href="@JORoutes.Admin.Users">

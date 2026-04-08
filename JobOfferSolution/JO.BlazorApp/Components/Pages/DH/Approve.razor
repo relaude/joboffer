@@ -2,7 +2,7 @@
 @inject IAlertService AlertService
 @inject IJobOfferService JobOfferService
 
-@attribute [Authorize(Roles = JOUSerRole.DH)]
+@attribute [Authorize(Roles = JOUserRole.DH)]
 @attribute [Route(JORoutes.DH.Approve + "/{jobOfferId:int}/{candidateId:int}")]
 
 <CandidateInfo CandidateId="@candidateId" />

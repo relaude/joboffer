@@ -4,7 +4,7 @@ using System.Text;
 
 namespace JO.Service.Constants
 {
-    public static class JOUSerRole
+    public static class JOUserRole
     {
         public const string Admin = "Admin";
         public const string TA = "Talent Acquisition";

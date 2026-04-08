@@ -120,6 +120,40 @@ namespace JO.Service.Services
             return newJO.Id;
         }
 
+        public async Task<IEnumerable<VwReturnLogs>> GetReturnLogs(int id)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwReturnLogs
+                .AsNoTracking()
+                .Where(x => x.JobOffer_Id == id)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+        }
+
+        public async Task<int> ReSubmitReturnedJO(
+            int id, 
+            int positionId, 
+            int departmentId,
+            decimal basicSalary,
+            decimal allowance,
+            decimal signingBonus,
+            DateTime startDate,
+            int modifiedBy)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            var jobOffer = await context.JobOffers.FindAsync(id);
+
+            jobOffer.JobPosition_Id = positionId;
+            jobOffer.Department_Id = departmentId;
+            jobOffer.BasicSalary = basicSalary;
+            jobOffer.Allowance = allowance;
+            jobOffer.SigningBonus = signingBonus;
+            jobOffer.ProposedStartDate = startDate;
+
+            context.JobOffers.Update(jobOffer);
+            return await context.SaveChangesAsync();
+        }
+
         private async Task<string> GenerateTransactionNumber(JobOfferDbContext context)
         {
             var year = DateTime.Now.Year;

@@ -192,12 +192,12 @@ namespace JO.Service.Services
         {
             return new List<string>
             {
-                JOUSerRole.Admin,
-                JOUSerRole.TA,
-                JOUSerRole.TR,
-                JOUSerRole.HRBP,
-                JOUSerRole.HROD,
-                JOUSerRole.DH
+                JOUserRole.Admin,
+                JOUserRole.TA,
+                JOUserRole.TR,
+                JOUserRole.HRBP,
+                JOUserRole.HROD,
+                JOUserRole.DH
             };
         }
     }

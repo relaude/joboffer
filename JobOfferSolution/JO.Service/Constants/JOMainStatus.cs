@@ -12,5 +12,6 @@ namespace JO.Service.Constants
         public const int Emailed = 4;
         public const int Accepted = 5;
         public const int Declined = 6;
+        public const int Returned = 7;
     }
 }

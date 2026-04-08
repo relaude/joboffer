@@ -21,15 +21,18 @@ namespace JO.Persistence.DataAccess
         public DbSet<CandidateStatus> CandidateStatus { get; set; }
         public DbSet<DeclineReasons> DeclineReasons { get; set; }
         public DbSet<ReturnReasons> ReturnReasons { get; set; }
+        public DbSet<ReturnLogs> ReturnLogs { get; set; }
 
         //Views
         public DbSet<VwCandidates> VwCandidates { get; set; }
         public DbSet<VwJobOffers> VwJobOffers { get; set; }
+        public DbSet<VwReturnLogs> VwReturnLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<VwCandidates>().HasNoKey().ToView("vw_Candidates");
             modelBuilder.Entity<VwJobOffers>().HasNoKey().ToView("vw_JobOffers");
+            modelBuilder.Entity<VwReturnLogs>().HasNoKey().ToView("vw_ReturnLogs");
         }
     }
 }

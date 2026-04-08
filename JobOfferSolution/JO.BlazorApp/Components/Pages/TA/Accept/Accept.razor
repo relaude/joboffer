@@ -3,12 +3,12 @@
 @inject IJobOfferService JobOfferService
 @inject IDropDownListService DropDownListService
 
-@attribute [Authorize(Roles = JOUSerRole.TA)]
+@attribute [Authorize(Roles = JOUserRole.TA)]
 @attribute [Route(JORoutes.TA.Accept + "/{jobOfferId:int}/{candidateId:int}")]
 
 <CandidateInfo CandidateId="@candidateId" />
 
-<JobOfferNoneDeclineView JobOfferId="@jobOfferId" />
+<JobOfferView JobOfferId="@jobOfferId" />
 
 <div class="d-flex justify-content-end border-top pt-3 mb-4">
     <button class="btn btn-outline-secondary btn-sm mr-2"
@@ -29,7 +29,7 @@
     </button>
 </div>
 
-<Modal @ref="modalDecline" Title="Decline Reason">
+<Modal @ref="modalDecline" Title="Reason">
     <ChildContent>
         <div class="container-fluid px-0">
             <div class="form-group mb-3">
@@ -40,7 +40,6 @@
                         <option value="@item.Id">@item.Value</option>
                     }
                 </select>
-                <small class="form-text text-muted">Choose the reason that best explains why this offer will be declined.</small>
             </div>
 
             @if (selectedReason == 4)
@@ -105,6 +104,8 @@
             await AlertService.Error("Please provide a reason.");
             return;
         }
+
+        if (!await AlertService.Confirm()) return;
         
         await JobOfferService.DeclineJobOffer(jobOfferId, JOMainStatus.Declined, selectedReason, otherReason);
 

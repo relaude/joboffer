@@ -82,13 +82,16 @@
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <h6 class="font-weight-bold text-info border-bottom pb-2 mb-3">Additional Information</h6>
+                @if (!string.IsNullOrEmpty(jobOffer.Remarks))
+                {
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold text-info border-bottom pb-2 mb-3">Additional Information</h6>
 
-                    <div class="form-control form-control-sm bg-light" style="min-height:80px;">
-                        @jobOffer.Remarks
+                        <div class="form-control form-control-sm bg-light" style="min-height:80px;">
+                            @jobOffer.Remarks
+                        </div>
                     </div>
-                </div>
+                }
 
                 <div class="mb-4">
                     <h6 class="font-weight-bold text-dark border-bottom pb-2 mb-3">Email</h6>

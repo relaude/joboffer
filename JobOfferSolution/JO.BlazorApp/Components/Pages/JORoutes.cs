@@ -30,6 +30,7 @@
             public const string Candidates = PrefixTA + "/candidates";
             public const string JobOffer = PrefixTA + "/joboffer";
             public const string Accept = PrefixTA + "/joboffer/accept";
+            public const string Return = PrefixTA + "/joboffer/return";
             public const string Email = PrefixTA + "/email";
         }
 

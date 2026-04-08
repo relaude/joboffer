@@ -12,7 +12,13 @@
     [WorkExperience_Id]   INT             NULL,
     [IsHROD]              BIT             NULL,
     [IsActive]            BIT             CONSTRAINT [DF_Candidates_IsActive] DEFAULT ((1)) NULL,
+    [JobPosition_Id]      INT             NULL,
+    [Department_Id]       INT             NULL,
+    [CandidateStatus_Id]  INT             NULL,
     [CreatedAt]           DATETIME        NULL,
+    [CreatedBy]           INT             NULL,
+    [ModifiedAt]          DATETIME        NULL,
+    [ModifiedBy]          INT             NULL,
     CONSTRAINT [PK_Candidates] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

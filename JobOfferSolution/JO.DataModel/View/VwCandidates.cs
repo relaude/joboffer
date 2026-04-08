@@ -7,7 +7,6 @@ namespace JO.DataModel.View
     public class VwCandidates
     {
         public int Id { get; set; }
-        public DateTime? CreatedAt { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ContactNumber { get; set; }
@@ -28,5 +27,10 @@ namespace JO.DataModel.View
         public string DepartmentName { get; set; }
         public int? CandidateStatus_Id { get; set; }
         public string? CandidateJOStatus { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+        public int? ModifiedBy { get; set; }
     }
 }

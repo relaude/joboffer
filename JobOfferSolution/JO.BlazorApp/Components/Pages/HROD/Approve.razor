@@ -1,22 +1,25 @@
 ﻿@inject NavigationManager Navigation
 @inject IAlertService AlertService
 @inject IJobOfferService JobOfferService
+@inject IDropDownListService DropDownListService
+@inject IAccountService AccountService
+@inject IReturnJobOfferService ReturnJobOfferService
 
-@attribute [Authorize(Roles = JOUSerRole.HROD)]
+@attribute [Authorize(Roles = JOUserRole.HROD)]
 @attribute [Route(JORoutes.HROD.Approve + "/{jobOfferId:int}/{candidateId:int}")]
 
 <CandidateInfo CandidateId="@candidateId" />
 
-<JobOfferNoneDeclineView JobOfferId="@jobOfferId" />
+<JobOfferView JobOfferId="@jobOfferId" />
 
 <div class="d-flex justify-content-end border-top pt-3 mb-4">
     <button class="btn btn-outline-secondary btn-sm mr-2"
-            @onclick="GoBack">
+        @onclick="GoBack">
         Go Back
     </button>
     
     <button class="btn btn-secondary btn-sm shadow-sm mr-2"
-        @onclick="() => HandleApprove()">
+        @onclick="HandleReturn">
         <i class="fa-solid fa-arrow-rotate-left fa-sm text-white-50"></i>
         Return to TA
     </button>
@@ -28,9 +31,57 @@
     </button>
 </div>
 
+<Modal @ref="modalReturn" Title="Reason">
+    <ChildContent>
+        <div class="container-fluid px-0">
+            <div class="form-group mb-3">
+                <label for="declineReason" class="font-weight-semibold mb-2">Select a reason</label>
+                <select id="declineReason" class="form-control" @bind="selectedReason">
+                    @foreach (var item in ddReason)
+                    {
+                        <option value="@item.Id">@item.Value</option>
+                    }
+                </select>
+            </div>
+
+            @if (selectedReason == 4)
+            {
+                <div class="form-group mb-0">
+                    <label for="otherReason" class="font-weight-semibold mb-2">Additional details</label>
+                    <textarea id="otherReason"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Specify the reason here."
+                              maxlength="200"
+                              @bind="otherReason"></textarea>
+                </div>
+            }
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button class="btn btn-primary btn-sm"
+                @onclick="() => ContinueReturn()">
+            Continue
+        </button>
+    </FooterTemplate>
+</Modal>
+
 @code {
     [Parameter] public int jobOfferId { get; set; }
     [Parameter] public int candidateId { get; set; }
+
+    Modal modalReturn = default!;
+    int selectedReason = 1;
+    string otherReason = string.Empty;
+    IEnumerable<DropdownDto> ddReason = new List<DropdownDto>();
+
+    int userId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ddReason = await DropDownListService.GetReturnReasons();
+        userId = await AccountService.GetJobOfferUserId();
+    }
 
     private void GoBack()
     {
@@ -43,6 +94,26 @@
             return;
 
         await JobOfferService.SetJobOfferStatus(jobOfferId, JOMainStatus.HRODApproved);
+
+        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}/{candidateId}");
+    }
+
+    private void HandleReturn()
+    {
+        modalReturn.Show();
+    }
+
+    private async Task ContinueReturn()
+    {
+        if (selectedReason == 4 && string.IsNullOrEmpty(otherReason))
+        {
+            await AlertService.Error("Please provide a reason."); 
+            return;
+        }
+
+        if (!await AlertService.Confirm()) return;
+
+        await ReturnJobOfferService.ReturnToTA(jobOfferId, selectedReason, userId, otherReason);
 
         Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}/{candidateId}");
     }

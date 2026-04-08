@@ -7,7 +7,6 @@ namespace JO.DataModel.View
     public class VwJobOffers
     {
         public int Id { get; set; }
-        public DateTime? CreatedAt { get; set; }
         public string? JobOfferNumber { get; set; }
         public int? Candidate_Id { get; set; }
         public int? JobPosition_Id { get; set; }
@@ -26,5 +25,10 @@ namespace JO.DataModel.View
         public string? DepartmentName { get; set; }
         public string? StatusName { get; set; }
         public string? DeclineReason { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+        public int? ModifiedBy { get; set; }
     }
 }

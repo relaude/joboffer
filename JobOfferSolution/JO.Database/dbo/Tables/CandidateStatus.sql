@@ -1,7 +1,7 @@
-﻿CREATE TABLE [dbo].[MainStatus] (
+﻿CREATE TABLE [dbo].[CandidateStatus] (
     [Id]         INT           IDENTITY (1, 1) NOT NULL,
     [StatusName] NVARCHAR (50) NULL,
     [OrderBy]    INT           NULL,
-    CONSTRAINT [PK_MainStatus] PRIMARY KEY CLUSTERED ([Id] ASC)
+    CONSTRAINT [PK_CandidateStatus] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

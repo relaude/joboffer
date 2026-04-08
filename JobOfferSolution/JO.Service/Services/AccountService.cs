@@ -2,10 +2,12 @@
 using JO.Persistence.DataAccess;
 using JO.Service.Constants;
 using JO.Service.Services.Contracts;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 
 namespace JO.Service.Services
@@ -15,15 +17,18 @@ namespace JO.Service.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IDbContextFactory<JobOfferDbContext> _contextFactory;
+        private readonly AuthenticationStateProvider _authStateProvider;
 
         public AccountService(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IDbContextFactory<JobOfferDbContext> contextFactory)
+            IDbContextFactory<JobOfferDbContext> contextFactory,
+            AuthenticationStateProvider authStateProvider)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _contextFactory = contextFactory;
+            _authStateProvider = authStateProvider;
         }
 
         public async Task<bool> LocalLogIn(string email)
@@ -55,6 +60,20 @@ namespace JO.Service.Services
         public async Task LocalLogOut()
         {
             await _signInManager.SignOutAsync();
+        }
+
+        public async Task<int> GetJobOfferUserId()
+        {
+            var user = await GetUserAsync();
+            string userId = user.FindFirst("JobOfferUserId")?.Value;
+
+            return string.IsNullOrEmpty(userId) ? 0 : int.Parse(userId);
+        }
+
+        private async Task<ClaimsPrincipal> GetUserAsync()
+        {
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            return authState.User;
         }
     }
 }
