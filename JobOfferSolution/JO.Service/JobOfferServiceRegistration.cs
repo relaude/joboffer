@@ -25,6 +25,9 @@ namespace JO.Service
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IReturnJobOfferService, ReturnJobOfferService>();
+            services.AddScoped<IHRService, HRService>();
+            services.AddScoped<IDHService, DHService>();
+            services.AddScoped<ITAService, TAService>();
 
             return services;
         }

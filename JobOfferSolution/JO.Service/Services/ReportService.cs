@@ -30,7 +30,7 @@ namespace JO.Service.Services
                     Total = g.Count(),
 
                     New = g.Count(x =>
-                        x.MainStatus_Id == JOMainStatus.New),
+                        x.MainStatus_Id == JOMainStatus.HRODApproval),
 
                     Approved = g.Count(x =>
                         x.MainStatus_Id == JOMainStatus.HRODApproved ||

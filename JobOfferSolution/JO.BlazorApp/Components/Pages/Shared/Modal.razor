@@ -38,10 +38,12 @@
     public void Show()
     {
         IsVisible = true;
+        _ = InvokeAsync(StateHasChanged);
     }
 
     public void Close()
     {
         IsVisible = false;
+        _ = InvokeAsync(StateHasChanged);
     }
 }

@@ -92,5 +92,7 @@
     <Build Include="dbo\Tables\CandidateStatus.sql" />
     <Build Include="dbo\Tables\ActivityLogs.sql" />
     <Build Include="dbo\Tables\Activities.sql" />
+    <Build Include="dbo\Views\vw_ReturnLogs.sql" />
+    <Build Include="dbo\Views\vw_ActivityLogs.sql" />
   </ItemGroup>
 </Project>

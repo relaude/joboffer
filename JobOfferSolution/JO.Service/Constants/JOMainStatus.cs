@@ -6,7 +6,7 @@ namespace JO.Service.Constants
 {
     public static class JOMainStatus
     {
-        public const int New = 1;
+        public const int HRODApproval = 1;
         public const int HRODApproved = 2;
         public const int DHApproved = 3;
         public const int Emailed = 4;

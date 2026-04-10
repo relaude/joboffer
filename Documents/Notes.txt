@@ -1,33 +1,5 @@
-**SQL Credentials
-joboffer_user | jobofferuser@01 | 10.54.4.119
-
-**Blazor App
-joboffer_user | Jobofferuser@01
-
-**March 3, 2026
-Job Offer
- - Accepted
- - Rejected
- 
- TA-Dashboard --> Click JO button 
-	- Redirect JO Accept/Reject
-	
-Filters
- -Status
- - Name
- - Position
- 
- Candidate CompBen Forms Info
- 
- Status
- - Accepted
- - Rejected
- - For Approval
- 
- Candidate --> List of JO
- 
-Dashboard
-	- Aggregate Count 
-	- Filters
-
-Add Currency
+**Codex Pending
+Modify [Approve.razor](JO.BlazorApp/Components/Pages/DH/Approve.razor) and [Approve.razor](JO.BlazorApp/Components/Pages/HROD/Approve.razor)  base on this
+- make "<Modal @ref="modalReturn" Title="Reason">" a reusable component
+- create a resusable component that can be use by both page
+- put the new shared componenet under \JO.BlazorApp\Components\Pages\Shared Folder

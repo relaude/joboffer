@@ -2,6 +2,7 @@
 @inject IAlertService AlertService
 @inject IJobOfferService JobOfferService
 @inject ICandidateService CandidateService
+@inject IAccountService AccountService
 @inject NavigationManager Navigation
 
 <div class="card shadow mb-4 border-left-primary small">
@@ -168,6 +169,7 @@
     private DateTime offerDate = DateTime.Today;
     private DateTime startDate = DateTime.Today.AddDays(7);
     private string remarks = "";
+    int userId;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -177,6 +179,8 @@
         candidate = await CandidateService.GetCandidate(CandidateId);
         positionId = candidate.JobPosition_Id;
         departmentId = candidate.Department_Id;
+
+        userId = await AccountService.GetJobOfferUserId();
     }
 
     private async Task HandleSubmit()
@@ -201,7 +205,8 @@
             signingBonus,
             offerDate,
             startDate,
-            remarks
+            remarks,
+            userId
         );
 
         Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{joId}/{CandidateId}");

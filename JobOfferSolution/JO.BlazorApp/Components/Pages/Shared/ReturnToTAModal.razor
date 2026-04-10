@@ -1,0 +1,88 @@
+@using System.Linq
+@inject IAlertService AlertService
+@inject IDropDownListService DropDownListService
+@inject IAccountService AccountService
+@inject IReturnJobOfferService ReturnJobOfferService
+
+<Modal @ref="modalReturn" Title="Reason">
+    <ChildContent>
+        <div class="container-fluid px-0">
+            <div class="form-group mb-3">
+                <label for="@ReasonId" class="font-weight-semibold mb-2">Select a reason</label>
+                <select id="@ReasonId" class="form-control" @bind="selectedReason">
+                    @foreach (var item in ddReason)
+                    {
+                        <option value="@item.Id">@item.Value</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb-0">
+                <label for="@OtherReasonId" class="font-weight-semibold mb-2">Additional details</label>
+                <textarea id="@OtherReasonId"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Specify the reason here."
+                          maxlength="200"
+                          @bind="otherReason"></textarea>
+            </div>
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button class="btn btn-primary btn-sm" @onclick="ContinueReturn">
+            Continue
+        </button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    [Parameter] public int JobOfferId { get; set; }
+    [Parameter] public int ActivityId { get; set; }
+    [Parameter] public string ValidationMessage { get; set; } = "Please provide additional details.";
+    [Parameter] public EventCallback OnReturned { get; set; }
+
+    private Modal modalReturn = default!;
+    private IEnumerable<DropdownDto> ddReason = new List<DropdownDto>();
+    private int selectedReason = 0;
+    private string otherReason = string.Empty;
+    private int userId;
+    private bool isLoaded;
+
+    private string ReasonId => $"reason-{JobOfferId}";
+    private string OtherReasonId => $"otherReason-{JobOfferId}";
+
+    public async Task ShowAsync()
+    {
+        await EnsureLoadedAsync();
+        otherReason = string.Empty;
+        modalReturn.Show();
+    }
+
+    private async Task ContinueReturn()
+    {
+        if (string.IsNullOrWhiteSpace(otherReason))
+        {
+            await AlertService.Error(ValidationMessage);
+            return;
+        }
+
+        if (!await AlertService.Confirm())
+            return;
+
+        await ReturnJobOfferService.ReturnToTA(JobOfferId, selectedReason, ActivityId, userId, otherReason);
+
+        modalReturn.Close();
+        await OnReturned.InvokeAsync();
+    }
+
+    private async Task EnsureLoadedAsync()
+    {
+        if (isLoaded)
+            return;
+
+        ddReason = await DropDownListService.GetReturnReasons();
+        selectedReason = ddReason.FirstOrDefault()?.Id ?? 0;
+        userId = await AccountService.GetJobOfferUserId();
+        isLoaded = true;
+    }
+}

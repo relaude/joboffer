@@ -3,6 +3,8 @@
 @inject IUtilitiesService UtilitiesService
 @inject IEmailService EmailService
 @inject ICandidateService CandidateService
+@inject ITAService TAService
+@inject IAccountService AccountService
 @inject NavigationManager Navigation
 
 <div class="card shadow mb-4 border-left-primary small">
@@ -238,10 +240,12 @@
     private EmailRequest emailRequest = new();
     private FileStreamDto? selectedFile;
     private List<FileStreamDto> listOfFiles = new();
+    int userId;
 
     protected override async Task OnParametersSetAsync()
     {
         jobOffer = await JobOfferService.GetJobOffer(JobOfferId);
+        userId = await AccountService.GetJobOfferUserId();
     }
 
     private void HandleCancel()
@@ -273,7 +277,7 @@
         try
         {
             await EmailService.SendAsync(emailRequest);
-            await JobOfferService.SetJobOfferStatus(JobOfferId, JOMainStatus.Emailed);
+            await TAService.EmailCandidate(JobOfferId, userId);
             Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{JobOfferId}/{jobOffer.Candidate_Id}");
         }
         catch (Exception ex)

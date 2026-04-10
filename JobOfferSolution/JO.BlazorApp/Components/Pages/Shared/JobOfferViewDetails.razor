@@ -5,6 +5,16 @@
 
 <JobOfferView JobOfferId="@jobOfferId" />
 
+<div class="row">
+    <div class="col-4">
+        <JobOfferActivities JobOfferId="@jobOfferId" />
+    </div>
+    <div class="col-8">
+        <JobOfferReturnLogs JobOfferId="@jobOfferId" />
+    </div>
+</div>
+
+
 @code {
     [Parameter] public int jobOfferId { get; set; }
     [Parameter] public int candidateId { get; set; }

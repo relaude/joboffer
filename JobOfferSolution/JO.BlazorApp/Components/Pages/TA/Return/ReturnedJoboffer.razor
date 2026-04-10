@@ -1,12 +1,14 @@
 ﻿@inject IJobOfferService JobOfferService
 @inject IDropDownListService DropDownListService
 @inject IAlertService AlertService
+@inject IAccountService AccountService
+@inject IReturnJobOfferService ReturnJobOfferService
 @inject NavigationManager Navigation
 
 @attribute [Authorize(Roles = JOUserRole.TA)]
 @attribute [Route(JORoutes.TA.Return + "/{jobOfferId:int}/{candidateId:int}")]
 
-<ReturnLogs JobOfferId="@jobOfferId" />
+<CandidateInfo CandidateId="@candidateId" />
 
 <div class="card shadow mb-4 border-left-primary small">
     <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
@@ -127,6 +129,8 @@
     </div>
 </div>
 
+<JobOfferReturnLogs JobOfferId="@jobOfferId" />
+
 @code {
     [Parameter] public int jobOfferId { get; set; }
     [Parameter] public int candidateId { get; set; }
@@ -134,12 +138,14 @@
     private IEnumerable<DropdownDto> ddPosition = new List<DropdownDto>();
     private IEnumerable<DropdownDto> ddDepartment = new List<DropdownDto>();
     VwJobOffers jobOffer = new();
+    int userId;
 
     protected override async Task OnParametersSetAsync()
     {
         ddPosition = await DropDownListService.GetJobPositions();
         ddDepartment = await DropDownListService.GetDepartments();
         jobOffer = await JobOfferService.GetJobOffer(jobOfferId);
+        userId = await AccountService.GetJobOfferUserId();
     }
 
     private void GoBack()
@@ -158,6 +164,18 @@
         }
 
         if (!await AlertService.Confirm()) return;
+
+        await ReturnJobOfferService.ReSubmitReturnedJO(
+            jobOfferId, 
+            jobOffer.JobPosition_Id.Value,
+            jobOffer.Department_Id.Value,
+            jobOffer.BasicSalary.Value,
+            jobOffer.Allowance.Value,
+            jobOffer.SigningBonus.Value,
+            jobOffer.ProposedStartDate.Value,
+            userId);
+
+        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}/{candidateId}");
     }
 
     private List<string> CollectErrors(List<string> errors)

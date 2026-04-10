@@ -2,6 +2,7 @@
 {
     public interface IReturnJobOfferService
     {
-        Task<int> ReturnToTA(int id, int reasonId, int userId, string remarks);
+        Task<int> ReSubmitReturnedJO(int id, int positionId, int departmentId, decimal basicSalary, decimal allowance, decimal signingBonus, DateTime startDate, int modifiedBy);
+        Task<int> ReturnToTA(int id, int reasonId, int activityId, int userId, string remarks);
     }
 }

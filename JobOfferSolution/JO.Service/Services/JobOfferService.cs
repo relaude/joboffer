@@ -48,28 +48,6 @@ namespace JO.Service.Services
             return (data, totalCount);
         }
 
-        public async Task<int> SetJobOfferStatus(int id, int statusId)
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            var jobOffer = await context.JobOffers.FindAsync(id);
-            jobOffer.MainStatus_Id = statusId;
-
-            context.JobOffers.Update(jobOffer);
-            return await context.SaveChangesAsync();
-        }
-
-        public async Task<int> DeclineJobOffer(int id, int statusId, int reasonId, string otherReason)
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            var jobOffer = await context.JobOffers.FindAsync(id);
-            jobOffer.MainStatus_Id = statusId;
-            jobOffer.DeclineReason_Id = reasonId;
-            jobOffer.OtherDeclineReason = otherReason;
-
-            context.JobOffers.Update(jobOffer);
-            return await context.SaveChangesAsync();
-        }
-
         public async Task<VwJobOffers> GetJobOffer(int id)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
@@ -87,34 +65,48 @@ namespace JO.Service.Services
             decimal signingBonus,
             DateTime offerDate,
             DateTime startDate,
-            string remarks)
+            string remarks,
+            int userId)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
 
             //New JO
             var newJO = new JobOffers
             {
-                CreatedAt = DateTime.Now,
                 Allowance = allowance,
                 BasicSalary = basicSalary,
                 Candidate_Id = candidateId,
                 Department_Id = departmentId,
                 JobOfferNumber = await GenerateTransactionNumber(context),
                 JobPosition_Id = positionId,
-                MainStatus_Id = JOMainStatus.New,
+                MainStatus_Id = JOMainStatus.HRODApproval,
                 OfferDate = offerDate,
                 ProposedStartDate = startDate,
                 Remarks = remarks,
-                SigningBonus = signingBonus
+                SigningBonus = signingBonus,
+                CreatedBy = userId,
+                CreatedAt = DateTime.Now
             };
 
             //Candidate Status
             var candidate = await context.Candidates.FindAsync(candidateId);
             candidate.CandidateStatus_Id = JOCandidateStatus.InProgress;
 
-            //Saves
+
+            // Track both inserts and persist them together.
             await context.JobOffers.AddAsync(newJO);
             context.Candidates.Update(candidate);
+            await context.SaveChangesAsync();
+
+            //Activity Log
+            var newLog = new ActivityLogs
+            {
+                Activity_Id = JOActivity.SubmitJOtoHR,
+                CreatedAt = DateTime.Now,
+                CreatedBy = userId,
+                JobOffer_Id = newJO.Id
+            };
+            await context.ActivityLogs.AddAsync(newLog);
             await context.SaveChangesAsync();
 
             return newJO.Id;
@@ -130,28 +122,14 @@ namespace JO.Service.Services
                 .ToListAsync();
         }
 
-        public async Task<int> ReSubmitReturnedJO(
-            int id, 
-            int positionId, 
-            int departmentId,
-            decimal basicSalary,
-            decimal allowance,
-            decimal signingBonus,
-            DateTime startDate,
-            int modifiedBy)
+        public async Task<IEnumerable<VwActivityLogs>> GetActivityLogs(int id)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
-            var jobOffer = await context.JobOffers.FindAsync(id);
-
-            jobOffer.JobPosition_Id = positionId;
-            jobOffer.Department_Id = departmentId;
-            jobOffer.BasicSalary = basicSalary;
-            jobOffer.Allowance = allowance;
-            jobOffer.SigningBonus = signingBonus;
-            jobOffer.ProposedStartDate = startDate;
-
-            context.JobOffers.Update(jobOffer);
-            return await context.SaveChangesAsync();
+            return await context.VwActivityLogs
+                .AsNoTracking()
+                .Where(x => x.JobOffer_Id == id)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
         }
 
         private async Task<string> GenerateTransactionNumber(JobOfferDbContext context)
