@@ -4,8 +4,17 @@
 <Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
-            <NotAuthorized>
-                @{ Navigation.NavigateTo(JORoutes.Public.Denied); }
+            <NotAuthorized Context="authContext">
+                @{ 
+                    if (authContext.User.Identity?.IsAuthenticated == true)
+                    {
+                        Navigation.NavigateTo(JORoutes.Public.Denied, true);
+                    }
+                    else
+                    {
+                        Navigation.NavigateTo(JORoutes.Public.Landing, true);
+                    }
+                }
             </NotAuthorized>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />

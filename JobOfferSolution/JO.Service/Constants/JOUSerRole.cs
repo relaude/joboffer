@@ -6,6 +6,7 @@ namespace JO.Service.Constants
 {
     public static class JOUserRole
     {
+        public const string All = "Admin,Talent Acquisition,Total Rewards,HR Business Partner,HROD Head,Division Head";
         public const string Admin = "Admin";
         public const string TA = "Talent Acquisition";
         public const string TR = "Total Rewards";

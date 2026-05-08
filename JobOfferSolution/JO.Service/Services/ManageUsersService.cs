@@ -182,6 +182,15 @@ namespace JO.Service.Services
                 : await _userManager.GetRolesAsync(user);
         }
 
+        public async Task<JobOfferUsers?> GetActiveUserByEmail(string email)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.JobOfferUsers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(jo=>jo.IsActive == true && jo.Email==email);
+        }
+
         private async Task EnsureRoleExists(string roleName)
         {
             if (!await _roleManager.RoleExistsAsync(roleName))

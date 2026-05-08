@@ -28,6 +28,7 @@ namespace JO.Service
             services.AddScoped<IHRService, HRService>();
             services.AddScoped<IDHService, DHService>();
             services.AddScoped<ITAService, TAService>();
+            services.AddScoped<ISingleSignOnService, SingleSignOnService>();
 
             return services;
         }

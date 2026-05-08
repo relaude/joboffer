@@ -5,6 +5,7 @@ namespace JO.Service.Services.Contracts
     public interface IManageUsersService
     {
         Task<int> DeactivateUser(int userId);
+        Task<JobOfferUsers?> GetActiveUserByEmail(string email);
         List<string> GetAllRoles();
         Task<List<JobOfferUsers>> GetAllUsersAsync();
         Task<IEnumerable<string>> GetUserRoles(string aspNetUserId);

@@ -1,6 +1,10 @@
-﻿namespace JO.BlazorApp.Components.Pages
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace JO.Service.Constants
 {
-    public static class JORoutes
+    public class JORoutes
     {
         private const string PrefixAdmin = "/admin/manage";
         private const string PrefixTA = "/ta";
@@ -12,6 +16,12 @@
         {
             public const string Login = "/login";
             public const string Denied = "/denied";
+            public const string Landing = "/";
+        }
+
+        public static class Private
+        {
+            public const string Home = "/home";
         }
 
         public static class Transaction
