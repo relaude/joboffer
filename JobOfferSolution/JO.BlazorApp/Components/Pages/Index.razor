@@ -23,6 +23,28 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    private bool _checkedAuth;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _checkedAuth || AuthenticationStateTask is null)
+        {
+            return;
+        }
+
+        _checkedAuth = true;
+
+        var authState = await AuthenticationStateTask;
+
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            NavigationManager.NavigateTo("/home", replace: true);
+        }
+    }
+
     private void Login()
     {
         NavigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn?redirectUri=/home", true);

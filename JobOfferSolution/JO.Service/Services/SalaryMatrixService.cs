@@ -1,0 +1,55 @@
+﻿using JO.DataModel.Entity;
+using JO.DataModel.View;
+using JO.Persistence.DataAccess;
+using JO.Service.Constants;
+using JO.Service.Services.Contracts;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace JO.Service.Services
+{
+    public class SalaryMatrixService : ISalaryMatrixService
+    {
+        private readonly IDbContextFactory<JobOfferDbContext> _contextFactory;
+        public SalaryMatrixService(IDbContextFactory<JobOfferDbContext> contextFactory)
+        {
+            _contextFactory = contextFactory;
+        }
+
+        public async Task<List<VwSalaryMatrixBand>> GetSalaryBands(int matrixId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwSalaryMatrixBand
+                .Where(jo => jo.SalaryMatrixId == matrixId)
+                .ToListAsync();
+        }
+
+        public async Task<VwSalaryMatrix> GetMatrix(int matrixId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwSalaryMatrix.FirstOrDefaultAsync(jo=>jo.Id==matrixId);
+        }
+
+        public async Task<int> CreateMatrix(SalaryMatrix matrix, List<SalaryMatrixBand> salaryBands)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            matrix.CreatedAt = DateTime.Now;
+            matrix.IsActive = true;
+            matrix.ApprovalStatusId = JOSalaryMatrixStatus.PendingApproval;
+
+            await context.SalaryMatrix.AddAsync(matrix);
+            await context.SaveChangesAsync();
+
+            foreach (var item in salaryBands)
+                item.SalaryMatrixId = matrix.Id;
+
+            await context.SalaryMatrixBand.AddRangeAsync(salaryBands);
+            await context.SaveChangesAsync();
+
+            return matrix.Id;
+        }
+    }
+}

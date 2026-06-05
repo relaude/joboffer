@@ -1,7 +1,7 @@
 ﻿@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="@JORoutes.Private.Home">
         <div class="sidebar-brand-text mx-3">Job Offer</div>
     </a>
     <hr class="sidebar-divider my-0">
@@ -29,6 +29,13 @@
                 <a class="nav-link" href="@JORoutes.Admin.Users">
                     <i class="fa-solid fa-user-gear"></i>
                     <span>Users and Roles</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@JORoutes.Admin.SalaryMatrix">
+                    <i class="fa-solid fa-table-cells"></i>
+                    <span>Salary Matrix</span>
                 </a>
             </li>
         }

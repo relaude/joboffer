@@ -17,6 +17,84 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
+        public async Task<List<DropdownDto>> GetDivisionsByCompnayId(int id)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Divisions
+                .AsNoTracking()
+                .Where(jo => jo.CompanyId == id)
+                .OrderBy(jo => jo.DivisionCode)
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = $"{jo.DivisionCode} - {jo.DivisionName}"
+                }).ToListAsync();
+        }
+
+        public async Task<List<DropdownDto>> GetJobPositionGrades()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.JobPositionGrades
+                .AsNoTracking()
+                .OrderBy(jo => jo.PositionGrade)
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = jo.PositionGrade
+                }).ToListAsync();
+        }
+
+        public async Task<List<DropdownDto>> GetJobFamilies()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.JobFamilies
+                .AsNoTracking()
+                .OrderBy(jo => jo.JobFamilyName)
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = jo.JobFamilyName
+                }).ToListAsync();
+        }
+
+        public async Task<List<DropdownDto>> GetJobLevels()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.JobLevels
+                .AsNoTracking()
+                .OrderBy(jo => jo.JobLevelName)
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = jo.JobLevelName
+                }).ToListAsync();
+        }
+
+        public async Task<List<DropdownDto>> GetCurrencies()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Currencies
+                .AsNoTracking()
+                .OrderBy(jo => jo.Currency)
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = $"{jo.Currency} - {jo.Description}"
+                }).ToListAsync();
+        }
+
+        public async Task<List<DropdownDto>> GetCompanies()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Companies
+                .AsNoTracking()
+                .OrderBy(jo => jo.CompanyCode)
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = $"{jo.CompanyCode} - {jo.CompanyName}"
+                }).ToListAsync();
+        }
         public async Task<IEnumerable<DropdownDto>> GetMainStatus()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();

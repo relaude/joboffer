@@ -11,24 +11,40 @@ namespace JO.Persistence.DataAccess
     {
         public JobOfferDbContext(DbContextOptions<JobOfferDbContext> options) : base(options) { }
 
-        //Tables
+        //Candidates
         public DbSet<JobOfferUsers> JobOfferUsers { get; set; }
         public DbSet<Candidates> Candidates { get; set; }
         public DbSet<JobPositions> JobPositions { get; set; }
+        public DbSet<Companies> Companies { get; set; }
+        public DbSet<Divisions> Divisions { get; set; }
         public DbSet<Departments> Departments { get; set; }
         public DbSet<JobOffers> JobOffers { get; set; }
+
+        //Status
         public DbSet<MainStatus> MainStatus { get; set; }
         public DbSet<CandidateStatus> CandidateStatus { get; set; }
+
+        //Logs
         public DbSet<DeclineReasons> DeclineReasons { get; set; }
         public DbSet<ReturnReasons> ReturnReasons { get; set; }
         public DbSet<ReturnLogs> ReturnLogs { get; set; }
         public DbSet<ActivityLogs> ActivityLogs { get; set; }
+
+        //Salary
+        public DbSet<SalaryMatrix> SalaryMatrix { get; set; }
+        public DbSet<SalaryMatrixBand> SalaryMatrixBand { get; set; }
+        public DbSet<Currencies> Currencies { get; set; }
+        public DbSet<JobLevels> JobLevels { get; set; }
+        public DbSet<JobFamilies> JobFamilies { get; set; }
+        public DbSet<JobPositionGrades> JobPositionGrades { get; set; }
 
         //Views
         public DbSet<VwCandidates> VwCandidates { get; set; }
         public DbSet<VwJobOffers> VwJobOffers { get; set; }
         public DbSet<VwReturnLogs> VwReturnLogs { get; set; }
         public DbSet<VwActivityLogs> VwActivityLogs { get; set; }
+        public DbSet<VwSalaryMatrix> VwSalaryMatrix { get; set; }
+        public DbSet<VwSalaryMatrixBand> VwSalaryMatrixBand { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +52,8 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwJobOffers>().HasNoKey().ToView("vw_JobOffers");
             modelBuilder.Entity<VwReturnLogs>().HasNoKey().ToView("vw_ReturnLogs");
             modelBuilder.Entity<VwActivityLogs>().HasNoKey().ToView("vw_ActivityLogs");
+            modelBuilder.Entity<VwSalaryMatrix>().HasNoKey().ToView("vw_SalaryMatrix");
+            modelBuilder.Entity<VwSalaryMatrixBand>().HasNoKey().ToView("vw_SalaryMatrixBand");
         }
     }
 }

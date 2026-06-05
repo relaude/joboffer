@@ -1,0 +1,430 @@
+﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.SalaryMatrixNew)]
+
+@inject IDropDownListService DropDownListService
+@inject IAccountService AccountService
+@inject IAlertService AlertService
+@inject ISalaryMatrixService SalaryMatrixService
+
+@inject NavigationManager Navigation
+
+<div class="card shadow border-left-primary mb-4 small">
+    <div class="card-header py-3">
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary d-flex align-items-center">
+                <i class="fas fa-table fa-fw text-primary mr-2"></i>
+                Create Salary Matrix
+            </h6>
+
+            <a href="@JORoutes.Admin.SalaryMatrix"
+               class="btn btn-sm btn-outline-secondary mt-2 mt-md-0">
+                <i class="fas fa-arrow-left fa-fw mr-1"></i>
+                Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-light border-left-info mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle fa-fw text-info mr-2"></i>
+                <span>Define the matrix details and add salary bands for each job profile.</span>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-gray-800">
+                    <i class="fas fa-file-alt fa-fw text-primary mr-2"></i>
+                    Matrix Details
+                </h6>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="pr-lg-3">
+                            <div class="form-group">
+                                <label for="company">Company <span class="text-danger">*</span></label>
+                                <select id="company"
+                                        class="form-control form-control-sm"
+                                        value="@salaryMatrix.CompanyId"
+                                        @onchange="OnCompanyChanged">
+                                    <option value="">Select company</option>
+                                    @foreach (var option in companies)
+                                    {
+                                        <option value="@option.Id">@option.Value</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="division">Division <span class="text-danger">*</span></label>
+                                <select id="division" class="form-control form-control-sm" @bind="salaryMatrix.DivisionId">
+                                    <option value="">Select division</option>
+                                    @foreach (var option in divisions)
+                                    {
+                                        <option value="@option.Id">@option.Value</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-lg-0">
+                                <label for="currency">Currency <span class="text-danger">*</span></label>
+                                <select id="currency" class="form-control form-control-sm" @bind="salaryMatrix.CurrencyId">
+                                    <option value="">Select currency</option>
+                                    @foreach (var option in currencies)
+                                    {
+                                        <option value="@option.Id">@option.Value</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mt-3 mt-lg-0">
+                        <div class="pl-lg-3">
+                            <div class="form-group">
+                                <label for="matrix-name">Matrix Name <span class="text-danger">*</span></label>
+                                <input id="matrix-name"
+                                       type="text"
+                                       class="form-control form-control-sm"
+                                       placeholder="e.g. Corporate Professional"
+                                       @bind="salaryMatrix.MatrixName" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="matrix-code">Matrix Code <span class="text-danger">*</span></label>
+                                <input id="matrix-code"
+                                       type="text"
+                                       class="form-control form-control-sm"
+                                       placeholder="e.g. CORP-PRO-2026"
+                                       @bind="salaryMatrix.MatrixCode" />
+                            </div>
+
+                            <div class="form-group mb-0">
+                                <label>Effective Date <span class="text-danger">*</span></label>
+                                <div class="d-flex flex-column flex-sm-row align-items-sm-center">
+                                    <input id="effective-from"
+                                           type="date"
+                                           title="Effective from"
+                                           class="form-control form-control-sm"
+                                           @bind="salaryMatrix.EffectiveFrom"
+                                           @bind:format="yyyy-MM-dd" />
+                                    <span class="text-muted text-center mx-sm-2 my-1 my-sm-0">to</span>
+                                    <input id="effective-to"
+                                           type="date"
+                                           title="Effective to"
+                                           class="form-control form-control-sm"
+                                           @bind="salaryMatrix.EffectiveTo"
+                                           @bind:format="yyyy-MM-dd" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* <div class="custom-control custom-checkbox">
+                    <input id="is-active"
+                           type="checkbox"
+                           class="custom-control-input"
+                           @bind="salaryMatrix.IsActive" />
+                    <label class="custom-control-label" for="is-active">Active matrix</label>
+                </div> *@
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header py-3">
+                <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+                    <div>
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-layer-group fa-fw text-primary mr-2"></i>
+                            Salary Bands
+                        </h6>
+                        <small class="text-muted">Add one row for each eligible job profile.</small>
+                    </div>
+
+                    <button type="button"
+                            class="btn btn-sm btn-outline-primary mt-2 mt-md-0"
+                            @onclick="AddBand">
+                        <i class="fas fa-plus fa-fw mr-1"></i>
+                        Add Band
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm text-nowrap mb-0">
+                        <thead class="thead-light text-center">
+                            <tr>
+                                <th>Job Level</th>
+                                <th>Job Family</th>
+                                <th>Position Grade</th>
+                                <th>Minimum</th>
+                                <th>Midpoint</th>
+                                <th>Maximum</th>
+                                @* <th title="Flag offers below the salary band.">Below Flag</th>
+                                <th title="Flag offers above the salary band.">Above Flag</th> *@
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (salaryBands.Any())
+                            {
+                                @foreach (var band in salaryBands)
+                                {
+                                    <tr @key="band">
+                                        <td>
+                                            <select class="form-control form-control-sm" @bind="band.JobLevelId">
+                                                <option value="">Select level</option>
+                                                @foreach (var option in jobLevels)
+                                                {
+                                                    <option value="@option.Id">@option.Value</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control form-control-sm" @bind="band.JobFamilyId">
+                                                <option value="">Select family</option>
+                                                @foreach (var option in jobFamilies)
+                                                {
+                                                    <option value="@option.Id">@option.Value</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control form-control-sm" @bind="band.PositionGradeId">
+                                                <option value="">Select grade</option>
+                                                @foreach (var option in positionGrades)
+                                                {
+                                                    <option value="@option.Id">@option.Value</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="number"
+                                                   class="form-control form-control-sm text-right"
+                                                   min="0"
+                                                   step="1000"
+                                                   @bind="band.BandMinimum" />
+                                        </td>
+                                        <td>
+                                            <input type="number"
+                                                   class="form-control form-control-sm text-right"
+                                                   min="0"
+                                                   step="1000"
+                                                   @bind="band.BandMidpoint" />
+                                        </td>
+                                        <td>
+                                            <input type="number"
+                                                   class="form-control form-control-sm text-right"
+                                                   min="0"
+                                                   step="1000"
+                                                   @bind="band.BandMaximum" />
+                                        </td>
+                                        @* <td class="text-center align-middle">
+                                            <input type="checkbox"
+                                                   title="Enable below-band flag"
+                                                   @bind="band.BelowBandFlagEnabled" />
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <input type="checkbox"
+                                                   title="Enable above-band flag"
+                                                   @bind="band.AboveBandFlagEnabled" />
+                                        </td> *@
+                                        <td class="text-center align-middle">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link text-danger p-0"
+                                                    title="Remove band"
+                                                    @onclick="() => RemoveBand(band)">
+                                                <i class="fas fa-trash-alt fa-fw"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-3">
+                                        <i class="fas fa-info-circle fa-fw mr-1"></i>
+                                        No salary bands added yet.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row justify-content-end">
+            <a href="@JORoutes.Admin.SalaryMatrix"
+               class="btn btn-sm btn-outline-secondary mb-2 mb-sm-0 mr-sm-2">
+                Cancel
+            </a>
+            <button type="button" class="btn btn-sm btn-primary" @onclick="SaveMatrix">
+                <i class="fas fa-save fa-fw mr-1"></i>
+                Save Matrix
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly SalaryMatrix salaryMatrix = new()
+    {
+        CompanyId = 1,
+        DivisionId = 0,
+        MatrixName = "",
+        MatrixCode = "",
+        CurrencyId = 1,
+        EffectiveFrom = DateTime.Now,
+        EffectiveTo = DateTime.Now.AddMonths(1),
+        ApprovalStatusId = 0,
+        IsActive = true
+    };
+
+    private readonly List<SalaryMatrixBand> salaryBands = new();
+
+    private List<DropdownDto> companies = new();
+    private List<DropdownDto> divisions = new();
+    private List<DropdownDto> currencies = new();
+    private List<DropdownDto> jobLevels = new();
+    private List<DropdownDto> jobFamilies = new();
+    private List<DropdownDto> positionGrades = new();
+
+    private int userId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        companies = await DropDownListService.GetCompanies();
+        currencies = await DropDownListService.GetCurrencies();
+        jobLevels = await DropDownListService.GetJobLevels();
+        jobFamilies = await DropDownListService.GetJobFamilies();
+        positionGrades = await DropDownListService.GetJobPositionGrades();
+
+        var selectedCompanyId = salaryMatrix.CompanyId ?? companies.FirstOrDefault()?.Id;
+        if (selectedCompanyId.HasValue)
+            divisions = await DropDownListService.GetDivisionsByCompnayId(selectedCompanyId.Value);
+        
+        userId = await AccountService.GetJobOfferUserId();
+        salaryMatrix.CreatedBy = userId;
+    }
+
+    private async Task SaveMatrix()
+    {
+        var errors = CollectErrors(new List<string>());
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        if (!await AlertService.Confirm()) return;
+
+        int matrixId = await SalaryMatrixService.CreateMatrix(salaryMatrix, salaryBands);
+        Navigation.NavigateTo($"{JORoutes.Admin.SalaryMatrix}/{matrixId}");
+    }
+
+    private List<string> CollectErrors(List<string> errors)
+    {
+        if (!salaryMatrix.CompanyId.HasValue || salaryMatrix.CompanyId <= 0)
+            errors.Add("Company is required.");
+
+        if (!salaryMatrix.DivisionId.HasValue || salaryMatrix.DivisionId <= 0)
+            errors.Add("Division is required.");
+
+        if (!salaryMatrix.CurrencyId.HasValue || salaryMatrix.CurrencyId <= 0)
+            errors.Add("Currency is required.");
+
+        if (string.IsNullOrWhiteSpace(salaryMatrix.MatrixName))
+            errors.Add("Matrix Name is required.");
+
+        if (string.IsNullOrWhiteSpace(salaryMatrix.MatrixCode))
+            errors.Add("Matrix Code is required.");
+
+        if (!salaryMatrix.EffectiveFrom.HasValue)
+            errors.Add("Effective Date From is required.");
+
+        if (!salaryMatrix.EffectiveTo.HasValue)
+            errors.Add("Effective Date To is required.");
+
+        if (!salaryBands.Any())
+            errors.Add("Please add at least one salary band.");
+        else
+            CollectSalaryBandErrors(errors);
+
+        return errors;
+    }
+
+    private void CollectSalaryBandErrors(List<string> errors)
+    {
+        for (var index = 0; index < salaryBands.Count; index++)
+        {
+            var band = salaryBands[index];
+            var rowNumber = index + 1;
+
+            if (!band.JobLevelId.HasValue || band.JobLevelId <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Job Level is required.");
+
+            if (!band.JobFamilyId.HasValue || band.JobFamilyId <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Job Family is required.");
+
+            if (!band.PositionGradeId.HasValue || band.PositionGradeId <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Position Grade is required.");
+
+            if (!band.BandMinimum.HasValue || band.BandMinimum <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Minimum amount is required.");
+
+            if (!band.BandMidpoint.HasValue || band.BandMidpoint <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Midpoint amount is required.");
+
+            if (!band.BandMaximum.HasValue || band.BandMaximum <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Maximum amount is required.");
+
+            if (band.BandMinimum.HasValue
+                && band.BandMidpoint.HasValue
+                && band.BandMaximum.HasValue
+                && band.BandMinimum > 0
+                && band.BandMidpoint > 0
+                && band.BandMaximum > 0
+                && !(band.BandMinimum < band.BandMidpoint && band.BandMidpoint < band.BandMaximum))
+            {
+                errors.Add($"Salary Band Row {rowNumber}: Minimum, Midpoint, and Maximum must be in ascending order.");
+            }
+        }
+    }
+
+    private async Task OnCompanyChanged(ChangeEventArgs e)
+    {
+        salaryMatrix.CompanyId = int.TryParse(e.Value?.ToString(), out var companyId)
+            ? companyId
+            : null;
+
+        salaryMatrix.DivisionId = null;
+        divisions.Clear();
+
+        if (salaryMatrix.CompanyId.HasValue)
+            divisions = await DropDownListService.GetDivisionsByCompnayId(salaryMatrix.CompanyId.Value);
+    }
+
+    private void AddBand()
+    {
+        salaryBands.Add(new SalaryMatrixBand
+        {
+            BelowBandFlagEnabled = true,
+            AboveBandFlagEnabled = true,
+            CreatedBy = userId,
+            CreatedAt = DateTime.Now
+        });
+    }
+
+    private void RemoveBand(SalaryMatrixBand band)
+    {
+        salaryBands.Remove(band);
+    }
+}

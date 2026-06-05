@@ -6,7 +6,7 @@ namespace JO.Service.Constants
 {
     public class JORoutes
     {
-        private const string PrefixAdmin = "/admin/manage";
+        private const string PrefixAdmin = "/admin";
         private const string PrefixTA = "/ta";
         private const string PrefixJobOffer = "/joboffer";
         private const string PrefixHROD = "/hrod";
@@ -32,6 +32,8 @@ namespace JO.Service.Constants
         public static class Admin
         {
             public const string Users = PrefixAdmin + "/users";
+            public const string SalaryMatrix = PrefixAdmin + "/salary-matrix";
+            public const string SalaryMatrixNew = PrefixAdmin + "/salary-matrix/new";
         }
 
         public static class TA

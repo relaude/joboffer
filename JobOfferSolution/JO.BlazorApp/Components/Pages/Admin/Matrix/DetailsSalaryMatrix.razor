@@ -1,0 +1,17 @@
+﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.SalaryMatrix + "/{matrixId:int}")]
+
+@inject ISalaryMatrixService SalaryMatrixService
+
+@code {
+    [Parameter] public int matrixId { get; set; }
+
+    private VwSalaryMatrix matrix = new();
+    private List<VwSalaryMatrixBand> salaryBands = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        matrix = await SalaryMatrixService.GetMatrix(matrixId);
+        salaryBands = await SalaryMatrixService.GetSalaryBands(matrixId);
+    }
+}

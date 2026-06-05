@@ -1,0 +1,184 @@
+﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.SalaryMatrix)]
+
+<div class="card shadow border-left-primary mb-4 small">
+    <div class="card-header py-3">
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary d-flex align-items-center">
+                <i class="fa-solid fa-table-cells fa-fw text-primary mr-2"></i>
+                Salary Matrix
+            </h6>
+
+            <a href="@JORoutes.Admin.SalaryMatrixNew" class="btn btn-sm btn-primary mt-2 mt-md-0">
+                <i class="fa-solid fa-plus fa-fw mr-1"></i>
+                New Matrix
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card border-left-primary h-100 py-2">
+                    <div class="card-body py-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Matrices</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@salaryMatrices.Count</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card border-left-success h-100 py-2">
+                    <div class="card-body py-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@salaryMatrices.Count(x => x.IsActive == true)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card border-left-warning h-100 py-2">
+                    <div class="card-body py-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Approval</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@salaryMatrices.Count(x => x.ApprovalStatusId == 1)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <h6 class="font-weight-bold text-gray-800 mb-1">Matrix List</h6>
+            <p class="text-muted mb-0">Manage salary structures, currencies, and effective periods.</p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-sm text-nowrap mb-0">
+                <thead class="thead-light text-center">
+                    <tr>
+                        <th>Matrix Name</th>
+                        <th>Code</th>
+                        <th>Currency</th>
+                        <th>Effective From</th>
+                        <th>Effective To</th>
+                        <th>Approval Status</th>
+                        <th>Active</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in salaryMatrices)
+                    {
+                        <tr>
+                            <td class="font-weight-bold text-gray-800">@item.MatrixName</td>
+                            <td>@item.MatrixCode</td>
+                            <td class="text-center">@GetCurrencyCode(item.CurrencyId)</td>
+                            <td class="text-center">@FormatDate(item.EffectiveFrom)</td>
+                            <td class="text-center">@FormatDate(item.EffectiveTo)</td>
+                            <td class="text-center">
+                                <span class="badge @GetApprovalBadgeClass(item.ApprovalStatusId)">
+                                    @GetApprovalStatus(item.ApprovalStatusId)
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge @(item.IsActive == true ? "badge-success" : "badge-secondary")">
+                                    @(item.IsActive == true ? "Yes" : "No")
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a href="@($"{JORoutes.Admin.SalaryMatrix}?edit={item.Id}")"
+                                   class="text-primary"
+                                   style="text-decoration: none;">
+                                    <i class="fa-solid fa-pen-to-square fa-fw mr-1"></i>
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<SalaryMatrix> salaryMatrices =
+    [
+        new()
+        {
+            Id = 1,
+            CompanyId = 1,
+            MatrixName = "Corporate Professional",
+            MatrixCode = "CORP-PRO-2026",
+            CurrencyId = 1,
+            EffectiveFrom = new DateTime(2026, 1, 1),
+            EffectiveTo = new DateTime(2026, 12, 31),
+            ApprovalStatusId = 2,
+            IsActive = true,
+            ApprovedByUserId = 1001,
+            ApprovedAt = new DateTime(2025, 12, 15)
+        },
+        new()
+        {
+            Id = 2,
+            CompanyId = 1,
+            MatrixName = "Technology & Engineering",
+            MatrixCode = "TECH-ENG-2026",
+            CurrencyId = 1,
+            EffectiveFrom = new DateTime(2026, 3, 1),
+            EffectiveTo = new DateTime(2027, 2, 28),
+            ApprovalStatusId = 2,
+            IsActive = true,
+            ApprovedByUserId = 1001,
+            ApprovedAt = new DateTime(2026, 2, 10)
+        },
+        new()
+        {
+            Id = 3,
+            CompanyId = 2,
+            MatrixName = "APAC Regional",
+            MatrixCode = "APAC-REG-2026",
+            CurrencyId = 2,
+            EffectiveFrom = new DateTime(2026, 7, 1),
+            EffectiveTo = new DateTime(2027, 6, 30),
+            ApprovalStatusId = 1,
+            IsActive = false
+        },
+        new()
+        {
+            Id = 4,
+            CompanyId = 1,
+            MatrixName = "Operations & Support",
+            MatrixCode = "OPS-SUP-2025",
+            CurrencyId = 1,
+            EffectiveFrom = new DateTime(2025, 1, 1),
+            EffectiveTo = new DateTime(2025, 12, 31),
+            ApprovalStatusId = 3,
+            IsActive = false
+        }
+    ];
+
+    private static string FormatDate(DateTime? date) => date?.ToString("dd MMM yyyy") ?? "-";
+
+    private static string GetCurrencyCode(int? currencyId) => currencyId switch
+    {
+        1 => "USD",
+        2 => "CNY",
+        _ => "-"
+    };
+
+    private static string GetApprovalStatus(int? approvalStatusId) => approvalStatusId switch
+    {
+        1 => "Pending",
+        2 => "Approved",
+        3 => "Expired",
+        _ => "Draft"
+    };
+
+    private static string GetApprovalBadgeClass(int? approvalStatusId) => approvalStatusId switch
+    {
+        1 => "badge-warning",
+        2 => "badge-success",
+        3 => "badge-secondary",
+        _ => "badge-light"
+    };
+}
