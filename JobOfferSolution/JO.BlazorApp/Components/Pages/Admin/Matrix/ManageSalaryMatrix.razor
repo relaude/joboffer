@@ -1,6 +1,8 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
 @attribute [Route(JORoutes.Admin.SalaryMatrix)]
 
+@inject ISalaryMatrixService SalaryMatrixService
+
 <div class="card shadow border-left-primary mb-4 small">
     <div class="card-header py-3">
         <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
@@ -66,31 +68,59 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in salaryMatrices)
+                    @if (isLoading)
                     {
                         <tr>
-                            <td class="font-weight-bold text-gray-800">@item.MatrixName</td>
-                            <td>@item.MatrixCode</td>
-                            <td class="text-center">@GetCurrencyCode(item.CurrencyId)</td>
-                            <td class="text-center">@FormatDate(item.EffectiveFrom)</td>
-                            <td class="text-center">@FormatDate(item.EffectiveTo)</td>
-                            <td class="text-center">
-                                <span class="badge @GetApprovalBadgeClass(item.ApprovalStatusId)">
-                                    @GetApprovalStatus(item.ApprovalStatusId)
-                                </span>
+                            <td colspan="8" class="text-center text-muted py-3">
+                                <i class="fas fa-spinner fa-spin fa-fw mr-1"></i>
+                                Loading salary matrices...
                             </td>
-                            <td class="text-center">
-                                <span class="badge @(item.IsActive == true ? "badge-success" : "badge-secondary")">
-                                    @(item.IsActive == true ? "Yes" : "No")
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <a href="@($"{JORoutes.Admin.SalaryMatrix}?edit={item.Id}")"
-                                   class="text-primary"
-                                   style="text-decoration: none;">
-                                    <i class="fa-solid fa-pen-to-square fa-fw mr-1"></i>
-                                    Edit
-                                </a>
+                        </tr>
+                    }
+                    else if (salaryMatrices.Any())
+                    {
+                        @foreach (var item in salaryMatrices)
+                        {
+                            <tr @key="item.Id">
+                                <td class="font-weight-bold text-gray-800">@DisplayText(item.MatrixName)</td>
+                                <td>@DisplayText(item.MatrixCode)</td>
+                                <td class="text-center">@DisplayText(item.Currency)</td>
+                                <td class="text-center">@FormatDate(item.EffectiveFrom)</td>
+                                <td class="text-center">@FormatDate(item.EffectiveTo)</td>
+                                <td class="text-center">
+                                    <span class="badge @GetApprovalBadgeClass(item.ApprovalStatusId)">
+                                        @DisplayText(item.StatusName)
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge @(item.IsActive == true ? "badge-success" : "badge-secondary")">
+                                        @(item.IsActive == true ? "Yes" : "No")
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="@($"{JORoutes.Admin.SalaryMatrix}/{item.Id}")"
+                                       class="text-primary"
+                                       style="text-decoration: none;">
+                                        <i class="fa-solid fa-eye fa-fw mr-1"></i>
+                                        View
+                                    </a>
+                                    <span class="text-muted mx-1">|</span>
+                                    <a href="@($"{JORoutes.Admin.SalaryMatrix}?edit={item.Id}")"
+                                       class="text-primary"
+                                       style="text-decoration: none;">
+                                        <i class="fa-solid fa-pen-to-square fa-fw mr-1"></i>
+                                        Edit
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-3">
+                                <i class="fas fa-info-circle fa-fw mr-1"></i>
+                                No salary matrices found.
                             </td>
                         </tr>
                     }
@@ -101,78 +131,21 @@
 </div>
 
 @code {
-    private readonly List<SalaryMatrix> salaryMatrices =
-    [
-        new()
-        {
-            Id = 1,
-            CompanyId = 1,
-            MatrixName = "Corporate Professional",
-            MatrixCode = "CORP-PRO-2026",
-            CurrencyId = 1,
-            EffectiveFrom = new DateTime(2026, 1, 1),
-            EffectiveTo = new DateTime(2026, 12, 31),
-            ApprovalStatusId = 2,
-            IsActive = true,
-            ApprovedByUserId = 1001,
-            ApprovedAt = new DateTime(2025, 12, 15)
-        },
-        new()
-        {
-            Id = 2,
-            CompanyId = 1,
-            MatrixName = "Technology & Engineering",
-            MatrixCode = "TECH-ENG-2026",
-            CurrencyId = 1,
-            EffectiveFrom = new DateTime(2026, 3, 1),
-            EffectiveTo = new DateTime(2027, 2, 28),
-            ApprovalStatusId = 2,
-            IsActive = true,
-            ApprovedByUserId = 1001,
-            ApprovedAt = new DateTime(2026, 2, 10)
-        },
-        new()
-        {
-            Id = 3,
-            CompanyId = 2,
-            MatrixName = "APAC Regional",
-            MatrixCode = "APAC-REG-2026",
-            CurrencyId = 2,
-            EffectiveFrom = new DateTime(2026, 7, 1),
-            EffectiveTo = new DateTime(2027, 6, 30),
-            ApprovalStatusId = 1,
-            IsActive = false
-        },
-        new()
-        {
-            Id = 4,
-            CompanyId = 1,
-            MatrixName = "Operations & Support",
-            MatrixCode = "OPS-SUP-2025",
-            CurrencyId = 1,
-            EffectiveFrom = new DateTime(2025, 1, 1),
-            EffectiveTo = new DateTime(2025, 12, 31),
-            ApprovalStatusId = 3,
-            IsActive = false
-        }
-    ];
+    private List<VwSalaryMatrix> salaryMatrices = new();
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        salaryMatrices = await SalaryMatrixService.GetMatrixList();
+        isLoading = false;
+    }
 
     private static string FormatDate(DateTime? date) => date?.ToString("dd MMM yyyy") ?? "-";
 
-    private static string GetCurrencyCode(int? currencyId) => currencyId switch
+    private static string DisplayText(string? value)
     {
-        1 => "USD",
-        2 => "CNY",
-        _ => "-"
-    };
-
-    private static string GetApprovalStatus(int? approvalStatusId) => approvalStatusId switch
-    {
-        1 => "Pending",
-        2 => "Approved",
-        3 => "Expired",
-        _ => "Draft"
-    };
+        return string.IsNullOrWhiteSpace(value) ? "-" : value;
+    }
 
     private static string GetApprovalBadgeClass(int? approvalStatusId) => approvalStatusId switch
     {

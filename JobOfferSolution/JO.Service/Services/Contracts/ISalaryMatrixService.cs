@@ -7,6 +7,8 @@ namespace JO.Service.Services.Contracts
     {
         Task<int> CreateMatrix(SalaryMatrix matrix, List<SalaryMatrixBand> salaryBands);
         Task<VwSalaryMatrix> GetMatrix(int matrixId);
+        Task<List<VwSalaryMatrix>> GetMatrixList();
         Task<List<VwSalaryMatrixBand>> GetSalaryBands(int matrixId);
+        Task<int> UpdateMatrixEffectiveDate(int matrixId, DateTime effectiveTo, bool isActive, int modifiedBy);
     }
 }

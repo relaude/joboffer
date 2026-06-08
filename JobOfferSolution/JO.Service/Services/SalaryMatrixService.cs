@@ -32,6 +32,12 @@ namespace JO.Service.Services
             return await context.VwSalaryMatrix.FirstOrDefaultAsync(jo=>jo.Id==matrixId);
         }
 
+        public async Task<List<VwSalaryMatrix>> GetMatrixList()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwSalaryMatrix.AsNoTracking().ToListAsync();
+        }
+
         public async Task<int> CreateMatrix(SalaryMatrix matrix, List<SalaryMatrixBand> salaryBands)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
@@ -50,6 +56,30 @@ namespace JO.Service.Services
             await context.SaveChangesAsync();
 
             return matrix.Id;
+        }
+
+        public async Task<int> UpdateMatrixEffectiveDate(int matrixId,
+            DateTime effectiveTo,
+            bool isActive,
+            int modifiedBy)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var entity = await context.SalaryMatrix.FindAsync(matrixId);
+
+            if (entity == null)
+                return 0;
+
+            entity.IsActive = isActive;
+
+            if (isActive)
+            {
+                entity.EffectiveTo = effectiveTo;
+                entity.ModifiedBy = modifiedBy;
+                entity.ModifiedAt = DateTime.Now;
+            }
+
+            return await context.SaveChangesAsync();
         }
     }
 }

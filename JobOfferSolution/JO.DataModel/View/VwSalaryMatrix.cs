@@ -27,6 +27,10 @@ namespace JO.DataModel.View
         public string? CompanyName { get; set; }
         public string? DivisionName { get; set; }
         public string? CurrencyName { get; set; }
+        public string? Currency { get; set; }
         public string? StatusName { get; set; }
+        public string? ApproverName { get; set; }
+        public string? CreatedByName { get; set; }
+        public string? ModifiedByName { get; set; }
     }
 }
