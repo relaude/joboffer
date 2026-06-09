@@ -94,5 +94,20 @@
     <Build Include="dbo\Tables\Activities.sql" />
     <Build Include="dbo\Views\vw_ReturnLogs.sql" />
     <Build Include="dbo\Views\vw_ActivityLogs.sql" />
+    <Build Include="dbo\Tables\SalaryMatrixStatus.sql" />
+    <Build Include="dbo\Tables\SalaryMatrixBand.sql" />
+    <Build Include="dbo\Tables\SalaryMatrix.sql" />
+    <Build Include="dbo\Tables\JobPositionGrades.sql" />
+    <Build Include="dbo\Tables\JobOfferCompensations.sql" />
+    <Build Include="dbo\Tables\JobOfferBenefits.sql" />
+    <Build Include="dbo\Tables\JobLevels.sql" />
+    <Build Include="dbo\Tables\JobFamilies.sql" />
+    <Build Include="dbo\Tables\Currencies.sql" />
+    <Build Include="dbo\Tables\CandidateDocuments.sql" />
+    <Build Include="dbo\Tables\CandidateCompensationProfile.sql" />
+    <Build Include="dbo\Tables\CandidateApplications.sql" />
+    <Build Include="dbo\Tables\Benefits.sql" />
+    <Build Include="dbo\Views\vw_SalaryMatrixBand.sql" />
+    <Build Include="dbo\Views\vw_SalaryMatrix.sql" />
   </ItemGroup>
 </Project>
