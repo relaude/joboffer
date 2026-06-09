@@ -44,6 +44,7 @@ namespace JO.Service.Constants
             public const string Accept = PrefixTA + "/joboffer/accept";
             public const string Return = PrefixTA + "/joboffer/return";
             public const string Email = PrefixTA + "/email";
+            public const string MassUpload = PrefixTA + "/mass-upload";
         }
 
         public static class HROD
