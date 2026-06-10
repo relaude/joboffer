@@ -1,6 +1,342 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
 @attribute [Route(JORoutes.TA.MassUpload)]
 
-@code {
+@inject IAlertService AlertService
+@inject IMassUploadService MassUploadService
+@inject IAccountService AccountService
 
+<div class="card shadow-sm border-left-primary mb-4 small">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="mb-1">
+                    <i class="fas fa-file-import text-primary mr-2"></i>
+                    Candidate Mass Upload
+                </h6>
+
+                <p class="text-muted mb-0">
+                    Upload multiple candidate records using the standard Excel template.
+                </p>
+            </div>
+
+            <div>
+                <a href="/template/candidate-massupload.xlsx" target="_blank" class="btn btn-outline-success mr-2 btn-sm">
+                    <i class="fas fa-download"></i>
+                    Download Template
+                </a>
+
+                <button class="btn btn-primary btn-sm"
+                        @onclick="()=> modalReadExcel.Show()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Upload File
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card border-left-primary shadow-sm small">
+            <div class="card-body">
+                <h4>@tempData.Count()</h4>
+                <small>Total Records</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-left-success shadow-sm small">
+            <div class="card-body">
+                <h4>@tempData.Where(jo=>jo.HasErrors == false).Count()</h4>
+                <small>Valid Records</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-left-danger shadow-sm small">
+            <div class="card-body">
+                <h4>@tempData.Where(jo => jo.HasErrors == true).Count()</h4>
+                <small>Validation Errors</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mt-4 small">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-success">
+            <i class="fas fa-users mr-2"></i>
+            Ready for Import
+        </h6>
+    </div>
+
+    <div class="card-body table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Candidate Name</th>
+                    <th>Email</th>
+                    <th>Contact No.</th>
+                    <th>Position Applied</th>
+                    <th>Expected Salary</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (tempData.Any())
+                {
+                    @foreach(var item in tempData.Where(jo=>jo.HasErrors == false))
+                    {
+                        <tr>
+                            <td>@($"{item.FirstName} {item.LastName}")</td>
+                            <td>@item.Email</td>
+                            <td>@item.ContactNumber</td>
+                            <td>@item.PositionAppliedFor</td>
+                            <td>@item.ExpectedSalary</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="99" class="text-center text-muted">
+                            <i class="fas fa-info-circle mr-1"></i> No records found.
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer text-right">
+        <button class="btn btn-success btn-sm">
+            <i class="fas fa-save"></i>
+            Save Candidates
+        </button>
+    </div>
+</div>
+
+<div class="card shadow mt-4 small">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-danger">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            Validation Errors
+        </h6>
+    </div>
+
+    <div class="card-body table-responsive">
+        <table class="table table-striped table-hover tbl-sm table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Candidate Name</th>
+                    <th>Email</th>
+                    <th>Errors</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (tempData.Any())
+                {
+                    @foreach (var item in tempData.Where(jo => jo.HasErrors == true))
+                    {
+                        <tr>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-sm btn-link text-primary p-0 align-baseline"
+                                        style="text-decoration: none;"
+                                        @onclick="() => ShowCandidateModal(item)">
+                                    @($"{item.FirstName} {item.LastName}")
+                                </button>
+                            </td>
+                            <td>@item.Email</td>
+                            <td>
+                                <div class="alert alert-danger py-2 px-3 mb-0">
+                                    <ul class="mb-0 pl-3 text-wrap">
+                                        @foreach (var error in GetErrorMessages(item.Errors))
+                                        {
+                                            <li>@error</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="99" class="text-center text-muted">
+                            <i class="fas fa-info-circle mr-1"></i> No records found.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<Modal @ref="modalReadExcel" Title="Excel File">
+    <ChildContent>
+        <InputFile OnChange="OnExcelFileSelected"
+                   accept=".xlsx,.xls"
+                   class="form-control-file" />
+    </ChildContent>
+    <FooterTemplate>
+        <button type="button" class="btn btn-sm btn-success"
+                disabled="@(_selectedExcelFile is null || _isReadingExcel)"
+                @onclick="() => ReadAndSaveExcelItems()">
+            <i class="fas fa-upload fa-sm text-white-50 mr-1"></i>Read and Save Items
+        </button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="modalCandidate">
+    <ChildContent>
+
+    </ChildContent>
+    <FooterTemplate>
+
+    </FooterTemplate>
+</Modal>
+
+@code {
+    private Modal modalReadExcel = default!;
+    private Modal modalCandidate = default!;
+
+    private IBrowserFile? _selectedExcelFile;
+    private bool _isReadingExcel;
+    private const long MaxExcelFileSize = 10 * 1024 * 1024; //10MB
+
+    private int userId = 0;
+    private int logId = 0;
+    private List<CandidateTempData> tempData = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        userId = await AccountService.GetJobOfferUserId();
+    }
+
+    private async Task FillTempData()
+    {
+        tempData.Clear();
+        tempData = await MassUploadService.GetCandidateTempData();
+        logId = tempData.FirstOrDefault().MassUploadLogId.Value;
+    }
+
+    private void ShowCandidateModal(CandidateTempData item)
+    {
+        modalCandidate.Title = $"{item.FirstName} {item.LastName}";
+        modalCandidate.Show();
+    }
+
+    private async Task ReadAndSaveExcelItems()
+    {
+        var errors = new List<string>();
+
+        if (_selectedExcelFile is null)
+        {
+            errors.Add("Please select an Excel file.");
+        }
+        else
+        {
+            if (!IsExcelFile(_selectedExcelFile))
+            {
+                errors.Add("Selected file must be an Excel file.");
+            }
+
+            if (_selectedExcelFile.Size > MaxExcelFileSize)
+            {
+                errors.Add($"File size must not exceed {MaxExcelFileSize / 1024 / 1024}MB.");
+            }
+        }
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        _isReadingExcel = true;
+
+        try
+        {
+            await using var stream = _selectedExcelFile.OpenReadStream(MaxExcelFileSize);
+            await MassUploadService.SaveExcelRowItems(stream, userId);
+            await FillTempData();
+            modalReadExcel.Close();
+        }
+        finally
+        {
+            _isReadingExcel = false;
+        }
+    }
+
+    private static bool IsExcelFile(IBrowserFile file)
+    {
+        var extension = System.IO.Path.GetExtension(file.Name);
+        return string.Equals(extension, ".xlsx", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(extension, ".xls", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void OnExcelFileSelected(InputFileChangeEventArgs e)
+    {
+        _selectedExcelFile = e.File;
+    }
+
+    private static IEnumerable<string> GetErrorMessages(string? errors)
+    {
+        return string.IsNullOrWhiteSpace(errors)
+            ? Enumerable.Empty<string>()
+            : errors.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(error => error.Trim())
+                .Where(error => !string.IsNullOrWhiteSpace(error));
+    }
+
+    private List<CandidateUploadPreviewVM> CandidatePreview =
+    [
+        new()
+        {
+            RowNo = 1,
+            CandidateName = "Juan Dela Cruz",
+            Email = "juan@email.com",
+            MobileNo = "09171234567",
+            PositionApplied = "Software Developer",
+            Department = "IT",
+            IsValid = true
+        },
+
+        new()
+        {
+            RowNo = 2,
+            CandidateName = "Maria Santos",
+            Email = "maria@email.com",
+            MobileNo = "09182345678",
+            PositionApplied = "QA Analyst",
+            Department = "IT",
+            IsValid = true
+        },
+
+        new()
+        {
+            RowNo = 3,
+            CandidateName = "John Reyes",
+            Email = "",
+            MobileNo = "09183456789",
+            PositionApplied = "Programmer",
+            Department = "IT",
+            IsValid = false
+        }
+    ];
+
+    private class CandidateUploadPreviewVM
+    {
+        public int RowNo { get; set; }
+        public string CandidateName { get; set; }
+        public string Email { get; set; }
+        public string MobileNo { get; set; }
+        public string PositionApplied { get; set; }
+        public string Department { get; set; }
+        public bool IsValid { get; set; }
+    }
 }

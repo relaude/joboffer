@@ -37,4 +37,8 @@
     <ProjectReference Include="..\JO.Service\JO.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\template\" />
+  </ItemGroup>
+
 </Project>

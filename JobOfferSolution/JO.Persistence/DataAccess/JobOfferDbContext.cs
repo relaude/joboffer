@@ -38,6 +38,11 @@ namespace JO.Persistence.DataAccess
         public DbSet<JobFamilies> JobFamilies { get; set; }
         public DbSet<JobPositionGrades> JobPositionGrades { get; set; }
 
+        //Mass Upload
+        public DbSet<CandidateExcelRawData> CandidateExcelRawData { get; set; }
+        public DbSet<CandidateTempData> CandidateTempData { get; set; }
+        public DbSet<CandidateMassUploadLogs> CandidateMassUploadLogs { get; set; }
+
         //Views
         public DbSet<VwCandidates> VwCandidates { get; set; }
         public DbSet<VwJobOffers> VwJobOffers { get; set; }
