@@ -183,7 +183,7 @@
                    class="form-control-file" />
     </ChildContent>
     <FooterTemplate>
-        <button type="button" class="btn btn-sm btn-success"
+        <button class="btn btn-sm btn-success"
                 disabled="@(_selectedExcelFile is null || _isReadingExcel)"
                 @onclick="() => ReadAndSaveExcelItems()">
             <i class="fas fa-upload fa-sm text-white-50 mr-1"></i>Read and Save Items
@@ -193,10 +193,74 @@
 
 <Modal @ref="modalCandidate">
     <ChildContent>
+        <div class="card border-0 shadow-sm mb-3 small">
+            <div class="card-header">
+                <h6 class="mb-0">Contact Details</h6>
+            </div>
 
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">First Name</label>
+                        <InputText class="form-control form-control-sm" @bind-Value="selectedCandidate.FirstName" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Middle Name</label>
+                        <InputText class="form-control form-control-sm" @bind-Value="selectedCandidate.MiddleName" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Last Name</label>
+                        <InputText class="form-control form-control-sm" @bind-Value="selectedCandidate.LastName" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Email Address</label>
+                        <InputText type="email" class="form-control form-control-sm" @bind-Value="selectedCandidate.Email" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Contact Number</label>
+                        <InputText class="form-control form-control-sm" @bind-Value="selectedCandidate.ContactNumber" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-3 small">
+            <div class="card-header">
+                <h6 class="mb-0">Job Position Applied For</h6>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Job Position</label>
+                        <InputSelect class="form-control form-control-sm" @bind-Value="selectedCandidate.JobPositionId">
+                            <option value="">-- Select Job Position --</option>
+                            <option value="1">Junior Developer</option>
+                            <option value="2">Senior Developer</option>
+                            <option value="3">Business Analyst</option>
+                            <option value="4">Project Manager</option>
+                            <option value="5">HR Specialist</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Expected Salary</label>
+                        <InputNumber TValue="decimal?" class="form-control form-control-sm" @bind-Value="selectedCandidate.ExpectedSalary" />
+                    </div>
+                </div>
+            </div>
+        </div>
     </ChildContent>
     <FooterTemplate>
-
+        <button class="btn btn-sm btn-primary">
+            Submit
+        </button>
     </FooterTemplate>
 </Modal>
 
@@ -211,6 +275,7 @@
     private int userId = 0;
     private int logId = 0;
     private List<CandidateTempData> tempData = new();
+    private CandidateMassUploadModalDto selectedCandidate = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -226,6 +291,13 @@
 
     private void ShowCandidateModal(CandidateTempData item)
     {
+        selectedCandidate.FirstName = item.FirstName;
+        selectedCandidate.MiddleName = item.MiddleName;
+        selectedCandidate.LastName = item.LastName;
+        selectedCandidate.Email = item.Email;
+        selectedCandidate.ContactNumber = item.ContactNumber;
+        selectedCandidate.ExpectedSalary = item.ExpectedSalary;
+
         modalCandidate.Title = $"{item.FirstName} {item.LastName}";
         modalCandidate.Show();
     }
