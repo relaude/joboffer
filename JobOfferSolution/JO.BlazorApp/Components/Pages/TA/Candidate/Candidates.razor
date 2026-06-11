@@ -64,7 +64,6 @@
                 <thead class="thead-light">
                     <tr>
                         <th>Name</th>
-                        <th>JO Status</th>
                         <th>Email</th>
                         <th>Position Applied For</th>
                         <th>Expected Salary</th>
@@ -84,7 +83,6 @@
                                         @($"{item.FirstName} {item.LastName}")
                                     </button>
                                 </td>
-                                <td>@item.CandidateJOStatus</td>
                                 <td>@item.Email</td>
                                 <td>@item.PositionAppliedFor</td>
                                 <td>@UtilitiesService.ToPeso(item.ExpectedSalary)</td>
@@ -184,7 +182,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ddStatus = await DropDownListService.GetCandidateStatus();
+        //ddStatus = await DropDownListService.GetCandidateStatus();
         await ChangePage(1);
     }
 
@@ -216,7 +214,6 @@
         lastName = item.LastName;
         email = item.Email;
         contactNumber = item.ContactNumber;
-        isHrod = item.IsHROD == true;
 
         modalPersonalInfo.Title = $"{firstName} {lastName}";
         modalPersonalInfo.Show();

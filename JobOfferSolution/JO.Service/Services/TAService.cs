@@ -75,7 +75,6 @@ namespace JO.Service.Services
 
             //Candidate
             var candidate = await context.Candidates.FindAsync(candidateId);
-            candidate.CandidateStatus_Id = JOCandidateStatus.Accepted;
 
             //Activity Log
             var newLog = new ActivityLogs

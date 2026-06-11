@@ -1,0 +1,410 @@
+@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.MSForms)]
+
+<div class="card shadow mb-4 border-left-primary small ms-form-page">
+    <div class="card-header py-3 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div class="mb-2 mb-md-0">
+            <div class="d-flex align-items-center mb-1">
+                <div class="icon-circle bg-primary text-white mr-2">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <div>
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Send Compensation & Benefits Form Request
+                    </h6>
+                    <div class="text-xs text-gray-500">
+                        Mockup only for Talent Acquisition partner workflow
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center">
+            <span class="badge badge-info badge-pill mr-2 mb-2">
+                <i class="fas fa-user-tie mr-1"></i> TA Partner View
+            </span>
+            <span class="badge badge-warning badge-pill mb-2">
+                <i class="fas fa-clock mr-1"></i> Awaiting Submission
+            </span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow-sm border-left-primary h-100">
+                            <div class="card-header py-2 bg-white d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                                    Candidate Information
+                                </h6>
+                                <span class="badge badge-light border text-gray-700">Primary Record</span>
+                            </div>
+                            <div class="card-body py-3">
+                                <div class="row small mb-2">
+                                    <div class="col-5 text-muted">Candidate Name</div>
+                                    <div class="col-7 font-weight-bold text-gray-800">Juan Dela Cruz</div>
+                                </div>
+                                <div class="row small mb-2">
+                                    <div class="col-5 text-muted">Email Address</div>
+                                    <div class="col-7">juan.delacruz@email.com</div>
+                                </div>
+                                <div class="row small mb-2">
+                                    <div class="col-5 text-muted">Contact Number</div>
+                                    <div class="col-7">0917-123-4567</div>
+                                </div>
+                                <div class="row small mb-2">
+                                    <div class="col-5 text-muted">Position Applied</div>
+                                    <div class="col-7">Senior Software Developer</div>
+                                </div>
+                                <div class="row small mb-2">
+                                    <div class="col-5 text-muted">Current Employer</div>
+                                    <div class="col-7">ABC Technologies Inc.</div>
+                                </div>
+                                <div class="row small">
+                                    <div class="col-5 text-muted">Expected Salary</div>
+                                    <div class="col-7 font-weight-bold text-success">₱85,000.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow-sm border-left-success h-100">
+                            <div class="card-header py-2 bg-white d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold text-success text-uppercase text-xs">
+                                    Requisition Information
+                                </h6>
+                                <span class="badge badge-light border text-gray-700">Reference</span>
+                            </div>
+                            <div class="card-body py-3">
+                                <div class="row small mb-2">
+                                    <div class="col-5 text-muted">Requisition No.</div>
+                                    <div class="col-7 font-weight-bold">REQ-2026-00125</div>
+                                </div>
+                                <div class="row small mb-2">
+                                    <div class="col-5 text-muted">Position</div>
+                                    <div class="col-7">Senior Software Developer</div>
+                                </div>
+                                <div class="row small mb-2">
+                                    <div class="col-5 text-muted">Hiring Company</div>
+                                    <div class="col-7">Unilab, Inc.</div>
+                                </div>
+                                <div class="row small mb-2">
+                                    <div class="col-5 text-muted">Legal Entity</div>
+                                    <div class="col-7">Unilab Inc.</div>
+                                </div>
+                                <div class="row small">
+                                    <div class="col-5 text-muted">TA Owner</div>
+                                    <div class="col-7">Maria Santos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-left-warning mb-4">
+                    <div class="card-header py-2 bg-white d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-warning text-uppercase text-xs">
+                            MS Forms Request Details
+                        </h6>
+                        <div class="small text-gray-500">
+                            Review before sending
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="font-weight-bold text-gray-700 small mb-1">MS Forms Template</label>
+                                <select class="form-control form-control-sm" disabled>
+                                    <option selected>Compensation & Benefits Form v1</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="font-weight-bold text-gray-700 small mb-1">Candidate Email</label>
+                                <input type="email" class="form-control form-control-sm" value="juan.delacruz@email.com" disabled />
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="font-weight-bold text-gray-700 small mb-1">Subject</label>
+                                <input type="text" class="form-control form-control-sm" value="Compensation and Benefits Information Request" disabled />
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="font-weight-bold text-gray-700 small mb-1">Message Template</label>
+                                <div class="border rounded bg-light p-3 text-gray-800 small ms-message-box">
+                                    <div class="mb-2">Dear Juan Dela Cruz,</div>
+                                    <div class="mb-2">Congratulations!</div>
+                                    <div class="mb-2">Please complete the Compensation and Benefits Form using the link below.</div>
+                                    <div class="mb-2">Kindly upload the required documents:</div>
+                                    <ul class="mb-2 pl-3">
+                                        <li>Updated Resume</li>
+                                        <li>Latest Payslip</li>
+                                    </ul>
+                                    <div class="mb-2">
+                                        Submission Link:<br />
+                                        <span class="text-primary">https://forms.office.com/r/xxxxxxxx</span>
+                                    </div>
+                                    <div>Thank you.</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="font-weight-bold text-gray-700 small mb-1">Expected Due Date</label>
+                                <div class="form-control form-control-sm bg-light d-flex align-items-center justify-content-between">
+                                    <span>June 18, 2026</span>
+                                    <i class="fas fa-calendar-alt text-primary"></i>
+                                </div>
+                            </div>
+
+                            <div class="col-md-8 mb-3">
+                                <label class="font-weight-bold text-gray-700 small mb-1">Reminder Settings</label>
+                                <div class="form-control form-control-sm bg-light d-flex align-items-center flex-wrap">
+                                    <span class="badge badge-success badge-pill mr-2 mb-1">
+                                        <i class="fas fa-check mr-1"></i> Send reminder after 3 days
+                                    </span>
+                                    <span class="badge badge-success badge-pill mb-1">
+                                        <i class="fas fa-check mr-1"></i> Send reminder after 5 days
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-1">
+                                <label class="font-weight-bold text-gray-700 small mb-1">Status</label>
+                                <div class="form-control form-control-sm bg-light d-flex align-items-center">
+                                    <span class="badge badge-warning badge-pill px-3 py-1">
+                                        Awaiting Candidate Submission
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-1">
+                                <label class="font-weight-bold text-gray-700 small mb-1">Submission Reference</label>
+                                <div class="form-control form-control-sm bg-light d-flex align-items-center justify-content-between">
+                                    <span class="text-gray-800">CBF-20260611-00001</span>
+                                    <i class="fas fa-hashtag text-secondary"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white d-flex flex-wrap justify-content-between align-items-center">
+                        <div class="small text-gray-500 mb-2 mb-md-0">
+                            This page is a static mockup. Buttons are intentionally inactive.
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm mr-2 mb-2 mb-md-0" disabled>
+                                <i class="fas fa-eye mr-1"></i> Preview Email
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm mr-2 mb-2 mb-md-0" disabled>
+                                <i class="fas fa-paper-plane mr-1"></i> Send Request
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm mb-2 mb-md-0" disabled>
+                                <i class="fas fa-times mr-1"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-left-info mb-4">
+                    <div class="card-header py-2 bg-white d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-info text-uppercase text-xs">
+                            Request Tracking
+                        </h6>
+                        <span class="badge badge-light border text-gray-700">Workflow Status</span>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="tracking-tile">
+                                    <div class="text-xs text-gray-500 text-uppercase mb-1">Request Sent Date</div>
+                                    <div class="font-weight-bold text-gray-800">June 11, 2026 09:30 AM</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="tracking-tile">
+                                    <div class="text-xs text-gray-500 text-uppercase mb-1">Submission Reference</div>
+                                    <div class="font-weight-bold text-gray-800">CBF-20260611-00001</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="tracking-tile">
+                                    <div class="text-xs text-gray-500 text-uppercase mb-1">Current Status</div>
+                                    <div>
+                                        <span class="badge badge-warning badge-pill">Awaiting Candidate Submission</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="tracking-tile">
+                                    <div class="text-xs text-gray-500 text-uppercase mb-1">Last Reminder Sent</div>
+                                    <div class="font-weight-bold text-gray-800">None</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-left-success mb-4">
+                    <div class="card-header py-2 bg-white d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-success text-uppercase text-xs">
+                            Quick Overview
+                        </h6>
+                        <i class="fas fa-layer-group text-success"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="icon-circle-sm bg-success text-white mr-3">
+                                <i class="fas fa-envelope-open-text"></i>
+                            </div>
+                            <div>
+                                <div class="font-weight-bold text-gray-800">MS Forms request</div>
+                                <div class="small text-gray-500">Prepared for email dispatch.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="icon-circle-sm bg-warning text-white mr-3">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div>
+                                <div class="font-weight-bold text-gray-800">Reminder rule</div>
+                                <div class="small text-gray-500">3-day and 5-day reminders shown.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start">
+                            <div class="icon-circle-sm bg-info text-white mr-3">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div>
+                                <div class="font-weight-bold text-gray-800">Submission tracking</div>
+                                <div class="small text-gray-500">Status is ready for follow-up monitoring.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-left-primary mb-4">
+                    <div class="card-header py-2 bg-white">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            Candidate Queue
+                        </h6>
+                    </div>
+
+                    <div class="card-body py-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover mb-0 text-nowrap">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Candidate</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-gray-800">Juan Dela Cruz</div>
+                                            <div class="small text-gray-500">Sr Developer</div>
+                                        </td>
+                                        <td><span class="badge badge-warning">Awaiting</span></td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-link btn-sm p-0 text-primary" disabled>View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-gray-800">Pedro Santos</div>
+                                            <div class="small text-gray-500">QA Analyst</div>
+                                        </td>
+                                        <td><span class="badge badge-success">Submitted</span></td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-link btn-sm p-0 text-primary" disabled>View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-gray-800">Ana Reyes</div>
+                                            <div class="small text-gray-500">Project Manager</div>
+                                        </td>
+                                        <td><span class="badge badge-danger">Overdue</span></td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-link btn-sm p-0 text-primary" disabled>View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm bg-gradient-primary text-white">
+                    <div class="card-body py-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <h6 class="m-0 font-weight-bold text-white text-uppercase text-xs">
+                                Implementation Note
+                            </h6>
+                        </div>
+                        <div class="small text-white-75">
+                            The page is intentionally static for now. It reflects the US-02 flow, request tracking, and candidate queue layout without any event handlers or service calls.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ms-form-page .icon-circle {
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0.35rem 0.85rem rgba(78, 115, 223, 0.18);
+    }
+
+    .ms-form-page .icon-circle-sm {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+    }
+
+    .ms-form-page .ms-message-box {
+        min-height: 14rem;
+        white-space: pre-wrap;
+        line-height: 1.5;
+    }
+
+    .ms-form-page .tracking-tile {
+        background: #f8f9fc;
+        border: 1px solid #eaecf4;
+        border-radius: 0.35rem;
+        padding: 0.85rem;
+        height: 100%;
+    }
+
+    .ms-form-page .table td,
+    .ms-form-page .table th {
+        vertical-align: middle;
+    }
+
+    .ms-form-page .text-xs {
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+    }
+</style>

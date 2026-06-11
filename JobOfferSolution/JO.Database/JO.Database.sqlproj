@@ -109,5 +109,10 @@
     <Build Include="dbo\Tables\Benefits.sql" />
     <Build Include="dbo\Views\vw_SalaryMatrixBand.sql" />
     <Build Include="dbo\Views\vw_SalaryMatrix.sql" />
+    <Build Include="dbo\Tables\CandidateTempData.sql" />
+    <Build Include="dbo\Tables\CandidateMassUploadLogs.sql" />
+    <Build Include="dbo\Tables\CandidateExcelRawData.sql" />
+    <Build Include="dbo\Tables\CandidateMSFormRequests.sql" />
+    <Build Include="dbo\Tables\CandidateFormRequestStatus.sql" />
   </ItemGroup>
 </Project>

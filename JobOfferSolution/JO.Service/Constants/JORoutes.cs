@@ -45,6 +45,8 @@ namespace JO.Service.Constants
             public const string Return = PrefixTA + "/joboffer/return";
             public const string Email = PrefixTA + "/email";
             public const string MassUpload = PrefixTA + "/mass-upload";
+            public const string MSForms = PrefixTA + "/candidate/ms-forms";
+            public const string MSFormsDashboard = PrefixTA + "/ms-forms";
         }
 
         public static class HROD

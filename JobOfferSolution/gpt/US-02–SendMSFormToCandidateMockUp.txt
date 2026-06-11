@@ -1,0 +1,194 @@
+Based on **US-02 (Row 3)** from Sheet **02_User_Stories** and the uploaded database tables (**Candidates** and **CandidateApplications**), the page should be used by the **Talent Acquisition (TA) Partner** to send an MS Forms request to the candidate and track the request status.
+
+---
+
+# Send MS Form to Candidate
+
+### Razor Component Mockup (AdminLTE / SBAdmin2 Style)
+
+```
++-----------------------------------------------------------------------------------+
+| Send Compensation & Benefits Form Request                                         |
++-----------------------------------------------------------------------------------+
+
+Candidate Information
++-----------------------------------------------------------------------------------+
+| Candidate Name      : Juan Dela Cruz                                              |
+| Email Address       : juan.delacruz@email.com                                     |
+| Contact Number      : 0917-123-4567                                               |
+| Position Applied    : Senior Software Developer                                   |
+| Current Employer    : ABC Technologies Inc.                                       |
+| Expected Salary     : ₱85,000.00                                                  |
+| Application Date    : June 10, 2026                                               |
++-----------------------------------------------------------------------------------+
+
+Requisition Information
++-----------------------------------------------------------------------------------+
+| Requisition No      : REQ-2026-00125                                              |
+| Position            : Senior Software Developer                                   |
+| Hiring Company      : Unilab, Inc.                                                |
+| Legal Entity        : Unilab Inc.                                                 |
+| TA Owner            : Maria Santos                                                |
++-----------------------------------------------------------------------------------+
+
+MS Forms Request Details
++-----------------------------------------------------------------------------------+
+
+MS Forms Template
+[ Compensation & Benefits Form v1                    ▼ ]
+
+Candidate Email
+[ juan.delacruz@email.com                                   ]
+
+Subject
+[ Compensation and Benefits Information Request            ]
+
+Message Template
++--------------------------------------------------------------------------+
+| Dear Juan Dela Cruz,                                                      |
+|                                                                           |
+| Congratulations!                                                          |
+|                                                                           |
+| Please complete the Compensation and Benefits Form using the link below.  |
+| Kindly upload the required documents:                                     |
+|                                                                           |
+| • Updated Resume                                                          |
+| • Latest Payslip                                                          |
+|                                                                           |
+| Submission Link:                                                          |
+| https://forms.office.com/r/xxxxxxxx                                       |
+|                                                                           |
+| Thank you.                                                                |
++--------------------------------------------------------------------------+
+
+Expected Submission Due Date
+[ June 18, 2026 ] 📅
+
+Reminder Settings
+☑ Send reminder after 3 days
+☑ Send reminder after 5 days
+
+Status
+[ Awaiting Candidate Submission ]
+
++-----------------------------------------------------------------------------------+
+| [ Preview Email ] [ Send Request ] [ Cancel ]                                    |
++-----------------------------------------------------------------------------------+
+```
+
+---
+
+# Workflow Status Section
+
+```
+Request Tracking
++-----------------------------------------------------------------------------------+
+| Request Sent Date      : June 11, 2026 09:30 AM                                  |
+| Submission Reference   : CBF-20260611-00001                                      |
+| Current Status         : Awaiting Candidate Submission                           |
+| Last Reminder Sent     : None                                                    |
++-----------------------------------------------------------------------------------+
+```
+
+---
+
+# Candidate List Grid
+
+```
++---------------------------------------------------------------------------------------------------------+
+| Candidates Awaiting Submission                                                                          |
++---------------------------------------------------------------------------------------------------------+
+
+Search Candidate [____________________] [Search]
+
++---------------------------------------------------------------------------------------------------------+
+| Candidate Name | Position Applied | Email Address | Request Date | Status | Action                     |
++---------------------------------------------------------------------------------------------------------+
+| Juan Dela Cruz | Sr Developer     | xxx@email.com | 06/11/2026   | Awaiting Submission | View |
+| Pedro Santos   | QA Analyst       | xxx@email.com | 06/10/2026   | Submitted           | View |
+| Ana Reyes      | Project Manager  | xxx@email.com | 06/09/2026   | Overdue             | View |
++---------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+# Recommended Database Table
+
+US-02 requires tracking the MS Form request separately from the candidate record.
+
+```sql
+CREATE TABLE CandidateFormRequests
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+
+    CandidateId INT NOT NULL,
+    CandidateApplicationId INT NOT NULL,
+
+    FormType NVARCHAR(100) NOT NULL,
+    FormUrl NVARCHAR(1000) NOT NULL,
+
+    RequestSentDate DATETIME NOT NULL,
+    DueDate DATETIME NULL,
+
+    SubmissionReferenceNo NVARCHAR(50) NULL,
+
+    Status NVARCHAR(50) NOT NULL,
+    -- Draft
+    -- Sent
+    -- Awaiting Submission
+    -- Submitted
+    -- Overdue
+    -- Cancelled
+
+    EmailSubject NVARCHAR(500) NULL,
+    EmailBody NVARCHAR(MAX) NULL,
+
+    Reminder1SentDate DATETIME NULL,
+    Reminder2SentDate DATETIME NULL,
+
+    SubmittedDate DATETIME NULL,
+
+    CreatedAt DATETIME NOT NULL,
+    CreatedBy INT NOT NULL
+);
+```
+
+---
+
+# Page Actions
+
+### Send Request
+
+1. Validate Candidate Email.
+2. Generate Submission Reference No.
+3. Create CandidateFormRequest record.
+4. Send Email with MS Forms Link.
+5. Update Candidate Application Status:
+
+```text
+Awaiting Candidate Submission
+```
+
+### Candidate Submission
+
+When MS Form is completed:
+
+```text
+Awaiting Candidate Submission
+        ↓
+Submitted
+```
+
+### Reminder Job
+
+Daily scheduled process:
+
+```text
+If Status = Awaiting Candidate Submission
+and DueDate <= Today
+
+→ Send Reminder Email
+→ Mark as Overdue
+```
+
+This design aligns directly with **US-02: Talent Acquisition Partner sends the MS Forms request to the candidate**, while using your existing **Candidates** and **CandidateApplications** tables as the parent records.

@@ -43,6 +43,9 @@ namespace JO.Persistence.DataAccess
         public DbSet<CandidateTempData> CandidateTempData { get; set; }
         public DbSet<CandidateMassUploadLogs> CandidateMassUploadLogs { get; set; }
 
+        //MS Forms
+        public DbSet<CandidateMSFormRequests> CandidateMSFormRequests { get; set; }
+
         //Views
         public DbSet<VwCandidates> VwCandidates { get; set; }
         public DbSet<VwJobOffers> VwJobOffers { get; set; }

@@ -177,8 +177,8 @@
         ddDepartment = await DropDownListService.GetDepartments();
 
         candidate = await CandidateService.GetCandidate(CandidateId);
-        positionId = candidate.JobPosition_Id;
-        departmentId = candidate.Department_Id;
+        // positionId = candidate.JobPosition_Id;
+        // departmentId = candidate.Department_Id;
 
         userId = await AccountService.GetJobOfferUserId();
     }

@@ -1,0 +1,387 @@
+Below is a **MS Word-ready Functional Design Document** for **US-02 – Send MS Form to Candidate**. You can copy this directly into Microsoft Word and save it as:
+
+**FRM-US02-Send-MSForm-To-Candidate.docx**
+
+---
+
+# Online Job Offer System
+
+## Functional Design Document
+
+### Module
+
+Candidate Management
+
+### User Story ID
+
+US-02
+
+### User Story Name
+
+Send MS Form to Candidate
+
+### Version
+
+1.0
+
+### Prepared By
+
+System Analyst
+
+### Date
+
+June 2026
+
+---
+
+# 1. Purpose
+
+The purpose of this module is to allow the Talent Acquisition (TA) Partner to send a Microsoft Forms link to a candidate for completion of Compensation & Benefits information and submission of required supporting documents.
+
+The system shall record the request, track the submission status, and send reminders when necessary.
+
+---
+
+# 2. User Story
+
+**As a Talent Acquisition Partner**
+
+I want to send a Microsoft Forms request to a candidate
+
+So that the candidate can provide Compensation & Benefits information and upload the required documents.
+
+---
+
+# 3. Actors
+
+| Actor                      | Description                                          |
+| -------------------------- | ---------------------------------------------------- |
+| Talent Acquisition Partner | Sends the MS Form request to the candidate           |
+| Candidate                  | Completes the MS Form and uploads required documents |
+| System                     | Tracks request status and sends reminders            |
+
+---
+
+# 4. Preconditions
+
+The following conditions must be met before sending an MS Form request:
+
+1. Candidate record exists.
+2. Candidate Application record exists.
+3. Candidate has a valid email address.
+4. Candidate Application Status is approved for Compensation & Benefits data collection.
+
+---
+
+# 5. Post Conditions
+
+After successful sending of the request:
+
+1. Email is sent to candidate.
+2. Request record is created.
+3. Status becomes:
+
+```text
+Awaiting Candidate Submission
+```
+
+4. Audit log is created.
+
+---
+
+# 6. Page Layout
+
+## 6.1 Candidate Information Section
+
+Displays candidate information retrieved from the Candidate and CandidateApplication tables.
+
+### Fields
+
+| Field            | Type     | Read Only |
+| ---------------- | -------- | --------- |
+| Candidate Name   | Text     | Yes       |
+| Email Address    | Text     | Yes       |
+| Contact Number   | Text     | Yes       |
+| Position Applied | Text     | Yes       |
+| Current Employer | Text     | Yes       |
+| Expected Salary  | Currency | Yes       |
+| Application Date | Date     | Yes       |
+
+---
+
+## 6.2 Requisition Information Section
+
+Displays requisition details.
+
+### Fields
+
+| Field          | Type | Read Only |
+| -------------- | ---- | --------- |
+| Requisition No | Text | Yes       |
+| Position       | Text | Yes       |
+| Hiring Company | Text | Yes       |
+| Legal Entity   | Text | Yes       |
+| TA Owner       | Text | Yes       |
+
+---
+
+## 6.3 MS Forms Request Section
+
+### Fields
+
+| Field                      | Type        | Required         |
+| -------------------------- | ----------- | ---------------- |
+| MS Forms Template          | Dropdown    | Yes              |
+| Candidate Email            | Textbox     | Yes              |
+| Email Subject              | Textbox     | Yes              |
+| Email Body                 | Text Area   | Yes              |
+| Due Date                   | Date Picker | Yes              |
+| Send Reminder After 3 Days | Checkbox    | No               |
+| Send Reminder After 5 Days | Checkbox    | No               |
+| Status                     | Text        | System Generated |
+
+---
+
+# 7. Page Actions
+
+## Preview Email
+
+Allows the TA Partner to preview the email before sending.
+
+### Validation
+
+* Candidate Email is required.
+* Subject is required.
+* Email Body is required.
+
+---
+
+## Send Request
+
+Sends the email to the candidate.
+
+### Processing Logic
+
+1. Validate required fields.
+2. Generate Submission Reference Number.
+3. Save request record.
+4. Send email notification.
+5. Update Candidate Application Status.
+
+### Status Update
+
+```text
+Awaiting Candidate Submission
+```
+
+---
+
+## Cancel
+
+Returns user to Candidate List page.
+
+No data is saved.
+
+---
+
+# 8. Status Workflow
+
+```text
+Draft
+   |
+   V
+Sent
+   |
+   V
+Awaiting Candidate Submission
+   |
+   +--------------------+
+   |                    |
+   V                    V
+Submitted            Overdue
+   |
+   V
+Completed
+```
+
+---
+
+# 9. Business Rules
+
+## BR-001
+
+Candidate Email Address is mandatory.
+
+---
+
+## BR-002
+
+Only active Candidate Applications may receive a request.
+
+---
+
+## BR-003
+
+Submission Reference Number shall be generated automatically.
+
+### Format
+
+```text
+CBF-YYYYMMDD-XXXXX
+```
+
+Example:
+
+```text
+CBF-20260611-00001
+```
+
+---
+
+## BR-004
+
+The system shall store the email content sent to the candidate.
+
+---
+
+## BR-005
+
+The system shall track reminder emails.
+
+---
+
+## BR-006
+
+The system shall prevent duplicate active requests.
+
+Active statuses:
+
+```text
+Draft
+Sent
+Awaiting Candidate Submission
+Overdue
+```
+
+---
+
+# 10. Candidate Tracking Grid
+
+The system shall provide a monitoring page.
+
+### Search Filters
+
+* Candidate Name
+* Requisition No
+* Position
+* Status
+* Request Date
+
+### Grid Columns
+
+| Column           |
+| ---------------- |
+| Candidate Name   |
+| Position Applied |
+| Email Address    |
+| Request Date     |
+| Due Date         |
+| Status           |
+| Action           |
+
+---
+
+# 11. Notifications
+
+## Initial Email
+
+Sent immediately after clicking Send Request.
+
+### Sample Subject
+
+```text
+Compensation and Benefits Information Request
+```
+
+---
+
+## Reminder Email
+
+Automatically sent based on configured reminder settings.
+
+### Conditions
+
+```text
+Status = Awaiting Candidate Submission
+AND
+Current Date > Due Date
+```
+
+---
+
+# 12. Audit Trail
+
+The following activities shall be logged.
+
+| Activity                 |
+| ------------------------ |
+| Request Created          |
+| Request Sent             |
+| Reminder Sent            |
+| Status Updated           |
+| Request Cancelled        |
+| Candidate Submitted Form |
+
+---
+
+# 13. Database Design
+
+## CandidateFormRequests
+
+```sql
+CREATE TABLE CandidateFormRequests
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+
+    CandidateId INT NOT NULL,
+    CandidateApplicationId INT NOT NULL,
+
+    FormType NVARCHAR(100) NOT NULL,
+    FormUrl NVARCHAR(1000) NOT NULL,
+
+    RequestSentDate DATETIME NOT NULL,
+    DueDate DATETIME NULL,
+
+    SubmissionReferenceNo NVARCHAR(50) NULL,
+
+    Status NVARCHAR(50) NOT NULL,
+
+    EmailSubject NVARCHAR(500) NULL,
+    EmailBody NVARCHAR(MAX) NULL,
+
+    Reminder1SentDate DATETIME NULL,
+    Reminder2SentDate DATETIME NULL,
+
+    SubmittedDate DATETIME NULL,
+
+    CreatedAt DATETIME NOT NULL,
+    CreatedBy INT NOT NULL
+);
+```
+
+---
+
+# 14. Future Enhancements
+
+1. Microsoft Forms API Integration.
+2. Automatic retrieval of submitted responses.
+3. Document upload validation.
+4. Email template management.
+5. Power Automate integration.
+6. Dashboard reporting.
+7. SLA monitoring.
+8. Candidate submission analytics.
+
+---
+
+**End of Document**

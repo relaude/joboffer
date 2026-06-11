@@ -1,0 +1,292 @@
+@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.MSFormsDashboard)]
+
+<div class="card shadow mb-4 border-left-primary small ms-form-dashboard-page">
+    <div class="card-header py-3 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div class="mb-2 mb-md-0">
+            <div class="d-flex align-items-center">
+                <div class="icon-circle bg-primary text-white mr-2">
+                    <i class="fas fa-table"></i>
+                </div>
+                <div>
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Candidates Awaiting Submission
+                    </h6>
+                    <div class="text-xs text-gray-500">
+                        Static mockup for the MS Form candidate list grid
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center">
+            <span class="badge badge-warning badge-pill mr-2 mb-2">
+                <i class="fas fa-clock mr-1"></i> Awaiting Submission
+            </span>
+            <span class="badge badge-success badge-pill mr-2 mb-2">
+                <i class="fas fa-check mr-1"></i> Submitted
+            </span>
+            <span class="badge badge-danger badge-pill mb-2">
+                <i class="fas fa-exclamation-triangle mr-1"></i> Overdue
+            </span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow-sm h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Awaiting Submission
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                <div class="small text-gray-500">Candidates waiting on the MS Form</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-hourglass-half fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow-sm h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Submitted
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">9</div>
+                                <div class="small text-gray-500">Completed requests received</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-check-circle fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-danger shadow-sm h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                    Overdue
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">4</div>
+                                <div class="small text-gray-500">Needs follow-up reminder</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow-sm h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Today Sent
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">6</div>
+                                <div class="small text-gray-500">New requests added today</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-paper-plane fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="form-row align-items-end">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 small mb-1">Status</label>
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-filter text-primary"></i>
+                                </span>
+                            </div>
+                            <select class="form-control form-control-sm" disabled>
+                                <option selected>All Status</option>
+                                <option>Awaiting Submission</option>
+                                <option>Submitted</option>
+                                <option>Overdue</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 small mb-1">Search Candidate</label>
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-search text-primary"></i>
+                                </span>
+                            </div>
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   placeholder="Candidate name, email, or position"
+                                   disabled />
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 small mb-1">Request Date</label>
+                        <input type="text" class="form-control form-control-sm" value="06/11/2026" disabled />
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="d-flex">
+                            <button type="button" class="btn btn-primary btn-sm mr-2 flex-fill" disabled>
+                                <i class="fas fa-search mr-1"></i> Search
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" disabled>
+                                <i class="fas fa-eraser mr-1"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header py-2 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                        Candidate List Grid
+                    </h6>
+                    <div class="small text-gray-500">
+                        Monitor request progress for each candidate
+                    </div>
+                </div>
+                <div class="small text-gray-500">
+                    Showing 1 to 3 of 3 entries
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm text-nowrap mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Candidate Name</th>
+                                <th>Position Applied</th>
+                                <th>Email Address</th>
+                                <th>Request Date</th>
+                                <th>Status</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="font-weight-bold text-gray-800">Juan Dela Cruz</div>
+                                    <div class="small text-gray-500">Submission Ref: CBF-20260611-00001</div>
+                                </td>
+                                <td>Sr Developer</td>
+                                <td>juan.delacruz@email.com</td>
+                                <td>06/11/2026</td>
+                                <td>
+                                    <span class="badge badge-warning badge-pill px-3 py-1">Awaiting Submission</span>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link btn-sm p-0 text-primary" disabled>
+                                        <i class="fas fa-eye mr-1"></i> View
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="font-weight-bold text-gray-800">Pedro Santos</div>
+                                    <div class="small text-gray-500">Submission Ref: CBF-20260610-00002</div>
+                                </td>
+                                <td>QA Analyst</td>
+                                <td>pedro.santos@email.com</td>
+                                <td>06/10/2026</td>
+                                <td>
+                                    <span class="badge badge-success badge-pill px-3 py-1">Submitted</span>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link btn-sm p-0 text-primary" disabled>
+                                        <i class="fas fa-eye mr-1"></i> View
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="font-weight-bold text-gray-800">Ana Reyes</div>
+                                    <div class="small text-gray-500">Submission Ref: CBF-20260609-00003</div>
+                                </td>
+                                <td>Project Manager</td>
+                                <td>ana.reyes@email.com</td>
+                                <td>06/09/2026</td>
+                                <td>
+                                    <span class="badge badge-danger badge-pill px-3 py-1">Overdue</span>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link btn-sm p-0 text-primary" disabled>
+                                        <i class="fas fa-eye mr-1"></i> View
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="small text-gray-500 mb-2 mb-md-0">
+                    Pagination is shown for mockup purposes only.
+                </div>
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn btn-outline-secondary btn-sm mr-2" disabled>
+                        <i class="fas fa-angle-left mr-1"></i> Prev
+                    </button>
+                    <span class="small text-gray-700 mr-2">Page 1 of 1</span>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
+                        Next <i class="fas fa-angle-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ms-form-dashboard-page .icon-circle {
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0.35rem 0.85rem rgba(78, 115, 223, 0.18);
+        flex: 0 0 auto;
+    }
+
+    .ms-form-dashboard-page .text-xs {
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+    }
+
+    .ms-form-dashboard-page .table td,
+    .ms-form-dashboard-page .table th {
+        vertical-align: middle;
+    }
+</style>

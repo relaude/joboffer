@@ -35,9 +35,6 @@ namespace JO.Service.Services
             var query = context.VwCandidates
                 .AsNoTracking();
 
-            if (statusId != 0)
-                query = query.Where(jo => jo.CandidateStatus_Id == statusId);
-
             if (!string.IsNullOrWhiteSpace(candidate))
                 query = query.Where(jo =>
                     EF.Functions.Like(jo.LastName, $"%{candidate}%") ||
@@ -59,9 +56,7 @@ namespace JO.Service.Services
                 JOCandidateStatus.Withdrawn];
 
             var query = context.VwCandidates
-                .AsNoTracking()
-                .Where(can => can.CandidateStatus_Id != null &&
-                    validStatus.Contains(can.CandidateStatus_Id.Value));
+                .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(candidate))
                 query = query.Where(jo =>
@@ -90,7 +85,6 @@ namespace JO.Service.Services
             candidate.LastName = lastName;
             candidate.Email = email;
             candidate.ContactNumber = contactNumber;
-            candidate.IsHROD = isHrod;
 
             context.Candidates.Update(candidate);
             return await context.SaveChangesAsync();

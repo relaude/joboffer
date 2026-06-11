@@ -88,10 +88,7 @@ namespace JO.Service.Services
                 CreatedAt = DateTime.Now
             };
 
-            //Candidate Status
             var candidate = await context.Candidates.FindAsync(candidateId);
-            candidate.CandidateStatus_Id = JOCandidateStatus.InProgress;
-
 
             // Track both inserts and persist them together.
             await context.JobOffers.AddAsync(newJO);
