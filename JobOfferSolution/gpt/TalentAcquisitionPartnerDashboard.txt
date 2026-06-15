@@ -1,0 +1,484 @@
+After reviewing the complete **02_User_Stories** workflow and the **Process Flow**, the **Talent Acquisition (TA) Partner Dashboard** should be the primary landing page after login.
+
+The dashboard should provide visibility into the entire Job Offer lifecycle:
+
+```text
+Pre-Analysis / Data Gathering
+Company & Legal Entity Setup
+Job Offer Analysis
+Salary Band Validation
+Approval Routing
+President Escalation
+Candidate Discussion
+Negotiation & Re-Proposal
+Offer Letter Generation
+```
+
+The Process Flow shows the TA Partner as the main actor throughout the process, requiring a dashboard that highlights pending actions, approvals, candidate responses, and SLA monitoring. 
+
+---
+
+# TA Partner Dashboard
+
+## Header
+
+```text
+Welcome, Juan Dela Cruz
+
+Talent Acquisition Partner
+
+Today: June 2026
+```
+
+---
+
+# KPI Summary Cards
+
+Top row cards.
+
+```text
++----------------+
+| Active Cases   |
+|      125       |
++----------------+
+
++----------------+
+| Awaiting Forms |
+|      18        |
++----------------+
+
++----------------+
+| For Analysis   |
+|      12        |
++----------------+
+
++----------------+
+| For Approval   |
+|      25        |
++----------------+
+
++----------------+
+| Negotiations   |
+|       7        |
++----------------+
+
++----------------+
+| Accepted Offers|
+|      34        |
++----------------+
+```
+
+---
+
+# My Action Items
+
+Most important section.
+
+```text
+--------------------------------------------------------------
+My Pending Actions
+--------------------------------------------------------------
+
+Priority   Candidate          Position          Action
+
+HIGH       Juan Dela Cruz     TSR               Analyze Offer
+
+HIGH       Maria Reyes        Product Manager   Re-Proposal
+
+MEDIUM     John Santos        QA Lead           Discussion
+
+LOW        Ana Cruz           Supervisor        Send MS Form
+
+--------------------------------------------------------------
+```
+
+Buttons:
+
+```html
+Analyze
+Review
+Open Case
+Continue
+```
+
+---
+
+# Pipeline Overview
+
+Shows where candidates are in the workflow.
+
+```text
+--------------------------------------------------------------
+
+Candidate Pipeline
+
+--------------------------------------------------------------
+
+Awaiting MS Form             18
+
+For Validation               10
+
+For Job Offer Analysis       12
+
+For Approval                 25
+
+For Candidate Discussion      8
+
+For Negotiation               7
+
+For Offer Letter              5
+
+Completed                    34
+
+--------------------------------------------------------------
+```
+
+Recommended display:
+
+```text
+[18] → [10] → [12] → [25] → [8] → [7] → [5] → [34]
+```
+
+---
+
+# Candidate Status Kanban
+
+Modern ATS-style view.
+
+```text
++---------------------+
+| Awaiting Submission |
++---------------------+
+
+Juan Dela Cruz
+Maria Reyes
+
+----------------------
+
++---------------------+
+| For Analysis        |
++---------------------+
+
+John Santos
+Mark Flores
+
+----------------------
+
++---------------------+
+| For Approval        |
++---------------------+
+
+Ana Cruz
+Leo Ramos
+
+----------------------
+
++---------------------+
+| Discussion          |
++---------------------+
+
+Carlos Lim
+
+----------------------
+
++---------------------+
+| Negotiation         |
++---------------------+
+
+Sarah Tan
+```
+
+---
+
+# Approval Monitoring
+
+Based on Approval Routing workflow.
+
+```text
+---------------------------------------------------------
+Approval Monitoring
+---------------------------------------------------------
+
+Candidate       Current Approver      Aging
+
+Juan Dela Cruz  HROD Head             1 Day
+
+Maria Reyes     Division Head         2 Days
+
+Leo Ramos       President             4 Days
+
+---------------------------------------------------------
+```
+
+Color coding:
+
+```text
+0-1 Days    Green
+2-3 Days    Yellow
+4+ Days     Red
+```
+
+---
+
+# Candidate Discussion Queue
+
+Candidates ready for discussion.
+
+```text
+---------------------------------------------------------
+Ready for Candidate Discussion
+---------------------------------------------------------
+
+Candidate       Position       Approved Options
+
+Juan Dela Cruz  TSR            2
+
+Maria Reyes     PM             1
+
+---------------------------------------------------------
+```
+
+Action:
+
+```html
+Discuss Offer
+```
+
+---
+
+# Negotiation Tracker
+
+From Negotiation & Re-Proposal stage.
+
+```text
+---------------------------------------------------------
+Negotiation Cases
+---------------------------------------------------------
+
+Candidate       Version      Requested Salary
+
+Juan Dela Cruz  V2           ₱48,000
+
+Maria Reyes     V3           ₱95,000
+
+---------------------------------------------------------
+```
+
+Action:
+
+```html
+Create Re-Proposal
+```
+
+---
+
+# SLA Monitoring
+
+Very useful for management.
+
+```text
+---------------------------------------------------------
+SLA Monitoring
+---------------------------------------------------------
+
+Stage                        Target     Actual
+
+Awaiting Candidate Form      3 Days     5 Days
+
+Approval Routing             2 Days     1 Day
+
+Negotiation                  5 Days     7 Days
+
+---------------------------------------------------------
+```
+
+Highlight overdue cases.
+
+---
+
+# Upcoming Candidate Follow-ups
+
+```text
+---------------------------------------------------------
+Follow Up Schedule
+---------------------------------------------------------
+
+Today
+
+09:00 AM  Juan Dela Cruz
+
+10:00 AM  Maria Reyes
+
+02:00 PM  Carlos Lim
+
+---------------------------------------------------------
+```
+
+---
+
+# Recent Activity Feed
+
+Audit trail summary.
+
+```text
+---------------------------------------------------------
+Recent Activity
+---------------------------------------------------------
+
+08:15 AM
+
+MS Form sent to Juan Dela Cruz
+
+---------------------------------------------------------
+
+09:30 AM
+
+Candidate submission received
+
+---------------------------------------------------------
+
+10:00 AM
+
+Job Offer Analysis completed
+
+---------------------------------------------------------
+
+11:15 AM
+
+Approval routed to HROD Head
+
+---------------------------------------------------------
+```
+
+---
+
+# Dashboard Charts
+
+## Job Offer Pipeline
+
+```text
+Bar Chart
+
+Awaiting Forms       18
+
+Analysis             12
+
+Approval             25
+
+Discussion            8
+
+Negotiation           7
+
+Completed            34
+```
+
+---
+
+## Approval Bottleneck Chart
+
+```text
+Pie Chart
+
+HROD Head       40%
+
+Division Head   35%
+
+President       25%
+```
+
+---
+
+## Monthly Offer Acceptance Trend
+
+```text
+Line Chart
+
+Jan    18
+
+Feb    22
+
+Mar    24
+
+Apr    31
+
+May    29
+
+Jun    34
+```
+
+---
+
+# Quick Actions Panel
+
+```html
+<button class="btn btn-primary btn-sm">
+New Job Offer
+</button>
+
+<button class="btn btn-success btn-sm">
+Send MS Form
+</button>
+
+<button class="btn btn-info btn-sm">
+Candidate Search
+</button>
+
+<button class="btn btn-warning btn-sm">
+Approval Monitor
+</button>
+
+<button class="btn btn-secondary btn-sm">
+Reports
+</button>
+```
+
+---
+
+# Recommended Bootstrap/SBAdmin2 Layout
+
+```text
++------------------------------------------------------+
+| KPI CARDS                                             |
++------------------------------------------------------+
+
++------------------------+-----------------------------+
+| My Action Items        | Pipeline Overview           |
++------------------------+-----------------------------+
+
++------------------------------------------------------+
+| Candidate Workflow Kanban                            |
++------------------------------------------------------+
+
++------------------------+-----------------------------+
+| Approval Monitoring    | Discussion Queue            |
++------------------------+-----------------------------+
+
++------------------------+-----------------------------+
+| Negotiation Tracker    | SLA Monitoring              |
++------------------------+-----------------------------+
+
++------------------------------------------------------+
+| Charts                                                |
++------------------------------------------------------+
+
++------------------------+-----------------------------+
+| Recent Activity        | Follow-up Schedule          |
++------------------------+-----------------------------+
+
++------------------------------------------------------+
+| Quick Actions                                         |
++------------------------------------------------------+
+```
+
+### Recommended Tabs
+
+1. **Dashboard**
+2. **Candidates**
+3. **Job Offers**
+4. **Approvals**
+5. **Negotiations**
+6. **Offer Letters**
+7. **Reports**
+8. **Administration**
+
+This dashboard design gives the TA Partner a complete operational view of all user stories and process stages, from MS Form submission through approvals, negotiation, acceptance, and final offer generation, while surfacing pending actions and SLA risks in one screen. 

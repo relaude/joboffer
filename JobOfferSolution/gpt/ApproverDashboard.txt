@@ -1,0 +1,535 @@
+After reviewing the complete **Job Offer Process Flow**, the **Approver Dashboard** should be very different from the TA Partner Dashboard.
+
+An Approver (HROD Head, Division Head, President) does **not manage candidates**. Their primary responsibility is to:
+
+1. Review Job Offer proposals
+2. Compare salary options
+3. Review salary band validations
+4. Review business justifications
+5. Approve / Reject / Return for Revision
+6. Monitor pending approvals
+7. Track SLA compliance
+
+The Process Flow shows that approvers receive approval tasks and review:
+
+* Multi-option Job Offer Sheet
+* Salary Band Validation Results
+* Compa-Ratio
+* Justification Notes
+* Internal Equity Data
+* Previous Approval Comments
+* Candidate Information
+* Company / Legal Entity Details
+* Above-band exceptions requiring escalation 
+
+---
+
+# Approver Dashboard
+
+## Dashboard Header
+
+```text
+Welcome, Maria Santos
+
+Role:
+HROD Head
+
+Today:
+June 2026
+```
+
+---
+
+# KPI Summary Cards
+
+```text
++----------------+
+| Pending        |
+|      18        |
++----------------+
+
++----------------+
+| Approved       |
+|      52        |
++----------------+
+
++----------------+
+| Returned       |
+|       6        |
++----------------+
+
++----------------+
+| Above Band     |
+|       4        |
++----------------+
+
++----------------+
+| SLA Risk       |
+|       3        |
++----------------+
+
++----------------+
+| Completed      |
+|      75        |
++----------------+
+```
+
+---
+
+# My Approval Queue
+
+This should be the main widget.
+
+```text
+--------------------------------------------------------------------------------
+
+Pending Approvals
+
+--------------------------------------------------------------------------------
+
+Priority   Candidate          Position             Aging
+
+HIGH       Juan Dela Cruz     TSR                  3 Days
+
+HIGH       Maria Reyes        Product Manager      2 Days
+
+MEDIUM     John Santos        QA Lead              1 Day
+
+LOW        Ana Cruz           Supervisor           0 Day
+
+--------------------------------------------------------------------------------
+```
+
+Actions:
+
+```html
+[ Review ]
+[ Open ]
+```
+
+---
+
+# Approval Pipeline
+
+```text
+------------------------------------------------------------
+
+Current Approval Workload
+
+------------------------------------------------------------
+
+Awaiting HROD Head           8
+
+Awaiting Division Head       6
+
+Awaiting President           4
+
+Returned for Revision        2
+
+Completed                    75
+
+------------------------------------------------------------
+```
+
+---
+
+# Approval SLA Monitoring
+
+Based on workflow aging.
+
+```text
+----------------------------------------------------------------
+
+Candidate           Stage              Target     Actual
+
+----------------------------------------------------------------
+
+Juan Dela Cruz      HROD Head          2 Days     3 Days
+
+Maria Reyes         Division Head      2 Days     2 Days
+
+Leo Ramos           President          2 Days     5 Days
+
+----------------------------------------------------------------
+```
+
+Color coding:
+
+```text
+Green    Within SLA
+
+Yellow   Near SLA
+
+Red      Overdue
+```
+
+---
+
+# Above Band Escalation Queue
+
+The Process Flow explicitly routes above-band salaries to the President. 
+
+```text
+------------------------------------------------------------
+
+Above Band Cases
+
+------------------------------------------------------------
+
+Candidate        Position       Salary      Band Max
+
+Juan Dela Cruz   TSR            ₱55,000     ₱52,000
+
+Maria Reyes      PM             ₱95,000     ₱90,000
+
+------------------------------------------------------------
+```
+
+Action:
+
+```html
+[ Review Escalation ]
+```
+
+---
+
+# Approval Workload by Company
+
+Useful when multiple Legal Entities exist.
+
+```text
+------------------------------------------------------------
+
+Company Approval Queue
+
+------------------------------------------------------------
+
+Unilab Inc.                    8
+
+Amherst Laboratories           5
+
+Biemedis                        3
+
+Allied Services                 2
+
+------------------------------------------------------------
+```
+
+---
+
+# Pending Review Cards
+
+Card-style approvals.
+
+```text
++-----------------------------------------------------+
+
+Candidate:
+Juan Dela Cruz
+
+Position:
+Territory Sales Representative
+
+Company:
+Unilab Inc.
+
+Highest Proposal:
+₱45,000
+
+Status:
+Pending HROD Review
+
+Aging:
+3 Days
+
+[Review]
+
++-----------------------------------------------------+
+```
+
+---
+
+# Recently Approved Cases
+
+```text
+------------------------------------------------------------
+
+Recent Approvals
+
+------------------------------------------------------------
+
+Candidate           Decision      Date
+
+------------------------------------------------------------
+
+Maria Reyes         Approved      Jun 15
+
+John Santos         Approved      Jun 15
+
+Ana Cruz            Approved      Jun 14
+
+------------------------------------------------------------
+```
+
+---
+
+# Returned For Revision
+
+```text
+------------------------------------------------------------
+
+Returned To TA Partner
+
+------------------------------------------------------------
+
+Candidate        Reason
+
+------------------------------------------------------------
+
+Juan Dela Cruz   Insufficient justification
+
+Leo Ramos        Budget clarification required
+
+------------------------------------------------------------
+```
+
+---
+
+# Approval Analytics
+
+## Approval Status Chart
+
+```text
+Approved                75
+
+Pending                 18
+
+Returned                 6
+
+Rejected                 3
+```
+
+Recommended:
+
+```text
+Donut Chart
+```
+
+---
+
+## Approval Volume Trend
+
+```text
+Jan     42
+
+Feb     48
+
+Mar     55
+
+Apr     61
+
+May     69
+
+Jun     75
+```
+
+Recommended:
+
+```text
+Line Chart
+```
+
+---
+
+## Salary Band Distribution
+
+```text
+Within Band          85%
+
+Above Band           15%
+```
+
+Recommended:
+
+```text
+Pie Chart
+```
+
+---
+
+# Quick Review Panel
+
+Displays highest priority approvals.
+
+```text
+------------------------------------------------------------
+
+Immediate Attention
+
+------------------------------------------------------------
+
+Candidate:
+Juan Dela Cruz
+
+Current Salary:
+₱35,000
+
+Recommended:
+₱55,000
+
+Band Status:
+ABOVE BAND
+
+Approval Level:
+President
+
+------------------------------------------------------------
+
+[Review Now]
+```
+
+---
+
+# Notification Center
+
+```text
+------------------------------------------------------------
+
+Notifications
+
+------------------------------------------------------------
+
+New approval assigned
+
+2 minutes ago
+
+------------------------------------------------------------
+
+President escalation received
+
+15 minutes ago
+
+------------------------------------------------------------
+
+TA Partner resubmitted proposal
+
+1 hour ago
+
+------------------------------------------------------------
+```
+
+---
+
+# Approval History Snapshot
+
+```text
+------------------------------------------------------------
+
+My Decisions Today
+
+------------------------------------------------------------
+
+Approved                8
+
+Returned                2
+
+Rejected                1
+
+------------------------------------------------------------
+```
+
+---
+
+# Quick Actions
+
+```html
+<button class="btn btn-primary btn-sm">
+My Approvals
+</button>
+
+<button class="btn btn-warning btn-sm">
+Above Band Cases
+</button>
+
+<button class="btn btn-info btn-sm">
+Approval Analytics
+</button>
+
+<button class="btn btn-success btn-sm">
+Completed Approvals
+</button>
+```
+
+---
+
+# Recommended SBAdmin2 / Bootstrap Layout
+
+```text
++------------------------------------------------------+
+| KPI CARDS                                             |
++------------------------------------------------------+
+
++----------------------+-------------------------------+
+| My Approval Queue    | SLA Monitoring                |
++----------------------+-------------------------------+
+
++------------------------------------------------------+
+| Pending Approval Cards                               |
++------------------------------------------------------+
+
++----------------------+-------------------------------+
+| Above Band Cases     | Company Queue                 |
++----------------------+-------------------------------+
+
++------------------------------------------------------+
+| Approval Analytics                                   |
++------------------------------------------------------+
+
++----------------------+-------------------------------+
+| Notifications        | Recent Approvals              |
++----------------------+-------------------------------+
+
++------------------------------------------------------+
+| Quick Actions                                       |
++------------------------------------------------------+
+```
+
+# Recommended Menu
+
+```text
+Dashboard
+
+My Approvals
+
+Pending Reviews
+
+Above Band Escalations
+
+Completed Approvals
+
+Approval Analytics
+
+Audit Trail
+
+Reports
+```
+
+### Key Difference from TA Dashboard
+
+**TA Partner Dashboard**
+
+* Manages candidates
+* Creates offers
+* Negotiates
+* Sends forms
+* Tracks pipeline
+
+**Approver Dashboard**
+
+* Reviews salary proposals
+* Reviews justifications
+* Monitors SLA
+* Handles escalations
+* Approves / Rejects / Returns cases
+
+This design follows the Approval Routing, HROD Approval, Division Head Approval, and President Escalation stages defined in the Process Flow. 

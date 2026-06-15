@@ -1,0 +1,644 @@
+@attribute [Route(JORoutes.MockUp.Negotiate)]
+
+<div class="card shadow mb-4 border-left-warning small negotiate-page">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-warning">
+                    <i class="fas fa-sync-alt fa-fw mr-2"></i>
+                    Negotiation and Re-Proposal
+                </h6>
+                <small class="text-muted">@header.JobOfferNo | @header.CandidateName | @header.PositionTitle | Mockup data only</small>
+            </div>
+
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1">
+                    <i class="fas fa-code-branch fa-fw text-primary mr-1"></i>
+                    @header.CurrentVersion to @header.NewVersion
+                </span>
+                <span class="badge badge-warning">
+                    <i class="fas fa-comments fa-fw mr-1"></i>
+                    @header.Status
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-warning py-2 mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-fw mr-2"></i>
+                <span>Candidate did not accept the approved offer. A revised proposal may be created while previous offer history is retained.</span>
+            </div>
+        </div>
+
+        <div class="row text-center mb-4">
+            @foreach (var step in workflowSteps)
+            {
+                <div class="col-xl col-md-4 col-6 mb-2">
+                    <div class="border rounded bg-light px-2 py-2 h-100">
+                        <div class="@step.TextClass mb-1"><i class="@step.Icon"></i></div>
+                        <div class="text-xs font-weight-bold text-gray-800">@step.Name</div>
+                        <span class="badge @step.BadgeClass mt-1">@step.Status</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-comment-dots fa-fw text-warning mr-2"></i>
+                            Candidate Feedback
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in candidateFeedback)
+                        {
+                            <div class="row mb-2">
+                                <div class="col-sm-5 text-muted">@item.Label</div>
+                                <div class="col-sm-7 @(item.Highlight ? "font-weight-bold text-gray-900" : string.Empty)">@item.Value</div>
+                            </div>
+                        }
+                        <hr class="my-3" />
+                        <label class="font-weight-bold text-gray-700 mb-1">Reason</label>
+                        <textarea class="form-control form-control-sm form-ctrl-sml" rows="4" readonly>@feedbackReason</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                        <div>
+                            <h6 class="m-0 font-weight-bold text-gray-800">
+                                <i class="fas fa-archive fa-fw text-warning mr-2"></i>
+                                Version 1 Approved Offers
+                            </h6>
+                            <small class="text-muted">Historical offers are read-only and preserved for audit.</small>
+                        </div>
+                        <span class="badge badge-secondary mt-2 mt-md-0 align-self-start align-self-md-center">Declined</span>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm text-nowrap mb-0">
+                                <thead class="thead-light text-center">
+                                    <tr>
+                                        <th>Metric</th>
+                                        @foreach (var offer in previousOffers)
+                                        {
+                                            <th>@offer.Name</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-weight-bold text-gray-800">Salary</td>
+                                        @foreach (var offer in previousOffers)
+                                        {
+                                            <td class="text-right font-weight-bold text-gray-900">@offer.BaseSalary</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td>Allowance</td>
+                                        @foreach (var offer in previousOffers)
+                                        {
+                                            <td class="text-right">@offer.Allowance</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td>Transportation</td>
+                                        @foreach (var offer in previousOffers)
+                                        {
+                                            <td class="text-right">@offer.Transportation</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td>Status</td>
+                                        @foreach (var offer in previousOffers)
+                                        {
+                                            <td><span class="badge badge-secondary">@offer.Status</span></td>
+                                        }
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border rounded bg-white mb-4">
+            <div class="px-3 py-2 border-bottom bg-light">
+                <h6 class="m-0 font-weight-bold text-gray-800">
+                    <i class="fas fa-user-check fa-fw text-warning mr-2"></i>
+                    Previous Approval Trail
+                </h6>
+            </div>
+
+            <div class="p-3">
+                <div class="row">
+                    @foreach (var approval in previousApprovals)
+                    {
+                        <div class="col-lg-3 col-sm-6 mb-3 mb-lg-0">
+                            <div class="border rounded bg-light px-3 py-2 h-100">
+                                <div class="font-weight-bold text-gray-900">@approval.Actor</div>
+                                <span class="badge @approval.BadgeClass mt-1">@approval.Decision</span>
+                                <div class="text-muted mt-2">@approval.Remarks</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-8 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                        <div>
+                            <h6 class="m-0 font-weight-bold text-gray-800">
+                                <i class="fas fa-layer-group fa-fw text-warning mr-2"></i>
+                                Version 2 Proposal Options
+                            </h6>
+                            <small class="text-muted">New proposal cycle under the same job offer transaction.</small>
+                        </div>
+                        <span class="badge badge-warning mt-2 mt-md-0 align-self-start align-self-md-center">@header.NewVersion Draft</span>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm text-nowrap mb-3">
+                                <thead class="thead-light text-center">
+                                    <tr>
+                                        <th>Input</th>
+                                        @foreach (var proposal in newProposals)
+                                        {
+                                            <th>@proposal.Name</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-weight-bold text-gray-800">Base Salary</td>
+                                        @foreach (var proposal in newProposals)
+                                        {
+                                            <td><input class="form-control form-control-sm form-ctrl-sml text-right" value="@proposal.BaseSalary" readonly /></td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td>Allowance</td>
+                                        @foreach (var proposal in newProposals)
+                                        {
+                                            <td><input class="form-control form-control-sm form-ctrl-sml text-right" value="@proposal.Allowance" readonly /></td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td>Transportation</td>
+                                        @foreach (var proposal in newProposals)
+                                        {
+                                            <td><input class="form-control form-control-sm form-ctrl-sml text-right" value="@proposal.Transportation" readonly /></td>
+                                        }
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm text-nowrap mb-0">
+                                <thead class="thead-light text-center">
+                                    <tr>
+                                        <th>Computed Analysis</th>
+                                        @foreach (var proposal in newProposals)
+                                        {
+                                            <th>@proposal.Name</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Increase %</td>
+                                        @foreach (var proposal in newProposals)
+                                        {
+                                            <td class="text-right">@proposal.IncreasePercent</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td>Compa Ratio</td>
+                                        @foreach (var proposal in newProposals)
+                                        {
+                                            <td class="text-right">@proposal.CompaRatio</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td>Band Position</td>
+                                        @foreach (var proposal in newProposals)
+                                        {
+                                            <td><span class="badge @proposal.ValidationBadge">@proposal.BandPosition</span></td>
+                                        }
+                                    </tr>
+                                    <tr class="bg-light">
+                                        <td class="font-weight-bold text-gray-800">Total Monthly Package</td>
+                                        @foreach (var proposal in newProposals)
+                                        {
+                                            <td class="text-right font-weight-bold text-primary">@proposal.TotalPackage</td>
+                                        }
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-pen-square fa-fw text-warning mr-2"></i>
+                            Negotiation Justification
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold text-gray-700 mb-1">Reason for Re-Proposal</label>
+                            <textarea class="form-control form-control-sm form-ctrl-sml" rows="4" readonly>@justification.ReProposalReason</textarea>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="font-weight-bold text-gray-700 mb-1">Business Justification</label>
+                            <textarea class="form-control form-control-sm form-ctrl-sml" rows="5" readonly>@justification.BusinessJustification</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-table fa-fw text-warning mr-2"></i>
+                            Salary Matrix Validation
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in salaryMatrix)
+                        {
+                            <div class="d-flex justify-content-between border-bottom py-1">
+                                <span class="text-muted">@item.Label</span>
+                                <span class="font-weight-bold text-gray-900">@item.Value</span>
+                            </div>
+                        }
+
+                        <hr class="my-3" />
+
+                        @foreach (var proposal in newProposals)
+                        {
+                            <div class="d-flex justify-content-between align-items-center border rounded px-3 py-2 mb-2">
+                                <span class="font-weight-bold text-gray-800">@proposal.Name</span>
+                                <span class="badge @proposal.ValidationBadge">
+                                    <i class="@proposal.ValidationIcon fa-fw mr-1"></i>
+                                    @proposal.BandPosition
+                                </span>
+                            </div>
+                        }
+
+                        <div class="alert alert-danger py-2 mt-3 mb-0">
+                            <i class="fas fa-user-tie fa-fw mr-1"></i>
+                            Option 3 is near upper band threshold. President approval route is previewed as conditional.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-route fa-fw text-warning mr-2"></i>
+                            Approval Route Preview
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var route in approvalRoute)
+                        {
+                            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                                <span class="font-weight-bold text-gray-800">@route.Actor</span>
+                                <span class="badge @route.BadgeClass">@route.Requirement</span>
+                            </div>
+                        }
+                        <div class="border-left-warning bg-light px-3 py-2 mt-3">
+                            <i class="fas fa-info-circle fa-fw text-warning mr-1"></i>
+                            Route updates when salary band validation changes.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-balance-scale fa-fw text-warning mr-2"></i>
+                            Version Comparison
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>V1</th>
+                                        <th>V2</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in versionComparison)
+                                    {
+                                        <tr>
+                                            <td>@row.Metric</td>
+                                            <td class="text-right">@row.VersionOne</td>
+                                            <td class="text-right font-weight-bold @(row.Highlight ? "text-primary" : "text-gray-900")">@row.VersionTwo</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-history fa-fw text-warning mr-2"></i>
+                            Negotiation Timeline
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in negotiationTimeline)
+                        {
+                            <div class="d-flex mb-3">
+                                <span class="icon-circle @item.IconBg text-white mr-3 negotiate-icon-sm">
+                                    <i class="@item.Icon fa-sm"></i>
+                                </span>
+                                <div class="border-bottom flex-fill pb-2">
+                                    <div class="d-flex flex-column flex-md-row justify-content-between">
+                                        <span class="font-weight-bold text-gray-900">@item.Date</span>
+                                        <span class="badge badge-light border align-self-start align-self-md-center">@item.Tag</span>
+                                    </div>
+                                    <div class="text-muted">@item.Notes</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-database fa-fw text-warning mr-2"></i>
+                            Historical Records Preserved
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in preservedRecords)
+                        {
+                            <div class="d-flex align-items-center border-bottom py-2">
+                                <i class="fas fa-check-circle fa-fw text-success mr-2"></i>
+                                <span>@item</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column flex-md-row justify-content-end">
+            <button type="button" class="btn btn-outline-secondary btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+                <i class="fas fa-save fa-fw mr-1"></i>
+                Save Draft
+            </button>
+            <button type="button" class="btn btn-outline-info btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+                <i class="fas fa-calculator fa-fw mr-1"></i>
+                Recompute Analysis
+            </button>
+            <button type="button" class="btn btn-outline-warning btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+                <i class="fas fa-check-double fa-fw mr-1"></i>
+                Validate Salary Band
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+                <i class="fas fa-code-branch fa-fw mr-1"></i>
+                Create Version 2
+            </button>
+            <button type="button" class="btn btn-primary btn-sm btn-sml" disabled>
+                <i class="fas fa-paper-plane fa-fw mr-1"></i>
+                Submit For Approval
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .negotiate-page .form-ctrl-sml {
+        font-size: 0.78rem;
+        min-height: 31px;
+    }
+
+    .negotiate-page .btn-sml {
+        font-size: 0.76rem;
+        padding: 0.25rem 0.65rem;
+    }
+
+    .negotiate-page textarea.form-ctrl-sml {
+        min-height: auto;
+        resize: none;
+    }
+
+    .negotiate-page .negotiate-icon-sm {
+        height: 2rem;
+        width: 2rem;
+        min-width: 2rem;
+    }
+</style>
+
+@code {
+    private readonly MockHeader header = new(
+        "JO-2026-000145",
+        "V1",
+        "V2",
+        "Juan Dela Cruz",
+        "Territory Sales Representative",
+        "Negotiation In Progress");
+
+    private readonly List<MockStep> workflowSteps =
+    [
+        new("Job Offer Analysis", "fas fa-chart-line", "Done", "badge-success", "text-success"),
+        new("Approval Routing", "fas fa-route", "Done", "badge-success", "text-success"),
+        new("Candidate Discussion", "fas fa-comments", "Done", "badge-success", "text-success"),
+        new("Negotiation & Re-Proposal", "fas fa-sync-alt", "Current", "badge-warning", "text-warning"),
+        new("Approval Routing V2", "fas fa-user-check", "Next", "badge-light border", "text-gray-500"),
+        new("Candidate Acceptance", "fas fa-handshake", "Open", "badge-light border", "text-gray-500"),
+        new("Offer Letter", "fas fa-file-signature", "Open", "badge-light border", "text-gray-500")
+    ];
+
+    private readonly List<MockPair> candidateFeedback =
+    [
+        new("Discussion Date", "June 15, 2026", false),
+        new("Candidate Response", "Requested Negotiation", true),
+        new("Requested Salary", "PHP 48,000.00", true),
+        new("Current Version", "V1", false),
+        new("New Version", "V2", true)
+    ];
+
+    private readonly string feedbackReason = "Current offer is below market expectation. Candidate received competing offers and requested a revised salary package closer to PHP 48,000.00.";
+
+    private readonly List<MockPreviousOffer> previousOffers =
+    [
+        new("Option A", "PHP 42,000.00", "PHP 3,000.00", "PHP 1,500.00", "Declined"),
+        new("Option B", "PHP 45,000.00", "PHP 3,000.00", "PHP 1,500.00", "Declined")
+    ];
+
+    private readonly List<MockApproval> previousApprovals =
+    [
+        new("TA Partner", "Approved Analysis", "Salary package reviewed and routed.", "badge-success"),
+        new("HROD Head", "Approved", "Approved Option A and B.", "badge-success"),
+        new("Division Head", "Approved", "Approved Option A and B.", "badge-success"),
+        new("President", "Not Required", "No above-band escalation in V1.", "badge-light border")
+    ];
+
+    private readonly List<MockProposal> newProposals =
+    [
+        new("Option 1", "PHP 46,000.00", "PHP 3,000.00", "PHP 1,500.00", "PHP 50,500.00", "31.4%", "1.02", "Within Band", "badge-success", "fas fa-check-circle"),
+        new("Option 2", "PHP 48,000.00", "PHP 3,000.00", "PHP 1,500.00", "PHP 52,500.00", "37.1%", "1.07", "Upper Band", "badge-info", "fas fa-check-circle"),
+        new("Option 3", "PHP 50,000.00", "PHP 3,000.00", "PHP 1,500.00", "PHP 54,500.00", "42.9%", "1.11", "Upper Band", "badge-warning", "fas fa-exclamation-triangle")
+    ];
+
+    private readonly MockJustification justification = new(
+        "Candidate requested an adjusted package after declining V1 approved offers. The revised proposal aligns closer to candidate expectation while remaining within the approved salary matrix.",
+        "The role is critical to territory coverage and candidate profile matches hiring manager requirements. Re-proposal helps reduce offer loss risk while preserving approver comments, prior versions, and candidate responses.");
+
+    private readonly List<MockPair> salaryMatrix =
+    [
+        new("Minimum", "PHP 38,000.00", false),
+        new("Midpoint", "PHP 45,000.00", true),
+        new("Maximum", "PHP 52,000.00", false)
+    ];
+
+    private readonly List<MockRoute> approvalRoute =
+    [
+        new("TA Partner", "Required", "badge-primary"),
+        new("HROD Head", "Required", "badge-primary"),
+        new("Division Head", "Required", "badge-primary"),
+        new("President", "Conditional", "badge-warning")
+    ];
+
+    private readonly List<MockComparison> versionComparison =
+    [
+        new("Highest Salary", "PHP 45,000", "PHP 50,000", true),
+        new("Difference", "-", "PHP 5,000", true),
+        new("Highest Increase %", "28.57%", "42.86%", true),
+        new("Negotiation Reason", "Candidate Declined", "Requested Negotiation", false)
+    ];
+
+    private readonly List<MockTimeline> negotiationTimeline =
+    [
+        new("June 15, 2026", "Candidate Feedback", "Candidate declined Option B and requested PHP 48,000.00 salary.", "fas fa-comment-dots", "bg-warning"),
+        new("June 16, 2026", "Version Created", "TA Partner initiated Version 2 proposal set under the same job offer transaction.", "fas fa-code-branch", "bg-info"),
+        new("June 16, 2026", "Validation", "System recalculated increase percentage, compa-ratio, band position, and approval route preview.", "fas fa-calculator", "bg-primary")
+    ];
+
+    private readonly List<string> preservedRecords =
+    [
+        "Rejected proposals",
+        "Declined approved offers",
+        "Candidate feedback",
+        "Approver comments",
+        "Prior versions",
+        "Salary band flags and candidate responses"
+    ];
+
+    private sealed record MockHeader(
+        string JobOfferNo,
+        string CurrentVersion,
+        string NewVersion,
+        string CandidateName,
+        string PositionTitle,
+        string Status);
+
+    private sealed record MockStep(
+        string Name,
+        string Icon,
+        string Status,
+        string BadgeClass,
+        string TextClass);
+
+    private sealed record MockPair(
+        string Label,
+        string Value,
+        bool Highlight = false);
+
+    private sealed record MockPreviousOffer(
+        string Name,
+        string BaseSalary,
+        string Allowance,
+        string Transportation,
+        string Status);
+
+    private sealed record MockApproval(
+        string Actor,
+        string Decision,
+        string Remarks,
+        string BadgeClass);
+
+    private sealed record MockProposal(
+        string Name,
+        string BaseSalary,
+        string Allowance,
+        string Transportation,
+        string TotalPackage,
+        string IncreasePercent,
+        string CompaRatio,
+        string BandPosition,
+        string ValidationBadge,
+        string ValidationIcon);
+
+    private sealed record MockJustification(
+        string ReProposalReason,
+        string BusinessJustification);
+
+    private sealed record MockRoute(
+        string Actor,
+        string Requirement,
+        string BadgeClass);
+
+    private sealed record MockComparison(
+        string Metric,
+        string VersionOne,
+        string VersionTwo,
+        bool Highlight);
+
+    private sealed record MockTimeline(
+        string Date,
+        string Tag,
+        string Notes,
+        string Icon,
+        string IconBg);
+}

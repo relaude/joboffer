@@ -1,0 +1,429 @@
+After reviewing the **Process Flow** for **Candidate Discussion and Acceptance** (Row 13), this stage occurs **after at least one salary proposal has completed all approval levels** and the workflow status changes to:
+
+```text
+Approved for Candidate Discussion
+```
+
+The process flow indicates that the system should:
+
+1. Display only approved salary options.
+2. Hide rejected options.
+3. Display candidate contact details.
+4. Allow TA Partner to discuss offer options with candidate.
+5. Capture discussion notes.
+6. Record candidate feedback.
+7. Track acceptance, rejection, or negotiation requests.
+8. Allow re-proposal if candidate declines.
+9. Proceed to Offer Letter Generation if candidate accepts. 
+
+---
+
+# Candidate Discussion & Acceptance Page
+
+## Page Header
+
+```text
+-------------------------------------------------------
+Candidate Discussion & Acceptance
+-------------------------------------------------------
+
+Job Offer No     : JO-2026-000145
+
+Candidate        : Juan Dela Cruz
+
+Position         : Territory Sales Representative
+
+Current Status   : Approved For Candidate Discussion
+```
+
+---
+
+# Workflow Progress
+
+```text
+-------------------------------------------------------
+Workflow Progress
+-------------------------------------------------------
+
+✓ Job Offer Analysis
+
+✓ Salary Band Validation
+
+✓ Approval Routing
+
+⏳ Candidate Discussion
+
+□ Offer Letter Generation
+
+□ Completed
+```
+
+---
+
+# Candidate Information Card
+
+```text
+-------------------------------------------------------
+Candidate Information
+-------------------------------------------------------
+
+Candidate Name       : Juan Dela Cruz
+
+Email Address        : juan@email.com
+
+Mobile Number        : 0917-123-4567
+
+Current Employer     : ABC Corporation
+
+Current Salary       : ₱35,000
+
+Expected Salary      : ₱45,000
+
+Preferred Start Date : July 15, 2026
+```
+
+---
+
+# Position Information Card
+
+```text
+-------------------------------------------------------
+Position Information
+-------------------------------------------------------
+
+Requisition No     : REQ-2026-00125
+
+Position Title     : Territory Sales Representative
+
+Department         : Sales
+
+Company            : Unilab Inc.
+
+Legal Entity       : Unilab Philippines
+
+Hiring Manager     : Maria Santos
+```
+
+---
+
+# Approved Salary Options
+
+The Process Flow states:
+
+> System displays approved salary options only and hides rejected proposals. 
+
+### Option Comparison Grid
+
+```text
+------------------------------------------------------------------------------------------------
+
+Approved Offer Options
+
+------------------------------------------------------------------------------------------------
+
+                            Option A          Option B
+
+Base Salary                ₱42,000          ₱45,000
+
+Allowance                  ₱3,000           ₱3,000
+
+Transportation             ₱1,500           ₱1,500
+
+Total Monthly Package      ₱46,500          ₱49,500
+
+Remarks                    Conservative     Recommended
+
+------------------------------------------------------------------------------------------------
+
+Select Discussion Option
+
+( ) Option A
+
+( ) Option B
+
+------------------------------------------------------------------------------------------------
+```
+
+---
+
+# Candidate Discussion Record
+
+```text
+-------------------------------------------------------
+Discussion Information
+-------------------------------------------------------
+
+Discussion Date
+
+[ June 15, 2026 ]
+
+Discussion Method
+
+[ Phone Call ▼ ]
+
+Options
+
+Phone Call
+MS Teams
+Face-to-Face
+Email
+```
+
+---
+
+# Discussion Notes
+
+```text
+-------------------------------------------------------
+Discussion Notes
+-------------------------------------------------------
+
+[__________________________________________________]
+
+[__________________________________________________]
+
+[__________________________________________________]
+
+[__________________________________________________]
+```
+
+This section captures the notes referenced in the process flow. 
+
+---
+
+# Candidate Feedback Section
+
+```text
+-------------------------------------------------------
+Candidate Feedback
+-------------------------------------------------------
+
+Candidate Response
+
+( ) Accepted
+
+( ) Requested Negotiation
+
+( ) Declined
+
+Feedback
+
+[__________________________________________________]
+
+[__________________________________________________]
+
+[__________________________________________________]
+```
+
+---
+
+# Negotiation Request Panel
+
+Visible only when:
+
+```text
+Candidate Response = Requested Negotiation
+```
+
+```text
+-------------------------------------------------------
+Negotiation Request
+-------------------------------------------------------
+
+Candidate Preferred Salary
+
+[ ₱48,000 ]
+
+Reason
+
+[__________________________________________________]
+
+[__________________________________________________]
+
+-------------------------------------------------------
+```
+
+---
+
+# Acceptance Confirmation Panel
+
+Visible when:
+
+```text
+Candidate Response = Accepted
+```
+
+```text
+-------------------------------------------------------
+Acceptance Details
+-------------------------------------------------------
+
+Accepted Option
+
+Option B
+
+Accepted Salary
+
+₱45,000
+
+Acceptance Date
+
+June 15, 2026
+
+Expected Start Date
+
+July 15, 2026
+```
+
+---
+
+# Discussion Timeline
+
+A running history of candidate conversations.
+
+```text
+-------------------------------------------------------
+Discussion History
+-------------------------------------------------------
+
+06/15/2026
+Phone Call
+
+Candidate interested in the role.
+Requested clarification on benefits.
+
+-------------------------------------------------------
+
+06/16/2026
+MS Teams Meeting
+
+Benefits explained.
+Candidate verbally accepted Option B.
+```
+
+---
+
+# Re-Proposal Alert
+
+Visible when candidate requests negotiation or rejects all offers.
+
+```html
+<div class="alert alert-warning">
+
+Candidate requested a revised offer package.
+
+A new proposal cycle may be initiated.
+
+Previous offer history will be retained.
+
+</div>
+```
+
+The process flow specifically states that historical records must be preserved during re-proposal cycles. 
+
+---
+
+# Offer Acceptance Summary
+
+```text
+-------------------------------------------------------
+Offer Acceptance Summary
+-------------------------------------------------------
+
+Selected Option     : Option B
+
+Salary              : ₱45,000
+
+Discussion Status   : Accepted
+
+Acceptance Date     : June 16, 2026
+
+Offer Status        : Ready For Offer Letter Generation
+```
+
+---
+
+# Action Buttons
+
+```html
+<button class="btn btn-primary btn-sm">
+Save Discussion
+</button>
+
+<button class="btn btn-success btn-sm">
+Record Acceptance
+</button>
+
+<button class="btn btn-warning btn-sm">
+Initiate Re-Proposal
+</button>
+
+<button class="btn btn-danger btn-sm">
+Record Decline
+</button>
+
+<button class="btn btn-info btn-sm">
+Generate Offer Letter
+</button>
+```
+
+---
+
+# Recommended Bootstrap Layout
+
+```text
++------------------------------------------------------+
+| Candidate Discussion & Acceptance                    |
++------------------------------------------------------+
+
++------------------------------------------------------+
+| Workflow Progress                                    |
++------------------------------------------------------+
+
++----------------------+-------------------------------+
+| Candidate Info       | Position Info                 |
++----------------------+-------------------------------+
+
++------------------------------------------------------+
+| Approved Salary Options                              |
++------------------------------------------------------+
+
++------------------------------------------------------+
+| Discussion Information                               |
++------------------------------------------------------+
+
++------------------------------------------------------+
+| Discussion Notes                                     |
++------------------------------------------------------+
+
++------------------------------------------------------+
+| Candidate Feedback                                   |
++------------------------------------------------------+
+
++------------------------------------------------------+
+| Negotiation Request (Conditional)                    |
++------------------------------------------------------+
+
++------------------------------------------------------+
+| Discussion Timeline                                  |
++------------------------------------------------------+
+
++------------------------------------------------------+
+| Offer Acceptance Summary                             |
++------------------------------------------------------+
+
+[Save] [Accept] [Re-Propose] [Decline] [Generate Offer]
+```
+
+### UX Recommendation
+
+For your ASP.NET MVC / Razor + SBAdmin2 implementation, use a **tabbed interface**:
+
+1. **Approved Offers**
+2. **Discussion Notes**
+3. **Candidate Feedback**
+4. **Negotiation History**
+5. **Acceptance Summary**
+6. **Audit Trail**
+
+This keeps the page compact while supporting the complete Candidate Discussion and Acceptance workflow described in the process flow. 

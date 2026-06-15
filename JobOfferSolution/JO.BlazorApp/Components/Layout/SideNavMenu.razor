@@ -8,7 +8,7 @@
 
     @if (user.Identity?.IsAuthenticated == true)
     {
-        @if (user.IsInRole(JOUserRole.TA) == true)
+        @* @if (user.IsInRole(JOUserRole.TA) == true)
         {
             <TAMenu />
         }
@@ -21,7 +21,9 @@
         @if (user.IsInRole(JOUserRole.DH) == true)
         {
             <DHMenu />
-        }
+        } *@
+
+        <MockMenu />
 
         @if (user.IsInRole(JOUserRole.Admin) == true)
         {

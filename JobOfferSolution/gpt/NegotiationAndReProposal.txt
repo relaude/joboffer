@@ -1,0 +1,515 @@
+After reviewing the **Process Flow** for **Negotiation and Re-Proposal** (Row 14), this page is significantly different from the Candidate Discussion page.
+
+This stage occurs when:
+
+* Candidate rejects all approved offers
+* Candidate requests a higher salary
+* TA Partner decides to create a revised proposal
+* Existing approved offers must be preserved as historical versions
+* A new proposal cycle is created under the same Job Offer transaction
+
+The workflow explicitly states:
+
+> System preserves historical records:
+>
+> 1. Rejected proposals
+> 2. Declined approved offers
+> 3. Candidate feedback
+> 4. Approver comments
+> 5. Prior versions
+> 6. Salary band flags and candidate responses
+>
+> System creates new proposal version number
+>
+> System routes new proposal set for approval. 
+
+---
+
+# Job Offer Negotiation & Re-Proposal Page
+
+## Header
+
+```text
+--------------------------------------------------------
+Negotiation & Re-Proposal
+--------------------------------------------------------
+
+Job Offer No       : JO-2026-000145
+
+Current Version    : V1
+
+New Version        : V2
+
+Candidate          : Juan Dela Cruz
+
+Position           : Territory Sales Representative
+
+Status             : Negotiation In Progress
+```
+
+---
+
+# Workflow Progress
+
+```text
+✓ Job Offer Analysis
+
+✓ Approval Routing
+
+✓ Candidate Discussion
+
+⏳ Negotiation & Re-Proposal
+
+□ Approval Routing (Version 2)
+
+□ Candidate Acceptance
+
+□ Offer Letter Generation
+```
+
+---
+
+# Negotiation Summary Banner
+
+```html
+<div class="alert alert-warning">
+
+Candidate did not accept the approved offer.
+
+A revised proposal may be created.
+
+Previous offer history will be retained.
+
+</div>
+```
+
+---
+
+# Candidate Feedback Section
+
+This section explains why re-proposal is required.
+
+```text
+--------------------------------------------------------
+Candidate Feedback
+--------------------------------------------------------
+
+Discussion Date
+
+June 15, 2026
+
+Candidate Response
+
+Requested Negotiation
+
+Requested Salary
+
+₱48,000
+
+Reason
+
+Current offer is below market expectation.
+Candidate received competing offers.
+
+--------------------------------------------------------
+```
+
+---
+
+# Previous Approved Offers
+
+Display historical offers in read-only mode.
+
+```text
+----------------------------------------------------------------------------------------------------------------
+
+Version 1 Approved Offers
+
+----------------------------------------------------------------------------------------------------------------
+
+                    OPTION A           OPTION B
+
+Salary              ₱42,000           ₱45,000
+
+Allowance           ₱3,000            ₱3,000
+
+Transportation      ₱1,500            ₱1,500
+
+Status              Declined          Declined
+
+----------------------------------------------------------------------------------------------------------------
+```
+
+This preserves approved offer history as required by the workflow. 
+
+---
+
+# Previous Approval History
+
+```text
+--------------------------------------------------------
+Previous Approval Trail
+--------------------------------------------------------
+
+TA Partner
+Approved Analysis
+
+HROD Head
+Approved Option A & B
+
+Division Head
+Approved Option A & B
+
+President
+Not Required
+
+--------------------------------------------------------
+```
+
+---
+
+# Re-Proposal Creation Section
+
+This becomes the primary working area.
+
+## New Salary Options
+
+```text
+--------------------------------------------------------------------------------------------------
+
+Version 2 Proposal Options
+
+--------------------------------------------------------------------------------------------------
+
+                     Option 1       Option 2       Option 3
+
+Base Salary
+
+[ 46,000 ]      [ 48,000 ]      [ 50,000 ]
+
+Allowance
+
+[ 3,000 ]       [ 3,000 ]       [ 3,000 ]
+
+Transportation
+
+[ 1,500 ]       [ 1,500 ]       [ 1,500 ]
+
+--------------------------------------------------------------------------------------------------
+```
+
+---
+
+# Auto Computation Panel
+
+System automatically recalculates values.
+
+```text
+--------------------------------------------------------------------------------------------------
+
+Computed Analysis
+
+--------------------------------------------------------------------------------------------------
+
+                     Option 1       Option 2       Option 3
+
+Increase %
+
+31.4%          37.1%          42.9%
+
+Compa Ratio
+
+1.02           1.07           1.11
+
+Band Position
+
+Within Band    Upper Band     Upper Band
+
+--------------------------------------------------------------------------------------------------
+```
+
+The workflow indicates the system must compute:
+
+* Salary Band Position
+* Percentage Increase
+* Compa-Ratio
+* Base Salary Indicators
+
+
+
+---
+
+# Negotiation Justification
+
+```text
+--------------------------------------------------------
+Negotiation Justification
+--------------------------------------------------------
+
+Reason for Re-Proposal
+
+[_______________________________________]
+
+[_______________________________________]
+
+[_______________________________________]
+
+Business Justification
+
+[_______________________________________]
+
+[_______________________________________]
+
+--------------------------------------------------------
+```
+
+---
+
+# Salary Band Validation
+
+Real-time validation.
+
+```text
+--------------------------------------------------------
+Salary Matrix Validation
+--------------------------------------------------------
+
+Minimum     ₱38,000
+
+Midpoint    ₱45,000
+
+Maximum     ₱52,000
+
+--------------------------------------------------------
+
+Option 1
+
+✓ WITHIN BAND
+
+--------------------------------------------------------
+
+Option 2
+
+✓ WITHIN BAND
+
+--------------------------------------------------------
+
+Option 3
+
+✓ WITHIN BAND
+
+--------------------------------------------------------
+```
+
+---
+
+# Above Band Escalation Panel
+
+Only displayed if necessary.
+
+```html
+<div class="alert alert-danger">
+
+Option 3 exceeds salary band maximum.
+
+President Approval will be required.
+
+</div>
+```
+
+Based on the Process Flow's President Escalation route. 
+
+---
+
+# Version Comparison Panel
+
+One of the most useful screens for approvers.
+
+```text
+------------------------------------------------------------------------------------------------------------------
+
+Version Comparison
+
+------------------------------------------------------------------------------------------------------------------
+
+                          Version 1           Version 2
+
+Highest Salary            ₱45,000            ₱50,000
+
+Difference                                     ₱5,000
+
+Highest Increase %        28.57%             42.86%
+
+Negotiation Reason        Candidate Declined
+
+------------------------------------------------------------------------------------------------------------------
+```
+
+---
+
+# Approval Route Preview
+
+Automatically updated.
+
+```text
+--------------------------------------------------------
+Approval Route Preview
+--------------------------------------------------------
+
+TA Partner
+
+Required
+
+HROD Head
+
+Required
+
+Division Head
+
+Required
+
+President
+
+Not Required
+
+--------------------------------------------------------
+```
+
+or
+
+```text
+President Approval Required
+Reason: Above Salary Band
+```
+
+---
+
+# Negotiation History
+
+```text
+--------------------------------------------------------
+Negotiation Timeline
+--------------------------------------------------------
+
+06/15/2026
+
+Candidate declined Option B.
+
+Requested ₱48,000 salary.
+
+--------------------------------------------------------
+
+06/16/2026
+
+TA Partner initiated Version 2.
+
+--------------------------------------------------------
+```
+
+---
+
+# Re-Proposal Actions
+
+```html
+<button class="btn btn-secondary btn-sm">
+Save Draft
+</button>
+
+<button class="btn btn-info btn-sm">
+Recompute Analysis
+</button>
+
+<button class="btn btn-warning btn-sm">
+Validate Salary Band
+</button>
+
+<button class="btn btn-primary btn-sm">
+Create Version 2
+</button>
+
+<button class="btn btn-success btn-sm">
+Submit For Approval
+</button>
+```
+
+---
+
+# Recommended Bootstrap Layout
+
+```text
++-------------------------------------------------------+
+| Negotiation & Re-Proposal Header                      |
++-------------------------------------------------------+
+
++-------------------------------------------------------+
+| Candidate Feedback                                    |
++-------------------------------------------------------+
+
++-------------------------------------------------------+
+| Previous Approved Offers (Read Only)                 |
++-------------------------------------------------------+
+
++-------------------------------------------------------+
+| Previous Approval History                             |
++-------------------------------------------------------+
+
++-------------------------------------------------------+
+| Version 2 Salary Proposal Options                     |
++-------------------------------------------------------+
+
++-------------------------------------------------------+
+| Computed Analysis                                     |
++-------------------------------------------------------+
+
++------------------------+------------------------------+
+| Salary Validation      | Approval Route Preview       |
++------------------------+------------------------------+
+
++-------------------------------------------------------+
+| Negotiation Justification                             |
++-------------------------------------------------------+
+
++-------------------------------------------------------+
+| Version Comparison                                    |
++-------------------------------------------------------+
+
++-------------------------------------------------------+
+| Negotiation Timeline                                  |
++-------------------------------------------------------+
+
+[Save] [Validate] [Create Version] [Submit]
+```
+
+### Recommended Database Design
+
+For this screen, do **not overwrite existing offers**. Instead create:
+
+```sql
+JobOffer
+(
+    Id,
+    JobOfferNo,
+    CurrentVersionNo
+)
+
+JobOfferVersion
+(
+    Id,
+    JobOfferId,
+    VersionNo,
+    Status,
+    CreatedBy,
+    CreatedDate
+)
+
+JobOfferProposal
+(
+    Id,
+    JobOfferVersionId,
+    OptionNo,
+    ProposedSalary,
+    Justification
+)
+```
+
+This structure directly supports the workflow requirement to maintain **historical proposal versions**, approval history, candidate responses, and negotiation cycles while creating new proposal versions under the same Job Offer transaction. 

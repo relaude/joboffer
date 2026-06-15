@@ -1,0 +1,679 @@
+@attribute [Route(JORoutes.MockUp.Approval)]
+
+<div class="card shadow mb-4 border-left-primary small approval-form-page">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-file-signature fa-fw mr-2"></i>
+                    Approval Form
+                </h6>
+                <small class="text-muted">@mockHeader.JobOfferNumber | @mockHeader.CandidateName | Mockup data only</small>
+            </div>
+
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1">
+                    <i class="fas fa-user-shield fa-fw text-primary mr-1"></i>
+                    HROD Head View
+                </span>
+                <span class="badge badge-warning">
+                    <i class="fas fa-exclamation-triangle fa-fw mr-1"></i>
+                    President Check Possible
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-light border-left-info py-2 mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle fa-fw text-info mr-2"></i>
+                <span>Multi-option approval workspace for reviewing salary proposals, salary band validation, justification notes, and route decisions per proposal.</span>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            @foreach (var step in workflowSteps)
+            {
+                <div class="col-md-3 col-6 mb-2">
+                    <div class="border rounded bg-light px-3 py-2 h-100">
+                        <div class="d-flex align-items-center">
+                            <span class="icon-circle @step.IconBg mr-2 approval-icon-sm">
+                                <i class="@step.Icon fa-sm"></i>
+                            </span>
+                            <div>
+                                <div class="text-xs font-weight-bold text-gray-800">@step.Name</div>
+                                <span class="badge @step.BadgeClass">@step.Status</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-id-card fa-fw text-primary mr-2"></i>
+                            Candidate Information
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-2">Candidate</div>
+                                <div class="font-weight-bold text-gray-900">@candidate.Name</div>
+                                <div class="text-muted">@candidate.Email</div>
+                                <div class="text-muted">@candidate.ContactNumber</div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-2">Application</div>
+                                <div class="d-flex justify-content-between border-bottom py-1">
+                                    <span class="text-muted">Position Applied</span>
+                                    <span class="font-weight-bold text-gray-900">@candidate.PositionAppliedFor</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom py-1">
+                                    <span class="text-muted">Current Employer</span>
+                                    <span class="font-weight-bold text-gray-900">@candidate.CurrentEmployer</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom py-1">
+                                    <span class="text-muted">Current Salary</span>
+                                    <span class="font-weight-bold text-gray-900">@candidate.CurrentSalary</span>
+                                </div>
+                                <div class="d-flex justify-content-between py-1">
+                                    <span class="text-muted">Expected Salary</span>
+                                    <span class="font-weight-bold text-gray-900">@candidate.ExpectedSalary</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label class="font-weight-bold text-gray-700 mb-1">Application Date</label>
+                                <div class="form-control form-control-sm form-ctrl-sml bg-light">@candidate.ApplicationDate</div>
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label class="font-weight-bold text-gray-700 mb-1">Validated By</label>
+                                <div class="form-control form-control-sm form-ctrl-sml bg-light">@candidate.ValidatedBy</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="font-weight-bold text-gray-700 mb-1">Validated Date</label>
+                                <div class="form-control form-control-sm form-ctrl-sml bg-light">@candidate.ValidatedDate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-building fa-fw text-primary mr-2"></i>
+                            Requisition Information
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Requisition No.</div>
+                            <div class="col-sm-7 font-weight-bold text-gray-900">@requisition.RequisitionNo</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Company</div>
+                            <div class="col-sm-7">@requisition.Company</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Legal Entity</div>
+                            <div class="col-sm-7 font-weight-bold text-gray-900">@requisition.LegalEntity</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Job Family</div>
+                            <div class="col-sm-7">@requisition.JobFamily</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Job Level</div>
+                            <div class="col-sm-7">@requisition.JobLevel</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Salary Grade</div>
+                            <div class="col-sm-7">@requisition.SalaryGrade</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5 text-muted">Approval Route</div>
+                            <div class="col-sm-7"><span class="badge badge-success">@requisition.RouteLabel</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-table fa-fw text-primary mr-2"></i>
+                            Salary Matrix Summary
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Matrix Name</div>
+                            <div class="col-sm-7 font-weight-bold text-gray-900">@matrix.MatrixName</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Matrix Code</div>
+                            <div class="col-sm-7">@matrix.MatrixCode</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Minimum</div>
+                            <div class="col-sm-7">@matrix.Minimum</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Midpoint</div>
+                            <div class="col-sm-7 font-weight-bold text-gray-900">@matrix.Midpoint</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Maximum</div>
+                            <div class="col-sm-7">@matrix.Maximum</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5 text-muted">Effective</div>
+                            <div class="col-sm-7">@matrix.EffectiveDate</div>
+                        </div>
+
+                        <div class="border-left-success bg-light px-3 py-2 mt-3">
+                            <i class="fas fa-check-circle fa-fw text-success mr-1"></i>
+                            Matrix is active and ready for comparison.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                        <div>
+                            <h6 class="m-0 font-weight-bold text-gray-800">
+                                <i class="fas fa-layer-group fa-fw text-primary mr-2"></i>
+                                Proposal Comparison
+                            </h6>
+                            <small class="text-muted">Approver sees all salary options in one view, with validation and route markers.</small>
+                        </div>
+                        <span class="badge badge-light border mt-2 mt-md-0 align-self-start align-self-md-center">TA Justification Included</span>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm text-nowrap mb-0">
+                                <thead class="thead-light text-center">
+                                    <tr>
+                                        <th>Metric</th>
+                                        @foreach (var option in proposals)
+                                        {
+                                            <th>@option.Name</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-weight-bold text-gray-900">Base Salary</td>
+                                        @foreach (var option in proposals)
+                                        {
+                                            <td class="text-right">@option.BaseSalary</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold text-gray-900">Increase %</td>
+                                        @foreach (var option in proposals)
+                                        {
+                                            <td class="text-right">@option.IncreasePercent</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold text-gray-900">Compa Ratio</td>
+                                        @foreach (var option in proposals)
+                                        {
+                                            <td class="text-right">@option.CompaRatio</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold text-gray-900">Band Position</td>
+                                        @foreach (var option in proposals)
+                                        {
+                                            <td class="text-center"><span class="badge @option.BadgeClass">@option.BandPosition</span></td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold text-gray-900">Approval Route</td>
+                                        @foreach (var option in proposals)
+                                        {
+                                            <td class="text-center">@option.ApprovalRoute</td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold text-gray-900">TA Justification</td>
+                                        @foreach (var option in proposals)
+                                        {
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-outline-primary btn-sm btn-sml" disabled>
+                                                    <i class="fas fa-eye fa-fw mr-1"></i>
+                                                    View
+                                                </button>
+                                            </td>
+                                        }
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-check-double fa-fw text-primary mr-2"></i>
+                            Validation Results
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var option in proposals)
+                        {
+                            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                                <span>@option.Name</span>
+                                <span class="badge @option.ValidationBadgeClass">
+                                    <i class="@option.ValidationIcon fa-fw mr-1"></i>
+                                    @option.ValidationStatus
+                                </span>
+                            </div>
+                        }
+
+                        <div class="border-left-warning bg-light px-3 py-2 mt-3">
+                            <div class="font-weight-bold text-gray-900">President Escalation</div>
+                            <div class="text-muted">Required only when an option exceeds the approved salary band.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-balance-scale fa-fw text-primary mr-2"></i>
+                            Equity and Market Data
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-2">Internal Equity</div>
+                        @foreach (var item in internalEquity)
+                        {
+                            <div class="d-flex justify-content-between border-bottom py-1">
+                                <span>@item.Label</span>
+                                <span class="font-weight-bold text-gray-900">@item.Value</span>
+                            </div>
+                        }
+
+                        <hr class="my-3" />
+
+                        <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-2">Market Benchmark</div>
+                        @foreach (var item in marketBenchmark)
+                        {
+                            <div class="d-flex justify-content-between border-bottom py-1">
+                                <span>@item.Label</span>
+                                <span class="font-weight-bold text-gray-900">@item.Value</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-clipboard-list fa-fw text-primary mr-2"></i>
+                            Approval History
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in approvalHistory)
+                        {
+                            <div class="border-left-primary bg-light px-3 py-2 mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <span class="font-weight-bold text-gray-900">@item.Actor</span>
+                                    <span class="badge @item.BadgeClass">@item.Status</span>
+                                </div>
+                                <div class="text-muted">@item.Description</div>
+                                <div class="text-muted small">@item.Timestamp</div>
+                            </div>
+                        }
+
+                        <div class="alert alert-warning py-2 mb-0" role="alert">
+                            <i class="fas fa-exclamation-triangle fa-fw mr-1"></i>
+                            Above-band proposals would add President Approval to the routing chain.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-pen-square fa-fw text-primary mr-2"></i>
+                            Approval Decision
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Decision</label>
+                                <div class="form-control form-control-sm form-ctrl-sml bg-light">
+                                    <i class="fas fa-circle-check fa-fw text-success mr-1"></i>
+                                    Approve Selected Options
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Selected Proposal</label>
+                                <div class="form-control form-control-sm form-ctrl-sml bg-light">@mockHeader.SelectedProposal</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Routing Status</label>
+                                <div class="form-control form-control-sm form-ctrl-sml bg-light">@mockHeader.RoutingStatus</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold text-gray-700 mb-1">Comments</label>
+                            <textarea class="form-control form-control-sm form-ctrl-sml" rows="5" readonly>@mockHeader.Comments</textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-2 mb-md-0">
+                                <div class="border-left-success bg-light px-3 py-2 h-100">
+                                    <div class="text-xs font-weight-bold text-uppercase text-gray-500">Required Action</div>
+                                    <div class="text-gray-900">Review each proposal in sequence.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2 mb-md-0">
+                                <div class="border-left-info bg-light px-3 py-2 h-100">
+                                    <div class="text-xs font-weight-bold text-uppercase text-gray-500">Comment Rule</div>
+                                    <div class="text-gray-900">Required for revision or rejection.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border-left-warning bg-light px-3 py-2 h-100">
+                                    <div class="text-xs font-weight-bold text-uppercase text-gray-500">Audit Trail</div>
+                                    <div class="text-gray-900">Timestamp and user will be stored.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-route fa-fw text-primary mr-2"></i>
+                            Approval Routing
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="d-flex align-items-center border-bottom py-2">
+                            <span class="icon-circle bg-success text-white mr-2 approval-icon-sm"><i class="fas fa-check fa-sm"></i></span>
+                            <div>
+                                <div class="font-weight-bold text-gray-900">HROD Head</div>
+                                <div class="text-muted">Pending approval review</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2">
+                            <span class="icon-circle bg-light text-gray-700 mr-2 approval-icon-sm"><i class="fas fa-circle fa-sm"></i></span>
+                            <div>
+                                <div class="font-weight-bold text-gray-900">Division Head</div>
+                                <div class="text-muted">Queued after HROD decision</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2">
+                            <span class="icon-circle bg-light text-gray-700 mr-2 approval-icon-sm"><i class="fas fa-user-tie fa-sm"></i></span>
+                            <div>
+                                <div class="font-weight-bold text-gray-900">President Approval</div>
+                                <div class="text-muted">Shown only for above-band options</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center py-2">
+                            <span class="icon-circle bg-primary text-white mr-2 approval-icon-sm"><i class="fas fa-flag-checkered fa-sm"></i></span>
+                            <div>
+                                <div class="font-weight-bold text-gray-900">Approved for Candidate Discussion</div>
+                                <div class="text-muted">Final step after routing completes</div>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="border-left-danger bg-light px-3 py-2">
+                            <div class="font-weight-bold text-gray-900">President Escalation Banner</div>
+                            <div class="text-muted">Displayed when any proposal is above band. Not triggered in this mockup.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-white d-flex flex-column flex-md-row justify-content-end">
+        <button type="button" class="btn btn-outline-secondary btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+            <i class="fas fa-undo fa-fw mr-1"></i>
+            Return to TA
+        </button>
+        <button type="button" class="btn btn-outline-warning btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+            <i class="fas fa-exclamation-circle fa-fw mr-1"></i>
+            Return for Revision
+        </button>
+        <button type="button" class="btn btn-outline-danger btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+            <i class="fas fa-times fa-fw mr-1"></i>
+            Reject
+        </button>
+        <button type="button" class="btn btn-primary btn-sm btn-sml" disabled>
+            <i class="fas fa-check fa-fw mr-1"></i>
+            Approve Selected
+        </button>
+    </div>
+</div>
+
+<style>
+    .approval-form-page .form-ctrl-sml {
+        font-size: .8rem;
+        min-height: calc(1.5em + .5rem + 2px);
+    }
+
+    .approval-form-page .btn-sml {
+        font-size: .78rem;
+    }
+
+    .approval-form-page .approval-icon-sm {
+        height: 2rem;
+        width: 2rem;
+        min-width: 2rem;
+    }
+</style>
+
+@code {
+    private readonly MockHeader mockHeader = new(
+        "JO-2026-000145",
+        "Juan Dela Cruz",
+        "Pending Approval",
+        "Option 2",
+        "No escalation required",
+        "Approve Option 2 after comparing band results, market alignment, and justification notes."
+    );
+
+    private readonly MockCandidate candidate = new(
+        "Juan Dela Cruz",
+        "juan.delacruz@example.com",
+        "+63 917 555 0192",
+        "Territory Sales Representative",
+        "ABC Corporation",
+        "PHP 35,000.00",
+        "PHP 45,000.00",
+        "Jun 11, 2026",
+        "Validated by TA Partner",
+        "Jun 12, 2026"
+    );
+
+    private readonly MockRequisition requisition = new(
+        "REQ-2026-00125",
+        "Unilab Inc.",
+        "Unilab Philippines",
+        "Sales",
+        "P3",
+        "SG-12",
+        "HROD / Division / President"
+    );
+
+    private readonly MockMatrix matrix = new(
+        "PH Sales 2026 Salary Matrix",
+        "SM-2026-PH-12",
+        "PHP 38,000.00",
+        "PHP 45,000.00",
+        "PHP 52,000.00",
+        "Jan 01, 2026"
+    );
+
+    private readonly List<MockStep> workflowSteps =
+    [
+        new("TA Analysis", "fas fa-check-circle", "Done", "badge-success", "bg-success text-white"),
+        new("HROD Head", "fas fa-user-shield", "Pending", "badge-warning", "bg-warning text-white"),
+        new("Division Head", "fas fa-sitemap", "Queued", "badge-light border", "bg-light text-gray-700"),
+        new("President", "fas fa-user-tie", "If Required", "badge-light border", "bg-light text-gray-700")
+    ];
+
+    private readonly List<MockProposal> proposals =
+    [
+        new("Option 1", "PHP 42,000.00", "Conservative offer aligned with lower market range.", "Within Band", "20.0%", "0.93", "PHP 504,000.00", "Within Band", "badge-success", "fas fa-check-circle", "badge-success","HROD"),
+        new("Option 2", "PHP 45,000.00", "Recommended option aligned with midpoint and candidate expectation.", "Midpoint", "28.6%", "1.00", "PHP 540,000.00", "Within Band", "badge-success", "fas fa-check-circle", "badge-success","Division Head"),
+        new("Option 3", "PHP 50,000.00", "Competitive offer positioned near the upper band.", "Upper Band", "42.9%", "1.11", "PHP 600,000.00", "Within Band", "badge-success", "fas fa-check-circle", "badge-success", "President")
+    ];
+
+    private readonly List<MockPair> internalEquity =
+    [
+        new("Lowest Similar Position", "PHP 40,000.00"),
+        new("Average Salary", "PHP 44,500.00"),
+        new("Highest Salary", "PHP 50,000.00")
+    ];
+
+    private readonly List<MockPair> marketBenchmark =
+    [
+        new("Market Minimum", "PHP 40,000.00"),
+        new("Market Median", "PHP 47,000.00"),
+        new("Market Maximum", "PHP 55,000.00")
+    ];
+
+    private readonly List<MockApproval> approvalHistory =
+    [
+        new("TA Partner", "Approved Analysis", "", "Jun 12, 2026 09:45 AM", "badge-success"),
+        new("HROD Head", "Pending", "Awaiting salary comparison review", "", "badge-warning"),
+        new("Division Head", "Pending", "Will receive task after HROD decision", "", "badge-warning")
+    ];
+
+    private readonly List<MockMapping> mockMappings =
+    [
+        new("Candidate", "Candidates", "FirstName, LastName, Email, ContactNumber, PositionAppliedFor, CurrentEmployer, ExpectedSalary"),
+        new("Application", "CandidateApplications", "CandidateId, RequisitionId, HiringCompanyId, LegalEntityId, ApplicationDate, TAOwnerId"),
+        new("Compensation profile", "CandidateCompensationProfile", "CurrentBaseSalary, CurrentAllowance, CurrentBonus, ExpectedSalary, IsValidated, ValidationDate"),
+        new("Submission documents", "CandidateDocuments", "CandidateApplicationId, DocumentTypeId, FileName, UploadedDate, IsActive"),
+        new("Salary matrix", "SalaryMatrix", "CompanyId, DivisionId, MatrixName, MatrixCode, EffectiveFrom, EffectiveTo, ApprovalStatusId, IsActive"),
+        new("Salary bands", "SalaryMatrixBand", "SalaryMatrixId, JobLevelId, JobFamilyId, PositionGradeId, BandMinimum, BandMidpoint, BandMaximum"),
+        new("Offer header", "JobOffers", "JobOfferNumber, Candidate_Id, CandidateApplicationId, BasicSalary, Allowance, SigningBonus, OfferDate"),
+        new("Offer compensation", "JobOfferCompensations", "MonthlySalary, AnnualSalary, RiceAllowance, TransportationAllowance, CommunicationAllowance, SigningBonus"),
+        new("Offer benefits", "JobOfferBenefits", "JobOfferId, BenefitId, BenefitValue")
+    ];
+
+    private sealed record MockHeader(
+        string JobOfferNumber,
+        string CandidateName,
+        string Status,
+        string SelectedProposal,
+        string RoutingStatus,
+        string Comments);
+
+    private sealed record MockCandidate(
+        string Name,
+        string Email,
+        string ContactNumber,
+        string PositionAppliedFor,
+        string CurrentEmployer,
+        string CurrentSalary,
+        string ExpectedSalary,
+        string ApplicationDate,
+        string ValidatedBy,
+        string ValidatedDate);
+
+    private sealed record MockRequisition(
+        string RequisitionNo,
+        string Company,
+        string LegalEntity,
+        string JobFamily,
+        string JobLevel,
+        string SalaryGrade,
+        string RouteLabel);
+
+    private sealed record MockMatrix(
+        string MatrixName,
+        string MatrixCode,
+        string Minimum,
+        string Midpoint,
+        string Maximum,
+        string EffectiveDate);
+
+    private sealed record MockStep(
+        string Name,
+        string Icon,
+        string Status,
+        string BadgeClass,
+        string IconBg);
+
+    private sealed record MockProposal(
+        string Name,
+        string BaseSalary,
+        string Justification,
+        string BandPosition,
+        string IncreasePercent,
+        string CompaRatio,
+        string AnnualSalary,
+        string ValidationStatus,
+        string BadgeClass,
+        string ValidationIcon,
+        string ValidationBadgeClass,
+        string ApprovalRoute);
+
+    private sealed record MockPair(string Label, string Value);
+
+    private sealed record MockApproval(
+        string Actor,
+        string Status,
+        string Description,
+        string Timestamp,
+        string BadgeClass);
+
+    private sealed record MockMapping(string Area, string TableName, string Fields);
+}

@@ -1,0 +1,403 @@
+After reviewing the **Approval Routing** stages (Rows 8–10) and the **Process Flow**, the Job Offer system should not use a simple approve/reject screen.
+
+The workflow shows a **Multi-Option Job Offer Approval Workspace** where approvers review all salary proposals in a single screen and make decisions per proposal. The process includes:
+
+1. HROD Head Approval
+2. Division Head Approval
+3. President Approval (Above-Band Salaries Only)
+4. Multi-option comparison
+5. Approval comments
+6. Approval history
+7. Salary Band Validation results
+8. Candidate & Requisition information
+
+The Process Flow explicitly states:
+
+* System creates approval workflow instance.
+* Approvers review proposal comparison in one approval view.
+* Approvers review each salary proposal.
+* Decision is recorded per proposal.
+* Above-band proposals route to President Approval.
+* Approval comments and timestamps are stored. 
+
+---
+
+# Job Offer Approval Routing Page
+
+## Header
+
+```text
+-------------------------------------------------------
+Job Offer Approval
+-------------------------------------------------------
+
+Job Offer No : JO-2026-000145
+
+Candidate    : Juan Dela Cruz
+
+Position     : Territory Sales Representative
+
+Current Stage:
+✓ HROD Head Approval
+
+Status:
+Pending Approval
+```
+
+---
+
+# Workflow Progress Tracker
+
+```text
+-------------------------------------------------------
+Approval Workflow
+-------------------------------------------------------
+
+[✓] TA Partner Analysis
+
+[⏳] HROD Head
+
+[ ] Division Head
+
+[ ] President
+    (If Required)
+
+[ ] Approved for Candidate Discussion
+
+-------------------------------------------------------
+```
+
+---
+
+# Candidate Information Card
+
+```text
+-------------------------------------------------------
+Candidate Information
+-------------------------------------------------------
+
+Candidate Name     : Juan Dela Cruz
+
+Current Salary     : ₱35,000
+
+Expected Salary    : ₱45,000
+
+Position Applied   : TSR
+
+Years Experience   : 5
+
+Application Date   : June 11, 2026
+
+-------------------------------------------------------
+```
+
+---
+
+# Requisition Information Card
+
+```text
+-------------------------------------------------------
+Requisition Information
+-------------------------------------------------------
+
+Requisition No     : REQ-2026-00125
+
+Company            : Unilab Inc.
+
+Legal Entity       : Unilab Philippines
+
+Job Family         : Sales
+
+Job Level          : P3
+
+Salary Grade       : SG-12
+
+-------------------------------------------------------
+```
+
+---
+
+# Salary Band Validation Summary
+
+```text
+-------------------------------------------------------
+Salary Matrix
+-------------------------------------------------------
+
+Minimum Salary     : ₱38,000
+
+Midpoint Salary    : ₱45,000
+
+Maximum Salary     : ₱52,000
+
+-------------------------------------------------------
+```
+
+---
+
+# Multi-Option Proposal Comparison Grid
+
+This is the most important section.
+
+```text
+---------------------------------------------------------------------------------------------------
+Proposal Comparison
+---------------------------------------------------------------------------------------------------
+
+                          OPTION 1      OPTION 2      OPTION 3
+---------------------------------------------------------------------------------------------------
+
+Base Salary             ₱42,000       ₱45,000       ₱55,000
+
+Increase %              20.0%         28.6%         57.1%
+
+Compa Ratio             0.93          1.00          1.22
+
+Band Position           Within Band   Midpoint      Above Band
+
+Approval Route          Standard      Standard      President
+
+TA Justification        View          View          View
+
+Decision
+                         ○Approve      ○Approve      ○Approve
+                         ○Reject       ○Reject       ○Reject
+
+Comments
+[__________________]
+
+---------------------------------------------------------------------------------------------------
+```
+
+This follows the process flow where approvers review multiple salary options in a single approval view. 
+
+---
+
+# Salary Band Indicators
+
+Display visual indicators.
+
+```text
+-------------------------------------------------------
+Validation Results
+-------------------------------------------------------
+
+OPTION 1
+
+✓ WITHIN BAND
+
+-------------------------------------------------------
+
+OPTION 2
+
+✓ WITHIN BAND
+
+-------------------------------------------------------
+
+OPTION 3
+
+⚠ ABOVE BAND
+
+Requires President Approval
+
+-------------------------------------------------------
+```
+
+---
+
+# Job Offer Analysis Details
+
+Approvers need visibility into why the proposal exists.
+
+```text
+-------------------------------------------------------
+TA Partner Justification
+-------------------------------------------------------
+
+Option 1
+Candidate has limited industry experience.
+
+Option 2
+Aligned with midpoint and market data.
+
+Option 3
+Candidate possesses highly specialized experience.
+
+-------------------------------------------------------
+```
+
+---
+
+# Internal Equity Information
+
+```text
+-------------------------------------------------------
+Internal Equity
+-------------------------------------------------------
+
+Lowest Similar Position     ₱40,000
+
+Average Salary              ₱44,500
+
+Highest Salary              ₱50,000
+
+-------------------------------------------------------
+```
+
+---
+
+# Market Benchmark Information
+
+```text
+-------------------------------------------------------
+Market Benchmark
+-------------------------------------------------------
+
+Market Minimum     ₱40,000
+
+Market Median      ₱47,000
+
+Market Maximum     ₱55,000
+
+-------------------------------------------------------
+```
+
+---
+
+# Approval Decision Panel
+
+Displayed at the bottom.
+
+```text
+-------------------------------------------------------
+Approval Decision
+-------------------------------------------------------
+
+Decision
+
+( ) Approve Selected Options
+
+( ) Return for Revision
+
+( ) Reject All Options
+
+Comments
+
+[____________________________________]
+
+[____________________________________]
+
+-------------------------------------------------------
+```
+
+---
+
+# Approval History
+
+```text
+-------------------------------------------------------
+Approval History
+-------------------------------------------------------
+
+TA Partner
+Approved Analysis
+06/15/2026 09:45 AM
+
+-------------------------------------------------------
+
+HROD Head
+Pending
+
+-------------------------------------------------------
+
+Division Head
+Pending
+
+-------------------------------------------------------
+```
+
+---
+
+# President Escalation Banner
+
+Only shown when an Above-Band proposal exists.
+
+```html
+<div class="alert alert-warning">
+
+⚠ One or more salary proposals exceed the approved salary band.
+
+President Approval will be required if approved.
+
+</div>
+```
+
+This is specifically mentioned in the Process Flow under Salary Band Validation and President Escalation. 
+
+---
+
+# Approval Actions
+
+```html
+<button class="btn btn-success btn-sm">
+Approve Selected
+</button>
+
+<button class="btn btn-warning btn-sm">
+Return For Revision
+</button>
+
+<button class="btn btn-danger btn-sm">
+Reject
+</button>
+
+<button class="btn btn-secondary btn-sm">
+View Audit Trail
+</button>
+```
+
+---
+
+# Recommended Bootstrap Layout
+
+```text
++-----------------------------------------------------------+
+| Job Offer Approval Header                                 |
++-----------------------------------------------------------+
+
++-----------------------------------------------------------+
+| Workflow Progress Tracker                                 |
++-----------------------------------------------------------+
+
++----------------------+------------------------------------+
+| Candidate Info       | Requisition Info                   |
++----------------------+------------------------------------+
+
++-----------------------------------------------------------+
+| Salary Matrix Summary                                     |
++-----------------------------------------------------------+
+
++-----------------------------------------------------------+
+| Multi-Option Proposal Comparison Grid                     |
++-----------------------------------------------------------+
+
++----------------------+------------------------------------+
+| Internal Equity      | Market Data                        |
++----------------------+------------------------------------+
+
++-----------------------------------------------------------+
+| TA Partner Justification                                  |
++-----------------------------------------------------------+
+
++-----------------------------------------------------------+
+| Approval Decision                                         |
++-----------------------------------------------------------+
+
++-----------------------------------------------------------+
+| Approval History                                          |
++-----------------------------------------------------------+
+
+[Approve] [Return For Revision] [Reject]
+```
+
+This design matches the workflow shown in the Process Flow where approvers review **all salary proposals in one approval screen**, see salary band validation results, compare options side-by-side, record comments, and route above-band offers to the President when required. 

@@ -1,0 +1,329 @@
+After reviewing the **Process Flow** and the stages **Row 6 – Job Offer Analysis** and **Row 7 – Salary Band Validation**, the Job Offer Prototype should be centered around a **single Job Offer Analysis Workspace** where the TA Partner can:
+
+1. Review validated candidate information
+2. Review Company & Legal Entity
+3. View Salary Matrix
+4. Create 3 Salary Proposal Options
+5. Perform Salary Band Validation
+6. Submit for Approval
+
+This is consistent with the workflow shown in the ProcessFlow diagram where:
+
+* Candidate Information is validated
+* Company / Legal Entity is confirmed
+* Salary Matrix is loaded
+* TA Partner creates 3 salary proposals
+* System computes Compa-Ratio, Salary Band Position, Increase %
+* Salary Band Validation occurs
+* Job Offer Analysis record is generated
+* Approval Routing starts 
+
+---
+
+# Proposed Page
+
+## Job Offer Analysis
+
+### Header
+
+```text
+Job Offer Analysis
+JOB-2026-000123
+Status : Draft Analysis
+```
+
+---
+
+## Candidate Summary Card
+
+```text
+--------------------------------------------------------
+Candidate Information
+--------------------------------------------------------
+
+Candidate Name     : Juan Dela Cruz
+Position Applied   : Territory Sales Representative
+Current Employer   : ABC Corporation
+Current Salary     : ₱35,000
+Expected Salary    : ₱45,000
+
+Application Date   : June 10, 2026
+Validated By       : TA Partner
+Validated Date     : June 11, 2026
+
+--------------------------------------------------------
+```
+
+This data comes from the validated MS Forms submission package referenced in the workflow. 
+
+---
+
+## Requisition & Organization Card
+
+```text
+--------------------------------------------------------
+Requisition Information
+--------------------------------------------------------
+
+Requisition No     : REQ-2026-00125
+Position Title     : Territory Sales Representative
+
+Company            : Unilab Inc.
+Legal Entity       : Unilab Philippines
+
+Job Family         : Sales
+Role Level         : Professional
+Job Level          : P3
+
+--------------------------------------------------------
+```
+
+---
+
+## Salary Matrix Section
+
+Automatically loaded after Company / Legal Entity validation.
+
+```text
+--------------------------------------------------------
+Salary Matrix
+--------------------------------------------------------
+
+Salary Grade       : SG-12
+
+Minimum            : ₱38,000
+Midpoint           : ₱45,000
+Maximum            : ₱52,000
+
+Matrix Status      : Active
+Effective Date     : Jan 1, 2026
+
+--------------------------------------------------------
+```
+
+The process flow specifically states:
+
+> System retrieves applicable salary matrix and displays applicable salary band. 
+
+---
+
+## Internal Equity & Market Data
+
+```text
+--------------------------------------------------------
+Internal Equity Information
+--------------------------------------------------------
+
+Average Team Salary        ₱44,500
+Highest Similar Position   ₱50,000
+Lowest Similar Position    ₱40,000
+
+--------------------------------------------------------
+
+Market Data
+--------------------------------------------------------
+
+Market Minimum             ₱40,000
+Market Median              ₱47,000
+Market Maximum             ₱55,000
+
+--------------------------------------------------------
+```
+
+---
+
+# Salary Proposal Options
+
+The process requires three proposals. 
+
+## Option 1
+
+```text
+Base Salary          [ ₱42,000 ]
+
+Justification
+[___________________________________]
+
+Band Position        Within Band
+Increase %           20%
+Compa Ratio          0.93
+```
+
+---
+
+## Option 2
+
+```text
+Base Salary          [ ₱45,000 ]
+
+Justification
+[___________________________________]
+
+Band Position        Midpoint
+Increase %           28.57%
+Compa Ratio          1.00
+```
+
+---
+
+## Option 3
+
+```text
+Base Salary          [ ₱50,000 ]
+
+Justification
+[___________________________________]
+
+Band Position        Upper Band
+Increase %           42.86%
+Compa Ratio          1.11
+```
+
+---
+
+# Salary Band Validation Panel
+
+Displayed beside the proposal grid.
+
+```text
+--------------------------------------------------------
+Salary Band Validation
+--------------------------------------------------------
+
+Minimum     ₱38,000
+Midpoint    ₱45,000
+Maximum     ₱52,000
+
+--------------------------------------------------------
+
+Option 1    WITHIN BAND     ✓
+Option 2    WITHIN BAND     ✓
+Option 3    WITHIN BAND     ✓
+
+--------------------------------------------------------
+```
+
+If salary exceeds maximum:
+
+```text
+Option 3
+
+Proposed Salary : ₱60,000
+
+Status : ABOVE BAND
+
+⚠ Additional President Approval Required
+```
+
+This follows the workflow where Above-Band proposals are routed to President Approval. 
+
+---
+
+# Negotiation Risk Indicator
+
+```text
+--------------------------------------------------------
+Negotiation Assessment
+--------------------------------------------------------
+
+Expected Salary          ₱45,000
+Best Proposal            ₱42,000
+
+Risk Level               HIGH
+
+Reason:
+Offer is below candidate expectation.
+
+--------------------------------------------------------
+```
+
+---
+
+# Analysis Notes
+
+```text
+TA Partner Justification
+
+[______________________________________]
+
+[______________________________________]
+
+[______________________________________]
+```
+
+Required for exceptions and approval routing.
+
+---
+
+# Approval Preview Section
+
+```text
+--------------------------------------------------------
+Approval Route
+--------------------------------------------------------
+
+HROD Head           Pending
+Division Head       Pending
+
+President Approval  Not Required
+
+--------------------------------------------------------
+```
+
+or
+
+```text
+President Approval Required
+Reason: Above Salary Band
+```
+
+---
+
+# Footer Buttons
+
+```html
+[ Save Draft ]
+
+[ Recompute Analysis ]
+
+[ Validate Salary Band ]
+
+[ Submit For Approval ]
+```
+
+---
+
+# Recommended Layout (Bootstrap)
+
+```text
++--------------------------------------------------+
+| Candidate Information                            |
++--------------------------------------------------+
+
++---------------------+----------------------------+
+| Requisition         | Salary Matrix              |
++---------------------+----------------------------+
+
++--------------------------------------------------+
+| Internal Equity / Market Data                    |
++--------------------------------------------------+
+
++--------------------------------------------------+
+| Salary Proposal Options                          |
+| Option 1                                         |
+| Option 2                                         |
+| Option 3                                         |
++--------------------------------------------------+
+
++---------------------+----------------------------+
+| Salary Validation   | Approval Preview           |
++---------------------+----------------------------+
+
++--------------------------------------------------+
+| Analysis Notes                                   |
++--------------------------------------------------+
+
+[Save] [Validate] [Submit for Approval]
+```
+
+This mockup aligns closely with the ProcessFlow document's **Job Offer Analysis** and **Salary Band Validation** stages, where the system loads the salary matrix, computes indicators, validates salary bands, stores three proposal options, and prepares the Job Offer Analysis record for approval routing. 

@@ -1,0 +1,147 @@
+# Executive Summary 
+In a job-offer workflow, the **“Company and Legal Entity Setup”** step requires the HR recruiter or TA partner to select the appropriate hiring company and legal entity for a given requisition. This ensures that compensation, payroll, and compliance are correctly applied. Based on typical HR systems and design guidelines, we outline a user story (role, need, and benefit), acceptance criteria, and mockup requirements for this step. We propose a form-based UI with **Company** and **Legal Entity** dropdowns (possibly cascaded by country), clear labels, required-field indicators (e.g. red asterisks), inline help text, and validation. The system must load the correct salary/compensation matrix once an entity is selected, and prevent proceeding if selections are invalid. We map these fields to the provided user-story spreadsheet schema, suggest a data model (company, legal entity, requisition, etc.), and discuss accessibility (WCAG-compliant labels and ARIA), localization support, and PII handling. We compare three prototype variants (Minimal vs. Standard vs. Compliance-Heavy) for different audiences. Finally, we include a wireframe mockup (see below) and a Mermaid flowchart of the user flow. All recommendations draw on authoritative UX and form-design sources (Nielsen Norman Group, W3C, Microsoft Fluent Design, etc.) and examples from real HR systems (e.g. Dayforce). 
+
+## 1. User Story & Acceptance Criteria (Inferred) 
+- **User Story:** As a Talent Acquisition (TA) partner, *I want to select the hiring company and legal entity for a job requisition from a list*, so that the offer’s compensation and payroll settings match the correct entity’s policies.  
+- **Role:** TA Partner / Recruiter.  
+- **Goal/Benefit:** Ensure the offer applies the correct entity-specific salary matrix and complies with local regulations (tax, benefits, etc.).  
+- **Acceptance Criteria (examples):**  
+  - The form **requires** a valid Company and Legal Entity be selected before proceeding. (If missing, an inline error is shown.)  
+  - If the requisition already has a Company or Entity, those defaults are pre-filled and displayed.  
+  - Company dropdown lists all possible hiring companies (with typeahead search for large lists). Selecting a company filters the Legal Entity list to those belonging to that company (cascading dropdown).  
+  - The system retrieves and displays the *company-specific salary matrix* or compensation range after selection (verifying the correct matrix is loaded).  
+  - The page shows the selected Company and Legal Entity clearly (confirming “you selected X entity”).  
+  - **Error Conditions:** If Company or Entity is not selected (or an invalid combination is chosen), the user is blocked from continuing and a red-outlined error message appears next to the offending field.  
+
+These criteria ensure the requisition is linked to a valid hiring entity. The user cannot move to the next stage (e.g. Compensation Details) until the form is valid. The system’s “salary matrix” for that entity is then used in subsequent steps. (For example, the Dayforce HCM help notes each organization must have a legal entity per country to apply correct payroll.) 
+
+## 2. Mockup Page Specification 
+
+- **Layout & Sections:** A simple two-column form layout. At top, display **Requisition summary** (e.g. Requisition ID, Job Title, Candidate Name) for context. Below, a section titled *“Company and Legal Entity”* containing: 
+  - **Company:** A required dropdown (or searchable combo box) of hiring companies.  
+  - **Legal Entity:** A required dropdown filtered by the selected company. (If only one entity per company, this could auto-select or be hidden.)  
+  - **Country/Region (optional):** Automatically determined by the legal entity, or a static field if needed. If auto-filled, mark it as read-only.  
+- **Fields & Labels:**  
+  - Use clear, concise labels above each field (“Company:”, “Legal Entity:”, etc.). Use sentence-style capitalization and avoid placeholder-only guidance.  
+  - Mark required fields with a **red asterisk** next to the label and include an instruction like “Fields marked * are required” at the top. Also set `aria-required="true"` on required inputs for screen readers.  
+  - Provide brief helper text under each field (e.g. “Select the hiring company for this offer.”) to improve clarity. Do **not** rely on placeholder text for essential labels.   
+- **Dropdown Behavior:**  
+  - The Company dropdown should allow searching/filtering if the list is long. (As a rule of thumb, enable typeahead when >10 options.) This lets users quickly find a company.  
+  - When a company is chosen, the Legal Entity dropdown populates with entities for that company. Use a “Loading…” indicator if needed while fetching data, to avoid confusion. Show a brief “Updated” or spinner feedback on change.  
+  - If the company has only one entity (common in small orgs), the entity may auto-fill but still be shown for confirmation. If none, present a validation error.  
+- **Validation & Errors:**  
+  - Use inline validation: as soon as the user moves off a field without a valid selection, show a red error message below it (e.g. “Company is required.”). Keep the user in context. The error text should be human-readable, polite, and explain how to fix it.  
+  - On submit or “Next”, if any required field is missing, add a red outline (border) to the field (or highlight background) and display the error message. For example: *“Please select a company”*. This follows UK government style of highlighting blank required fields in red.  
+  - Once corrected, remove the error highlight and allow progression.  
+- **UX Copy & Notices:**  
+  - Provide a short instruction at the top: *“Please select the hiring company and legal entity for this offer. This ensures correct compensation rules are applied.”* (As in the wireframe below.)  
+  - If applicable, a brief note or info icon could explain why this matters (e.g. “Different legal entities may have different salary bands”).  
+  - **Legal Notices/Consent:** This step typically does not yet involve candidate consent or e-signatures. However, the page should include a general privacy notice link or tooltip (e.g. “Data is kept confidential and used only for offer processing”). If any checkboxes are needed (e.g. “I confirm this company/entity is correct”), those should be optional or in the next step.  
+- **Buttons/Actions:**  
+  - At bottom, provide **“Back”** (if part of a wizard) and **“Next: Compensation”** or “Continue” buttons. The Next button remains disabled until both Company and Entity are valid (optional, per Fluent guidance).  
+  - The Next button text can indicate the next step (e.g. “Next: Compensation Details”).  
+- **Error State (Full Page):** If the page loads and no company/entity is set, highlight the fields. If the requisition data is inconsistent (e.g. selected company has no entities), show a blocking error “Unable to determine legal entity – please select a valid company.”  
+- **Privacy/Security UI:** No sensitive information is entered by the TA at this point besides selecting records. Ensure no personal data fields are exposed here. If the UI ever showed candidate PII (not in this step), use masking or secure text (but not needed here).
+
+**Figure: Mockup of the “Company & Legal Entity Setup” form:**  
+ *Figure 1: Example HR system UI for selecting Company and Legal Entity. Here the TA would pick the company (“Community Center”) and its legal entity in the dropdowns. Required fields are marked, and error text appears in red if left blank. (Source: Dayforce HCM tutorial.)*  
+
+## 3. Data Model & Field Mapping
+
+| **Data Field**         | **Type/Lookup**       | **Story Column (A5:O5)**         | **Comments/Mapping**  |
+|-----------------------|-----------------------|----------------------------------|-----------------------|
+| storyID               | String (e.g. “US-04”) | A5 (ID)                          | Unique user-story ID. |
+| epic                  | String                | B5 (Epic)                        | Feature grouping (“Job Offer Digitization”). |
+| stepName              | String                | C5 (Step)                        | “Company and Legal Entity Setup”. |
+| userRole              | String                | D5 (Role)                        | E.g. “Talent Acquisition Partner”. |
+| userStoryText         | Text                  | E5 (Narrative)                   | “Select company and legal entity…” |
+| storyGoal             | Text                  | F5 (Goal)                        | “Ensure compensation analysis uses correct entity.” |
+| priority              | String                | G5 (Priority)                    | “High”. |
+| acceptanceCriteria    | Text                  | H5 (Acceptance Criteria)         | Requirements for valid selection. |
+| preconditions         | Text                  | I5 (Preconditions)               | “TA Partner starts job offer for requisition”. |
+| nextSteps             | Text                  | J5 (Next Steps)                  | “Candidate, requisition, company, entity exist.” |
+| newFields             | Text/List             | K5 (New Fields)                  | “Salary matrix, Company ID, LegalEntity ID” (fields needed). |
+| businessRules         | Text                  | L5 (Business Rule)               | “Each company/entity has own compensation details.” |
+| acceptanceValidation  | Text                  | M5 (Acceptance Validation)       | “Correct salary matrix loaded.” |
+| uxRequirements        | Text                  | N5 (UX Requirements)             | “Display selected company/entity to user.” |
+| notes                 | Text                  | O5 (Notes)                       | “If none set, prompt user.” |
+
+Fields marked *unknown* would indicate missing info; in this case, the sheet columns are all populated. We see the **New Fields** column (K5) implies data entities like *Company*, *LegalEntity*, and *SalaryMatrix*. The mapping above aligns our UI fields (e.g. companyId, legalEntityId) with the user story context. 
+
+The **proposed database model** behind the form might include: 
+- **Requisition** (with fields `requisitionId`, `companyId`, `legalEntityId`, etc.), 
+- **Company** (id, name, etc.), 
+- **LegalEntity** (id, name, country, companyId), 
+- **SalaryMatrix** (id, companyId, entityId, payBand data), 
+- **Country** (id, name) if separate. 
+Relations: Requisition references Company and LegalEntity; LegalEntity references Company (to filter dropdown). The system would query **SalaryMatrix** by the selected entity.  
+
+## 4. Accessibility, Localization, Security/Privacy 
+
+- **Accessibility (WCAG compliant):**  
+  - Every form field must have a `<label>` (not just placeholder text) linked to the input via `for`/`id`. Mark required fields with `aria-required="true"` in addition to a visible asterisk.  
+  - Use color *and* shape/text to indicate required or error states (e.g. red border **and** an icon or text) since color alone is insufficient. Provide explicit error text.  
+  - Error messages should be programmatically tied to fields (ARIA `aria-describedby`) and placed adjacent to inputs. For example, a validation message like “Company is required” should have `role="alert"` or be in an ARIA live region to announce automatically.  
+  - The form must be navigable by keyboard (tab order top-to-bottom, skip any invisible fields). Ensure focus styles are visible. Elements like dropdowns should be operable with arrow keys. (The UXPin guide recommends proper ARIA and focus state for dropdowns.)  
+  - Maintain at least 4.5:1 contrast between text and background (e.g. black text on white) and ensure the red error text/borders meet contrast guidelines.  
+- **Localization:**  
+  - Design the form so all text (labels, help text, error messages) can be translated. Avoid embedding text in images. Allow field formats (dates, numbers) to adapt to locale if needed. For example, if showing a date or currency later, they should reflect the legal entity’s country. The UI should support reading right-to-left languages if ever needed. (No specific foreign-language copy here, but architecture should support i18n.)  
+  - Use flexible layouts (avoid fixed field length) to accommodate longer translated strings.  
+- **Security & Privacy:**  
+  - The form itself only collects internal lookup selections (company/entity). However, it will be part of a system handling PII (candidate data, salary data, etc.). Ensure the page is served over HTTPS. Securely validate and store the selected IDs. Do not display sensitive identifiers (company tax ID, etc.) beyond what is needed.  
+  - Follow least-privilege: only authorized HR users (TA partners) can access and submit this form. All input should be server-validated to prevent injection or spoofing.  
+  - **Consent/E-signature:** This step does not involve candidate signature. Later in the offer flow, if an e-signature is used for the offer letter, it must comply with laws like the US ESIGN Act or EU eIDAS (not detailed here). However, you may include a note that the selection data will feed into the final offer/contract.  
+  - Any PII (e.g. recruiter name) should be handled per GDPR/CCPA: explicitly state usage in a privacy policy link if visible. Use secure cookies and CSRF tokens for the form.  
+  - Log the selection event (timestamp, user, chosen company/entity) for audit and compliance tracking.
+
+## 5. UI Patterns & Examples from Primary Sources
+
+- **Official HR Systems:** Most HCM/HR platforms have similar flows. For example, the Dayforce HCM “Legal Entity” setup screen lists each entity’s Name, Country, Tax ID, etc.. We incorporate this by ensuring our UI includes at least the Name and Country fields. Dayforce’s documentation explains each entity is tied to a country, illustrating why “Operating Country” might be a hidden or auto field in our form. (See figure above.) Similarly, Oracle and Workday systems use *Organizations* or *Business Units* with legal entity fields; these typically use dropdowns for company and entity.  
+
+- **Government Registration Forms:** Official forms (e.g. UK Companies House or supplier registration) often highlight required fields and country. For instance, a UK supplier-reg PDF instructs mandatory fields are marked and “will turn red” if left blank. We adopt this pattern by highlighting blank required fields in red until filled.  
+
+- **Design Guidelines:**  
+  - **Required Fields:** Nielsen Norman Group advises *always* marking required fields explicitly to reduce user confusion. We follow this by using a red asterisk on labels and a legend. Microsoft’s Fluent UI also says use `required` prop to show a red asterisk and announce it to screen readers. If an entire form is required, they even suggest disabling the Next button until complete.  
+  - **Inline Validation:** According to UX best-practices, errors should be shown inline next to the relevant field, not only in a summary. We adopt inline error text and red borders (as Microsoft recommends) for any missing or invalid Company/Entity.  
+  - **Dropdowns:** The dropdowns should be clear and searchable. UXPin notes that for dependent (cascading) dropdowns, “if hierarchical relationships are necessary, cascading dropdowns with clear visual indicators are better” than confusing interdependent menus. Thus we might show a spinner or “Loading…” note on the Legal Entity field while it updates. Also, for long lists, we add a type-ahead search box inside the dropdown (e.g. “Search company…”).  
+  - **Layout:** Microsoft’s guidelines suggest top-aligned labels for better scanning, which we mirror in the mockup. Helper text (under fields) is used for additional instructions. All content (labels, helper text, errors) is kept brief and essential.
+
+## 6. Prototype Variants Comparison
+
+| **Variant**      | **Description**                                               | **Pros**                                                        | **Cons**                                                      | **Target Users**                                        |
+|------------------|---------------------------------------------------------------|-----------------------------------------------------------------|--------------------------------------------------------------|---------------------------------------------------------|
+| **Minimal**      | Bare-bones form with only *Company* and *Entity* fields, minimal text or styling. No help text or fancy widgets. | Fast to implement; super simple; ideal for internal tools or demos. | Prone to user error (no guidance); not fully accessible; users may be confused if multiple entities; not compliant-heavy. | Small startups or internal prototypes; tech-savvy recruiters. |
+| **Standard**     | Well-designed form with labels, asterisks for required fields, inline validation, basic helper text. Uses searchable dropdowns. | User-friendly, accessible (ARIA attributes, contrast), clear guidance. Balanced complexity. | More development effort; still limited compliance features (no logging of consent). | Most companies’ default: mid-size to large HR teams; professional recruiters. |
+| **Compliance-Heavy** | All of Standard **plus** extra features: multi-language support, detailed legal disclaimers, logging/audit trail, OTP or two-factor for sign-off, “I confirm” checkboxes, e-signature boilerplate. Possibly complex routing (e.g. auto-review by legal). | Maximum compliance and safety; useful for global or regulated environments (finance, healthcare). | Slow for users (many steps), high dev cost, may overwhelm casual users. | Multinational enterprises, regulated industries (banking, gov). |
+
+For example, a **Minimal** prototype might simply have two plain dropdowns labeled “Company” and “Entity” with no inline help. A **Standard** prototype adds the asterisks, red error text, and maybe a question-mark tooltip. A **Compliance-Heavy** prototype might split the page into tabs (e.g. “Details” and “Approvals”), require email re-validation, and include a checkbox “I attest that this information is correct.”. The choice depends on risk tolerance and audience.
+
+## 7. User Flow (Mermaid Diagram) 
+
+```mermaid
+flowchart LR
+    Start[Start Job Offer Creation] --> SetupForm[Company & Legal Entity Setup Form]
+    SetupForm --> CheckExisting{Requisition has pre-assigned entity?}
+    CheckExisting -- Yes --> Preload[Pre-fill company and entity]
+    CheckExisting -- No --> None[Require user selection]
+    Preload --> DisplayFields[Display selected company & entity fields]
+    None --> DisplayFields
+    DisplayFields --> Valid?{Valid selection made?}
+    Valid? -- No --> ShowError[Show error: "Please select company and entity"]
+    ShowError --> SetupForm
+    Valid? -- Yes --> LoadMatrix[Load & display salary matrix]
+    LoadMatrix --> Next[Proceed to Compensation Details]
+```  
+
+*Figure 2: User flow for the Company/Entity selection step. The TA partner opens the form; if the requisition already has a company/entity, they are preloaded; otherwise the user must select them. Invalid or missing selections trigger inline errors. Upon valid selection, the system loads the appropriate salary matrix and advances the workflow.*  
+
+## References 
+
+- W3C/WAI accessibility techniques (using `aria-required` for required fields).  
+- Deque accessibility guidance (mark required fields visibly and programmatically).  
+- Nielsen Norman (UX) recommendations on required fields and error handling.  
+- Microsoft Fluent UI design system (field validation: red asterisk for required, red border & message for errors).  
+- UXPin design guide on dropdowns (cascading menus, searchable lists, accessibility cues).  
+- Dayforce HCM help (defining legal entity per country), and its UI screenshot.  
+- Government supplier registration guide (UK) – mandatory fields turn red when blank.  
+

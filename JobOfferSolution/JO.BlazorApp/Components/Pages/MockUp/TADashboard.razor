@@ -1,0 +1,716 @@
+@attribute [Route(JORoutes.MockUp.TADashboard)]
+
+<div class="card shadow mb-4 border-left-primary small ta-dashboard-page">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-tachometer-alt fa-fw mr-2"></i>
+                    Talent Acquisition (TA) Partner Dashboard
+                </h6>
+                <small class="text-muted">Welcome, @dashboardUser.Name | @dashboardUser.Role | Today: @dashboardUser.Today | Mockup data only</small>
+            </div>
+
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1">
+                    <i class="fas fa-user-tie fa-fw text-primary mr-1"></i>
+                    TA Partner View
+                </span>
+                <span class="badge badge-info">
+                    <i class="fas fa-stream fa-fw mr-1"></i>
+                    Job Offer Lifecycle
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <ul class="nav nav-tabs small mb-4" role="tablist">
+            @foreach (var tab in tabs)
+            {
+                <li class="nav-item">
+                    <a class="nav-link @(tab.IsActive ? "active" : "disabled")" href="javascript:void(0)">
+                        <i class="@tab.Icon fa-fw mr-1"></i>
+                        @tab.Label
+                    </a>
+                </li>
+            }
+        </ul>
+
+        <div class="row">
+            @foreach (var kpi in kpiCards)
+            {
+                <div class="col-xl-2 col-md-4 col-6 mb-4">
+                    <div class="card border-left-@kpi.Color shadow h-100 py-2">
+                        <div class="card-body py-2">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-@kpi.Color text-uppercase mb-1">@kpi.Label</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@kpi.Value</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="@kpi.Icon fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-xl-7 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                        <div>
+                            <h6 class="m-0 font-weight-bold text-gray-800">
+                                <i class="fas fa-tasks fa-fw text-primary mr-2"></i>
+                                My Pending Actions
+                            </h6>
+                            <small class="text-muted">Priority work items from the job offer lifecycle.</small>
+                        </div>
+                        <span class="badge badge-danger mt-2 mt-md-0 align-self-start align-self-md-center">2 High Priority</span>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Priority</th>
+                                        <th>Candidate</th>
+                                        <th>Position</th>
+                                        <th>Action</th>
+                                        <th class="text-center">Open</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in actionItems)
+                                    {
+                                        <tr>
+                                            <td><span class="badge @item.PriorityBadge">@item.Priority</span></td>
+                                            <td class="font-weight-bold text-gray-900">@item.Candidate</td>
+                                            <td>@item.Position</td>
+                                            <td>@item.Action</td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-outline-primary btn-sm btn-sml" disabled>
+                                                    <i class="@item.ActionIcon fa-fw mr-1"></i>
+                                                    @item.ButtonText
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-5 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-project-diagram fa-fw text-primary mr-2"></i>
+                            Candidate Pipeline
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var stage in pipelineStages)
+                        {
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="font-weight-bold text-gray-800">@stage.Label</span>
+                                    <span class="badge @stage.BadgeClass">@stage.Count</span>
+                                </div>
+                                <div class="progress progress-sm">
+                                    <div class="progress-bar @stage.BarClass" role="progressbar" style="@stage.WidthStyle"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border rounded bg-white mb-4">
+            <div class="px-3 py-2 border-bottom bg-light">
+                <h6 class="m-0 font-weight-bold text-gray-800">
+                    <i class="fas fa-columns fa-fw text-primary mr-2"></i>
+                    Candidate Workflow Kanban
+                </h6>
+            </div>
+
+            <div class="p-3">
+                <div class="row">
+                    @foreach (var column in kanbanColumns)
+                    {
+                        <div class="col-xl col-md-4 col-sm-6 mb-3 mb-xl-0">
+                            <div class="border rounded bg-light h-100">
+                                <div class="px-3 py-2 border-bottom bg-white d-flex justify-content-between align-items-center">
+                                    <span class="font-weight-bold text-gray-800">@column.Title</span>
+                                    <span class="badge @column.BadgeClass">@column.Candidates.Count</span>
+                                </div>
+                                <div class="p-2">
+                                    @foreach (var candidate in column.Candidates)
+                                    {
+                                        <div class="border rounded bg-white px-2 py-2 mb-2">
+                                            <div class="font-weight-bold text-gray-900">@candidate.Name</div>
+                                            <div class="text-muted">@candidate.Position</div>
+                                            <span class="badge badge-light border mt-1">@candidate.Aging</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-user-check fa-fw text-primary mr-2"></i>
+                            Approval Monitoring
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Candidate</th>
+                                        <th>Current Approver</th>
+                                        <th>Aging</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in approvals)
+                                    {
+                                        <tr>
+                                            <td class="font-weight-bold text-gray-900">@item.Candidate</td>
+                                            <td>@item.Approver</td>
+                                            <td>@item.Aging</td>
+                                            <td><span class="badge @item.BadgeClass">@item.Status</span></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                        <div>
+                            <h6 class="m-0 font-weight-bold text-gray-800">
+                                <i class="fas fa-comments fa-fw text-primary mr-2"></i>
+                                Ready for Candidate Discussion
+                            </h6>
+                        </div>
+                        <span class="badge badge-info mt-2 mt-md-0 align-self-start align-self-md-center">Approved Options Only</span>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Candidate</th>
+                                        <th>Position</th>
+                                        <th class="text-center">Options</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in discussionQueue)
+                                    {
+                                        <tr>
+                                            <td class="font-weight-bold text-gray-900">@item.Candidate</td>
+                                            <td>@item.Position</td>
+                                            <td class="text-center"><span class="badge badge-success">@item.ApprovedOptions</span></td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-outline-info btn-sm btn-sml" disabled>
+                                                    <i class="fas fa-comments fa-fw mr-1"></i>
+                                                    Discuss Offer
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-sync-alt fa-fw text-primary mr-2"></i>
+                            Negotiation Cases
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Candidate</th>
+                                        <th>Version</th>
+                                        <th>Requested Salary</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in negotiations)
+                                    {
+                                        <tr>
+                                            <td class="font-weight-bold text-gray-900">@item.Candidate</td>
+                                            <td><span class="badge badge-warning">@item.Version</span></td>
+                                            <td>@item.RequestedSalary</td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-outline-warning btn-sm btn-sml" disabled>
+                                                    <i class="fas fa-code-branch fa-fw mr-1"></i>
+                                                    Re-Proposal
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-stopwatch fa-fw text-primary mr-2"></i>
+                            SLA Monitoring
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in slaItems)
+                        {
+                            <div class="border rounded px-3 py-2 mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <span class="font-weight-bold text-gray-800">@item.Stage</span>
+                                    <span class="badge @item.BadgeClass">@item.Status</span>
+                                </div>
+                                <div class="d-flex justify-content-between text-muted mt-1">
+                                    <span>Target: @item.Target</span>
+                                    <span>Actual: @item.Actual</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4 col-lg-6 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-chart-bar fa-fw text-primary mr-2"></i>
+                            Job Offer Pipeline Chart
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in pipelineChart)
+                        {
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>@item.Label</span>
+                                    <span class="font-weight-bold text-gray-900">@item.Value</span>
+                                </div>
+                                <div class="progress progress-sm">
+                                    <div class="progress-bar @item.BarClass" role="progressbar" style="@item.WidthStyle"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-6 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-chart-pie fa-fw text-primary mr-2"></i>
+                            Approval Bottleneck
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in bottlenecks)
+                        {
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="mr-3 text-center">
+                                    <span class="icon-circle @item.IconBg text-white dashboard-icon-sm">
+                                        <i class="fas fa-user-check fa-sm"></i>
+                                    </span>
+                                </div>
+                                <div class="flex-fill">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="font-weight-bold text-gray-800">@item.Label</span>
+                                        <span>@item.Value</span>
+                                    </div>
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar @item.BarClass" role="progressbar" style="@item.WidthStyle"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-chart-line fa-fw text-primary mr-2"></i>
+                            Monthly Acceptance Trend
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in acceptanceTrend)
+                        {
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="trend-month">@item.Month</span>
+                                <div class="progress progress-sm flex-fill mx-2">
+                                    <div class="progress-bar bg-success" role="progressbar" style="@item.WidthStyle"></div>
+                                </div>
+                                <span class="font-weight-bold text-gray-900 trend-value">@item.Value</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-rss fa-fw text-primary mr-2"></i>
+                            Recent Activity
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var activity in recentActivities)
+                        {
+                            <div class="d-flex mb-3">
+                                <span class="icon-circle @activity.IconBg text-white mr-3 dashboard-icon-sm">
+                                    <i class="@activity.Icon fa-sm"></i>
+                                </span>
+                                <div class="border-bottom flex-fill pb-2">
+                                    <div class="font-weight-bold text-gray-900">@activity.Time</div>
+                                    <div class="text-muted">@activity.Description</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-calendar-alt fa-fw text-primary mr-2"></i>
+                            Follow Up Schedule
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var followUp in followUps)
+                        {
+                            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                                <div>
+                                    <div class="font-weight-bold text-gray-900">@followUp.Candidate</div>
+                                    <div class="text-muted">@followUp.Purpose</div>
+                                </div>
+                                <span class="badge badge-light border">@followUp.Time</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border rounded bg-white">
+            <div class="px-3 py-2 border-bottom bg-light">
+                <h6 class="m-0 font-weight-bold text-gray-800">
+                    <i class="fas fa-bolt fa-fw text-primary mr-2"></i>
+                    Quick Actions
+                </h6>
+            </div>
+
+            <div class="p-3 d-flex flex-column flex-md-row">
+                <button type="button" class="btn btn-primary btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+                    <i class="fas fa-plus fa-fw mr-1"></i>
+                    New Job Offer
+                </button>
+                <button type="button" class="btn btn-success btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+                    <i class="fas fa-paper-plane fa-fw mr-1"></i>
+                    Send MS Form
+                </button>
+                <button type="button" class="btn btn-info btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+                    <i class="fas fa-search fa-fw mr-1"></i>
+                    Candidate Search
+                </button>
+                <button type="button" class="btn btn-warning btn-sm btn-sml mb-2 mb-md-0 mr-md-2" disabled>
+                    <i class="fas fa-user-check fa-fw mr-1"></i>
+                    Approval Monitor
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm btn-sml" disabled>
+                    <i class="fas fa-chart-bar fa-fw mr-1"></i>
+                    Reports
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ta-dashboard-page .form-ctrl-sml {
+        font-size: 0.78rem;
+        min-height: 31px;
+    }
+
+    .ta-dashboard-page .btn-sml {
+        font-size: 0.76rem;
+        padding: 0.25rem 0.65rem;
+    }
+
+    .ta-dashboard-page .dashboard-icon-sm {
+        height: 2rem;
+        width: 2rem;
+        min-width: 2rem;
+    }
+
+    .ta-dashboard-page .nav-tabs .nav-link {
+        padding: 0.45rem 0.75rem;
+    }
+
+    .ta-dashboard-page .trend-month {
+        width: 2.5rem;
+    }
+
+    .ta-dashboard-page .trend-value {
+        width: 2rem;
+        text-align: right;
+    }
+</style>
+
+@code {
+    private readonly MockUser dashboardUser = new("Juan Dela Cruz", "Talent Acquisition Partner", "June 2026");
+
+    private readonly List<MockTab> tabs =
+    [
+        new("Dashboard", "fas fa-tachometer-alt", true),
+        new("Candidates", "fas fa-users", false),
+        new("Job Offers", "fas fa-file-signature", false),
+        new("Approvals", "fas fa-user-check", false),
+        new("Negotiations", "fas fa-sync-alt", false),
+        new("Offer Letters", "fas fa-envelope-open-text", false),
+        new("Reports", "fas fa-chart-bar", false),
+        new("Administration", "fas fa-cogs", false)
+    ];
+
+    private readonly List<MockKpi> kpiCards =
+    [
+        new("Active Cases", "125", "primary", "fas fa-folder-open"),
+        new("Awaiting Forms", "18", "warning", "fas fa-hourglass-half"),
+        new("For Analysis", "12", "info", "fas fa-chart-line"),
+        new("For Approval", "25", "secondary", "fas fa-user-check"),
+        new("Negotiations", "7", "danger", "fas fa-sync-alt"),
+        new("Accepted Offers", "34", "success", "fas fa-handshake")
+    ];
+
+    private readonly List<MockActionItem> actionItems =
+    [
+        new("HIGH", "Juan Dela Cruz", "TSR", "Analyze Offer", "Analyze", "badge-danger", "fas fa-chart-line"),
+        new("HIGH", "Maria Reyes", "Product Manager", "Re-Proposal", "Review", "badge-danger", "fas fa-sync-alt"),
+        new("MEDIUM", "John Santos", "QA Lead", "Discussion", "Open Case", "badge-warning", "fas fa-comments"),
+        new("LOW", "Ana Cruz", "Supervisor", "Send MS Form", "Continue", "badge-success", "fas fa-paper-plane")
+    ];
+
+    private readonly List<MockPipelineStage> pipelineStages =
+    [
+        new("Awaiting MS Form", 18, "badge-warning", "bg-warning", "width: 45%"),
+        new("For Validation", 10, "badge-info", "bg-info", "width: 25%"),
+        new("For Job Offer Analysis", 12, "badge-primary", "bg-primary", "width: 30%"),
+        new("For Approval", 25, "badge-secondary", "bg-secondary", "width: 62%"),
+        new("For Candidate Discussion", 8, "badge-info", "bg-info", "width: 20%"),
+        new("For Negotiation", 7, "badge-danger", "bg-danger", "width: 18%"),
+        new("For Offer Letter", 5, "badge-primary", "bg-primary", "width: 12%"),
+        new("Completed", 34, "badge-success", "bg-success", "width: 85%")
+    ];
+
+    private readonly List<MockKanbanColumn> kanbanColumns =
+    [
+        new("Awaiting Submission", "badge-warning", [new("Juan Dela Cruz", "TSR", "2 Days"), new("Maria Reyes", "PM", "1 Day")]),
+        new("For Analysis", "badge-info", [new("John Santos", "QA Lead", "Today"), new("Mark Flores", "Supervisor", "1 Day")]),
+        new("For Approval", "badge-secondary", [new("Ana Cruz", "Supervisor", "2 Days"), new("Leo Ramos", "Analyst", "4 Days")]),
+        new("Discussion", "badge-primary", [new("Carlos Lim", "Engineer", "Today")]),
+        new("Negotiation", "badge-danger", [new("Sarah Tan", "Manager", "3 Days"), new("Maria Reyes", "PM", "V3")])
+    ];
+
+    private readonly List<MockApprovalMonitor> approvals =
+    [
+        new("Juan Dela Cruz", "HROD Head", "1 Day", "On Track", "badge-success"),
+        new("Maria Reyes", "Division Head", "2 Days", "Watch", "badge-warning"),
+        new("Leo Ramos", "President", "4 Days", "Overdue", "badge-danger")
+    ];
+
+    private readonly List<MockDiscussionQueue> discussionQueue =
+    [
+        new("Juan Dela Cruz", "TSR", 2),
+        new("Maria Reyes", "Product Manager", 1),
+        new("Carlos Lim", "Engineer", 2)
+    ];
+
+    private readonly List<MockNegotiationCase> negotiations =
+    [
+        new("Juan Dela Cruz", "V2", "PHP 48,000.00"),
+        new("Maria Reyes", "V3", "PHP 95,000.00"),
+        new("Sarah Tan", "V2", "PHP 120,000.00")
+    ];
+
+    private readonly List<MockSla> slaItems =
+    [
+        new("Awaiting Candidate Form", "3 Days", "5 Days", "Overdue", "badge-danger"),
+        new("Approval Routing", "2 Days", "1 Day", "On Track", "badge-success"),
+        new("Negotiation", "5 Days", "7 Days", "Overdue", "badge-danger")
+    ];
+
+    private readonly List<MockChartItem> pipelineChart =
+    [
+        new("Awaiting Forms", "18", "bg-warning", "width: 53%"),
+        new("Analysis", "12", "bg-info", "width: 35%"),
+        new("Approval", "25", "bg-secondary", "width: 74%"),
+        new("Discussion", "8", "bg-primary", "width: 24%"),
+        new("Negotiation", "7", "bg-danger", "width: 21%"),
+        new("Completed", "34", "bg-success", "width: 100%")
+    ];
+
+    private readonly List<MockChartItem> bottlenecks =
+    [
+        new("HROD Head", "40%", "bg-primary", "width: 40%", "bg-primary"),
+        new("Division Head", "35%", "bg-info", "width: 35%", "bg-info"),
+        new("President", "25%", "bg-warning", "width: 25%", "bg-warning")
+    ];
+
+    private readonly List<MockTrend> acceptanceTrend =
+    [
+        new("Jan", 18, "width: 53%"),
+        new("Feb", 22, "width: 65%"),
+        new("Mar", 24, "width: 71%"),
+        new("Apr", 31, "width: 91%"),
+        new("May", 29, "width: 85%"),
+        new("Jun", 34, "width: 100%")
+    ];
+
+    private readonly List<MockActivity> recentActivities =
+    [
+        new("08:15 AM", "MS Form sent to Juan Dela Cruz.", "fas fa-paper-plane", "bg-primary"),
+        new("09:30 AM", "Candidate submission received.", "fas fa-inbox", "bg-info"),
+        new("10:00 AM", "Job Offer Analysis completed.", "fas fa-chart-line", "bg-success"),
+        new("11:15 AM", "Approval routed to HROD Head.", "fas fa-route", "bg-warning")
+    ];
+
+    private readonly List<MockFollowUp> followUps =
+    [
+        new("09:00 AM", "Juan Dela Cruz", "Discuss approved offer options"),
+        new("10:00 AM", "Maria Reyes", "Review negotiation request"),
+        new("02:00 PM", "Carlos Lim", "Candidate discussion follow-up")
+    ];
+
+    private sealed record MockUser(string Name, string Role, string Today);
+
+    private sealed record MockTab(string Label, string Icon, bool IsActive);
+
+    private sealed record MockKpi(string Label, string Value, string Color, string Icon);
+
+    private sealed record MockActionItem(
+        string Priority,
+        string Candidate,
+        string Position,
+        string Action,
+        string ButtonText,
+        string PriorityBadge,
+        string ActionIcon);
+
+    private sealed record MockPipelineStage(
+        string Label,
+        int Count,
+        string BadgeClass,
+        string BarClass,
+        string WidthStyle);
+
+    private sealed record MockKanbanColumn(
+        string Title,
+        string BadgeClass,
+        List<MockKanbanCandidate> Candidates);
+
+    private sealed record MockKanbanCandidate(string Name, string Position, string Aging);
+
+    private sealed record MockApprovalMonitor(
+        string Candidate,
+        string Approver,
+        string Aging,
+        string Status,
+        string BadgeClass);
+
+    private sealed record MockDiscussionQueue(string Candidate, string Position, int ApprovedOptions);
+
+    private sealed record MockNegotiationCase(string Candidate, string Version, string RequestedSalary);
+
+    private sealed record MockSla(
+        string Stage,
+        string Target,
+        string Actual,
+        string Status,
+        string BadgeClass);
+
+    private sealed record MockChartItem(
+        string Label,
+        string Value,
+        string BarClass,
+        string WidthStyle,
+        string IconBg = "bg-primary");
+
+    private sealed record MockTrend(string Month, int Value, string WidthStyle);
+
+    private sealed record MockActivity(
+        string Time,
+        string Description,
+        string Icon,
+        string IconBg);
+
+    private sealed record MockFollowUp(string Time, string Candidate, string Purpose);
+}
