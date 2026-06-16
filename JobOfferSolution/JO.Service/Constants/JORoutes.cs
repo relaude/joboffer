@@ -73,6 +73,7 @@ namespace JO.Service.Constants
             public const string Negotiate = PrefixMock + "/negotiate";
             public const string TADashboard = PrefixMock + "/ta-dashboard";
             public const string ApproverDashboard = PrefixMock + "/approver-dashboard";
+            public const string Users = PrefixMock + "/users";
         }
     }
 }

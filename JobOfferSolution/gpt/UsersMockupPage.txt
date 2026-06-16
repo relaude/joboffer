@@ -1,0 +1,592 @@
+For a **Hybrid RBAC + ABAC** implementation, the **Job Offer Users Administration Page** becomes one of the most important administration screens because it manages:
+
+* Azure AD linked users
+* ASP.NET Identity roles
+* Company access
+* Legal Entity access
+* Department access
+* Approval limits
+* ABAC attributes
+* Approval routing eligibility
+
+---
+
+# Job Offer Users Management
+
+```text
+Administration > Security > Job Offer Users
+```
+
+---
+
+# Page Header
+
+```text
+-------------------------------------------------------
+Job Offer Users Administration
+-------------------------------------------------------
+
+Manage User Access, Roles and Attributes
+
+Total Users: 128
+
+Active Users: 117
+
+Inactive Users: 11
+```
+
+---
+
+# Search & Filters
+
+```html
+<div class="card">
+
+    User Name
+    [________________]
+
+    Email
+    [________________]
+
+    Employee No
+    [________________]
+
+    Role
+    [▼ Select Role]
+
+    Company
+    [▼ Select Company]
+
+    Status
+    [▼ Active / Inactive]
+
+    [ Search ]
+    [ Clear ]
+
+</div>
+```
+
+---
+
+# User Grid
+
+```text
+-----------------------------------------------------------------------------------------------------------------------
+
+Employee No     Name               Email                    Role             Company          Status
+
+-----------------------------------------------------------------------------------------------------------------------
+
+100001          Juan Dela Cruz     juan@unilab.com.ph       TA Partner       Unilab          Active
+
+100002          Maria Santos       maria@unilab.com.ph      HROD Head        Unilab          Active
+
+100003          Leo Ramos          leo@unilab.com.ph        President        Corporate       Active
+
+-----------------------------------------------------------------------------------------------------------------------
+```
+
+Actions:
+
+```html
+[ View ]
+[ Edit ]
+[ Disable ]
+```
+
+---
+
+# User Details Page
+
+## Tab Layout
+
+```text
+-------------------------------------------------------
+
+User Details
+
+-------------------------------------------------------
+
+[ General ]
+[ Roles ]
+[ Company Access ]
+[ Legal Entities ]
+[ Approval Limits ]
+[ Attributes ]
+[ Permissions ]
+[ Audit Trail ]
+
+-------------------------------------------------------
+```
+
+---
+
+# Tab 1 - General Information
+
+```html
+<div class="card">
+
+Employee No
+
+[100001]
+
+Full Name
+
+[Juan Dela Cruz]
+
+Email
+
+[juan@unilab.com.ph]
+
+Azure AD Object ID
+
+[4f1c2d88-xxxx-xxxx]
+
+Identity User Id
+
+[3baf0e8f-xxxx-xxxx]
+
+Status
+
+(•) Active
+( ) Inactive
+
+</div>
+```
+
+---
+
+# Tab 2 - Roles (RBAC)
+
+Uses ASP.NET Identity Roles.
+
+```html
+<div class="card">
+
+Assigned Roles
+
+☑ TA Partner
+
+☐ HROD Head
+
+☐ Division Head
+
+☐ President
+
+☐ Administrator
+
+☐ System Auditor
+
+</div>
+```
+
+---
+
+# Tab 3 - Company Access (ABAC)
+
+```html
+<div class="card">
+
+User Company Access
+
+☑ Unilab Inc.
+
+☑ Allied Services
+
+☐ Amherst
+
+☐ Biomedis
+
+☐ RITM
+
+</div>
+```
+
+Corresponding table:
+
+```sql
+UserCompanyAccess
+```
+
+---
+
+# Tab 4 - Legal Entity Access
+
+```html
+<div class="card">
+
+Legal Entity Access
+
+☑ Unilab Philippines
+
+☑ UL Skin Sciences
+
+☑ UL Consumer Health
+
+☐ Amherst Manufacturing
+
+☐ Amherst Distribution
+
+</div>
+```
+
+---
+
+# Tab 5 - Approval Limits
+
+Critical for Approval Routing.
+
+```html
+<div class="card">
+
+Minimum Approval Amount
+
+[ 0.00 ]
+
+Maximum Approval Amount
+
+[ 100,000.00 ]
+
+Above Band Approval
+
+☑ Allowed
+
+☐ Not Allowed
+
+</div>
+```
+
+Example:
+
+```text
+TA Partner
+
+0 - 0
+
+----------------
+
+HROD Head
+
+0 - 100,000
+
+----------------
+
+Division Head
+
+0 - 250,000
+
+----------------
+
+President
+
+Unlimited
+```
+
+---
+
+# Tab 6 - Attributes (ABAC)
+
+Most important section.
+
+Instead of hardcoding access, attributes drive authorization.
+
+```text
+---------------------------------------------------
+User Attributes
+---------------------------------------------------
+
+Attribute Name          Value
+
+---------------------------------------------------
+
+Department              Sales
+
+BusinessUnit            Commercial
+
+Location                Manila
+
+JobLevel                Director
+
+Region                  NCR
+
+EmploymentType          Regular
+
+ApprovalLimit           100000
+
+---------------------------------------------------
+```
+
+Add Attribute
+
+```html
+Attribute Name
+
+[________________]
+
+Value
+
+[________________]
+
+[ Add Attribute ]
+```
+
+---
+
+# Tab 7 - Effective Permissions
+
+Shows RBAC + ABAC result.
+
+```text
+---------------------------------------------------
+Effective Permissions
+---------------------------------------------------
+
+JO.CREATE
+
+✓ Allowed
+
+JO.EDIT
+
+✓ Allowed
+
+JO.APPROVE
+
+✓ Allowed
+
+JO.REJECT
+
+✓ Allowed
+
+JO.DELETE
+
+✗ Denied
+
+---------------------------------------------------
+```
+
+Useful for troubleshooting.
+
+---
+
+# Tab 8 - Approval Routing Eligibility
+
+Shows what approvals user can receive.
+
+```text
+---------------------------------------------------
+Approval Routing Eligibility
+---------------------------------------------------
+
+Can Approve
+
+✔ Within Band Offers
+
+✔ Sales Department
+
+✔ Company = Unilab
+
+✔ Company = Allied
+
+✔ Salary <= 100,000
+
+---------------------------------------------------
+
+Cannot Approve
+
+✗ Manufacturing
+
+✗ Above Band > 100,000
+
+---------------------------------------------------
+```
+
+---
+
+# Approval Simulation Panel
+
+Very useful feature.
+
+```html
+<div class="card">
+
+Simulation
+
+Company
+
+[ Unilab ▼ ]
+
+Department
+
+[ Sales ▼ ]
+
+Salary
+
+[ 90000 ]
+
+Above Band
+
+☐ No
+☑ Yes
+
+[ Test Access ]
+
+</div>
+```
+
+Result:
+
+```text
+ACCESS DENIED
+
+Reason:
+
+Above Band Offer
+
+President Approval Required
+```
+
+---
+
+# User Claims Viewer
+
+Since you are using:
+
+```csharp
+Microsoft.AspNetCore.Identity
+
+Microsoft.AspNetCore.Authentication.OpenIdConnect
+```
+
+show generated claims.
+
+```text
+---------------------------------------------------
+Claims Generated
+---------------------------------------------------
+
+JobOfferUserId = 101
+
+EmployeeNo = 100001
+
+Department = Sales
+
+Role = HROD Head
+
+ApprovalLimit = 100000
+
+CompanyIds = 1,2
+
+LegalEntityIds = 5,7,9
+```
+
+---
+
+# Audit Trail
+
+```text
+---------------------------------------------------
+Security Audit
+---------------------------------------------------
+
+Date                 Action
+
+---------------------------------------------------
+
+06/11/2026
+
+Role Changed
+
+Administrator
+
+---------------------------------------------------
+
+06/10/2026
+
+Approval Limit Updated
+
+Administrator
+
+---------------------------------------------------
+```
+
+---
+
+# Page Actions
+
+```html
+<button class="btn btn-success btn-sm">
+Save User
+</button>
+
+<button class="btn btn-primary btn-sm">
+Sync Azure AD
+</button>
+
+<button class="btn btn-info btn-sm">
+Generate Claims
+</button>
+
+<button class="btn btn-warning btn-sm">
+Test Authorization
+</button>
+
+<button class="btn btn-secondary btn-sm">
+View Audit Trail
+</button>
+```
+
+---
+
+# Recommended SBAdmin2 Layout
+
+```text
++------------------------------------------------------+
+| User Search & Grid                                   |
++------------------------------------------------------+
+
+                OPEN USER
+
++------------------------------------------------------+
+| User Header                                          |
++------------------------------------------------------+
+
++------------------------------------------------------+
+| Tabs                                                 |
+|------------------------------------------------------|
+| General                                              |
+| Roles                                                |
+| Company Access                                       |
+| Legal Entities                                       |
+| Approval Limits                                      |
+| Attributes                                           |
+| Permissions                                          |
+| Audit Trail                                          |
++------------------------------------------------------+
+
+[ Save ] [ Sync Azure AD ] [ Test Authorization ]
+```
+
+### Additional Recommendation
+
+Create a separate **ABAC Policy Management Page**:
+
+```text
+Administration
+ ├─ Job Offer Users
+ ├─ Roles
+ ├─ Permissions
+ ├─ ABAC Policies
+ ├─ Approval Matrix
+ ├─ Company Setup
+ └─ Legal Entity Setup
+```
+
+Then policies such as:
+
+```text
+Role = HROD Head
+AND Company = User.Company
+AND Salary <= User.ApprovalLimit
+```
+
+can be configured without code changes, making your Job Offer system flexible as approval rules evolve.

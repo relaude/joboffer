@@ -1,0 +1,578 @@
+@attribute [Route(JORoutes.MockUp.Users)]
+
+<div class="card shadow mb-4 border-left-primary jo-users-page small">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-users-cog fa-fw mr-2"></i>
+                    User Grid
+                </h6>
+                <small class="text-muted">Administration > Security > Job Offer Users | Hybrid RBAC + ABAC mockup</small>
+            </div>
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1"><i class="fas fa-user-shield fa-fw text-primary mr-1"></i>Admin View</span>
+                <span class="badge badge-info"><i class="fas fa-project-diagram fa-fw mr-1"></i>RBAC + ABAC</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-4">
+            @foreach (var stat in summaryStats)
+            {
+                <div class="col-xl-3 col-md-6 mb-3 mb-xl-0">
+                    <div class="border-left-@stat.Color bg-light px-3 py-2 h-100">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-xs font-weight-bold text-@stat.Color text-uppercase mb-1">@stat.Label</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-900">@stat.Value</div>
+                            </div>
+                            <i class="@stat.Icon fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="border rounded bg-white mb-4">
+            <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                <div>
+                    <h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-filter fa-fw text-primary mr-2"></i>Search & Filters</h6>
+                    <small class="text-muted">Find Azure AD linked users, Identity roles, access scope, and approval eligibility.</small>
+                </div>
+                <span class="badge badge-light border mt-2 mt-md-0 align-self-start align-self-md-center">Mock Search</span>
+            </div>
+
+            <div class="p-3">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">User Name</label>
+                        <input class="form-control form-ctrl-sml" value="Maria" readonly />
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">Email</label>
+                        <input class="form-control form-ctrl-sml" value="unilab.com.ph" readonly />
+                    </div>
+                    <div class="col-lg-2 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">Employee No</label>
+                        <input class="form-control form-ctrl-sml" value="100002" readonly />
+                    </div>
+                    <div class="col-lg-2 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">Role</label>
+                        <select class="form-control form-ctrl-sml" disabled>
+                            <option>HROD Head</option>
+                            <option>TA Partner</option>
+                            <option>Division Head</option>
+                            <option>President</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">Company</label>
+                        <select class="form-control form-ctrl-sml" disabled>
+                            <option>Unilab</option>
+                            <option>Allied</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">Status</label>
+                        <select class="form-control form-ctrl-sml" disabled>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex flex-column flex-md-row justify-content-end">
+                    <button type="button" class="btn btn-primary btn-sm mb-2 mb-md-0 mr-md-2" disabled><i class="fas fa-search fa-fw mr-1"></i>Search</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled><i class="fas fa-eraser fa-fw mr-1"></i>Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="border rounded bg-white mb-4">
+            <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between small">
+                <div>
+                    <h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-table fa-fw text-primary mr-2"></i>Job Offer Users</h6>
+                    <small class="text-muted">User grid focused on role, company scope, status, and approval routing readiness.</small>
+                </div>
+                <button type="button" class="btn btn-success btn-sm mt-2 mt-md-0 align-self-start align-self-md-center" disabled>
+                    <i class="fas fa-user-plus fa-fw mr-1"></i>Add User
+                </button>
+            </div>
+
+            <div class="p-3">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm text-nowrap mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Employee No</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Company</th>
+                                <th>Status</th>
+                                <th>Approval Band</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in users)
+                            {
+                                <tr class="@(user.IsSelected ? "table-primary" : "")">
+                                    <td class="font-weight-bold text-gray-900">@user.EmployeeNo</td>
+                                    <td>@user.Name</td>
+                                    <td>@user.Email</td>
+                                    <td><span class="badge @user.RoleBadge">@user.Role</span></td>
+                                    <td>@user.Company</td>
+                                    <td><span class="badge @user.StatusBadge">@user.Status</span></td>
+                                    <td>@user.ApprovalBand</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-outline-primary btn-sm mr-1" disabled title="View"><i class="fas fa-eye fa-fw"></i></button>
+                                        <button type="button" class="btn btn-outline-info btn-sm mr-1" disabled title="Edit"><i class="fas fa-edit fa-fw"></i></button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" disabled title="Disable"><i class="fas fa-ban fa-fw"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="border rounded bg-white mb-4">
+            <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                <div>
+                    <h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-id-badge fa-fw text-primary mr-2"></i>User Details</h6>
+                    <small class="text-muted">@selectedUser.Name | @selectedUser.Role | @selectedUser.Email</small>
+                </div>
+                <span class="badge badge-success mt-2 mt-md-0 align-self-start align-self-md-center"><i class="fas fa-check-circle fa-fw mr-1"></i>Active Identity Link</span>
+            </div>
+
+            <div class="p-3">
+                <ul class="nav nav-tabs small mb-3" role="tablist">
+                    @foreach (var tab in tabs)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link @(tab.IsActive ? "active" : "disabled")" href="javascript:void(0)">
+                                <i class="@tab.Icon fa-fw mr-1"></i>@tab.Label
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <div class="row">
+                    <div class="col-xl-4 col-lg-6 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-user fa-fw text-primary mr-2"></i>General</h6></div>
+                            <div class="p-3">
+                                @foreach (var item in generalInfo)
+                                {
+                                    <div class="d-flex justify-content-between border-bottom py-1">
+                                        <span class="text-muted">@item.Label</span>
+                                        <span class="font-weight-bold text-gray-900 text-right">@item.Value</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-user-tag fa-fw text-primary mr-2"></i>Roles (RBAC)</h6></div>
+                            <div class="p-3">
+                                @foreach (var role in roles)
+                                {
+                                    <div class="custom-control custom-checkbox mb-2 small">
+                                        <input type="checkbox" class="custom-control-input" id="@role.Id" checked="@role.IsAssigned" disabled />
+                                        <label class="custom-control-label" for="@role.Id">@role.Name</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-building fa-fw text-primary mr-2"></i>Company Access (ABAC)</h6></div>
+                            <div class="p-3">
+                                @foreach (var access in companyAccess)
+                                {
+                                    <div class="custom-control custom-checkbox mb-2">
+                                        <input type="checkbox" class="custom-control-input" id="@access.Id" checked="@access.IsAssigned" disabled />
+                                        <label class="custom-control-label" for="@access.Id">@access.Name</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-landmark fa-fw text-primary mr-2"></i>Legal Entities</h6></div>
+                            <div class="p-3">
+                                @foreach (var entity in legalEntities)
+                                {
+                                    <div class="custom-control custom-checkbox mb-2">
+                                        <input type="checkbox" class="custom-control-input" id="@entity.Id" checked="@entity.IsAssigned" disabled />
+                                        <label class="custom-control-label" for="@entity.Id">@entity.Name</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-coins fa-fw text-primary mr-2"></i>Approval Limits</h6></div>
+                            <div class="p-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Minimum Approval Amount</label>
+                                <input class="form-control form-ctrl-sml mb-2" value="PHP 0.00" readonly />
+                                <label class="font-weight-bold text-gray-700 mb-1">Maximum Approval Amount</label>
+                                <input class="form-control form-ctrl-sml mb-2" value="PHP 100,000.00" readonly />
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="aboveBandApproval" disabled />
+                                    <label class="custom-control-label" for="aboveBandApproval">Above Band Approval Allowed</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-sitemap fa-fw text-primary mr-2"></i>Approval Matrix</h6></div>
+                            <div class="p-3">
+                                @foreach (var level in approvalLevels)
+                                {
+                                    <div class="d-flex justify-content-between border-bottom py-1">
+                                        <span>@level.Label</span>
+                                        <span class="font-weight-bold text-gray-900">@level.Value</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light d-flex justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-fingerprint fa-fw text-primary mr-2"></i>User Attributes (ABAC)</h6>
+                                <span class="badge badge-light border">UserAttributes</span>
+                            </div>
+                            <div class="p-3">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm mb-3">
+                                        <thead class="thead-light"><tr><th>Attribute Name</th><th>Value</th></tr></thead>
+                                        <tbody>
+                                            @foreach (var item in attributes)
+                                            {
+                                                <tr><td class="font-weight-bold text-gray-900">@item.Label</td><td>@item.Value</td></tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-5 mb-2 mb-md-0"><input class="form-control form-ctrl-sml" value="Region" readonly /></div>
+                                    <div class="col-md-5 mb-2 mb-md-0"><input class="form-control form-ctrl-sml" value="NCR" readonly /></div>
+                                    <div class="col-md-2"><button type="button" class="btn btn-outline-primary btn-sm btn-block" disabled><i class="fas fa-plus fa-fw"></i></button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-key fa-fw text-primary mr-2"></i>Effective Permissions</h6></div>
+                            <div class="p-3">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm mb-0">
+                                        <thead class="thead-light"><tr><th>Permission</th><th>Policy Source</th><th>ABAC Result</th></tr></thead>
+                                        <tbody>
+                                            @foreach (var permission in permissions)
+                                            {
+                                                <tr>
+                                                    <td class="font-weight-bold text-gray-900">@permission.Code</td>
+                                                    <td>@permission.Source</td>
+                                                    <td><span class="badge @permission.BadgeClass"><i class="@permission.Icon fa-fw mr-1"></i>@permission.Result</span></td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-route fa-fw text-primary mr-2"></i>Approval Routing Eligibility</h6></div>
+                            <div class="p-3">
+                                <div class="text-xs font-weight-bold text-uppercase text-success mb-2">Can Approve</div>
+                                @foreach (var item in canApprove)
+                                {
+                                    <div class="mb-1"><i class="fas fa-check-circle fa-fw text-success mr-1"></i>@item</div>
+                                }
+                                <hr />
+                                <div class="text-xs font-weight-bold text-uppercase text-danger mb-2">Cannot Approve</div>
+                                @foreach (var item in cannotApprove)
+                                {
+                                    <div class="mb-1 small"><i class="fas fa-times-circle fa-fw text-danger mr-1"></i>@item</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-vial fa-fw text-primary mr-2"></i>Approval Simulation</h6></div>
+                            <div class="p-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Company</label>
+                                <select class="form-control form-ctrl-sml mb-2" disabled><option>Unilab</option></select>
+                                <label class="font-weight-bold text-gray-700 mb-1">Department</label>
+                                <select class="form-control form-ctrl-sml mb-2" disabled><option>Sales</option></select>
+                                <label class="font-weight-bold text-gray-700 mb-1">Salary</label>
+                                <input class="form-control form-ctrl-sml mb-2" value="PHP 120,000.00" readonly />
+                                <div class="custom-control custom-checkbox mb-2">
+                                    <input type="checkbox" class="custom-control-input" id="simulationAboveBand" checked disabled />
+                                    <label class="custom-control-label" for="simulationAboveBand">Above Band</label>
+                                </div>
+                                <button type="button" class="btn btn-warning btn-sm btn-block mb-3" disabled><i class="fas fa-bolt fa-fw mr-1"></i>Test Access</button>
+                                <div class="alert alert-danger py-2 mb-0" role="alert">
+                                    <div class="font-weight-bold">ACCESS DENIED</div>
+                                    Above Band Offer. President Approval Required.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 mb-4">
+                        <div class="border rounded h-100">
+                            <div class="px-3 py-2 border-bottom bg-light small"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-id-card-alt fa-fw text-primary mr-2"></i>Claims Generated</h6></div>
+                            <div class="p-3">
+                                @foreach (var claim in claims)
+                                {
+                                    <div class="d-flex justify-content-between border-bottom py-1">
+                                        <span class="text-muted">@claim.Label</span>
+                                        <span class="font-weight-bold text-gray-900 text-right">@claim.Value</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border rounded">
+                    <div class="px-3 py-2 border-bottom bg-light"><h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-history fa-fw text-primary mr-2"></i>Security Audit</h6></div>
+                    <div class="p-3">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm mb-0">
+                                <thead class="thead-light"><tr><th>Date</th><th>Action</th><th>Actor</th><th>Result</th></tr></thead>
+                                <tbody>
+                                    @foreach (var item in auditTrail)
+                                    {
+                                        <tr>
+                                            <td>@item.Date</td>
+                                            <td class="font-weight-bold text-gray-900">@item.Action</td>
+                                            <td>@item.Actor</td>
+                                            <td><span class="badge @item.BadgeClass">@item.Result</span></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-white d-flex flex-column flex-lg-row justify-content-end">
+        <button type="button" class="btn btn-success mb-2 mb-lg-0 mr-lg-2" disabled><i class="fas fa-save fa-fw mr-1"></i>Save User</button>
+        <button type="button" class="btn btn-primary mb-2 mb-lg-0 mr-lg-2" disabled><i class="fas fa-sync-alt fa-fw mr-1"></i>Sync Azure AD</button>
+        <button type="button" class="btn btn-info mb-2 mb-lg-0 mr-lg-2" disabled><i class="fas fa-id-card fa-fw mr-1"></i>Generate Claims</button>
+        <button type="button" class="btn btn-warning mb-2 mb-lg-0 mr-lg-2" disabled><i class="fas fa-shield-alt fa-fw mr-1"></i>Test Authorization</button>
+        <button type="button" class="btn btn-secondary btn-sml" disabled><i class="fas fa-history fa-fw mr-1"></i>View Audit Trail</button>
+    </div>
+</div>
+
+<style>
+    .jo-users-page .form-ctrl-sml {
+        font-size: .8rem;
+        min-height: calc(1.5em + .5rem + 2px);
+    }
+
+    .jo-users-page .{
+        font-size: .78rem;
+        padding: .25rem .55rem;
+    }
+
+    .jo-users-page .nav-tabs .nav-link {
+        padding: .45rem .65rem;
+    }
+
+    .jo-users-page .custom-control-label {
+        line-height: 1.55;
+    }
+</style>
+
+@code {
+    private readonly List<MockStat> summaryStats =
+    [
+        new("Total Users", "128", "primary", "fas fa-users"),
+        new("Active Users", "117", "success", "fas fa-user-check"),
+        new("Inactive Users", "11", "danger", "fas fa-user-slash"),
+        new("ABAC Policies", "18", "info", "fas fa-shield-alt")
+    ];
+
+    private readonly List<MockUser> users =
+    [
+        new("100001", "Juan Dela Cruz", "juan@unilab.com.ph", "TA Partner", "Unilab", "Active", "0 - 0", "badge-primary", "badge-success", false),
+        new("100002", "Maria Santos", "maria@unilab.com.ph", "HROD Head", "Unilab", "Active", "0 - 100,000", "badge-info", "badge-success", true),
+        new("100003", "Leo Ramos", "leo@unilab.com.ph", "President", "Corporate", "Active", "Unlimited", "badge-warning", "badge-success", false),
+        new("100004", "Ana Reyes", "ana@unilab.com.ph", "Division Head", "Allied", "Active", "0 - 250,000", "badge-secondary", "badge-success", false),
+        new("100005", "Carlo Lim", "carlo@unilab.com.ph", "System Auditor", "Corporate", "Inactive", "Read Only", "badge-dark", "badge-secondary", false)
+    ];
+
+    private MockUser selectedUser => users.First(user => user.IsSelected);
+
+    private readonly List<MockTab> tabs =
+    [
+        new("General", "fas fa-user", true),
+        new("Roles", "fas fa-user-tag", false),
+        new("Company Access", "fas fa-building", false),
+        new("Legal Entities", "fas fa-landmark", false),
+        new("Approval Limits", "fas fa-coins", false),
+        new("Attributes", "fas fa-fingerprint", false),
+        new("Permissions", "fas fa-key", false),
+        new("Audit Trail", "fas fa-history", false)
+    ];
+
+    private readonly List<MockPair> generalInfo =
+    [
+        new("Employee No", "100002"),
+        new("Full Name", "Maria Santos"),
+        new("Email", "maria@unilab.com.ph"),
+        new("Azure AD Object ID", "4f1c2d88-xxxx-xxxx"),
+        new("Identity User Id", "3baf0e8f-xxxx-xxxx"),
+        new("Status", "Active")
+    ];
+
+    private readonly List<MockCheck> roles =
+    [
+        new("roleTa", "TA Partner", false),
+        new("roleHrod", "HROD Head", true),
+        new("roleDivision", "Division Head", false),
+        new("rolePresident", "President", false),
+        new("roleAdmin", "Administrator", false),
+        new("roleAuditor", "System Auditor", false)
+    ];
+
+    private readonly List<MockCheck> companyAccess =
+    [
+        new("companyUnilab", "Unilab Inc.", true),
+        new("companyAllied", "Allied Services", true),
+        new("companyAmherst", "Amherst", false),
+        new("companyBiomedis", "Biomedis", false),
+        new("companyRitm", "RITM", false)
+    ];
+
+    private readonly List<MockCheck> legalEntities =
+    [
+        new("legalUnilabPh", "Unilab Philippines", true),
+        new("legalSkin", "UL Skin Sciences", true),
+        new("legalConsumer", "UL Consumer Health", true),
+        new("legalAmherstMfg", "Amherst Manufacturing", false),
+        new("legalAmherstDist", "Amherst Distribution", false)
+    ];
+
+    private readonly List<MockPair> approvalLevels =
+    [
+        new("TA Partner", "0 - 0"),
+        new("HROD Head", "0 - 100,000"),
+        new("Division Head", "0 - 250,000"),
+        new("President", "Unlimited")
+    ];
+
+    private readonly List<MockPair> attributes =
+    [
+        new("Department", "Sales"),
+        new("BusinessUnit", "Commercial"),
+        new("Location", "Manila"),
+        new("JobLevel", "Director"),
+        new("Region", "NCR"),
+        new("EmploymentType", "Regular"),
+        new("ApprovalLimit", "100000")
+    ];
+
+    private readonly List<MockPermission> permissions =
+    [
+        new("JO.CREATE", "TA Partner", "Denied", "badge-danger", "fas fa-times-circle"),
+        new("JO.EDIT", "HROD Head", "Allowed", "badge-success", "fas fa-check-circle"),
+        new("JO.APPROVE", "HROD Head + Attribute Match", "Allowed", "badge-success", "fas fa-check-circle"),
+        new("JO.REJECT", "HROD Head", "Allowed", "badge-success", "fas fa-check-circle"),
+        new("JO.DELETE", "Administrator Only", "Denied", "badge-danger", "fas fa-times-circle")
+    ];
+
+    private readonly List<string> canApprove =
+    [
+        "Within Band Offers",
+        "Sales Department",
+        "Company = Unilab",
+        "Company = Allied",
+        "Salary <= 100,000"
+    ];
+
+    private readonly List<string> cannotApprove =
+    [
+        "Manufacturing",
+        "Above Band > 100,000"
+    ];
+
+    private readonly List<MockPair> claims =
+    [
+        new("JobOfferUserId", "101"),
+        new("EmployeeNo", "100002"),
+        new("Department", "Sales"),
+        new("Role", "HROD Head"),
+        new("ApprovalLimit", "100000"),
+        new("CompanyIds", "1,2"),
+        new("LegalEntityIds", "5,7,9")
+    ];
+
+    private readonly List<MockAudit> auditTrail =
+    [
+        new("06/11/2026", "Role Changed", "Administrator", "Completed", "badge-success"),
+        new("06/10/2026", "Approval Limit Updated", "Administrator", "Completed", "badge-success"),
+        new("06/09/2026", "Company Access Added", "Security Admin", "Completed", "badge-success"),
+        new("06/08/2026", "Authorization Test", "Administrator", "Denied", "badge-danger")
+    ];
+
+    private sealed record MockStat(string Label, string Value, string Color, string Icon);
+
+    private sealed record MockUser(
+        string EmployeeNo,
+        string Name,
+        string Email,
+        string Role,
+        string Company,
+        string Status,
+        string ApprovalBand,
+        string RoleBadge,
+        string StatusBadge,
+        bool IsSelected);
+
+    private sealed record MockTab(string Label, string Icon, bool IsActive);
+
+    private sealed record MockPair(string Label, string Value);
+
+    private sealed record MockCheck(string Id, string Name, bool IsAssigned);
+
+    private sealed record MockPermission(string Code, string Source, string Result, string BadgeClass, string Icon);
+
+    private sealed record MockAudit(string Date, string Action, string Actor, string Result, string BadgeClass);
+}

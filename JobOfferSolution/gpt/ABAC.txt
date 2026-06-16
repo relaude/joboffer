@@ -1,0 +1,706 @@
+Based on:
+
+1. Your **Job Offer User Stories**
+2. The complete **Process Flow** (TA Partner → HROD Head → Division Head → President → Candidate Discussion → Re-Proposal) 
+3. Your current architecture:
+
+   * ASP.NET Identity (`ApplicationUser`)
+   * Azure AD SSO (`OpenIdConnect`)
+   * ASP.NET Roles
+   * Custom `JobOfferUsers` table
+   * Custom claim `JobOfferUserId` in `AccountService` (retrieved from ClaimsPrincipal)
+
+I would recommend moving from **Role-Based Access Control (RBAC)** to a **Hybrid RBAC + ABAC model**.
+
+---
+
+# Why ABAC for Job Offer System?
+
+Your workflow is not purely role-based.
+
+Example:
+
+### HROD Head
+
+Can approve:
+
+```text
+Company = Unilab
+Salary <= 100,000
+```
+
+But cannot approve:
+
+```text
+Company = Amherst
+```
+
+---
+
+### Division Head
+
+Can approve:
+
+```text
+Business Unit = Sales
+```
+
+But cannot approve:
+
+```text
+Business Unit = Manufacturing
+```
+
+---
+
+### President
+
+Can only approve:
+
+```text
+Above Band = True
+```
+
+This is ABAC.
+
+Access depends on:
+
+```text
+User Attributes
+Resource Attributes
+Action
+Context
+```
+
+not merely Role.
+
+---
+
+# Recommended Security Architecture
+
+```text
+Azure AD
+    │
+    ▼
+
+AspNetUsers
+    │
+    ▼
+
+JobOfferUsers
+    │
+    ▼
+
+User Attributes
+    │
+    ▼
+
+ABAC Engine
+    │
+    ▼
+
+Permission Decision
+```
+
+---
+
+# Core Tables
+
+---
+
+## JobOfferUsers
+
+You already have this.
+
+```sql
+CREATE TABLE JobOfferUsers
+(
+    Id INT IDENTITY PRIMARY KEY,
+
+    IdentityUserId NVARCHAR(450),
+
+    EmployeeNo NVARCHAR(50),
+
+    Email NVARCHAR(255),
+
+    FullName NVARCHAR(255),
+
+    IsActive BIT,
+
+    CreatedDate DATETIME2
+)
+```
+
+---
+
+## Departments
+
+```sql
+CREATE TABLE Departments
+(
+    Id INT IDENTITY PRIMARY KEY,
+
+    DepartmentName NVARCHAR(200)
+)
+```
+
+---
+
+## Companies
+
+```sql
+CREATE TABLE Companies
+(
+    Id INT IDENTITY PRIMARY KEY,
+
+    CompanyCode NVARCHAR(50),
+
+    CompanyName NVARCHAR(255)
+)
+```
+
+---
+
+## LegalEntities
+
+```sql
+CREATE TABLE LegalEntities
+(
+    Id INT IDENTITY PRIMARY KEY,
+
+    CompanyId INT,
+
+    LegalEntityCode NVARCHAR(50),
+
+    LegalEntityName NVARCHAR(255)
+)
+```
+
+---
+
+# User Attributes
+
+This is the heart of ABAC.
+
+---
+
+## UserAttributes
+
+```sql
+CREATE TABLE UserAttributes
+(
+    Id INT IDENTITY PRIMARY KEY,
+
+    JobOfferUserId INT NOT NULL,
+
+    AttributeName NVARCHAR(100),
+
+    AttributeValue NVARCHAR(500)
+)
+```
+
+Example
+
+```text
+UserId = 1
+
+Department = Sales
+Company = Unilab
+Location = Manila
+JobLevel = Director
+ApprovalLimit = 100000
+```
+
+Stored as:
+
+```text
+Department=Sales
+
+Company=Unilab
+
+Location=Manila
+
+ApprovalLimit=100000
+```
+
+---
+
+# Resource Attributes
+
+---
+
+## JobOfferCases
+
+```sql
+CREATE TABLE JobOfferCases
+(
+    Id INT IDENTITY PRIMARY KEY,
+
+    CandidateId INT,
+
+    CompanyId INT,
+
+    LegalEntityId INT,
+
+    DepartmentId INT,
+
+    PositionLevel NVARCHAR(50),
+
+    ProposedSalary DECIMAL(18,2),
+
+    AboveBand BIT,
+
+    Status NVARCHAR(50)
+)
+```
+
+Resource Attributes:
+
+```text
+Company
+LegalEntity
+Department
+Salary
+PositionLevel
+AboveBand
+```
+
+---
+
+# Permissions
+
+---
+
+## Permissions
+
+```sql
+CREATE TABLE Permissions
+(
+    Id INT IDENTITY PRIMARY KEY,
+
+    PermissionCode NVARCHAR(100),
+
+    PermissionName NVARCHAR(255)
+)
+```
+
+Examples
+
+```text
+JO.CREATE
+JO.EDIT
+JO.DELETE
+
+JO.ANALYZE
+
+JO.APPROVE
+
+JO.REJECT
+
+JO.RETURN
+
+JO.GENERATE_OFFER
+```
+
+---
+
+# Roles
+
+Continue using Identity Roles.
+
+---
+
+## Roles
+
+Identity already provides:
+
+```text
+TA Partner
+
+HROD Head
+
+Division Head
+
+President
+
+System Admin
+```
+
+---
+
+# Role Permissions
+
+```sql
+CREATE TABLE RolePermissions
+(
+    RoleId NVARCHAR(450),
+
+    PermissionId INT
+)
+```
+
+Example
+
+```text
+TA Partner
+
+JO.CREATE
+JO.ANALYZE
+
+------------------
+
+HROD Head
+
+JO.APPROVE
+JO.REJECT
+JO.RETURN
+```
+
+---
+
+# ABAC Policies
+
+Most important table.
+
+---
+
+## AuthorizationPolicies
+
+```sql
+CREATE TABLE AuthorizationPolicies
+(
+    Id INT IDENTITY PRIMARY KEY,
+
+    PolicyName NVARCHAR(200),
+
+    PermissionCode NVARCHAR(100),
+
+    Expression NVARCHAR(MAX),
+
+    IsActive BIT
+)
+```
+
+Example:
+
+### HROD Approval
+
+```text
+Permission:
+JO.APPROVE
+
+Expression:
+
+Role == "HROD Head"
+AND
+Resource.CompanyId == User.CompanyId
+AND
+Resource.ProposedSalary <= User.ApprovalLimit
+```
+
+---
+
+### President Approval
+
+```text
+Permission:
+JO.APPROVE
+
+Expression:
+
+Role == "President"
+AND
+Resource.AboveBand == true
+```
+
+---
+
+# Approval Matrix
+
+This directly supports the Process Flow.
+
+---
+
+## ApprovalLevels
+
+```sql
+CREATE TABLE ApprovalLevels
+(
+    Id INT IDENTITY PRIMARY KEY,
+
+    SequenceNo INT,
+
+    ApprovalRole NVARCHAR(100),
+
+    IsAboveBandOnly BIT
+)
+```
+
+Data
+
+```text
+1 HROD Head
+
+2 Division Head
+
+3 President
+```
+
+President:
+
+```text
+IsAboveBandOnly = 1
+```
+
+---
+
+# User Company Access
+
+Very important.
+
+---
+
+## UserCompanyAccess
+
+```sql
+CREATE TABLE UserCompanyAccess
+(
+    JobOfferUserId INT,
+
+    CompanyId INT
+)
+```
+
+Example
+
+```text
+Maria Santos
+
+Unilab
+Allied Services
+
+-----------------
+
+Juan Reyes
+
+Amherst
+```
+
+---
+
+# User Legal Entity Access
+
+```sql
+CREATE TABLE UserLegalEntityAccess
+(
+    JobOfferUserId INT,
+
+    LegalEntityId INT
+)
+```
+
+---
+
+# Approval Limits
+
+Needed for Salary Band Validation.
+
+---
+
+## UserApprovalLimits
+
+```sql
+CREATE TABLE UserApprovalLimits
+(
+    JobOfferUserId INT,
+
+    MinSalary DECIMAL(18,2),
+
+    MaxSalary DECIMAL(18,2)
+)
+```
+
+Example
+
+```text
+HROD Head
+
+0 - 100,000
+
+Division Head
+
+0 - 200,000
+
+President
+
+Unlimited
+```
+
+---
+
+# Audit Tables
+
+Critical for compliance.
+
+---
+
+## AuthorizationAudit
+
+```sql
+CREATE TABLE AuthorizationAudit
+(
+    Id BIGINT IDENTITY PRIMARY KEY,
+
+    JobOfferUserId INT,
+
+    PermissionCode NVARCHAR(100),
+
+    ResourceType NVARCHAR(100),
+
+    ResourceId INT,
+
+    Result BIT,
+
+    Reason NVARCHAR(MAX),
+
+    CreatedDate DATETIME2
+)
+```
+
+Example
+
+```text
+User:
+Maria Santos
+
+Permission:
+JO.APPROVE
+
+Case:
+123
+
+Result:
+Denied
+
+Reason:
+Company mismatch
+```
+
+---
+
+# Integration with ASP.NET Identity
+
+Keep Identity exactly as-is.
+
+Your current setup already supports:
+
+```csharp
+builder.Services
+.AddDefaultIdentity<ApplicationUser>()
+.AddRoles<IdentityRole>();
+```
+
+No changes required.
+
+Identity handles:
+
+```text
+Authentication
+Azure AD Login
+Cookies
+Claims
+Roles
+```
+
+ABAC handles:
+
+```text
+Authorization
+```
+
+---
+
+# Claims to Add After Login
+
+When Azure AD login succeeds:
+
+```text
+JobOfferUserId
+
+Department
+
+CompanyIds
+
+LegalEntityIds
+
+ApprovalLimit
+
+Role
+```
+
+Example
+
+```csharp
+new Claim("Department","Sales");
+new Claim("ApprovalLimit","100000");
+```
+
+Then your authorization service evaluates:
+
+```csharp
+CanApprove(JobOfferCase case, User user)
+```
+
+using:
+
+```text
+User Attributes
++
+Resource Attributes
++
+Policy
+```
+
+---
+
+# Recommended Architecture for Your Project
+
+```text
+Azure AD Login
+       │
+       ▼
+
+AspNetUsers
+       │
+       ▼
+
+JobOfferUsers
+       │
+       ▼
+
+Claims Builder
+       │
+       ▼
+
+ABAC Authorization Service
+       │
+       ▼
+
+Policies Stored in MSSQL
+       │
+       ▼
+
+Approval Routing Engine
+```
+
+For the Job Offer System described in your user stories and process flow, this **Hybrid RBAC + ABAC design** is much better than pure ASP.NET Identity Roles because approval authority depends on:
+
+* Company
+* Legal Entity
+* Salary Amount
+* Above-Band Status
+* Approval Level
+* Department
+* Business Unit
+
+which are dynamic attributes rather than static roles. 
