@@ -11,8 +11,11 @@ namespace JO.Persistence.DataAccess
     {
         public JobOfferDbContext(DbContextOptions<JobOfferDbContext> options) : base(options) { }
 
-        //Candidates
+        //RBAC+ABAC
         public DbSet<JobOfferUsers> JobOfferUsers { get; set; }
+        public DbSet<UserAttributes> UserAttributes { get; set; }
+
+        //Candidates
         public DbSet<Candidates> Candidates { get; set; }
         public DbSet<JobPositions> JobPositions { get; set; }
         public DbSet<Companies> Companies { get; set; }

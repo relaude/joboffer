@@ -18,17 +18,20 @@ namespace JO.Service.Services
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IDbContextFactory<JobOfferDbContext> _contextFactory;
         private readonly AuthenticationStateProvider _authStateProvider;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountService(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IDbContextFactory<JobOfferDbContext> contextFactory,
-            AuthenticationStateProvider authStateProvider)
+            AuthenticationStateProvider authStateProvider,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _contextFactory = contextFactory;
             _authStateProvider = authStateProvider;
+            _roleManager = roleManager;
         }
 
         public async Task<bool> LocalLogIn(string email)
@@ -68,6 +71,12 @@ namespace JO.Service.Services
             string userId = user.FindFirst("JobOfferUserId")?.Value;
 
             return string.IsNullOrEmpty(userId) ? 0 : int.Parse(userId);
+        }
+
+        public async Task CreateRole(string roleName)
+        {
+            if (!await _roleManager.RoleExistsAsync(roleName))
+                await _roleManager.CreateAsync(new IdentityRole(roleName));
         }
 
         private async Task<ClaimsPrincipal> GetUserAsync()

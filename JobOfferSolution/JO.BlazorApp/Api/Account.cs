@@ -1,4 +1,5 @@
-﻿using JO.DataModel.Identity;
+﻿using JO.DataModel.DTOs;
+using JO.DataModel.Identity;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,20 @@ namespace JO.BlazorApp.Api
             try
             {
                 await _accountService.LocalLogOut();
+                return Results.Ok();
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message);
+            }
+        }
+
+        [HttpPost("newrole")]
+        public async Task<IResult> NewRole([FromBody] NewRoleDto dto)
+        {
+            try
+            {
+                await _accountService.CreateRole(dto.RoleName);
                 return Results.Ok();
             }
             catch (Exception ex)
