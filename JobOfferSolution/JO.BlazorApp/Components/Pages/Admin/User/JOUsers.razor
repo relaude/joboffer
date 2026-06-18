@@ -1,0 +1,182 @@
+﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.Users)]
+
+<div class="card shadow mb-4 border-left-primary jo-users-page small">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-users-cog fa-fw mr-2"></i>
+                    Job Offer Users
+                </h6>
+                <small class="text-muted">Administration > Security > Job Offer Users | Hybrid RBAC + ABAC</small>
+            </div>
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1"><i class="fas fa-user-shield fa-fw text-primary mr-1"></i>Admin View</span>
+                <span class="badge badge-info"><i class="fas fa-project-diagram fa-fw mr-1"></i>RBAC + ABAC</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <!-- Summary Status -->
+        <div class="row mb-4">
+            @foreach (var stat in summaryStats)
+            {
+                <div class="col-xl-3 col-md-6 mb-3 mb-xl-0">
+                    <div class="border-left-@stat.Color bg-light px-3 py-2 h-100">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-xs font-weight-bold text-@stat.Color text-uppercase mb-1">@stat.Label</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-900">@stat.Value</div>
+                            </div>
+                            <i class="@stat.Icon fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <!-- Summary Status -->
+
+        <!-- Filters -->
+        <div class="border rounded bg-white mb-4">
+            <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                <div>
+                    <h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-filter fa-fw text-primary mr-2"></i>Search & Filters</h6>
+                    <small class="text-muted">Find Azure AD linked users, Identity roles, access scope, and approval eligibility.</small>
+                </div>
+                <span class="badge badge-light border mt-2 mt-md-0 align-self-start align-self-md-center">Mock Search</span>
+            </div>
+
+            <div class="p-3">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">User Name</label>
+                        <input class="form-control form-control-sm" value="Maria" readonly />
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">Email</label>
+                        <input class="form-control form-control-sm" value="unilab.com.ph" readonly />
+                    </div>
+                    <div class="col-lg-2 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">Employee No</label>
+                        <input class="form-control form-control-sm" value="100002" readonly />
+                    </div>
+                    <div class="col-lg-2 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">Role</label>
+                        <select class="form-control form-control-sm" disabled>
+                            <option>HROD Head</option>
+                            <option>TA Partner</option>
+                            <option>Division Head</option>
+                            <option>President</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">Company</label>
+                        <select class="form-control form-control-sm" disabled>
+                            <option>Unilab</option>
+                            <option>Allied</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-6 mb-3">
+                        <label class="font-weight-bold text-gray-700 mb-1">Status</label>
+                        <select class="form-control form-control-sm" disabled>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex flex-column flex-md-row justify-content-end">
+                    <button type="button" class="btn btn-primary btn-sm mb-2 mb-md-0 mr-md-2" disabled><i class="fas fa-search fa-fw mr-1"></i>Search</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled><i class="fas fa-eraser fa-fw mr-1"></i>Clear</button>
+                </div>
+            </div>
+        </div>
+        <!-- Filters -->
+
+        <!-- User Grid -->
+        <div class="border rounded bg-white mb-4">
+            <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                <div>
+                    <h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-table fa-fw text-primary mr-2"></i>Users Grid</h6>
+                    <small class="text-muted">User grid focused on role, company scope, status, and approval routing readiness.</small>
+                </div>
+                <a href="@JORoutes.Admin.NewUser" class="btn btn-success btn-sm mt-2 mt-md-0 align-self-start align-self-md-center" disabled>
+                    <i class="fas fa-user-plus fa-fw mr-1"></i>Add User
+                </a>
+            </div>
+
+            <div class="p-3">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm text-nowrap mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Employee No</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Company</th>
+                                <th>Status</th>
+                                <th>Approval Band</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in users)
+                            {
+                                <tr class="@(user.IsSelected ? "table-primary" : "")">
+                                    <td class="font-weight-bold text-gray-900">@user.EmployeeNo</td>
+                                    <td>@user.Name</td>
+                                    <td>@user.Email</td>
+                                    <td><span class="badge @user.RoleBadge">@user.Role</span></td>
+                                    <td>@user.Company</td>
+                                    <td><span class="badge @user.StatusBadge">@user.Status</span></td>
+                                    <td>@user.ApprovalBand</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-outline-primary btn-sm mr-1" disabled title="View"><i class="fas fa-eye fa-fw"></i></button>
+                                        <button type="button" class="btn btn-outline-info btn-sm mr-1" disabled title="Edit"><i class="fas fa-edit fa-fw"></i></button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" disabled title="Disable"><i class="fas fa-ban fa-fw"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private readonly List<MockStat> summaryStats =
+    [
+        new("Total Users", "128", "primary", "fas fa-users"),
+        new("Active Users", "117", "success", "fas fa-user-check"),
+        new("Inactive Users", "11", "danger", "fas fa-user-slash"),
+        new("ABAC Policies", "18", "info", "fas fa-shield-alt")
+    ];
+
+    private readonly List<MockUser> users =
+    [
+        new("100001", "Juan Dela Cruz", "juan@unilab.com.ph", "TA Partner", "Unilab", "Active", "0 - 0", "badge-primary", "badge-success", false),
+        new("100002", "Maria Santos", "maria@unilab.com.ph", "HROD Head", "Unilab", "Active", "0 - 100,000", "badge-info", "badge-success", true),
+        new("100003", "Leo Ramos", "leo@unilab.com.ph", "President", "Corporate", "Active", "Unlimited", "badge-warning", "badge-success", false),
+        new("100004", "Ana Reyes", "ana@unilab.com.ph", "Division Head", "Allied", "Active", "0 - 250,000", "badge-secondary", "badge-success", false),
+        new("100005", "Carlo Lim", "carlo@unilab.com.ph", "System Auditor", "Corporate", "Inactive", "Read Only", "badge-dark", "badge-secondary", false)
+    ];
+
+    private sealed record MockStat(string Label, string Value, string Color, string Icon);
+
+    private sealed record MockUser(
+        string EmployeeNo,
+        string Name,
+        string Email,
+        string Role,
+        string Company,
+        string Status,
+        string ApprovalBand,
+        string RoleBadge,
+        string StatusBadge,
+        bool IsSelected);
+}

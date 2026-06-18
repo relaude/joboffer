@@ -114,5 +114,19 @@
     <Build Include="dbo\Tables\CandidateExcelRawData.sql" />
     <Build Include="dbo\Tables\CandidateMSFormRequests.sql" />
     <Build Include="dbo\Tables\CandidateFormRequestStatus.sql" />
+    <Build Include="dbo\Tables\UserLegalEntityAccess.sql" />
+    <Build Include="dbo\Tables\UserAttributes.sql" />
+    <Build Include="dbo\Tables\UserApprovalLimits.sql" />
+    <Build Include="dbo\Tables\RolePermissions.sql" />
+    <Build Include="dbo\Tables\Permissions.sql" />
+    <Build Include="dbo\Tables\LegalEntities.sql" />
+    <Build Include="dbo\Tables\JobOfferCases.sql" />
+    <Build Include="dbo\Tables\AuthorizationPolicies.sql" />
+    <Build Include="dbo\Tables\ApprovalLevels.sql" />
+    <Build Include="dbo\Views\vw_CandidateMSFormRequests.sql" />
+    <Build Include="dbo\Tables\UserRoleCategories.sql" />
+    <Build Include="dbo\Tables\UserDivisionAccess.sql" />
+    <Build Include="dbo\Tables\JOUserRoles.sql" />
+    <Build Include="dbo\Views\vw_JOUserRoles.sql" />
   </ItemGroup>
 </Project>

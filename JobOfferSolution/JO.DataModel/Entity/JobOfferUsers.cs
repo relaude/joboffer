@@ -8,7 +8,7 @@ namespace JO.DataModel.Entity
 {
     public class JobOfferUsers : BaseEntity
     {
-        public string? AspNetUser_Id { get; set; }
+        public string? AspNetUserId { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
         public bool? IsActive { get; set; }

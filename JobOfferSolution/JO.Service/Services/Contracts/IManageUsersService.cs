@@ -1,4 +1,5 @@
 ﻿using JO.DataModel.Entity;
+using JO.DataModel.View;
 
 namespace JO.Service.Services.Contracts
 {
@@ -9,6 +10,7 @@ namespace JO.Service.Services.Contracts
         List<string> GetAllRoles();
         Task<List<JobOfferUsers>> GetAllUsersAsync();
         Task<IEnumerable<string>> GetUserRoles(string aspNetUserId);
+        Task<List<VwJOUserRoles>> GetVwJOUserRoles();
         Task<bool> IsUserExists(string email, int userId = 0);
         Task<int> NewUserAsync(string name, string email, List<string> roles);
         Task<int> UpdateUserAsync(int userId, bool isActive, string name, string email, List<string> roles);

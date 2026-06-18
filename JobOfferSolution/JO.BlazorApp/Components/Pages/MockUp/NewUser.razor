@@ -1,0 +1,525 @@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.MockUp.NewUser)]
+
+<div class="card shadow mb-4 border-left-primary new-user-page small">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div class="d-flex align-items-center mb-2 mb-lg-0">
+                <div class="icon-circle bg-primary text-white mr-2">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div>
+                    <h6 class="m-0 font-weight-bold text-primary">Create Job Offer User</h6>
+                    <div class="text-xs text-gray-500">Administration > Security > Job Offer Users > New User | Hybrid RBAC + ABAC</div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center">
+                <span class="badge badge-light border mr-2 mb-2 mb-lg-0">
+                    <i class="fas fa-database fa-fw text-primary mr-1"></i>Mockup Data
+                </span>
+                <span class="badge badge-info badge-pill">
+                    <i class="fas fa-project-diagram fa-fw mr-1"></i>RBAC + ABAC Setup
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-light border-left-info mb-4" role="alert">
+            <div class="d-flex align-items-start">
+                <i class="fas fa-info-circle fa-fw text-info mr-2 mt-1"></i>
+                <div>
+                    <div class="font-weight-bold text-gray-800">Static creation mockup</div>
+                    <div class="text-gray-600">This screen previews the data an administrator would review before saving a Job Offer user, assigning Identity roles, and generating ABAC claims.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            @foreach (var step in setupSteps)
+            {
+                <div class="col-xl-3 col-md-6 mb-3 mb-xl-0">
+                    <div class="border-left-@step.Color bg-light px-3 py-2 h-100">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-xs font-weight-bold text-@step.Color text-uppercase mb-1">@step.Label</div>
+                                <div class="font-weight-bold text-gray-900">@step.Value</div>
+                            </div>
+                            <i class="@step.Icon fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-xl-8">
+                <div class="card shadow-sm border-left-primary mb-4">
+                    <div class="card-header py-2 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                        <div>
+                            <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                                <i class="fas fa-id-card fa-fw mr-1"></i>General Information
+                            </h6>
+                            <small class="text-muted">Fields align with JobOfferUsers and Azure AD / ASP.NET Identity references.</small>
+                        </div>
+                        <span class="badge badge-success badge-pill mt-2 mt-md-0">
+                            <i class="fas fa-user-check fa-fw mr-1"></i>Active
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Employee No</label>
+                                <input class="form-control form-control-sm" value="100006" readonly />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Full Name</label>
+                                <input class="form-control form-control-sm" value="Isabel Mercado" readonly />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Email</label>
+                                <input class="form-control form-control-sm" value="isabel.mercado@unilab.com.ph" readonly />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Azure AD Object ID</label>
+                                <input class="form-control form-control-sm" value="4f1c2d88-9a40-47b8-8a77-44f76f64a203" readonly />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">ASP.NET Identity User ID</label>
+                                <input class="form-control form-control-sm" value="3baf0e8f-7791-42fc-a047-d15dbd6a9772" readonly />
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label class="font-weight-bold text-gray-700 mb-1">Primary Department</label>
+                                <select class="form-control form-control-sm" disabled>
+                                    <option selected>Sales</option>
+                                    <option>Manufacturing</option>
+                                    <option>Human Resources</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label class="font-weight-bold text-gray-700 mb-1">Business Unit</label>
+                                <select class="form-control form-control-sm" disabled>
+                                    <option selected>Commercial</option>
+                                    <option>Corporate</option>
+                                    <option>Operations</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="font-weight-bold text-gray-700 mb-1">User Status</label>
+                                <div class="form-control form-control-sm bg-light d-flex align-items-center">
+                                    <span class="badge badge-success badge-pill px-3">Active</span>
+                                    <span class="text-gray-500 ml-2">ready for claims</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-left-info mb-4">
+                    <div class="card-header py-2 bg-white">
+                        <h6 class="m-0 font-weight-bold text-info text-uppercase text-xs">
+                            <i class="fas fa-user-shield fa-fw mr-1"></i>Roles, Access Scope and Approval Limits
+                        </h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4 mb-4 mb-lg-0">
+                                <div class="section-title">Identity Roles</div>
+                                @foreach (var role in roles)
+                                {
+                                    <div class="custom-control custom-checkbox mb-2">
+                                        <input type="checkbox" class="custom-control-input" id="@role.Id" checked="@role.Checked" disabled />
+                                        <label class="custom-control-label" for="@role.Id">
+                                            <span class="font-weight-bold text-gray-800">@role.Name</span>
+                                            <span class="badge @role.Badge ml-1">@role.Scope</span>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-lg-4 mb-4 mb-lg-0">
+                                <div class="section-title">Company Access</div>
+                                @foreach (var company in companies)
+                                {
+                                    <div class="d-flex align-items-center justify-content-between border-bottom py-2">
+                                        <div>
+                                            <div class="font-weight-bold text-gray-800">@company.Name</div>
+                                            <div class="text-xs text-gray-500">@company.Code</div>
+                                        </div>
+                                        <span class="badge @(company.Allowed ? "badge-success" : "badge-light border")">
+                                            <i class="fas @(company.Allowed ? "fa-check" : "fa-minus") fa-fw mr-1"></i>@(company.Allowed ? "Allowed" : "No Access")
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="section-title">Approval Limits</div>
+                                <div class="bg-light rounded p-3 mb-3">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Salary Range</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-900">PHP 0.00 - 100,000.00</div>
+                                    <div class="text-xs text-gray-500">UserApprovalLimits.MinSalary / MaxSalary</div>
+                                </div>
+                                <div class="custom-control custom-checkbox mb-2">
+                                    <input type="checkbox" class="custom-control-input" id="withinBand" checked disabled />
+                                    <label class="custom-control-label" for="withinBand">Can approve within-band offers</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="aboveBand" disabled />
+                                    <label class="custom-control-label" for="aboveBand">Above-band approval requires President</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow-sm h-100 border-left-success">
+                            <div class="card-header py-2 bg-white">
+                                <h6 class="m-0 font-weight-bold text-success text-uppercase text-xs">
+                                    <i class="fas fa-building fa-fw mr-1"></i>Legal Entity Access
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var entity in legalEntities)
+                                {
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div>
+                                            <div class="font-weight-bold text-gray-800">@entity.Name</div>
+                                            <div class="text-xs text-gray-500">@entity.Code</div>
+                                        </div>
+                                        <span class="badge @(entity.Allowed ? "badge-success" : "badge-light border")">@entity.Status</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow-sm h-100 border-left-warning">
+                            <div class="card-header py-2 bg-white">
+                                <h6 class="m-0 font-weight-bold text-warning text-uppercase text-xs">
+                                    <i class="fas fa-route fa-fw mr-1"></i>Approval Routing Eligibility
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item in routingRules)
+                                {
+                                    <div class="d-flex align-items-start mb-3">
+                                        <i class="@item.Icon fa-fw @item.Color mr-2 mt-1"></i>
+                                        <div>
+                                            <div class="font-weight-bold text-gray-800">@item.Title</div>
+                                            <div class="text-gray-600">@item.Detail</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-left-secondary mb-4">
+                    <div class="card-header py-2 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                        <h6 class="m-0 font-weight-bold text-gray-800 text-uppercase text-xs">
+                            <i class="fas fa-tags fa-fw text-primary mr-1"></i>ABAC Attributes
+                        </h6>
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-2 mt-md-0" disabled>
+                            <i class="fas fa-plus fa-fw mr-1"></i>Add Attribute
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Attribute Name</th>
+                                        <th>Value</th>
+                                        <th>Used For</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in attributes)
+                                    {
+                                        <tr>
+                                            <td class="font-weight-bold text-gray-800">@item.Name</td>
+                                            <td>@item.Value</td>
+                                            <td>@item.Usage</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4">
+                <div class="card shadow-sm border-left-primary mb-4">
+                    <div class="card-header py-2 bg-white">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            <i class="fas fa-clipboard-check fa-fw mr-1"></i>Creation Review
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var item in reviewItems)
+                        {
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="review-icon @item.Background mr-3">
+                                    <i class="@item.Icon text-white"></i>
+                                </div>
+                                <div>
+                                    <div class="font-weight-bold text-gray-800">@item.Title</div>
+                                    <div class="text-gray-600">@item.Detail</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-left-success mb-4">
+                    <div class="card-header py-2 bg-white">
+                        <h6 class="m-0 font-weight-bold text-success text-uppercase text-xs">
+                            <i class="fas fa-key fa-fw mr-1"></i>Effective Permissions
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var permission in permissions)
+                        {
+                            <div class="d-flex align-items-center justify-content-between border-bottom py-2">
+                                <div>
+                                    <div class="font-weight-bold text-gray-800">@permission.Code</div>
+                                    <div class="text-xs text-gray-500">@permission.Name</div>
+                                </div>
+                                <span class="badge @(permission.Allowed ? "badge-success" : "badge-light border")">
+                                    <i class="fas @(permission.Allowed ? "fa-check" : "fa-times") fa-fw mr-1"></i>@(permission.Allowed ? "Allowed" : "Denied")
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-left-info mb-4">
+                    <div class="card-header py-2 bg-white">
+                        <h6 class="m-0 font-weight-bold text-info text-uppercase text-xs">
+                            <i class="fas fa-code fa-fw mr-1"></i>Generated Claims Preview
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var claim in claims)
+                        {
+                            <div class="claim-row">
+                                <span class="text-gray-500">@claim.Type</span>
+                                <span class="font-weight-bold text-gray-900">@claim.Value</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-left-warning mb-4">
+                    <div class="card-header py-2 bg-white">
+                        <h6 class="m-0 font-weight-bold text-warning text-uppercase text-xs">
+                            <i class="fas fa-vial fa-fw mr-1"></i>Authorization Simulation
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Company</label>
+                            <select class="form-control form-control-sm" disabled>
+                                <option selected>Unilab Inc.</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Department</label>
+                            <select class="form-control form-control-sm" disabled>
+                                <option selected>Sales</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Proposed Salary</label>
+                            <input class="form-control form-control-sm text-right" value="90000.00" readonly />
+                        </div>
+                        <div class="bg-light rounded p-3">
+                            <div class="font-weight-bold text-success mb-1">
+                                <i class="fas fa-check-circle fa-fw mr-1"></i>Access Allowed
+                            </div>
+                            <div class="text-gray-600">Role is HROD Head, company is in scope, and proposed salary is within the approval limit.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border rounded bg-white p-3 d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div class="text-gray-600 mb-3 mb-lg-0">
+                <i class="fas fa-lock fa-fw text-secondary mr-1"></i>
+                Buttons are intentionally disabled for this mockup. No save, sync, claim generation, or authorization test is wired.
+            </div>
+            <div class="d-flex flex-wrap">
+                <a href="@JORoutes.Admin.Users" class="btn btn-outline-secondary btn-sm mr-2 mb-2 mb-lg-0">
+                    <i class="fas fa-arrow-left fa-fw mr-1"></i>Back to Users
+                </a>
+                <button type="button" class="btn btn-outline-info btn-sm mr-2 mb-2 mb-lg-0" disabled>
+                    <i class="fas fa-sync-alt fa-fw mr-1"></i>Sync Azure AD
+                </button>
+                <button type="button" class="btn btn-outline-warning btn-sm mr-2 mb-2 mb-lg-0" disabled>
+                    <i class="fas fa-shield-alt fa-fw mr-1"></i>Test Authorization
+                </button>
+                <button type="button" class="btn btn-primary btn-sm mb-2 mb-lg-0" disabled>
+                    <i class="fas fa-save fa-fw mr-1"></i>Save User
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .new-user-page .icon-circle {
+        height: 2.25rem;
+        width: 2.25rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+    }
+
+    .new-user-page .section-title {
+        color: #4e73df;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        margin-bottom: .75rem;
+        text-transform: uppercase;
+    }
+
+    .new-user-page .review-icon {
+        height: 2rem;
+        width: 2rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+    }
+
+    .new-user-page .claim-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        border-bottom: 1px solid #e3e6f0;
+        padding: .45rem 0;
+    }
+
+    .new-user-page .claim-row:last-child {
+        border-bottom: 0;
+    }
+
+    .new-user-page .custom-control-label,
+    .new-user-page .form-control,
+    .new-user-page .btn,
+    .new-user-page .badge {
+        letter-spacing: 0;
+    }
+</style>
+
+@code {
+    private readonly List<MockStat> setupSteps =
+    [
+        new("Identity Link", "Azure AD matched", "primary", "fas fa-link"),
+        new("RBAC Role", "HROD Head", "info", "fas fa-user-shield"),
+        new("ABAC Scope", "2 companies / 3 entities", "success", "fas fa-sitemap"),
+        new("Approval Band", "PHP 100,000 max", "warning", "fas fa-coins")
+    ];
+
+    private readonly List<MockRole> roles =
+    [
+        new("roleTa", "TA Partner", "Workflow", "badge-primary", false),
+        new("roleHrod", "HROD Head", "Approver", "badge-info", true),
+        new("roleDh", "Division Head", "Approver", "badge-secondary", false),
+        new("rolePresident", "President", "Executive", "badge-warning", false),
+        new("roleAdmin", "Administrator", "Security", "badge-dark", false)
+    ];
+
+    private readonly List<MockAccess> companies =
+    [
+        new("Unilab Inc.", "UNILAB", true, "Allowed"),
+        new("Allied Services", "ALLIED", true, "Allowed"),
+        new("Amherst Laboratories", "AMHERST", false, "No Access"),
+        new("Biomedis", "BIOMEDIS", false, "No Access")
+    ];
+
+    private readonly List<MockAccess> legalEntities =
+    [
+        new("Unilab Philippines", "UL-PH", true, "Allowed"),
+        new("UL Skin Sciences", "UL-SKIN", true, "Allowed"),
+        new("UL Consumer Health", "UL-CH", true, "Allowed"),
+        new("Amherst Manufacturing", "AMH-MFG", false, "No Access")
+    ];
+
+    private readonly List<MockRule> routingRules =
+    [
+        new("Can receive HROD approvals", "Sequence 1 approval level for regular Job Offer cases.", "fas fa-check-circle", "text-success"),
+        new("Company must match access scope", "Allowed for Unilab Inc. and Allied Services only.", "fas fa-building", "text-primary"),
+        new("Salary must be within limit", "ProposedSalary <= PHP 100,000.00.", "fas fa-coins", "text-warning"),
+        new("Above-band offers excluded", "President approval is required when AboveBand is true.", "fas fa-exclamation-triangle", "text-danger")
+    ];
+
+    private readonly List<MockAttribute> attributes =
+    [
+        new("Department", "Sales", "Resource.Department comparison"),
+        new("BusinessUnit", "Commercial", "Division Head routing context"),
+        new("Location", "Manila", "Regional visibility"),
+        new("JobLevel", "Director", "Approval route eligibility"),
+        new("ApprovalLimit", "100000", "Salary authorization expression"),
+        new("EmploymentType", "Regular", "Generated user claim")
+    ];
+
+    private readonly List<MockPermission> permissions =
+    [
+        new("JO.CREATE", "Create offer cases", false),
+        new("JO.EDIT", "Edit assigned cases", false),
+        new("JO.APPROVE", "Approve eligible cases", true),
+        new("JO.REJECT", "Reject eligible cases", true),
+        new("JO.RETURN", "Return for revision", true),
+        new("JO.DELETE", "Delete cases", false)
+    ];
+
+    private readonly List<MockClaim> claims =
+    [
+        new("JobOfferUserId", "106"),
+        new("EmployeeNo", "100006"),
+        new("Role", "HROD Head"),
+        new("Department", "Sales"),
+        new("CompanyIds", "1,2"),
+        new("LegalEntityIds", "1,2,3"),
+        new("ApprovalLimit", "100000")
+    ];
+
+    private readonly List<MockReviewItem> reviewItems =
+    [
+        new("Identity verified", "Azure AD and ASP.NET Identity references are ready.", "fas fa-user-check", "bg-success"),
+        new("Role selected", "HROD Head grants approval actions through RolePermissions.", "fas fa-user-shield", "bg-info"),
+        new("ABAC scope configured", "Company and legal entity access constrain resource matching.", "fas fa-project-diagram", "bg-primary"),
+        new("Claims preview ready", "Generated claims summarize the authorization context.", "fas fa-key", "bg-warning")
+    ];
+
+    private sealed record MockStat(string Label, string Value, string Color, string Icon);
+
+    private sealed record MockRole(string Id, string Name, string Scope, string Badge, bool Checked);
+
+    private sealed record MockAccess(string Name, string Code, bool Allowed, string Status);
+
+    private sealed record MockRule(string Title, string Detail, string Icon, string Color);
+
+    private sealed record MockAttribute(string Name, string Value, string Usage);
+
+    private sealed record MockPermission(string Code, string Name, bool Allowed);
+
+    private sealed record MockClaim(string Type, string Value);
+
+    private sealed record MockReviewItem(string Title, string Detail, string Icon, string Background);
+}

@@ -33,6 +33,7 @@ namespace JO.Service.Constants
         public static class Admin
         {
             public const string Users = PrefixAdmin + "/users";
+            public const string NewUser = PrefixAdmin + "/new-user";
             public const string SalaryMatrix = PrefixAdmin + "/salary-matrix";
             public const string SalaryMatrixNew = PrefixAdmin + "/salary-matrix/new";
         }
@@ -74,6 +75,7 @@ namespace JO.Service.Constants
             public const string TADashboard = PrefixMock + "/ta-dashboard";
             public const string ApproverDashboard = PrefixMock + "/approver-dashboard";
             public const string Users = PrefixMock + "/users";
+            public const string NewUser = PrefixMock + "/new-user";
         }
     }
 }

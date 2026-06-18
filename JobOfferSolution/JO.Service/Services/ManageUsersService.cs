@@ -1,5 +1,6 @@
 ﻿using JO.DataModel.Entity;
 using JO.DataModel.Identity;
+using JO.DataModel.View;
 using JO.Persistence;
 using JO.Persistence.DataAccess;
 using JO.Service.Constants;
@@ -24,6 +25,15 @@ namespace JO.Service.Services
             _userManager = userManager;
             _roleManager = roleManager;
             _contextFactory = contextFactory;
+        }
+
+        public async Task<List<VwJOUserRoles>> GetVwJOUserRoles()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwJOUserRoles
+                .AsNoTracking()
+                .OrderBy(jo=>jo.OrderBy)
+                .ToListAsync();
         }
 
         public async Task<bool> IsUserExists(string email, int userId = 0)
@@ -73,7 +83,7 @@ namespace JO.Service.Services
 
                 var joUser = new JobOfferUsers
                 {
-                    AspNetUser_Id = aspUser.Id,
+                    AspNetUserId = aspUser.Id,
                     Name = name,
                     Email = email,
                     IsActive = true,
@@ -116,7 +126,7 @@ namespace JO.Service.Services
                 if (joUser == null)
                     throw new Exception("User not found.");
 
-                var aspUser = await _userManager.FindByIdAsync(joUser.AspNetUser_Id);
+                var aspUser = await _userManager.FindByIdAsync(joUser.AspNetUserId);
                 if (aspUser == null)
                     throw new Exception("ASP.NET Identity user not found.");
 

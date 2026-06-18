@@ -2,8 +2,8 @@
 @inject IUtilitiesService UtilitiesService
 @inject IAlertService AlertService
 
-@attribute [Authorize(Roles = JOUserRole.Admin)]
-@attribute [Route(JORoutes.Admin.Users)]
+@* @attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.Users)] *@
 
 <div class="card shadow border-left-primary mb-4 small">
     <div class="card-header py-3">
@@ -200,7 +200,7 @@
         newUserName = user.Name;
         newUserEmail = user.Email;
         isActive = user.IsActive == true ? "1" : "0";
-        selectedRoles = (await ManageUsersService.GetUserRoles(user.AspNetUser_Id)).ToList();
+        selectedRoles = (await ManageUsersService.GetUserRoles(user.AspNetUserId)).ToList();
 
         modalUser.Title = user.Name;
         modalUser.Show();
