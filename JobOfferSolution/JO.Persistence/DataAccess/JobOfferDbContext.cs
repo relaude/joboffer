@@ -57,6 +57,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwSalaryMatrix> VwSalaryMatrix { get; set; }
         public DbSet<VwSalaryMatrixBand> VwSalaryMatrixBand { get; set; }
         public DbSet<VwJOUserRoles> VwJOUserRoles { get; set; }
+        public DbSet<VwDivisions> VwDivisions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -67,6 +68,7 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwSalaryMatrix>().HasNoKey().ToView("vw_SalaryMatrix");
             modelBuilder.Entity<VwSalaryMatrixBand>().HasNoKey().ToView("vw_SalaryMatrixBand");
             modelBuilder.Entity<VwJOUserRoles>().HasNoKey().ToView("vw_JOUserRoles");
+            modelBuilder.Entity<VwDivisions>().HasNoKey().ToView("vw_Divisions");
         }
     }
 }

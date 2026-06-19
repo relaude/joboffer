@@ -76,6 +76,7 @@ namespace JO.Service.Constants
             public const string ApproverDashboard = PrefixMock + "/approver-dashboard";
             public const string Users = PrefixMock + "/users";
             public const string NewUser = PrefixMock + "/new-user";
+            public const string ARBAC = PrefixMock + "/arbac";
         }
     }
 }

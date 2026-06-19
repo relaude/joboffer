@@ -27,6 +27,48 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
+        public async Task<List<VwDivisions>> GetVwDivisionsByIds(List<int> divisionIds)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwDivisions
+                .AsNoTracking()
+                .Where(jo => divisionIds.Contains(jo.Id))
+                .ToListAsync();
+        }
+
+        public async Task<List<VwDivisions>> SearchVwDivisions(int companyId, string keyword)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var query = context.VwDivisions
+                .AsNoTracking()
+                .AsQueryable();
+
+            if(companyId > 0)
+                query = query.Where(jo => jo.CompanyId == companyId);
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                keyword = keyword.Trim();
+
+                query = query.Where(jo =>
+                    EF.Functions.Like(jo.DivisionCode ?? "", $"%{keyword}%") ||
+                    EF.Functions.Like(jo.DivisionName ?? "", $"%{keyword}%"));
+            }
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<List<string?>> GetRoles()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwJOUserRoles
+                .AsNoTracking()
+                .OrderBy(jo => jo.OrderBy)
+                .Select(jo => jo.RoleName)
+                .ToListAsync();
+        }
+
         public async Task<List<VwJOUserRoles>> GetVwJOUserRoles()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();

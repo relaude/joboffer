@@ -9,14 +9,14 @@ Update only the `modalAddDivision` presentation in `JO.BlazorApp/Components/Page
 Use the existing large modal and SBAdmin2 styling. The child content contains one compact card with:
 
 - A concise guidance row with a building icon and a `0 selected` badge.
-- A responsive two-column filter area for Company and Division. Each search input includes a FontAwesome search icon and stacks to one column on small screens.
+- A responsive two-column filter area for Company and Division that stacks to one column on small screens. The Company dropdown defaults to `All Companies`; the Division filter is a plain text input.
 - A responsive, bordered, compact table with Checkbox, Company, Division Code, and Division Name columns.
 
 The table uses realistic mock companies and divisions. All checkboxes start empty. Company and division codes use badges to improve scanning while division names remain the primary readable text.
 
 ## Footer
 
-Add a primary small button labeled `Add selected division` with a FontAwesome plus icon. It is disabled because the static mockup begins with zero selected rows and has no interaction wiring.
+Add a primary small button labeled `Add Selected Division/s` with a FontAwesome plus icon. It has no click handler because the mockup is intentionally presentational.
 
 ## UX Principles
 

@@ -2,6 +2,7 @@
 @attribute [Route(JORoutes.Admin.NewUser)]
 
 @inject IManageUsersService ManageUsersService
+@inject IDropDownListService DropDownListService
 
 <div class="card shadow mb-4 border-left-primary small">
     <div class="card-header py-3 bg-white">
@@ -26,10 +27,9 @@
 
     <div class="card-body">
         <div class="row">
-
-            <!-- General Info -->
             <div class="col-xl-3">
-                <div class="card mb-4">
+                <!-- General Info -->
+                <div class="card mb-2">
                     <div class="card-header py-2 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                         <div>
                             <h6 class="m-0 font-weight-bold text-gray-800 text-uppercase text-xs">
@@ -44,7 +44,7 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label class="font-weight-bold text-gray-700 mb-1">Full Name</label>
-                            <input type="text" class="form-control form-control-sm"  />
+                            <input type="text" class="form-control form-control-sm" />
                         </div>
 
                         <div class="mb-3">
@@ -53,8 +53,23 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Approval Limit -->
+                <div class="card mb-4">
+                    <div class="card-header py-2 bg-white">
+                        <h6 class="m-0 font-weight-bold text-gray-800 text-uppercase text-xs">
+                            <i class="fas fa-coins text-primary fa-fw mr-1"></i>Approval Limits
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="font-weight-bold text-gray-700 mb-1">User Approval Limits</label>
+                            <input type="number" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <!-- General Info -->
 
             <!-- Roles -->
             <div class="col-xl-3">
@@ -66,14 +81,18 @@
                     </div>
 
                     <div class="card-body">
-                        @if (userRoles.Any())
+                        @if (roleList.Any())
                         {
-                            foreach (var role in userRoles)
+                            foreach (var item in roleList.Select((value, index) => new { value, index }))
                             {
                                 <div class="custom-control custom-checkbox mb-2">
-                                    <input type="checkbox" class="custom-control-input" id="@("role_" + role.Id)" />
-                                    <label class="custom-control-label" for="@("role_" + role.Id)">
-                                        <span class="font-weight-bold text-gray-800">@role.RoleName</span>
+                                    <input class="custom-control-input"
+                                           type="checkbox"
+                                           id="@("role_" + item.index)"
+                                           checked="@selectedRoles.Contains(item.value)"
+                                           @onchange="(e) => OnCheckboxChanged(item.value, (bool)e.Value!)" />
+                                    <label class="custom-control-label" for="@("role_" + item.index)">
+                                        <span class="font-weight-bold text-gray-800">@item.value</span>
                                     </label>
                                 </div>
                             }
@@ -84,14 +103,15 @@
             </div>
             <!-- Roles -->
 
-            <!-- Company Access -->
+            <!-- Division Access -->
             <div class="col-xl-6">
                 <div class="card mb-4">
                     <div class="card-header py-2 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                         <h6 class="m-0 font-weight-bold text-gray-800 text-uppercase text-xs">
                             <i class="fas fa-building fa-fw mr-1 text-primary"></i>Division Access
                         </h6>
-                        <button type="button" class="btn btn-outline-primary btn-sm mt-2 mt-md-0" disabled>
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-2 mt-md-0"
+                                @onclick="() => ShowAddDivisionModal()">
                             <i class="fas fa-plus fa-fw mr-1"></i>Add Division
                         </button>
                     </div>
@@ -101,7 +121,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Company Access -->
+            <!-- Division Access -->
 
         </div>
     
@@ -182,54 +202,184 @@
     </div>
 </div>
 
+<Modal @ref="modalAddDivision" Title="Divisions">
+    <ChildContent>
+        <div class="card mb-3 small">
+            <div class="card-header py-2 bg-white d-flex align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                    <i class="fas fa-filter fa-fw mr-1"></i>Filter Divisions
+                </h6>
+            </div>
+            <div class="card-body py-3">
+                <div class="form-row">
+                    <div class="form-group col-md-6 mb-2 mb-md-0">
+                        <label class="font-weight-bold text-gray-700 mb-1">Company</label>
+                        
+                        <select class="form-control form-control-sm"
+                            @bind="modalCompanyId"
+                            @bind:after="FillModalDivision">
+                            @foreach (var company in ddCompanies)
+                            { <option value="@company.Id">@company.Value</option> }
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6 mb-0">
+                        <label class="font-weight-bold text-gray-700 mb-1">Division</label>
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-search text-gray-500"></i>
+                                </span>
+                            </div>
+
+                            <input class="form-control"
+                                   placeholder="Search code or division name"
+                                   @bind="modalKeyword"
+                                   @bind:event="oninput"
+                                   @onkeydown="HandleKeywordKeyDown" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-0 small">
+            <div class="card-header py-2 bg-white d-flex align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-gray-800 text-uppercase text-xs">
+                    <i class="fas fa-sitemap fa-fw mr-1 text-primary"></i>Available Divisions
+                </h6>
+                <span class="badge badge-light border badge-pill">@modalDivision.Count divisions</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-sm mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="text-center align-middle" style="width: 52px;">
+                                    <input type="checkbox"
+                                           checked="@AreAllDivisionsSelected"
+                                           disabled="@(!modalDivision.Any())"
+                                           @onchange="e => UpdateAllDivisionSelections((bool)e.Value!)" />
+                                </th>
+                                <th class="align-middle">Company</th>
+                                <th class="align-middle">Division Code</th>
+                                <th class="align-middle">Division Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (modalDivision.Any())
+                            {
+                                @foreach (var division in modalDivision)
+                                {
+                                    <tr>
+                                        <td class="text-center align-middle">
+                                            <input type="checkbox"
+                                                checked="@selectedDivisionIds.Contains(division.Id)"
+                                                @onchange="e => UpdateDivisionSelection(division.Id, (bool)e.Value!)" />
+                                        </td>
+                                        <td>@division.CompanyName</td>
+                                        <td>@division.DivisionCode</td>
+                                        <td>@division.DivisionName</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        <i class="fas fa-info-circle mr-1"></i> No records found.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button type="button" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus fa-fw mr-1"></i>Add Selected Divsion/s
+        </button>
+    </FooterTemplate>
+</Modal>
+
 @code {
-    private List<VwJOUserRoles> userRoles = new();
+    private List<string> selectedRoles = new();
+    private List<string?> roleList = new();
+
+    Modal modalAddDivision = default!;
+    private List<DropdownDto> ddCompanies = new();
+    private List<VwDivisions> modalDivision = new();
+    private int modalCompanyId = 0;
+    private string modalKeyword = "";
+    private List<int> selectedDivisionIds = new();
+
+    private bool AreAllDivisionsSelected =>
+        modalDivision.Any() &&
+        modalDivision.All(d => selectedDivisionIds.Contains(d.Id));
 
     protected override async Task OnInitializedAsync()
     {
-        userRoles = await ManageUsersService.GetVwJOUserRoles();
+        roleList = await ManageUsersService.GetRoles();
+        ddCompanies = await DropDownListService.GetCompanies();
     }
 
-    private readonly List<MockStat> setupSteps =
-    [
-        new("Identity Link", "Azure AD matched", "primary", "fas fa-link"),
-        new("RBAC Role", "HROD Head", "info", "fas fa-user-shield"),
-        new("ABAC Scope", "2 companies / 3 entities", "success", "fas fa-sitemap"),
-        new("Approval Band", "PHP 100,000 max", "warning", "fas fa-coins")
-    ];
+    private async Task ShowAddDivisionModal()
+    {
+        //reset
+        modalCompanyId = ddCompanies.FirstOrDefault().Id;
+        modalKeyword = "";
+        selectedDivisionIds.Clear();
 
-    private readonly List<MockRole> roles =
-    [
-        new("roleTa", "TA Partner", "Workflow", "badge-primary", false),
-        new("roleHrod", "HROD Head", "Approver", "badge-info", true),
-        new("roleDh", "Division Head", "Approver", "badge-secondary", false),
-        new("rolePresident", "President", "Executive", "badge-warning", false),
-        new("roleAdmin", "Administrator", "Security", "badge-dark", false)
-    ];
+        await FillModalDivision();
+        modalAddDivision.Show();
+    }
 
-    private readonly List<MockAccess> companies =
-    [
-        new("Unilab Inc.", "UNILAB", true, "Allowed"),
-        new("Allied Services", "ALLIED", true, "Allowed"),
-        new("Amherst Laboratories", "AMHERST", false, "No Access"),
-        new("Biomedis", "BIOMEDIS", false, "No Access")
-    ];
+    private void UpdateAllDivisionSelections(bool isChecked)
+    {
+        foreach (var division in modalDivision)
+        {
+            UpdateDivisionSelection(division.Id, isChecked);
+        }
+    }
 
-    private readonly List<MockAccess> legalEntities =
-    [
-        new("Unilab Philippines", "UL-PH", true, "Allowed"),
-        new("UL Skin Sciences", "UL-SKIN", true, "Allowed"),
-        new("UL Consumer Health", "UL-CH", true, "Allowed"),
-        new("Amherst Manufacturing", "AMH-MFG", false, "No Access")
-    ];
+    private void UpdateDivisionSelection(int divisionId, bool isChecked)
+    {
+        if (isChecked)
+        {
+            if (!selectedDivisionIds.Contains(divisionId))
+                selectedDivisionIds.Add(divisionId);
+        }
+        else
+        {
+            selectedDivisionIds.Remove(divisionId);
+        }
+    }
 
-    private readonly List<MockRule> routingRules =
-    [
-        new("Can receive HROD approvals", "Sequence 1 approval level for regular Job Offer cases.", "fas fa-check-circle", "text-success"),
-        new("Company must match access scope", "Allowed for Unilab Inc. and Allied Services only.", "fas fa-building", "text-primary"),
-        new("Salary must be within limit", "ProposedSalary <= PHP 100,000.00.", "fas fa-coins", "text-warning"),
-        new("Above-band offers excluded", "President approval is required when AboveBand is true.", "fas fa-exclamation-triangle", "text-danger")
-    ];
+    private async Task FillModalDivision()
+    {
+        modalDivision = await ManageUsersService
+            .SearchVwDivisions(modalCompanyId, modalKeyword);
+    }
+
+    private async Task HandleKeywordKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await FillModalDivision();
+    }
+
+    private async Task OnCheckboxChanged(string value, bool isChecked)
+    {
+        if (isChecked)
+        {
+            if (!selectedRoles.Contains(value))
+                selectedRoles.Add(value);
+        }
+        else
+        {
+            selectedRoles.Remove(value);
+        }
+    }
 
     private readonly List<MockAttribute> attributes =
     [
@@ -251,38 +401,7 @@
         new("JO.DELETE", "Delete cases", false)
     ];
 
-    private readonly List<MockClaim> claims =
-    [
-        new("JobOfferUserId", "106"),
-        new("EmployeeNo", "100006"),
-        new("Role", "HROD Head"),
-        new("Department", "Sales"),
-        new("CompanyIds", "1,2"),
-        new("LegalEntityIds", "1,2,3"),
-        new("ApprovalLimit", "100000")
-    ];
-
-    private readonly List<MockReviewItem> reviewItems =
-    [
-        new("Identity verified", "Azure AD and ASP.NET Identity references are ready.", "fas fa-user-check", "bg-success"),
-        new("Role selected", "HROD Head grants approval actions through RolePermissions.", "fas fa-user-shield", "bg-info"),
-        new("ABAC scope configured", "Company and legal entity access constrain resource matching.", "fas fa-project-diagram", "bg-primary"),
-        new("Claims preview ready", "Generated claims summarize the authorization context.", "fas fa-key", "bg-warning")
-    ];
-
-    private sealed record MockStat(string Label, string Value, string Color, string Icon);
-
-    private sealed record MockRole(string Id, string Name, string Scope, string Badge, bool Checked);
-
-    private sealed record MockAccess(string Name, string Code, bool Allowed, string Status);
-
-    private sealed record MockRule(string Title, string Detail, string Icon, string Color);
-
     private sealed record MockAttribute(string Name, string Value, string Usage);
 
     private sealed record MockPermission(string Code, string Name, bool Allowed);
-
-    private sealed record MockClaim(string Type, string Value);
-
-    private sealed record MockReviewItem(string Title, string Detail, string Icon, string Background);
 }

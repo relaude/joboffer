@@ -1,0 +1,133 @@
+This usually happens when **Codex thinks your request is a planning/documentation task**, or it **does not have enough permission/context to safely edit the actual code files**.
+
+Codex can read, edit, run code, commit, push, and create PRs depending on the environment/client, but for GitHub PR/code-review flows it may only propose a patch unless it has permission to push changes back to the branch. OpenAI’s Codex docs say Codex can read, edit, and run code, and the GitHub integration can push a fix back only when it has permission. ([OpenAI Developers][1]) ([OpenAI Developers][2])
+
+Common reasons it keeps creating `*.md` files:
+
+1. **Your prompt sounds like “document this” or “explain this”**
+
+   Example bad prompt:
+
+   > Analyze this page and create implementation steps.
+
+   Codex may create `IMPLEMENTATION.md`, `NOTES.md`, or `PLAN.md`.
+
+2. **You did not specify the exact file path**
+
+   Codex may avoid touching code if it is unsure which file to edit.
+
+3. **You asked for a feature, not a patch**
+
+   If the instruction is broad, Codex may make a design document first.
+
+4. **The repository/workspace is read-only or lacks permission**
+
+   In GitHub integration, Codex needs permission to push fixes back to the branch. ([OpenAI Developers][2])
+
+5. **It is in review/planning mode**
+
+   Some Codex flows propose changes for review rather than directly modifying code. OpenAI’s Codex Security page, for example, says it proposes a patch for human review and does not automatically modify code. ([OpenAI Help Center][3])
+
+Use a stricter instruction like this:
+
+```text
+Modify the existing code only.
+
+Do not create any .md, README, NOTES, PLAN, SUMMARY, or documentation files.
+
+Target file:
+Pages/Candidates/CandidateForm.razor
+
+Required change:
+Update the SaveCandidateAsync method so that it validates FirstName and LastName before saving.
+
+Rules:
+1. Edit only this file: Pages/Candidates/CandidateForm.razor
+2. Do not create new files.
+3. Do not write documentation.
+4. Do not summarize instead of editing.
+5. Show the final diff after editing.
+6. If the file path is wrong, stop and tell me. Do not create alternative files.
+```
+
+For line-specific changes:
+
+```text
+Edit this exact file only:
+
+Services/CandidateService.cs
+
+Change the code inside SearchCandidatesAsync only.
+
+Current issue:
+The statusId parameter is not being used.
+
+Required update:
+Add a filter so that when statusId > 0, the query filters records by StatusId.
+
+Do not create markdown files.
+Do not create documentation.
+Do not create new files.
+Only modify Services/CandidateService.cs.
+After editing, show the diff.
+```
+
+For your earlier C# example, your Codex prompt could be:
+
+```text
+Modify the existing file that contains SearchCandidatesAsync.
+
+Task:
+Use the statusId parameter in the query.
+
+Expected behavior:
+- If statusId > 0, filter candidates by StatusId.
+- If candidate has text, search LastName or FirstName.
+- Keep pagination.
+- Do not create any .md files.
+- Do not create documentation.
+- Do not create new files.
+- Show the diff only.
+```
+
+The code change should look roughly like this:
+
+```csharp
+public async Task<PagedResult<VwCandidates>> SearchCandidatesAsync(
+    int statusId,
+    string? candidate,
+    int page,
+    int pageSize)
+{
+    await using var context = await _contextFactory.CreateDbContextAsync();
+
+    var query = context.VwCandidates
+        .AsNoTracking();
+
+    if (statusId > 0)
+    {
+        query = query.Where(x => x.StatusId == statusId);
+    }
+
+    if (!string.IsNullOrWhiteSpace(candidate))
+    {
+        query = query.Where(x =>
+            EF.Functions.Like(x.LastName, $"%{candidate}%") ||
+            EF.Functions.Like(x.FirstName, $"%{candidate}%"));
+    }
+
+    return await query.ToPagedResultAsync(page, pageSize);
+}
+```
+
+Also check these settings/workflow items:
+
+* Make sure Codex is opened **inside the repository/workspace**, not just in a chat.
+* Make sure the repo is connected and the target branch is writable.
+* Ask for **“edit this file”**, not “create a guide,” “document,” or “make instructions.”
+* Always include: **file path, method/component name, exact expected behavior, no new files, show diff**.
+* If using GitHub PR/code review, confirm Codex has permission to push changes to the branch.
+
+[1]: https://developers.openai.com/codex/cloud?utm_source=chatgpt.com "Codex web"
+[2]: https://developers.openai.com/codex/integrations/github?utm_source=chatgpt.com "Codex code review in GitHub"
+[3]: https://help.openai.com/en/articles/20001107-codex-security?utm_source=chatgpt.com "Codex Security"

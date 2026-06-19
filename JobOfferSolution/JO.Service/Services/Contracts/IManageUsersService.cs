@@ -9,10 +9,12 @@ namespace JO.Service.Services.Contracts
         Task<JobOfferUsers?> GetActiveUserByEmail(string email);
         List<string> GetAllRoles();
         Task<List<JobOfferUsers>> GetAllUsersAsync();
+        Task<List<string?>> GetRoles();
         Task<IEnumerable<string>> GetUserRoles(string aspNetUserId);
         Task<List<VwJOUserRoles>> GetVwJOUserRoles();
         Task<bool> IsUserExists(string email, int userId = 0);
         Task<int> NewUserAsync(string name, string email, List<string> roles);
+        Task<List<VwDivisions>> SearchVwDivisions(int companyId, string keyword);
         Task<int> UpdateUserAsync(int userId, bool isActive, string name, string email, List<string> roles);
     }
 }
