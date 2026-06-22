@@ -1,4 +1,5 @@
-﻿using JO.DataModel.Entity;
+﻿using JO.DataModel.DTOs;
+using JO.DataModel.Entity;
 using JO.DataModel.Identity;
 using JO.DataModel.View;
 using JO.Persistence;
@@ -26,6 +27,13 @@ namespace JO.Service.Services
             _roleManager = roleManager;
             _contextFactory = contextFactory;
         }
+
+        //public async Task<List<UserPermissionsDto>> GetUserPermissions(List<int> roleIds)
+        //{
+        //    await using var context = await _contextFactory.CreateDbContextAsync();
+
+        //    var permissions = await context.Permissions.AsNoTracking().ToListAsync();
+        //}
 
         public async Task<List<VwDivisions>> GetVwDivisionsByIds(List<int> divisionIds)
         {

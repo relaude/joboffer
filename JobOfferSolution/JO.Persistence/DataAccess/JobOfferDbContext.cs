@@ -14,6 +14,7 @@ namespace JO.Persistence.DataAccess
         //RBAC+ABAC
         public DbSet<JobOfferUsers> JobOfferUsers { get; set; }
         public DbSet<UserAttributes> UserAttributes { get; set; }
+        public DbSet<Permissions> Permissions { get; set; }
 
         //Candidates
         public DbSet<Candidates> Candidates { get; set; }

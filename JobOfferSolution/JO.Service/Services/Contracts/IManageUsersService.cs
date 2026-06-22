@@ -11,6 +11,7 @@ namespace JO.Service.Services.Contracts
         Task<List<JobOfferUsers>> GetAllUsersAsync();
         Task<List<string?>> GetRoles();
         Task<IEnumerable<string>> GetUserRoles(string aspNetUserId);
+        Task<List<VwDivisions>> GetVwDivisionsByIds(List<int> divisionIds);
         Task<List<VwJOUserRoles>> GetVwJOUserRoles();
         Task<bool> IsUserExists(string email, int userId = 0);
         Task<int> NewUserAsync(string name, string email, List<string> roles);
