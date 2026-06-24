@@ -33,7 +33,10 @@ namespace JO.Service.Constants
         public static class Admin
         {
             public const string Users = PrefixAdmin + "/users";
+            public const string UserDetails = PrefixAdmin + "/user";
             public const string NewUser = PrefixAdmin + "/new-user";
+            public const string EditUser = PrefixAdmin + "/edit-user";
+            public const string ToggleActive = PrefixAdmin + "/toggle-user";
             public const string SalaryMatrix = PrefixAdmin + "/salary-matrix";
             public const string SalaryMatrixNew = PrefixAdmin + "/salary-matrix/new";
         }

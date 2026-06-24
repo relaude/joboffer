@@ -15,6 +15,9 @@ namespace JO.Persistence.DataAccess
         public DbSet<JobOfferUsers> JobOfferUsers { get; set; }
         public DbSet<UserAttributes> UserAttributes { get; set; }
         public DbSet<Permissions> Permissions { get; set; }
+        public DbSet<UserApprovalLimits> UserApprovalLimits { get; set; }
+        public DbSet<UserDivisionAccess> UserDivisionAccess { get; set; }
+        public DbSet<UserPermissions> UserPermissions { get; set; }
 
         //Candidates
         public DbSet<Candidates> Candidates { get; set; }
@@ -59,6 +62,9 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwSalaryMatrixBand> VwSalaryMatrixBand { get; set; }
         public DbSet<VwJOUserRoles> VwJOUserRoles { get; set; }
         public DbSet<VwDivisions> VwDivisions { get; set; }
+        public DbSet<VwRolePermissions> VwRolePermissions { get; set; }
+        public DbSet<VwJOUsersInRoles> VwJOUsersInRoles { get; set; }
+        public DbSet<VwUserDivisionAccess> VwUserDivisionAccess { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -70,6 +76,9 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwSalaryMatrixBand>().HasNoKey().ToView("vw_SalaryMatrixBand");
             modelBuilder.Entity<VwJOUserRoles>().HasNoKey().ToView("vw_JOUserRoles");
             modelBuilder.Entity<VwDivisions>().HasNoKey().ToView("vw_Divisions");
+            modelBuilder.Entity<VwRolePermissions>().HasNoKey().ToView("vw_RolePermissions");
+            modelBuilder.Entity<VwJOUsersInRoles>().HasNoKey().ToView("vw_JOUsersInRoles");
+            modelBuilder.Entity<VwUserDivisionAccess>().HasNoKey().ToView("vw_UserDivisionAccess");
         }
     }
 }

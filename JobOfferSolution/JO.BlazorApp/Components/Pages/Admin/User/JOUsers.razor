@@ -1,6 +1,8 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
 @attribute [Route(JORoutes.Admin.Users)]
 
+@inject IManageUsersService ManageUsersService
+
 <div class="card shadow mb-4 border-left-primary jo-users-page small">
     <div class="card-header py-3 bg-white">
         <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
@@ -9,7 +11,7 @@
                     <i class="fas fa-users-cog fa-fw mr-2"></i>
                     Job Offer Users
                 </h6>
-                <small class="text-muted">Administration > Security > Job Offer Users | Hybrid RBAC + ABAC</small>
+                <small class="text-muted">Job Offer Users | Hybrid RBAC + ABAC</small>
             </div>
             <div class="mt-2 mt-lg-0">
                 <span class="badge badge-light border mr-1"><i class="fas fa-user-shield fa-fw text-primary mr-1"></i>Admin View</span>
@@ -43,52 +45,52 @@
             <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
                 <div>
                     <h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-filter fa-fw text-primary mr-2"></i>Search & Filters</h6>
-                    <small class="text-muted">Find Azure AD linked users, Identity roles, access scope, and approval eligibility.</small>
+                    <small class="text-muted">Find users, Identity roles, access scope, and approval eligibility.</small>
                 </div>
-                <span class="badge badge-light border mt-2 mt-md-0 align-self-start align-self-md-center">Mock Search</span>
             </div>
 
             <div class="p-3">
-                <div class="row">
+                <div class="row align-items-end">
                     <div class="col-lg-3 col-md-6 mb-3">
-                        <label class="font-weight-bold text-gray-700 mb-1">User Name</label>
-                        <input class="form-control form-control-sm" value="Maria" readonly />
+                        <label class="font-weight-bold text-gray-700 mb-1">Name</label>
+                        <input class="form-control form-ctrl-sml" />
                     </div>
+
                     <div class="col-lg-3 col-md-6 mb-3">
                         <label class="font-weight-bold text-gray-700 mb-1">Email</label>
-                        <input class="form-control form-control-sm" value="unilab.com.ph" readonly />
+                        <input class="form-control form-ctrl-sml" />
                     </div>
-                    <div class="col-lg-2 col-md-6 mb-3">
-                        <label class="font-weight-bold text-gray-700 mb-1">Employee No</label>
-                        <input class="form-control form-control-sm" value="100002" readonly />
-                    </div>
+
                     <div class="col-lg-2 col-md-6 mb-3">
                         <label class="font-weight-bold text-gray-700 mb-1">Role</label>
-                        <select class="form-control form-control-sm" disabled>
+                        <select class="form-control form-ctrl-sml">
+                            <option>All Roles</option>
                             <option>HROD Head</option>
                             <option>TA Partner</option>
                             <option>Division Head</option>
                             <option>President</option>
                         </select>
                     </div>
-                    <div class="col-lg-1 col-md-6 mb-3">
-                        <label class="font-weight-bold text-gray-700 mb-1">Company</label>
-                        <select class="form-control form-control-sm" disabled>
-                            <option>Unilab</option>
-                            <option>Allied</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-1 col-md-6 mb-3">
+
+                    <div class="col-lg-2 col-md-6 mb-3">
                         <label class="font-weight-bold text-gray-700 mb-1">Status</label>
-                        <select class="form-control form-control-sm" disabled>
+                        <select class="form-control form-ctrl-sml">
+                            <option>All Statuses</option>
                             <option>Active</option>
                             <option>Inactive</option>
                         </select>
                     </div>
-                </div>
-                <div class="d-flex flex-column flex-md-row justify-content-end">
-                    <button type="button" class="btn btn-primary btn-sm mb-2 mb-md-0 mr-md-2" disabled><i class="fas fa-search fa-fw mr-1"></i>Search</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled><i class="fas fa-eraser fa-fw mr-1"></i>Clear</button>
+
+                    <div class="col-lg-2 col-md-12 mb-3">
+                        <div class="d-flex flex-column flex-sm-row justify-content-lg-end">
+                            <button type="button" class="btn btn-primary btn-sm mb-2 mb-sm-0 mr-sm-2" disabled>
+                                <i class="fas fa-search fa-fw mr-1"></i>Search
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
+                                <i class="fas fa-eraser fa-fw mr-1"></i>Clear
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,31 +113,58 @@
                     <table class="table table-bordered table-sm text-nowrap mb-0">
                         <thead class="thead-light">
                             <tr>
-                                <th>Employee No</th>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Role</th>
-                                <th>Company</th>
-                                <th>Status</th>
-                                <th>Approval Band</th>
+                                <th class="text-center">Status</th>
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var user in users)
+                            @foreach (var user in joUsers)
                             {
-                                <tr class="@(user.IsSelected ? "table-primary" : "")">
-                                    <td class="font-weight-bold text-gray-900">@user.EmployeeNo</td>
+                                <tr>
                                     <td>@user.Name</td>
                                     <td>@user.Email</td>
-                                    <td><span class="badge @user.RoleBadge">@user.Role</span></td>
-                                    <td>@user.Company</td>
-                                    <td><span class="badge @user.StatusBadge">@user.Status</span></td>
-                                    <td>@user.ApprovalBand</td>
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-outline-primary btn-sm mr-1" disabled title="View"><i class="fas fa-eye fa-fw"></i></button>
-                                        <button type="button" class="btn btn-outline-info btn-sm mr-1" disabled title="Edit"><i class="fas fa-edit fa-fw"></i></button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm" disabled title="Disable"><i class="fas fa-ban fa-fw"></i></button>
+                                        @if (user.IsActive == true)
+                                        {
+                                            <span class="badge badge-success">
+                                                <i class="fas fa-user-check fa-fw mr-1"></i>Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">
+                                                <i class="fas fa-user-slash fa-fw mr-1"></i>Inactive
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="@($"{JORoutes.Admin.UserDetails}/{user.Id}")" 
+                                            class="btn btn-outline-primary btn-sm mr-1" 
+                                            title="View">
+                                                <i class="fas fa-eye fa-fw"></i>
+                                        </a>
+
+                                        <a href="@($"{JORoutes.Admin.EditUser}/{user.Id}")"
+                                            class="btn btn-outline-info btn-sm mr-1" title="Edit">
+                                            <i class="fas fa-edit fa-fw"></i>
+                                        </a>
+
+                                        @if (user.IsActive == true)
+                                        {
+                                            <a href="@($"{JORoutes.Admin.ToggleActive}/{user.Id}")"
+                                                class="btn btn-outline-danger btn-sm" title="Disable">
+                                                <i class="fas fa-user-slash fa-fw"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@($"{JORoutes.Admin.ToggleActive}/{user.Id}")"
+                                                class="btn btn-outline-success btn-sm" title="Activate">
+                                                <i class="fas fa-user-check fa-fw"></i>
+                                            </a>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -149,12 +178,19 @@
 </div>
 
 @code {
+    private List<JobOfferUsers> joUsers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        joUsers = await ManageUsersService.GetAllUsersAsync();
+    }
+
     private readonly List<MockStat> summaryStats =
     [
-        new("Total Users", "128", "primary", "fas fa-users"),
-        new("Active Users", "117", "success", "fas fa-user-check"),
-        new("Inactive Users", "11", "danger", "fas fa-user-slash"),
-        new("ABAC Policies", "18", "info", "fas fa-shield-alt")
+        new("Total Users", "0", "primary", "fas fa-users"),
+        new("Active Users", "0", "success", "fas fa-user-check"),
+        new("Inactive Users", "0", "danger", "fas fa-user-slash"),
+        new("ABAC Policies", "0", "info", "fas fa-shield-alt")
     ];
 
     private readonly List<MockUser> users =

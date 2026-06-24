@@ -1,0 +1,12 @@
+﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.ToggleActive + "/{joUserId:int}")]
+
+@inject NavigationManager Navigation
+
+<UserDetailsShared JoUserId="joUserId"
+    ShowToggleButton="true"
+    ToggleRedirectUrl="@($"{JORoutes.Admin.UserDetails}/{joUserId}")" />
+
+@code {
+    [Parameter] public int joUserId { get; set; }
+}

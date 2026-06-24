@@ -1,0 +1,8 @@
+﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.UserDetails + "/{joUserId:int}")]
+
+<UserDetailsShared JoUserId="joUserId" />
+
+@code {
+    [Parameter] public int joUserId { get; set; }
+}
