@@ -9,10 +9,9 @@ namespace JO.DataModel.Entity
     {
         [Key] public int Id { get; set; }
         public int? CandidateId { get; set; }
-        public int? CandidateApplicationId { get; set; }
         public DateTime? RequestSentDate { get; set; }
         public DateTime? DueDate { get; set; }
-        public string? SubmissionReferenceNo { get; set; }
+        public string? ReferenceNumber { get; set; }
         public int? StatusId { get; set; }
         public string? EmailSubject { get; set; }
         public string? EmailBody { get; set; }

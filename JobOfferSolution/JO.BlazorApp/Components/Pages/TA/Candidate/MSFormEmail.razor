@@ -1,0 +1,415 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.MSFormCandidate + "/{candidateId:int}")]
+
+@inject ICandidateService CandidateService
+@inject IUtilitiesService UtilitiesService
+@inject IAlertService AlertService
+@inject IEmailService EmailService
+@inject IAccountService AccountService
+@inject IRequestTrackerService RequestTrackerService
+
+@inject NavigationManager Navigation
+
+<div class="card shadow mb-4 border-left-primary small ms-form-page">
+    <div class="card-header py-3 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div class="mb-2 mb-md-0">
+            <div class="d-flex align-items-center mb-1">
+                <div class="icon-circle bg-primary text-white mr-2">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <div>
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Send Compensation & Benefits Form Request
+                    </h6>
+                    <div class="text-xs text-gray-500">
+                        Talent Acquisition partner workflow
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center">
+            <span class="badge badge-light border mr-1">
+                <i class="fas fa-user-shield fa-fw text-primary mr-1"></i>
+                Talent Aquisition View
+            </span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+
+            <!-- Candidate Info -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header py-2 bg-white d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            Candidate Information
+                        </h6>
+                    </div>
+                    <div class="card-body py-3">
+                        <div class="row small mb-2">
+                            <div class="col-5 text-muted">Candidate Name</div>
+                            <div class="col-7 font-weight-bold text-gray-800">@($"{candidate.FirstName} {candidate.LastName}")</div>
+                        </div>
+                        <div class="row small mb-2">
+                            <div class="col-5 text-muted">Email Address</div>
+                            <div class="col-7">@candidate.Email</div>
+                        </div>
+                        <div class="row small mb-2">
+                            <div class="col-5 text-muted">Contact Number</div>
+                            <div class="col-7">@candidate.ContactNumber</div>
+                        </div>
+                        <div class="row small mb-2">
+                            <div class="col-5 text-muted">Position Applied</div>
+                            <div class="col-7">@candidate.PositionAppliedFor</div>
+                        </div>
+                        <div class="row small mb-2">
+                            <div class="col-5 text-muted">Current Employer</div>
+                            <div class="col-7">@candidate.CurrentEmployer</div>
+                        </div>
+                        <div class="row small">
+                            <div class="col-5 text-muted">Expected Salary</div>
+                            <div class="col-7 font-weight-bold text-success">
+                                @UtilitiesService.ToPeso(candidate.ExpectedSalary)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Candidate Info -->
+
+            <!-- Work Info -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header py-2 bg-white d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            Work Information
+                        </h6>
+                    </div>
+                    <div class="card-body py-3">
+                        <div class="row small mb-2">
+                            <div class="col-5 text-muted">Current Employer</div>
+                            <div class="col-7 font-weight-bold">@candidate.CurrentEmployer</div>
+                        </div>
+                        <div class="row small mb-2">
+                            <div class="col-5 text-muted">Last Position</div>
+                            <div class="col-7">@candidate.LastPositionHeld</div>
+                        </div>
+                        <div class="row small mb-2">
+                            <div class="col-5 text-muted">Employment Status</div>
+                            <div class="col-7">@candidate.EmploymentStatusName</div>
+                        </div>
+                        <div class="row small mb-2">
+                            <div class="col-5 text-muted">Experience</div>
+                            <div class="col-7">@candidate.WorkExperienceName</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Work Info -->
+            
+            <!-- Quick View -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header py-2 bg-white d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            Quick Overview
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="icon-circle-sm bg-success text-white mr-3">
+                                <i class="fas fa-envelope-open-text"></i>
+                            </div>
+                            <div>
+                                <div class="font-weight-bold text-gray-800">MS Forms request</div>
+                                <div class="small text-gray-500">Prepared for email dispatch.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="icon-circle-sm bg-warning text-white mr-3">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div>
+                                <div class="font-weight-bold text-gray-800">Reminder rule</div>
+                                <div class="small text-gray-500">3-day and 5-day reminders shown.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start">
+                            <div class="icon-circle-sm bg-info text-white mr-3">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div>
+                                <div class="font-weight-bold text-gray-800">Submission tracking</div>
+                                <div class="small text-gray-500">Status is ready for follow-up monitoring.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Quick View -->
+
+        </div>
+
+        <!-- Request -->
+        <div class="card mb-4">
+            <div class="card-header py-2 bg-white d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary text-xs text-uppercase">
+                    MS Forms Request Details
+                </h6>
+                <div class="small text-gray-500">
+                    Review before sending
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 border-right pr-4">
+                        <div class="mb-4">
+                            <div class="mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Expected Due Date</label>
+                                <input type="date" class="form-control form-control-sm" @bind-value="msrequest.DueDate" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-2">Reminder Settings</label>
+                                <div class="border rounded bg-light px-3 py-2">
+                                    <div class="custom-control custom-checkbox mb-1">
+                                        <input type="checkbox" class="custom-control-input" id="reminderAfter3Days" 
+                                            @bind="msrequest.Reminder1"  />
+                                        <label class="custom-control-label text-gray-700" for="reminderAfter3Days">
+                                            Send reminder after 3 days
+                                        </label>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="reminderAfter5Days"
+                                               @bind="msrequest.Reminder2" />
+                                        <label class="custom-control-label text-gray-700" for="reminderAfter5Days">
+                                            Send reminder after 5 days
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8 pl-4">
+                        <div class="mb-3">
+                            <label class="font-weight-bold text-gray-700 mb-1">Template</label>
+                            <select class="form-control form-control-sm" disabled>
+                                <option selected>Compensation & Benefits Form v1</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="font-weight-bold text-gray-700 mb-1">Subject</label>
+                            <input type="text" class="form-control form-control-sm" disabled
+                                @bind-value="msrequest.EmailSubject"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="text-xs text-uppercase text-muted">Message</label>
+                            <BlazoredTextEditor @ref="@QuillHtml">
+                                <ToolbarContent>
+                                    <select class="ql-header">
+                                        <option selected=""></option>
+                                        <option value="1"></option>
+                                        <option value="2"></option>
+                                        <option value="3"></option>
+                                        <option value="4"></option>
+                                        <option value="5"></option>
+                                    </select>
+
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+
+                                    <span class="ql-formats">
+                                        <select class="ql-color"></select>
+                                        <select class="ql-background"></select>
+                                    </span>
+
+                                    <span class="ql-formats">
+                                        <button class="ql-list" value="ordered"></button>
+                                        <button class="ql-list" value="bullet"></button>
+                                    </span>
+
+                                    <span class="ql-formats">
+                                        <button class="ql-link"></button>
+                                    </span>
+                                </ToolbarContent>
+
+                                <EditorContent></EditorContent>
+                            </BlazoredTextEditor>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <!-- Request -->
+    </div>
+
+    <div class="card-footer text-right">
+        <a href="@JORoutes.TA.Candidates" class="btn btn-outline-secondary btn-sm mr-2 mb-2 mb-lg-0">
+            <i class="fas fa-arrow-left fa-fw mr-1"></i>Back to Candidates
+        </a>
+
+        <button class="btn btn-primary btn-sm mr-2 mb-2 mb-md-0"
+                @onclick="()=> modalInputEmail.Show()">
+            <i class="fas fa-envelope-open-text mr-1"></i> Test Email
+        </button>
+
+        <button type="button" class="btn btn-primary btn-sm mr-2 mb-2 mb-md-0"
+                @onclick="SendEmail">
+            <i class="fas fa-paper-plane mr-1"></i> Send Request
+        </button>
+        
+    </div>
+</div>
+
+<Modal @ref="modalInputEmail" ModalSize="modal-sm" Title="Recipient">
+    <ChildContent>
+        <input type="email" class="form-control" @bind="emailRequest.To" />
+    </ChildContent>
+    <FooterTemplate>
+        <button class="btn btn-secondary btn-sm" @onclick="SendTestMail">Continue</button>
+    </FooterTemplate>
+</Modal>
+
+<style>
+    .ms-form-page .icon-circle {
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0.35rem 0.85rem rgba(78, 115, 223, 0.18);
+    }
+
+    .ms-form-page .icon-circle-sm {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+    }
+
+    .ms-form-page .ms-message-box {
+        min-height: 14rem;
+        white-space: pre-wrap;
+        line-height: 1.5;
+    }
+
+    .ms-form-page .tracking-tile {
+        background: #f8f9fc;
+        border: 1px solid #eaecf4;
+        border-radius: 0.35rem;
+        padding: 0.85rem;
+        height: 100%;
+    }
+
+    .ms-form-page .table td,
+    .ms-form-page .table th {
+        vertical-align: middle;
+    }
+
+    .ms-form-page .text-xs {
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+    }
+</style>
+
+@code {
+    [Parameter] public int candidateId { get; set; }
+
+    private VwCandidates candidate = new();
+    private Modal modalInputEmail = default!;
+    private EmailRequest emailRequest = new();
+    private CandidateMSFormRequestDto msrequest = new();
+
+    BlazoredTextEditor QuillHtml;
+    private string QuillHTMLContent = @"<p>Dear #CandidateName,</p><p><br></p><p>Congratulations!</p><p><br></p><p>Please complete the Compensation and Benefits Form using the link below.</p><p>Kindly upload the required documents:</p><ol><li data-list='bullet'><span class='ql-ui' contenteditable='false'></span>Updated Resume</li><li data-list='bullet'><span class='ql-ui' contenteditable='false'></span>Latest Payslip</li></ol><p><br></p><p>Submission Link: <a href='https://duckduckgo.com/' rel='noopener noreferrer' target='_blank'>MS-Forms</a></p><p><br></p><p>Thank you.</p>";
+
+    protected override async Task OnInitializedAsync()
+    {
+        candidate = await CandidateService.GetCandidate(candidateId);
+        await SetRequest();
+
+        await Task.Delay(500);
+        await QuillHtml.LoadHTMLContent(QuillHTMLContent);
+    }
+
+    private async Task SetRequest()
+    {
+        msrequest.CandidateId = candidateId;
+        msrequest.CandidateEmail = candidate.Email;
+        msrequest.CreatedBy = await AccountService.GetJobOfferUserId();
+        msrequest.DueDate = DateTime.Now.AddDays(1);
+        msrequest.Reminder1 = true;
+        msrequest.EmailSubject = "Compensation and Benefits Information Request";
+    }
+
+    private async Task SendEmail()
+    {
+        var errors = await CollectErrors(new List<string>(), false);
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        if (!await AlertService.Confirm()) return;
+
+        int requestId = await RequestTrackerService.CreateAndEmailMsFormRequest(msrequest);
+        Navigation.NavigateTo($"{JORoutes.TA.MSFormDetails}/{requestId}");
+    }
+
+    private async Task SendTestMail()
+    {
+        var errors = await CollectErrors(new List<string>(), true);
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        emailRequest.Body = msrequest.EmailBody;
+
+        await EmailService.SendAsync(emailRequest);
+        modalInputEmail.Close();
+    }
+
+    private async Task<List<string>> CollectErrors(List<string> errors, bool isTestMail)
+    {
+        msrequest.EmailBody = await QuillHtml.GetHTML();
+        msrequest.EmailBody = msrequest.EmailBody.Replace("#CandidateName", $"{candidate.FirstName} {candidate.LastName}");
+
+        if (isTestMail)
+        {
+            bool isValidEmail = UtilitiesService.IsValidEmail(emailRequest.To);
+            if (!isValidEmail)
+                errors.Add("Please enter a valid email address.");
+        }
+
+        if (string.IsNullOrEmpty(msrequest.EmailSubject))
+            errors.Add("Email Subject is required.");
+
+        if (string.IsNullOrEmpty(msrequest.EmailBody) || msrequest.EmailBody == "<p><br></p>")
+            errors.Add("Email Message is required.");
+
+        return errors;
+    }
+}

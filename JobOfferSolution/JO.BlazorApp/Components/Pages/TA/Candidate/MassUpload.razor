@@ -111,10 +111,13 @@
     </div>
 
     <div class="card-footer text-right">
-        <button class="btn btn-success btn-sm">
-            <i class="fas fa-save"></i>
-            Save Candidates
-        </button>
+        @if (tempData.Any())
+        {
+            <button class="btn btn-success btn-sm">
+                <i class="fas fa-save"></i>
+                Save Candidates
+            </button>
+        }
     </div>
 </div>
 

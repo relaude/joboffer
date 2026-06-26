@@ -31,6 +31,7 @@ namespace JO.Service
             services.AddScoped<ISingleSignOnService, SingleSignOnService>();
             services.AddScoped<ISalaryMatrixService, SalaryMatrixService>();
             services.AddScoped<IMassUploadService, MassUploadService>();
+            services.AddScoped<IRequestTrackerService, RequestTrackerService>();
 
             return services;
         }

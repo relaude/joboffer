@@ -129,6 +129,11 @@
     <Build Include="dbo\Tables\UserDivisionAccess.sql" />
     <Build Include="dbo\Tables\JOUserRoles.sql" />
     <Build Include="dbo\Views\vw_JOUserRoles.sql" />
+    <Build Include="dbo\Tables\UserPermissions.sql" />
+    <Build Include="dbo\Views\vw_UserDivisionAccess.sql" />
+    <Build Include="dbo\Views\vw_RolePermissions.sql" />
+    <Build Include="dbo\Views\vw_JOUsersInRoles.sql" />
+    <Build Include="dbo\Views\vw_Divisions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

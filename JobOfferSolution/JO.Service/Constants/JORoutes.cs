@@ -45,6 +45,9 @@ namespace JO.Service.Constants
         {
             public const string Dashboard = PrefixTA + "/dashboard";
             public const string Candidates = PrefixTA + "/candidates";
+            public const string MSFormCandidate = PrefixTA + "/msform-candidate";
+            public const string MSFormDetails = PrefixTA + "/msform-details";
+            public const string RequestTracker = PrefixTA + "/request-tracker";
             public const string JobOffer = PrefixTA + "/joboffer";
             public const string Accept = PrefixTA + "/joboffer/accept";
             public const string Return = PrefixTA + "/joboffer/return";

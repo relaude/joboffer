@@ -1,12 +1,14 @@
-﻿Create View vw_CandidateMSFormRequests
-AS
-Select vcnd.Id
-,(vcnd.FirstName + ' ' + vcnd.LastName) CandidateName
-,vcnd.Email
-,vcnd.PositionAppliedFor
-,cmr.SubmissionReferenceNo
+﻿CREATE View vw_CandidateMSFormRequests
+As
+Select cmr.Id
+,cmr.ReferenceNumber
 ,cmr.RequestSentDate
-,ISNULL(cmrs.StatusName,'Awaiting Submission') MSFormRequestStatus
-From vw_Candidates vcnd
-Left Join CandidateMSFormRequests cmr On vcnd.Id=cmr.CandidateId
-Left Join CandidateFormRequestStatus cmrs On cmrs.Id=cmr.StatusId;
+,cnd.FirstName
+,cnd.MiddleName
+,cnd.LastName
+,cnd.Email
+,cnd.PositionAppliedFor
+,cfrs.StatusName
+From CandidateMSFormRequests cmr
+Left Join Candidates cnd On cnd.Id=cmr.CandidateId
+Left Join CandidateFormRequestStatus cfrs On cfrs.Id=cmr.StatusId;

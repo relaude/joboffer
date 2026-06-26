@@ -3,7 +3,7 @@
 
 @inject IManageUsersService ManageUsersService
 
-<div class="card shadow mb-4 border-left-primary jo-users-page small">
+<div class="card shadow mb-4 border-left-primary small">
     <div class="card-header py-3 bg-white">
         <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
             <div>
@@ -173,6 +173,7 @@
                 </div>
             </div>
         </div>
+        <!-- User Grid -->
 
     </div>
 </div>
@@ -193,26 +194,5 @@
         new("ABAC Policies", "0", "info", "fas fa-shield-alt")
     ];
 
-    private readonly List<MockUser> users =
-    [
-        new("100001", "Juan Dela Cruz", "juan@unilab.com.ph", "TA Partner", "Unilab", "Active", "0 - 0", "badge-primary", "badge-success", false),
-        new("100002", "Maria Santos", "maria@unilab.com.ph", "HROD Head", "Unilab", "Active", "0 - 100,000", "badge-info", "badge-success", true),
-        new("100003", "Leo Ramos", "leo@unilab.com.ph", "President", "Corporate", "Active", "Unlimited", "badge-warning", "badge-success", false),
-        new("100004", "Ana Reyes", "ana@unilab.com.ph", "Division Head", "Allied", "Active", "0 - 250,000", "badge-secondary", "badge-success", false),
-        new("100005", "Carlo Lim", "carlo@unilab.com.ph", "System Auditor", "Corporate", "Inactive", "Read Only", "badge-dark", "badge-secondary", false)
-    ];
-
     private sealed record MockStat(string Label, string Value, string Color, string Icon);
-
-    private sealed record MockUser(
-        string EmployeeNo,
-        string Name,
-        string Email,
-        string Role,
-        string Company,
-        string Status,
-        string ApprovalBand,
-        string RoleBadge,
-        string StatusBadge,
-        bool IsSelected);
 }

@@ -8,12 +8,12 @@
 
     @if (user.Identity?.IsAuthenticated == true)
     {
-        @* @if (user.IsInRole(JOUserRole.TA) == true)
+        @if (user.IsInRole(JOUserRole.TA) == true)
         {
             <TAMenu />
         }
 
-        @if (user.IsInRole(JOUserRole.HROD) == true)
+        @* @if (user.IsInRole(JOUserRole.HROD) == true)
         {
             <HRODMenu />
         }
