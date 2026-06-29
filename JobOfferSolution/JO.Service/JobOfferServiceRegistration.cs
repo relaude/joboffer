@@ -32,6 +32,7 @@ namespace JO.Service
             services.AddScoped<ISalaryMatrixService, SalaryMatrixService>();
             services.AddScoped<IMassUploadService, MassUploadService>();
             services.AddScoped<IRequestTrackerService, RequestTrackerService>();
+            services.AddScoped<IMSFormRequestService, MSFormRequestService>();
 
             return services;
         }

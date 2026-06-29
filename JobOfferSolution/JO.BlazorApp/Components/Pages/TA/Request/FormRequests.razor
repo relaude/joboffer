@@ -1,6 +1,8 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
 @attribute [Route(JORoutes.TA.RequestTracker)]
 
+@inject IMSFormRequestService MSFormRequestService
+
 <div class="card shadow mb-4 border-left-primary small">
     <div class="card-header py-3 bg-white">
         <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
@@ -151,6 +153,45 @@
             <div class="p-3">
                 <div class="table-responsive">
                     <table class="table table-bordered table-sm text-nowrap mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Reference Number</th>
+                                <th>Candidate Name</th>
+                                <th>Email</th>
+                                <th class="text-center">Request Sent Date</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in requestList)
+                            {
+                                <tr>
+                                    <td>@DisplayText(request.ReferenceNumber)</td>
+                                    <td>@GetCandidateName(request)</td>
+                                    <td>@DisplayText(request.Email)</td>
+                                    <td class="text-center">@FormatDateTime(request.RequestSentDate)</td>
+                                    <td class="text-center">
+                                        <span class="badge badge-@GetStatusBadgeColor(request.StatusName)">
+                                            @DisplayText(request.StatusName)
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="@($"{JORoutes.TA.MSFormDetails}/{request.Id}")"
+                                           class="btn btn-outline-primary btn-sm mr-1"
+                                           title="View">
+                                            <i class="fas fa-eye fa-fw"></i>
+                                        </a>
+
+                                        <a href="@($"{JORoutes.TA.MSFormFileUpload}/{request.Id}")"
+                                           class="btn btn-outline-info btn-sm mr-1"
+                                           title="Upload">
+                                            <i class="fas fa-upload fa-fw"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -160,5 +201,43 @@
 </div>
 
 @code {
+    private List<VwCandidateMSFormRequests> requestList = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        requestList = await MSFormRequestService.GetMSFormRequests();
+    }
+
+    private static string GetCandidateName(VwCandidateMSFormRequests request)
+    {
+        var nameParts = new[]
+        {
+            request.FirstName,
+            request.MiddleName,
+            request.LastName
+        };
+
+        return DisplayText(string.Join(" ", nameParts.Where(name => !string.IsNullOrWhiteSpace(name))));
+    }
+
+    private static string DisplayText(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "N/A" : value;
+    }
+
+    private static string FormatDateTime(DateTime? value)
+    {
+        return value.HasValue ? value.Value.ToString("MMM dd, yyyy hh:mm tt") : "N/A";
+    }
+
+    private static string GetStatusBadgeColor(string? statusName)
+    {
+        return statusName?.Trim().ToLowerInvariant() switch
+        {
+            "submitted" or "completed" => "success",
+            "awaiting submission" or "pending" => "warning",
+            "overdue" => "danger",
+            _ => "secondary"
+        };
+    }
 }

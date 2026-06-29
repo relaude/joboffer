@@ -1,7 +1,5 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.MSFormDetails + "/{requestId:int}")]
-
-<h1>@requestId</h1>
+@attribute [Route(JORoutes.TA.DivisionSetup + "/{requestId:int}")]
 
 @code {
     [Parameter] public int requestId { get; set; }

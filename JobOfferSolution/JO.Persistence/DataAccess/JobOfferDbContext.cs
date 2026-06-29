@@ -27,6 +27,9 @@ namespace JO.Persistence.DataAccess
         public DbSet<Departments> Departments { get; set; }
         public DbSet<JobOffers> JobOffers { get; set; }
 
+        //Company Setup
+        public DbSet<CandidateApplications> CandidateApplications { get; set; }
+
         //Status
         public DbSet<MainStatus> MainStatus { get; set; }
         public DbSet<CandidateStatus> CandidateStatus { get; set; }
@@ -52,6 +55,7 @@ namespace JO.Persistence.DataAccess
 
         //MS Forms
         public DbSet<CandidateMSFormRequests> CandidateMSFormRequests { get; set; }
+        public DbSet<SubmittedDocuments> SubmittedDocuments { get; set; }
 
         //Views
         public DbSet<VwCandidates> VwCandidates { get; set; }
@@ -65,6 +69,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwRolePermissions> VwRolePermissions { get; set; }
         public DbSet<VwJOUsersInRoles> VwJOUsersInRoles { get; set; }
         public DbSet<VwUserDivisionAccess> VwUserDivisionAccess { get; set; }
+        public DbSet<VwCandidateMSFormRequests> VwCandidateMSFormRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -79,6 +84,7 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwRolePermissions>().HasNoKey().ToView("vw_RolePermissions");
             modelBuilder.Entity<VwJOUsersInRoles>().HasNoKey().ToView("vw_JOUsersInRoles");
             modelBuilder.Entity<VwUserDivisionAccess>().HasNoKey().ToView("vw_UserDivisionAccess");
+            modelBuilder.Entity<VwCandidateMSFormRequests>().HasNoKey().ToView("vw_CandidateMSFormRequests");
         }
     }
 }

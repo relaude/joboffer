@@ -104,7 +104,6 @@
     <Build Include="dbo\Tables\JobLevels.sql" />
     <Build Include="dbo\Tables\JobFamilies.sql" />
     <Build Include="dbo\Tables\Currencies.sql" />
-    <Build Include="dbo\Tables\CandidateDocuments.sql" />
     <Build Include="dbo\Tables\CandidateCompensationProfile.sql" />
     <Build Include="dbo\Tables\CandidateApplications.sql" />
     <Build Include="dbo\Tables\Benefits.sql" />
@@ -134,6 +133,7 @@
     <Build Include="dbo\Views\vw_RolePermissions.sql" />
     <Build Include="dbo\Views\vw_JOUsersInRoles.sql" />
     <Build Include="dbo\Views\vw_Divisions.sql" />
+    <Build Include="dbo\Tables\SubmittedDocuments.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />
