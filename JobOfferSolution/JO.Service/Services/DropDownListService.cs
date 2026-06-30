@@ -17,6 +17,19 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
+        public async Task<List<DropdownDto>> GetSalaryMatrixByDivisionId(int id)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwSalaryMatrix
+                .AsNoTracking()
+                .Where(jo => jo.DivisionId == id)
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = jo.MatrixCode
+                }).ToListAsync();
+        }
+
         public async Task<List<DropdownDto>> GetDivisionsByCompnayId(int id)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();

@@ -33,6 +33,7 @@ namespace JO.Service
             services.AddScoped<IMassUploadService, MassUploadService>();
             services.AddScoped<IRequestTrackerService, RequestTrackerService>();
             services.AddScoped<IMSFormRequestService, MSFormRequestService>();
+            services.AddScoped<IJOAnalysisService, JOAnalysisService>();
 
             return services;
         }

@@ -148,8 +148,8 @@ textarea:focus {
     background-color: #fff;
 }
 
-/* candidate ms form request */
-.ms-form-page .icon-circle {
+/* form request */
+.jo-form-page .icon-circle {
     width: 2.35rem;
     height: 2.35rem;
     border-radius: 999px;
@@ -159,7 +159,7 @@ textarea:focus {
     box-shadow: 0 0.35rem 0.85rem rgba(78, 115, 223, 0.18);
 }
 
-.ms-form-page .icon-circle-sm {
+.jo-form-page .icon-circle-sm {
     width: 2rem;
     height: 2rem;
     border-radius: 999px;
@@ -169,13 +169,13 @@ textarea:focus {
     flex: 0 0 auto;
 }
 
-.ms-form-page .ms-message-box {
+.jo-form-page .ms-message-box {
     min-height: 14rem;
     white-space: pre-wrap;
     line-height: 1.5;
 }
 
-.ms-form-page .tracking-tile {
+.jo-form-page .tracking-tile {
     background: #f8f9fc;
     border: 1px solid #eaecf4;
     border-radius: 0.35rem;
@@ -183,12 +183,12 @@ textarea:focus {
     height: 100%;
 }
 
-.ms-form-page .table td,
-.ms-form-page .table th {
+.jo-form-page .table td,
+.jo-form-page .table th {
     vertical-align: middle;
 }
 
-.ms-form-page .text-xs {
+.jo-form-page .text-xs {
     font-size: 0.72rem;
     letter-spacing: 0.04em;
 }

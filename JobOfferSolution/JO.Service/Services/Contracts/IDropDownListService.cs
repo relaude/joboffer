@@ -16,5 +16,6 @@ namespace JO.Service.Services.Contracts
         Task<IEnumerable<DropdownDto>> GetJobPositions();
         Task<IEnumerable<DropdownDto>> GetMainStatus();
         Task<IEnumerable<DropdownDto>> GetReturnReasons();
+        Task<List<DropdownDto>> GetSalaryMatrixByDivisionId(int id);
     }
 }

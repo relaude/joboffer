@@ -157,8 +157,6 @@
                                 <th>Minimum</th>
                                 <th>Midpoint</th>
                                 <th>Maximum</th>
-                                @* <th title="Flag offers below the salary band.">Below Flag</th>
-                                <th title="Flag offers above the salary band.">Above Flag</th> *@
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -216,16 +214,6 @@
                                                    step="1000"
                                                    @bind="band.BandMaximum" />
                                         </td>
-                                        @* <td class="text-center align-middle">
-                                            <input type="checkbox"
-                                                   title="Enable below-band flag"
-                                                   @bind="band.BelowBandFlagEnabled" />
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            <input type="checkbox"
-                                                   title="Enable above-band flag"
-                                                   @bind="band.AboveBandFlagEnabled" />
-                                        </td> *@
                                         <td class="text-center align-middle">
                                             <button type="button"
                                                     class="btn btn-sm btn-link text-danger p-0"
