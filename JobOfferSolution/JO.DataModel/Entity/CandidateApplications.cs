@@ -13,6 +13,7 @@ namespace JO.DataModel.Entity
         public int? HiringCompanyId { get; set; }
         public int? HiringDivisionId { get; set; }
         public int? SalaryMatrixId { get; set; }
+        public string? ReferenceNumber { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
     }

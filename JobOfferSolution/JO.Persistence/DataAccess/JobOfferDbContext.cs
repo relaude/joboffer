@@ -70,6 +70,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwJOUsersInRoles> VwJOUsersInRoles { get; set; }
         public DbSet<VwUserDivisionAccess> VwUserDivisionAccess { get; set; }
         public DbSet<VwCandidateMSFormRequests> VwCandidateMSFormRequests { get; set; }
+        public DbSet<VwCandidateApplications> VwCandidateApplications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -85,6 +86,7 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwJOUsersInRoles>().HasNoKey().ToView("vw_JOUsersInRoles");
             modelBuilder.Entity<VwUserDivisionAccess>().HasNoKey().ToView("vw_UserDivisionAccess");
             modelBuilder.Entity<VwCandidateMSFormRequests>().HasNoKey().ToView("vw_CandidateMSFormRequests");
+            modelBuilder.Entity<VwCandidateApplications>().HasNoKey().ToView("vw_CandidateApplications");
         }
     }
 }

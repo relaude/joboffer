@@ -45,11 +45,17 @@ namespace JO.Service.Constants
         {
             public const string Dashboard = PrefixTA + "/dashboard";
             public const string Candidates = PrefixTA + "/candidates";
+
             public const string MSFormCandidate = PrefixTA + "/msform-candidate";
             public const string MSFormDetails = PrefixTA + "/msform-details";
             public const string MSFormFileUpload = PrefixTA + "/msform-file-upload";
             public const string DivisionSetup = PrefixTA + "/division-setup";
+            public const string ApplicationDetails = PrefixTA + "/application-details";
+            public const string JOAnalysis = PrefixTA + "/joboffer-analysis";
+
             public const string RequestTracker = PrefixTA + "/request-tracker";
+            public const string JobOfferTracker = PrefixTA + "/joboffer-tracker";
+
             public const string JobOffer = PrefixTA + "/joboffer";
             public const string Accept = PrefixTA + "/joboffer/accept";
             public const string Return = PrefixTA + "/joboffer/return";

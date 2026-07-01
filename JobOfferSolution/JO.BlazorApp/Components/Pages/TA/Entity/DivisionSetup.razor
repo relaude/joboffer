@@ -6,6 +6,8 @@
 @inject ISalaryMatrixService SalaryMatrixService
 @inject IJOAnalysisService JOAnalysisService
 @inject IAlertService AlertService
+@inject IAccountService AccountService
+@inject NavigationManager Navigation
 
 <div class="card shadow mb-4 border-left-primary small jo-form-page">
     <div class="card-header py-3 bg-white">
@@ -87,7 +89,7 @@
                                 Company <span class="text-danger">*</span>
                             </label>
                             <select class="form-control form-control-sm"
-                                    @bind="selectedCompanyId"
+                                    @bind="application.HiringCompanyId"
                                     @bind:after="OnCompanyChanged">
                                 @foreach (var option in ddCompanies)
                                 {
@@ -101,7 +103,7 @@
                                 Division <span class="text-danger">*</span>
                             </label>
                             <select class="form-control form-control-sm"
-                                    @bind="selectedDivisionId"
+                                    @bind="application.HiringDivisionId"
                                     @bind:after="OnDivisionChanged"
                                     disabled="@(ddDivisions.Count == 0)">
                                 @foreach (var option in ddDivisions)
@@ -116,7 +118,7 @@
                                 Salary Matrix <span class="text-danger">*</span>
                             </label>
                             <select class="form-control form-control-sm"
-                                    @bind="selectedMatrixId"
+                                    @bind="application.SalaryMatrixId"
                                     @bind:after="OnMatrixChanged"
                                     disabled="@(ddMatrix.Count == 0)">
                                 @foreach (var option in ddMatrix)
@@ -179,7 +181,8 @@
             <i class="fas fa-arrow-left fa-fw mr-1"></i>Back to Tracker
         </a>
 
-        <button type="button" class="btn btn-primary btn-sm mr-1">
+        <button type="button" class="btn btn-primary btn-sm mr-1"
+                @onclick="HandleSubmit">
             <i class="fas fa-save fa-fw mr-1"></i>Submit
         </button>
     </div>
@@ -193,19 +196,33 @@
     private List<DropdownDto> ddDivisions = new();
     private List<DropdownDto> ddMatrix = new();
     private List<VwSalaryMatrixBand> salaryBands = new();
-
-    private int selectedCompanyId = 0;
-    private int selectedDivisionId = 0;
-    private int selectedMatrixId = 0;
+    private CandidateApplications application = new();
 
     protected override async Task OnInitializedAsync()
     {
         requestInfo = await MSFormRequestService.GetMSFormRequest(requestId) ?? new();
 
         ddCompanies = await DropDownListService.GetCompanies();
-        selectedCompanyId = ddCompanies.FirstOrDefault()?.Id ?? 0;
+        application.HiringCompanyId = ddCompanies.FirstOrDefault()?.Id ?? 0;
 
         await OnCompanyChanged();
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (application.SalaryMatrixId == 0)
+        {
+            await AlertService.Error("Salary Matrix is required."); return;
+        }
+
+        if (!await AlertService.Confirm("Are you sure you want to save this Legal Entity Setup?")) return;
+
+        application.CandidateId = requestInfo.CandidateId;
+        application.MSFormRequestId = requestId;
+        application.CreatedBy = await AccountService.GetJobOfferUserId();
+        int id = await JOAnalysisService.LegalEntitySetup(application);
+
+        Navigation.NavigateTo($"{JORoutes.TA.ApplicationDetails}/{id}");
     }
 
     private async Task OnCompanyChanged()
@@ -213,13 +230,13 @@
         ddDivisions.Clear();
         ddMatrix.Clear();
         salaryBands.Clear();
-        selectedDivisionId = 0;
-        selectedMatrixId = 0;
-        
-        if (selectedCompanyId > 0)
-            ddDivisions = await DropDownListService.GetDivisionsByCompnayId(selectedCompanyId);
+        application.HiringDivisionId = 0;
+        application.SalaryMatrixId = 0;
 
-        selectedDivisionId = ddDivisions.FirstOrDefault()?.Id ?? 0;
+        if (application.HiringCompanyId > 0)
+            ddDivisions = await DropDownListService.GetDivisionsByCompnayId(application.HiringCompanyId.Value);
+
+        application.HiringDivisionId = ddDivisions.FirstOrDefault()?.Id ?? 0;
 
         await OnDivisionChanged();
     }
@@ -228,12 +245,12 @@
     {
         ddMatrix.Clear();
         salaryBands.Clear();
-        selectedMatrixId = 0;
+        application.SalaryMatrixId = 0;
         
-        if (selectedDivisionId > 0)
-            ddMatrix = await DropDownListService.GetSalaryMatrixByDivisionId(selectedDivisionId);
+        if (application.HiringDivisionId > 0)
+            ddMatrix = await DropDownListService.GetSalaryMatrixByDivisionId(application.HiringDivisionId.Value);
 
-        selectedMatrixId = ddMatrix.FirstOrDefault()?.Id ?? 0;
+        application.SalaryMatrixId = ddMatrix.FirstOrDefault()?.Id ?? 0;
 
         await OnMatrixChanged();
     }
@@ -242,7 +259,7 @@
     {
         salaryBands.Clear();
         
-        if (selectedMatrixId > 0)
-            salaryBands = await SalaryMatrixService.GetSalaryBands(selectedMatrixId);
+        if (application.SalaryMatrixId > 0)
+            salaryBands = await SalaryMatrixService.GetSalaryBands(application.SalaryMatrixId.Value);
     }
 }
