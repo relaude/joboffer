@@ -1,6 +1,7 @@
 ﻿using JO.DataModel.Entity;
 using JO.DataModel.View;
 using JO.Persistence.DataAccess;
+using JO.Service.Constants;
 using JO.Service.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -16,6 +17,138 @@ namespace JO.Service.Services
         public JOAnalysisService(IDbContextFactory<JobOfferDbContext> dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task<int> SaveAllProposals(List<JobOfferProposal> proposals)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            await context.JobOfferProposal.AddRangeAsync(proposals);
+
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<List<JobOfferProposal>> ReComputeProposalAnalysis(List<JobOfferProposal> proposals)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var matrixBand = await context.SalaryMatrixBand.FindAsync(proposals.FirstOrDefault().SalaryMatrixBandId.Value);
+
+            foreach (var proposal in proposals)
+            {
+                decimal increasePercentage = ComputeIncreasePercentage(proposal.ProposedSalary.Value, proposal.CurrentSalary.Value);
+                decimal compaRatio = Math.Round((proposal.ProposedSalary.Value / proposal.SalaryMidpoint.Value), 2);
+                decimal annualSalary = proposal.ProposedSalary.Value * 12;
+                int statusId = SetValidationStatusId(proposal.ProposedSalary.Value, matrixBand);
+                string justification = SetJustificationNotes(statusId);
+
+                proposal.IncreasePercentage = increasePercentage;
+                proposal.CompaRatio = compaRatio;
+                proposal.AnnualSalary = annualSalary;
+                proposal.ValidationStatusId = statusId;
+                proposal.Justification = justification;
+            }
+
+            return proposals;
+        }
+
+        public async Task<List<JobOfferProposal>> InitializeProposal(
+            int applicationId,
+            int salaryMatrixId,
+            int salaryMatrixBandId,
+            decimal currentSalary,
+            int createdBy)
+        {
+
+            List<JobOfferProposal> proposalList = new();
+
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var matrixBand = await context.SalaryMatrixBand.FindAsync(salaryMatrixBandId);
+
+            for (int i = 1; i <= 3; i++)
+            {
+                decimal increasePercentage = i * 10;
+
+                decimal proposedSalary = ComputeProposedSalary(currentSalary, increasePercentage);
+
+                //Compa-Ratio = Proposed Salary / Salary Midpoint
+                decimal compaRatio = Math.Round((proposedSalary / matrixBand.BandMidpoint.Value), 2);
+
+                decimal annualSalary = proposedSalary * 12;
+
+                int statusId = SetValidationStatusId(proposedSalary, matrixBand);
+                string justification = SetJustificationNotes(statusId);
+
+                proposalList.Add(new JobOfferProposal
+                {
+                    CandidateApplicationId = applicationId,
+                    SalaryMatrixBandId = salaryMatrixId,
+                    OptionNumber = i,
+                    CurrentSalary = currentSalary,
+                    ProposedSalary = proposedSalary,
+                    SalaryMidpoint = matrixBand.BandMidpoint,
+                    CompaRatio = compaRatio,
+                    IncreasePercentage = increasePercentage,
+                    AnnualSalary = annualSalary,
+                    ValidationStatusId = statusId,
+                    Justification = justification,
+                    CreatedBy = createdBy,
+                    CreatedAt = DateTime.Now
+                });
+            }
+
+            return proposalList;
+        }
+
+        private decimal ComputeIncreasePercentage(decimal proposedSalary, decimal currentSalary)
+        {
+            //Increase % = ((Proposed Salary - Current Salary) / Current Salary) × 100
+            decimal percentage = ((proposedSalary - currentSalary) / currentSalary) * 100;
+            return Math.Round(percentage, 2);
+        }
+
+        private decimal ComputeProposedSalary(decimal currentSalary, decimal increasePercentage)
+        {
+            //Proposed Salary = Current Salary × (1 + (Increase % / 100))
+            decimal salary = currentSalary * (1 + (increasePercentage/100));
+            return Math.Round(salary, 2);
+        }
+
+        private string SetJustificationNotes(int statusId)
+        {
+            return statusId switch
+            {
+                JOValidationStatus.Within => "Conservative offer aligned with lower market range.",
+                JOValidationStatus.Midpoint => "Recommended offer matching candidate expectation and salary midpoint.",
+                JOValidationStatus.Upper => "Competitive offer for faster acceptance while remaining below maximum.",
+                JOValidationStatus.Lower => "Proposed salary is below the salary band minimum.",
+                JOValidationStatus.Exceed => "Proposed salary exceeds the salary band maximum.",
+                _ => string.Empty
+            };
+        }
+
+        private int SetValidationStatusId(decimal proposedSalary, SalaryMatrixBand matrixBand)
+        {
+            if (!matrixBand.BandMinimum.HasValue ||
+                !matrixBand.BandMidpoint.HasValue ||
+                !matrixBand.BandMaximum.HasValue)
+                return 0;
+
+            var minimum = matrixBand.BandMinimum.Value;
+            var midpoint = matrixBand.BandMidpoint.Value;
+            var maximum = matrixBand.BandMaximum.Value;
+
+            if (proposedSalary < minimum)
+                return JOValidationStatus.Lower;
+
+            if (proposedSalary == midpoint)
+                return JOValidationStatus.Midpoint;
+
+            if (proposedSalary > maximum)
+                return JOValidationStatus.Exceed;
+
+            if (proposedSalary > midpoint)
+                return JOValidationStatus.Upper;
+
+            return JOValidationStatus.Within;
         }
 
         public async Task<List<VwCandidateApplications>> GetCandidateApplications()

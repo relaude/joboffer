@@ -18,6 +18,7 @@ namespace JO.DataModel.View
         public int? SalaryMatrixId { get; set; }
         public string? MatrixCode { get; set; }
         public string? MatrixName { get; set; }
+        public string? Currency { get; set; }
         public string? CreatedByName { get; set; }
         public DateTime? CreatedAt { get; set; }
     }

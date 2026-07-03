@@ -134,6 +134,11 @@
     <Build Include="dbo\Views\vw_JOUsersInRoles.sql" />
     <Build Include="dbo\Views\vw_Divisions.sql" />
     <Build Include="dbo\Tables\SubmittedDocuments.sql" />
+    <Build Include="dbo\Tables\WorkFlowStatus.sql" />
+    <Build Include="dbo\Tables\ValidationStatus.sql" />
+    <Build Include="dbo\Tables\JobOfferWorkFlow.sql" />
+    <Build Include="dbo\Tables\JobOfferProposal.sql" />
+    <Build Include="dbo\Views\vw_CandidateApplications.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

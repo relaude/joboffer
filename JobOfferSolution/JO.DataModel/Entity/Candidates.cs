@@ -16,6 +16,7 @@ namespace JO.DataModel.Entity
         public string? LastPositionHeld { get; set; }
         public decimal ExpectedSalary { get; set; }
         public string? CurrentEmployer { get; set; }
+        public decimal? CurrentSalary { get; set; }
         public int EmploymentStatus_Id { get; set; }
         public int WorkExperience_Id { get; set; }
         public bool? IsActive { get; set; }

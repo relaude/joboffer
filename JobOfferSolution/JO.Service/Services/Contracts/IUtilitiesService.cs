@@ -7,6 +7,7 @@
         bool IsValidEmail(string email);
         bool IsValidSeriesOfEmail(string emails, char separator = ';');
         string LimitString(string input, int maxLength);
+        string ToCurrency(decimal? amount, string? currency);
         string ToPeso(decimal? amount);
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace JO.Service.Services
 {
@@ -12,6 +13,14 @@ namespace JO.Service.Services
         public string ToPeso(decimal? amount)
         {
             return amount?.ToString("C", new CultureInfo("en-PH")) ?? "";
+        }
+
+        public string ToCurrency(decimal? amount, string? currency)
+        {
+            if (string.IsNullOrEmpty(currency))
+                return ToPeso(amount);
+
+            return $"{currency} {amount?.ToString("N2")}" ?? "";
         }
 
         public bool IsValidEmail(string email)

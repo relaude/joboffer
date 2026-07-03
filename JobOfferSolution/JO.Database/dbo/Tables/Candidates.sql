@@ -9,6 +9,7 @@
     [LastPositionHeld]    NVARCHAR (100)  NULL,
     [ExpectedSalary]      DECIMAL (18, 2) NULL,
     [CurrentEmployer]     NVARCHAR (100)  NULL,
+    [CurrentSalary]       DECIMAL (18, 2) NULL,
     [EmploymentStatus_Id] INT             NULL,
     [WorkExperience_Id]   INT             NULL,
     [IsActive]            BIT             CONSTRAINT [DF_Candidates_IsActive] DEFAULT ((1)) NULL,
