@@ -1,0 +1,8 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.JOAnalysisDetails + "/{applicationId:int}")]
+
+<h1>@applicationId</h1>
+
+@code {
+    [Parameter] public int applicationId { get; set; }
+}

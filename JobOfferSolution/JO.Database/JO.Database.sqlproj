@@ -139,6 +139,12 @@
     <Build Include="dbo\Tables\JobOfferWorkFlow.sql" />
     <Build Include="dbo\Tables\JobOfferProposal.sql" />
     <Build Include="dbo\Views\vw_CandidateApplications.sql" />
+    <Build Include="dbo\Tables\Frequencies.sql" />
+    <Build Include="dbo\Tables\CompensationBenefitType.sql" />
+    <Build Include="dbo\Tables\CompensationBenefits.sql" />
+    <Build Include="dbo\Tables\CompBenTypes.sql" />
+    <Build Include="dbo\Tables\CompBenPackages.sql" />
+    <Build Include="Scripts\SeedCompensationBenefitsSampleData.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

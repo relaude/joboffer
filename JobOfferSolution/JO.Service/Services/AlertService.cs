@@ -15,6 +15,8 @@ namespace JO.Service.Services
             _swal = swal;
         }
 
+        public async Task Success(string message = "Successfully saved.", string title = "Success") => await _swal.FireAsync(title, message, SweetAlertIcon.Success);
+
         public async Task Error(string message, string title = "Error")
         {
             await _swal.FireAsync(title, message, SweetAlertIcon.Error);

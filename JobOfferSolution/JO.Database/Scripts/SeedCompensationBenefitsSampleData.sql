@@ -1,0 +1,112 @@
+IF NOT EXISTS (SELECT 1 FROM [dbo].[CompBenTypes] WHERE [TypeName] = N'Allowance')
+BEGIN
+    INSERT INTO [dbo].[CompBenTypes] ([TypeName])
+    VALUES (N'Allowance');
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[CompBenTypes] WHERE [TypeName] = N'Bonus')
+BEGIN
+    INSERT INTO [dbo].[CompBenTypes] ([TypeName])
+    VALUES (N'Bonus');
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[CompBenTypes] WHERE [TypeName] = N'Benefit')
+BEGIN
+    INSERT INTO [dbo].[CompBenTypes] ([TypeName])
+    VALUES (N'Benefit');
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[Frequencies] WHERE [Id] = 1)
+BEGIN
+    INSERT INTO [dbo].[Frequencies] ([Id], [FrequencyName], [Multiplier])
+    VALUES (1, N'Monthly', 12);
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[Frequencies] WHERE [Id] = 2)
+BEGIN
+    INSERT INTO [dbo].[Frequencies] ([Id], [FrequencyName], [Multiplier])
+    VALUES (2, N'Annual', 1);
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[Frequencies] WHERE [Id] = 3)
+BEGIN
+    INSERT INTO [dbo].[Frequencies] ([Id], [FrequencyName], [Multiplier])
+    VALUES (3, N'One-Time', 1);
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[Frequencies] WHERE [Id] = 4)
+BEGIN
+    INSERT INTO [dbo].[Frequencies] ([Id], [FrequencyName], [Multiplier])
+    VALUES (4, N'Ongoing', 0);
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[Currencies] WHERE [Currency] = 'PHP')
+BEGIN
+    INSERT INTO [dbo].[Currencies] ([Currency], [Description])
+    VALUES ('PHP', N'Philippine Peso');
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[CompBenPackages] WHERE [PackageName] = N'Standard')
+BEGIN
+    INSERT INTO [dbo].[CompBenPackages] ([PackageName])
+    VALUES (N'Standard');
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[CompBenPackages] WHERE [PackageName] = N'Professional')
+BEGIN
+    INSERT INTO [dbo].[CompBenPackages] ([PackageName])
+    VALUES (N'Professional');
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[CompBenPackages] WHERE [PackageName] = N'Elite')
+BEGIN
+    INSERT INTO [dbo].[CompBenPackages] ([PackageName])
+    VALUES (N'Elite');
+END
+
+DECLARE @AllowanceTypeId INT = (SELECT TOP 1 [Id] FROM [dbo].[CompBenTypes] WHERE [TypeName] = N'Allowance');
+DECLARE @BonusTypeId INT = (SELECT TOP 1 [Id] FROM [dbo].[CompBenTypes] WHERE [TypeName] = N'Bonus');
+DECLARE @BenefitTypeId INT = (SELECT TOP 1 [Id] FROM [dbo].[CompBenTypes] WHERE [TypeName] = N'Benefit');
+DECLARE @MonthlyFrequencyId INT = (SELECT TOP 1 [Id] FROM [dbo].[Frequencies] WHERE [FrequencyName] = N'Monthly');
+DECLARE @OneTimeFrequencyId INT = (SELECT TOP 1 [Id] FROM [dbo].[Frequencies] WHERE [FrequencyName] = N'One-Time');
+DECLARE @OngoingFrequencyId INT = (SELECT TOP 1 [Id] FROM [dbo].[Frequencies] WHERE [FrequencyName] = N'Ongoing');
+DECLARE @PhpCurrencyId INT = (SELECT TOP 1 [Id] FROM [dbo].[Currencies] WHERE [Currency] = 'PHP');
+DECLARE @StandardPackageId INT = (SELECT TOP 1 [Id] FROM [dbo].[CompBenPackages] WHERE [PackageName] = N'Standard');
+DECLARE @ProfessionalPackageId INT = (SELECT TOP 1 [Id] FROM [dbo].[CompBenPackages] WHERE [PackageName] = N'Professional');
+DECLARE @ElitePackageId INT = (SELECT TOP 1 [Id] FROM [dbo].[CompBenPackages] WHERE [PackageName] = N'Elite');
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[CompensationBenefits] WHERE [PackageId] = @StandardPackageId AND [ItemName] = N'Rice Allowance')
+BEGIN
+    INSERT INTO [dbo].[CompensationBenefits] ([PackageId], [ItemName], [Description], [TypeId], [Amount], [CurrencyId], [IsTaxable], [Tax], [IsRecurring], [FrequencyId], [DisplayOrder], [IsActive], [CreatedBy], [CreatedAt])
+    VALUES
+        (@StandardPackageId, N'Rice Allowance', NULL, @AllowanceTypeId, 2000.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 1, 1, 1, GETDATE()),
+        (@StandardPackageId, N'Transportation Allowance', NULL, @AllowanceTypeId, 4000.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 2, 1, 1, GETDATE()),
+        (@StandardPackageId, N'Communication Allowance', NULL, @AllowanceTypeId, 1500.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 3, 1, 1, GETDATE()),
+        (@StandardPackageId, N'Clothing Allowance', NULL, @AllowanceTypeId, 750.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 4, 1, 1, GETDATE()),
+        (@StandardPackageId, N'Signing Bonus', NULL, @BonusTypeId, 20000.00, @PhpCurrencyId, 1, NULL, 0, @OneTimeFrequencyId, 5, 1, 1, GETDATE()),
+        (@StandardPackageId, N'Benefit Package', N'HMO + leave conversion', @BenefitTypeId, NULL, NULL, 0, NULL, 1, @OngoingFrequencyId, 6, 1, 1, GETDATE());
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[CompensationBenefits] WHERE [PackageId] = @ProfessionalPackageId AND [ItemName] = N'Rice Allowance')
+BEGIN
+    INSERT INTO [dbo].[CompensationBenefits] ([PackageId], [ItemName], [Description], [TypeId], [Amount], [CurrencyId], [IsTaxable], [Tax], [IsRecurring], [FrequencyId], [DisplayOrder], [IsActive], [CreatedBy], [CreatedAt])
+    VALUES
+        (@ProfessionalPackageId, N'Rice Allowance', NULL, @AllowanceTypeId, 2500.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 1, 1, 1, GETDATE()),
+        (@ProfessionalPackageId, N'Transportation Allowance', NULL, @AllowanceTypeId, 6000.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 2, 1, 1, GETDATE()),
+        (@ProfessionalPackageId, N'Communication Allowance', NULL, @AllowanceTypeId, 2500.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 3, 1, 1, GETDATE()),
+        (@ProfessionalPackageId, N'Clothing Allowance', NULL, @AllowanceTypeId, 1000.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 4, 1, 1, GETDATE()),
+        (@ProfessionalPackageId, N'Signing Bonus', NULL, @BonusTypeId, 35000.00, @PhpCurrencyId, 1, NULL, 0, @OneTimeFrequencyId, 5, 1, 1, GETDATE()),
+        (@ProfessionalPackageId, N'Benefit Package', N'HMO + dependents + leave conversion', @BenefitTypeId, NULL, NULL, 0, NULL, 1, @OngoingFrequencyId, 6, 1, 1, GETDATE());
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[CompensationBenefits] WHERE [PackageId] = @ElitePackageId AND [ItemName] = N'Rice Allowance')
+BEGIN
+    INSERT INTO [dbo].[CompensationBenefits] ([PackageId], [ItemName], [Description], [TypeId], [Amount], [CurrencyId], [IsTaxable], [Tax], [IsRecurring], [FrequencyId], [DisplayOrder], [IsActive], [CreatedBy], [CreatedAt])
+    VALUES
+        (@ElitePackageId, N'Rice Allowance', NULL, @AllowanceTypeId, 3000.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 1, 1, 1, GETDATE()),
+        (@ElitePackageId, N'Transportation Allowance', NULL, @AllowanceTypeId, 8000.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 2, 1, 1, GETDATE()),
+        (@ElitePackageId, N'Communication Allowance', NULL, @AllowanceTypeId, 3500.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 3, 1, 1, GETDATE()),
+        (@ElitePackageId, N'Clothing Allowance', NULL, @AllowanceTypeId, 1500.00, @PhpCurrencyId, 0, NULL, 1, @MonthlyFrequencyId, 4, 1, 1, GETDATE()),
+        (@ElitePackageId, N'Signing Bonus', NULL, @BonusTypeId, 50000.00, @PhpCurrencyId, 1, NULL, 0, @OneTimeFrequencyId, 5, 1, 1, GETDATE()),
+        (@ElitePackageId, N'Benefit Package', N'Premium HMO + dependents + leave conversion', @BenefitTypeId, NULL, NULL, 0, NULL, 1, @OngoingFrequencyId, 6, 1, 1, GETDATE());
+END

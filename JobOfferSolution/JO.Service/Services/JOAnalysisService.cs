@@ -5,7 +5,9 @@ using JO.Service.Constants;
 using JO.Service.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
@@ -19,24 +21,50 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<VwCompensationBenefits>> GetCompensationBenefits(int packageId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwCompensationBenefits.AsNoTracking()
+                .Where(jo=>jo.PackageId==packageId)
+                .OrderBy(jo=>jo.DisplayOrder)
+                .ToListAsync();
+        }
+
+        public async Task<List<ValidationStatus>> GetValidationStatus()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.ValidationStatus.AsNoTracking().ToListAsync();
+        }
+
         public async Task<int> SaveAllProposals(List<JobOfferProposal> proposals)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
-            await context.JobOfferProposal.AddRangeAsync(proposals);
 
+            int applicationId = proposals.FirstOrDefault().CandidateApplicationId.Value;
+            int matrixBandId = proposals.FirstOrDefault().SalaryMatrixBandId.Value;
+
+            bool existingProposal = await context.JobOfferProposal
+                .Where(jo=>jo.CandidateApplicationId==applicationId
+                    && jo.SalaryMatrixBandId==matrixBandId)
+                .AnyAsync();
+
+            if (existingProposal) return 0;
+
+            await context.JobOfferProposal.AddRangeAsync(proposals);
             return await context.SaveChangesAsync();
         }
 
-        public async Task<List<JobOfferProposal>> ReComputeProposalAnalysis(List<JobOfferProposal> proposals)
+        public async Task<List<JobOfferProposal>> ReComputeProposalAnalysis(List<JobOfferProposal> proposals, List<VwCompensationBenefits> compensationItems)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             var matrixBand = await context.SalaryMatrixBand.FindAsync(proposals.FirstOrDefault().SalaryMatrixBandId.Value);
+            decimal packagesAnnualAmount = ComputePackagesAnnualAmount(compensationItems);
 
             foreach (var proposal in proposals)
             {
                 decimal increasePercentage = ComputeIncreasePercentage(proposal.ProposedSalary.Value, proposal.CurrentSalary.Value);
                 decimal compaRatio = Math.Round((proposal.ProposedSalary.Value / proposal.SalaryMidpoint.Value), 2);
-                decimal annualSalary = proposal.ProposedSalary.Value * 12;
+                decimal annualSalary = (proposal.ProposedSalary.Value * 12) + packagesAnnualAmount;
                 int statusId = SetValidationStatusId(proposal.ProposedSalary.Value, matrixBand);
                 string justification = SetJustificationNotes(statusId);
 
@@ -55,13 +83,15 @@ namespace JO.Service.Services
             int salaryMatrixId,
             int salaryMatrixBandId,
             decimal currentSalary,
-            int createdBy)
+            int createdBy,
+            List<VwCompensationBenefits> compensationItems)
         {
 
             List<JobOfferProposal> proposalList = new();
 
             await using var context = await _dbContext.CreateDbContextAsync();
             var matrixBand = await context.SalaryMatrixBand.FindAsync(salaryMatrixBandId);
+            decimal packagesAnnualAmount = ComputePackagesAnnualAmount(compensationItems);
 
             for (int i = 1; i <= 3; i++)
             {
@@ -72,7 +102,7 @@ namespace JO.Service.Services
                 //Compa-Ratio = Proposed Salary / Salary Midpoint
                 decimal compaRatio = Math.Round((proposedSalary / matrixBand.BandMidpoint.Value), 2);
 
-                decimal annualSalary = proposedSalary * 12;
+                decimal annualSalary = (proposedSalary * 12) + packagesAnnualAmount;
 
                 int statusId = SetValidationStatusId(proposedSalary, matrixBand);
                 string justification = SetJustificationNotes(statusId);
@@ -96,6 +126,13 @@ namespace JO.Service.Services
             }
 
             return proposalList;
+        }
+
+        private decimal ComputePackagesAnnualAmount(List<VwCompensationBenefits> compensationItems)
+        {
+            return compensationItems
+                .Where(item => item.Amount > 0)
+                .Sum(item => item.Amount.GetValueOrDefault() * item.Multiplier.GetValueOrDefault());
         }
 
         private decimal ComputeIncreasePercentage(decimal proposedSalary, decimal currentSalary)

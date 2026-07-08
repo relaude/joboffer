@@ -6,6 +6,7 @@ namespace JO.Service.Services.Contracts
     {
         Task<IEnumerable<DropdownDto>> GetCandidateStatus();
         Task<List<DropdownDto>> GetCompanies();
+        Task<List<DropdownDto>> GetCompBenPackages();
         Task<List<DropdownDto>> GetCurrencies();
         Task<IEnumerable<DropdownDto>> GetDeclineReasons();
         Task<IEnumerable<DropdownDto>> GetDepartments();
