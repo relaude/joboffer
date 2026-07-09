@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -88,6 +88,7 @@ namespace JO.Service.Constants
             public const string SendRequest = PrefixMock + "/send-request";
             public const string Legal = PrefixMock + "/legal";
             public const string Analysis = PrefixMock + "/analysis";
+            public const string AnalysisTA = PrefixMock + "/analysis-ta";
             public const string Approval = PrefixMock + "/approval";
             public const string Accept = PrefixMock + "/accept";
             public const string Negotiate = PrefixMock + "/negotiate";

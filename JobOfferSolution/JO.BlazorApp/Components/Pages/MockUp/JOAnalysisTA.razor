@@ -1,0 +1,436 @@
+@attribute [Route(JORoutes.MockUp.AnalysisTA)]
+
+<div class="card shadow mb-4 border-left-primary small jo-form-page jo-analysis-ta-page">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-chart-line fa-fw mr-2"></i>
+                    Job Offer Analysis
+                </h6>
+                <small class="text-muted">Proposal options with calculated salary band position, increase %, and compa-ratio.</small>
+            </div>
+
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1">
+                    <i class="fas fa-user-tie fa-fw text-primary mr-1"></i>
+                    TA Partner View
+                </span>
+                <span class="badge badge-success">
+                    <i class="fas fa-check-circle fa-fw mr-1"></i>
+                    Matrix Matched
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-4">
+        <div class="alert alert-light border-left-info py-2 mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle fa-fw text-info mr-2"></i>
+                <span>Mockup data only. This preview mirrors the live TA analysis workspace layout without any service calls.</span>
+            </div>
+        </div>
+
+        <div class="row align-items-start">
+            <div class="col-lg-6 pr-lg-3 mb-4 mb-lg-0">
+                <!-- Application -->
+                <div class="mb-3">
+                    <div class="card border shadow-sm w-100">
+                        <div class="card-header bg-white py-2">
+                            <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                                <i class="fas fa-building fa-fw text-primary mr-2"></i>
+                                Application Details
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted">Reference No.</div>
+                                <div class="col-sm-8 font-weight-bold text-gray-900">@application.ReferenceNumber</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted">Company</div>
+                                <div class="col-sm-8">@application.CompanyName</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted">Division</div>
+                                <div class="col-sm-8 font-weight-bold text-gray-900">@application.DivisionName</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted">Salary Matrix</div>
+                                <div class="col-sm-8 font-weight-bold text-gray-900">@application.MatrixName</div>
+                            </div>
+                            <hr class="my-3" />
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted">Candidate</div>
+                                <div class="col-sm-8 font-weight-bold text-gray-900">@candidate.CandidateName</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted">Position</div>
+                                <div class="col-sm-8">@candidate.PositionAppliedFor</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted">Current Salary</div>
+                                <div class="col-sm-8">@candidate.CurrentSalary</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 text-muted">Expected Salary</div>
+                                <div class="col-sm-8 font-weight-bold text-gray-900">@candidate.ExpectedSalary</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Salary Matrix -->
+                <div class="mb-3">
+                    <div class="card border shadow-sm w-100">
+                        <div class="card-header bg-white py-2">
+                            <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                                <i class="fas fa-table fa-fw text-primary mr-2"></i>
+                                Salary Matrix
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="row mb-2">
+                                <div class="col-sm-5 text-muted">Matrix Code</div>
+                                <div class="col-sm-7 font-weight-bold text-gray-900">@selectedBand.MatrixCode</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-5 text-muted">Salary Grade</div>
+                                <div class="col-sm-7">@selectedBand.PositionGrade</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-5 text-muted">Minimum</div>
+                                <div class="col-sm-7">@selectedBand.BandMinimum</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-5 text-muted">Midpoint</div>
+                                <div class="col-sm-7 font-weight-bold text-gray-900">@selectedBand.BandMidpoint</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-5 text-muted">Maximum</div>
+                                <div class="col-sm-7">@selectedBand.BandMaximum</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Negotiation Assessment -->
+                <div class="mb-3">
+                    <div class="card border shadow-sm w-100">
+                        <div class="card-header bg-white py-2">
+                            <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                                <i class="fas fa-handshake fa-fw text-primary mr-2"></i>
+                                Negotiation Assessment
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Expected Salary</div>
+                                <div class="col-6 text-right font-weight-bold text-gray-900">@candidate.ExpectedSalary</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Best Proposal</div>
+                                <div class="col-6 text-right font-weight-bold text-gray-900">@joProposals.FirstOrDefault()?.ProposedSalary</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-6 text-muted">Risk Level</div>
+                                <div class="col-6 text-right"><span class="badge badge-info">@assessment.RiskLevel</span></div>
+                            </div>
+                            <div class="border-left-info bg-light px-3 py-2">
+                                <div class="font-weight-bold text-gray-900">Reason</div>
+                                <div class="text-muted">@assessment.RiskReason</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approval Preview -->
+                <div class="mb-3">
+                    <div class="card border shadow-sm w-100">
+                        <div class="card-header bg-white py-2">
+                            <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                                <i class="fas fa-route fa-fw text-primary mr-2"></i>
+                                Approval Preview
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            @foreach (var approval in approvals)
+                            {
+                                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                                    <span>@approval.Role</span>
+                                    <span class="badge @approval.BadgeClass">@approval.Status</span>
+                                </div>
+                            }
+
+                            <div class="border-left-info bg-light px-3 py-2 mt-3">
+                                <i class="fas fa-clipboard-list fa-fw text-info mr-1"></i>
+                                Approval view includes all salary options, band results, and TA notes.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 pl-lg-3">
+                <!-- Salary Bands -->
+                <div class="mb-3">
+                    <div class="card border shadow-sm w-100">
+                        <div class="card-header bg-white py-2">
+                            <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                                <i class="fas fa-check-double fa-fw text-primary mr-2"></i>
+                                Salary Bands
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="list-group list-group-flush">
+                                @foreach (var band in salaryBands)
+                                {
+                                    <label class="list-group-item d-flex align-items-center px-0 py-2 mb-0">
+                                        <input class="mr-3" type="radio" name="salaryBand"
+                                               checked="@(selectedBandId == band.Id)" disabled />
+                                        <span class="font-weight-bold text-gray-900">@band.JobLevelName</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JO Proposals -->
+                @foreach (var option in joProposals)
+                {
+                    <div class="mb-3">
+                        <div class="border rounded shadow-sm h-100 w-100">
+                            <div class="px-3 py-2 bg-light border-bottom d-flex justify-content-between align-items-center">
+                                <span class="font-weight-bold text-gray-900">@($"Option {option.OptionNumber}")</span>
+                                <span class="badge badge-success">@option.ValidationStatus</span>
+                            </div>
+                            <div class="p-3">
+                                <div class="form-group mb-2">
+                                    <label class="font-weight-bold text-gray-700 mb-1">
+                                        Base Salary <span class="text-muted font-weight-normal">(@application.Currency)</span>
+                                    </label>
+                                    <input class="form-control form-control-sm form-ctrl-sml" value="@option.ProposedSalary" readonly />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold text-gray-700 mb-1">Justification</label>
+                                    <textarea class="form-control form-control-sm form-ctrl-sml" rows="3" readonly>@option.Justification</textarea>
+                                </div>
+                                <div class="row text-center">
+                                    <div class="col-6 mb-2">
+                                        <div class="text-xs text-muted">Increase</div>
+                                        <div class="font-weight-bold text-gray-900">@($"{option.IncreasePercentage}%")</div>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <div class="text-xs text-muted">Compa-Ratio</div>
+                                        <div class="font-weight-bold text-gray-900">@option.CompaRatio</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="text-xs text-muted">Annual Salary + Packages</div>
+                                        <div class="font-weight-bold text-gray-900">@option.AnnualSalary</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Compensation & Benefits Snapshot -->
+                <div class="mb-3">
+                    <div class="card border shadow-sm w-100">
+                        <div class="card-header bg-white py-2">
+                            <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                                <i class="fas fa-gift fa-fw text-primary mr-2"></i>
+                                Compensation & Benefits Snapshot
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="form-group row align-items-center mb-3">
+                                <div class="col-sm-10 col-md-6 col-lg-4">
+                                    <select class="form-control form-control-sm" disabled>
+                                        @foreach (var package in ddPackages)
+                                        {
+                                            <option selected="@(package == selectedPackage)">@package</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in compensationItems)
+                                        {
+                                            <tr>
+                                                <td>@item.Label</td>
+                                                <td class="font-weight-bold text-gray-900">@item.Value</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Notes -->
+                <div class="mb-0">
+                    <div class="card border shadow-sm w-100">
+                        <div class="card-header bg-white py-2">
+                            <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                                <i class="fas fa-pen-square fa-fw text-primary mr-2"></i>
+                                Analysis Notes
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            <label class="font-weight-bold text-gray-700 mb-1">TA Partner Justification</label>
+                            <textarea class="form-control form-control-sm form-ctrl-sml" rows="5" readonly>@analysisNotes</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer text-right">
+        <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary btn-sm mr-2">
+            <i class="fas fa-arrow-left fa-fw mr-1"></i>Back to Tracker
+        </a>
+        <button type="button" class="btn btn-outline-info btn-sm mr-2" disabled>
+            <i class="fas fa-calculator fa-fw mr-1"></i>
+            Recompute Analysis
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" disabled>
+            <i class="fas fa-paper-plane fa-fw mr-1"></i>
+            Submit For Approval
+        </button>
+    </div>
+</div>
+
+<style>
+    .jo-analysis-ta-page .form-ctrl-sml {
+        font-size: .8rem;
+        min-height: calc(1.5em + .5rem + 2px);
+    }
+
+    .jo-analysis-ta-page textarea.form-ctrl-sml {
+        min-height: auto;
+    }
+</style>
+
+@code {
+    private readonly MockApplication application = new(
+        "APP-2026-000123",
+        "Unilab Inc.",
+        "Sales Division",
+        "PH Sales 2026 Salary Matrix",
+        "Juan Dela Cruz",
+        "PHP");
+
+    private readonly MockCandidate candidate = new(
+        "Juan Dela Cruz",
+        "Territory Sales Representative",
+        "PHP 35,000.00",
+        "PHP 45,000.00");
+
+    private readonly MockBand selectedBand = new(
+        1,
+        "Professional (P3)",
+        "PH-SALES-SG12",
+        "SG-12",
+        "PHP 38,000.00",
+        "PHP 45,000.00",
+        "PHP 52,000.00");
+
+    private readonly int selectedBandId = 1;
+
+    private readonly List<MockBand> salaryBands =
+    [
+        new(1, "Professional (P3)", "PH-SALES-SG12", "SG-12", "PHP 38,000.00", "PHP 45,000.00", "PHP 52,000.00"),
+        new(2, "Senior Professional (P4)", "PH-SALES-SG13", "SG-13", "PHP 48,000.00", "PHP 56,000.00", "PHP 64,000.00"),
+        new(3, "Lead (M1)", "PH-SALES-SG14", "SG-14", "PHP 60,000.00", "PHP 70,000.00", "PHP 80,000.00")
+    ];
+
+    private readonly List<MockProposal> joProposals =
+    [
+        new(1, "PHP 42,000.00", "Conservative offer aligned with lower market range.", "20.00", "0.93", "PHP 504,000.00", "Within Band"),
+        new(2, "PHP 45,000.00", "Recommended offer matching candidate expectation and salary midpoint.", "28.57", "1.00", "PHP 540,000.00", "Within Band"),
+        new(3, "PHP 50,000.00", "Competitive offer for faster acceptance while remaining below maximum.", "42.86", "1.11", "PHP 600,000.00", "Within Band")
+    ];
+
+    private readonly MockAssessment assessment = new(
+        "Medium",
+        "Recommended proposal meets candidate expectation and aligns to matrix midpoint, keeping negotiation risk manageable.");
+
+    private readonly List<MockApproval> approvals =
+    [
+        new("HROD Head", "Pending", "badge-warning"),
+        new("Division Head", "Pending", "badge-warning"),
+        new("President Approval", "Not Required", "badge-light border")
+    ];
+
+    private readonly List<string> ddPackages =
+    [
+        "Standard Sales Package",
+        "Enhanced Sales Package"
+    ];
+
+    private readonly string selectedPackage = "Standard Sales Package";
+
+    private readonly List<MockPair> compensationItems =
+    [
+        new("Rice Allowance", "PHP 2,000.00"),
+        new("Transportation Allowance", "PHP 4,000.00"),
+        new("Communication Allowance", "PHP 1,500.00"),
+        new("Clothing Allowance", "PHP 750.00"),
+        new("Signing Bonus", "PHP 20,000.00"),
+        new("Benefit Package", "HMO + leave conversion")
+    ];
+
+    private readonly string analysisNotes =
+        "Candidate is validated and salary matrix is active. Option 2 is recommended because it meets expected salary, aligns to midpoint, and remains within the approved salary band.";
+
+    private sealed record MockApplication(
+        string ReferenceNumber,
+        string CompanyName,
+        string DivisionName,
+        string MatrixName,
+        string CandidateName,
+        string Currency);
+
+    private sealed record MockCandidate(
+        string CandidateName,
+        string PositionAppliedFor,
+        string CurrentSalary,
+        string ExpectedSalary);
+
+    private sealed record MockBand(
+        int Id,
+        string JobLevelName,
+        string MatrixCode,
+        string PositionGrade,
+        string BandMinimum,
+        string BandMidpoint,
+        string BandMaximum);
+
+    private sealed record MockProposal(
+        int OptionNumber,
+        string ProposedSalary,
+        string Justification,
+        string IncreasePercentage,
+        string CompaRatio,
+        string AnnualSalary,
+        string ValidationStatus);
+
+    private sealed record MockAssessment(string RiskLevel, string RiskReason);
+
+    private sealed record MockApproval(string Role, string Status, string BadgeClass);
+
+    private sealed record MockPair(string Label, string Value);
+}
