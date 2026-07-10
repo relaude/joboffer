@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace JO.DataModel.Entity
+namespace JO.DataModel.View
 {
-    public class JobOfferProposal
+    public class VwJobOfferProposal
     {
-        [Key] public int Id { get; set; }
-        public int? CandidateApplicationId { get; set; }
-        public int? SalaryMatrixBandId { get; set; }
+        public int Id { get; set; }
         public int? JobOfferAnalysisId { get; set; }
+        public string? ReferenceNumber { get; set; }
         public int? OptionNumber { get; set; }
         public decimal? CurrentSalary { get; set; }
         public decimal? ProposedSalary { get; set; }
@@ -18,9 +16,7 @@ namespace JO.DataModel.Entity
         public decimal? CompaRatio { get; set; }
         public decimal? IncreasePercentage { get; set; }
         public decimal? AnnualSalary { get; set; }
-        public int? ValidationStatusId { get; set; }
+        public string? ValidationStatusName { get; set; }
         public string? Justification { get; set; }
-        public int? CreatedBy { get; set; }
-        public DateTime? CreatedAt { get; set; }
     }
 }

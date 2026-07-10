@@ -15,6 +15,7 @@ namespace JO.DataModel.View
         public string? CompanyName { get; set; }
         public string? DivisionCode { get; set; }
         public string? DivisionName { get; set; }
+        public string? PositionAppliedFor { get; set; }
         public int? SalaryMatrixId { get; set; }
         public string? MatrixCode { get; set; }
         public string? MatrixName { get; set; }

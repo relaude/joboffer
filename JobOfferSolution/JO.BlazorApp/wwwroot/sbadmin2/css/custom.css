@@ -192,3 +192,85 @@ textarea:focus {
     font-size: 0.72rem;
     letter-spacing: 0.04em;
 }
+
+/* job offer analysis */
+.jo-analysis-ta-page .form-ctrl-sml {
+    font-size: .8rem;
+    min-height: calc(1.5em + .5rem + 2px);
+}
+
+.jo-analysis-ta-page textarea.form-ctrl-sml {
+    min-height: auto;
+}
+
+/* Salary band position track */
+.jo-analysis-ta-page .jo-band-track {
+    position: relative;
+    height: 10px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #e74a3b 0%, #f6c23e 50%, #1cc88a 100%);
+    opacity: .85;
+    margin-top: .5rem;
+}
+
+.jo-analysis-ta-page .jo-band-track-sm {
+    height: 6px;
+    margin-top: .25rem;
+}
+
+.jo-analysis-ta-page .jo-band-mid {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    left: 50%;
+    width: 2px;
+    background: #5a5c69;
+    transform: translateX(-50%);
+}
+
+.jo-analysis-ta-page .jo-band-marker {
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border: 3px solid #4e73df;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+}
+
+.jo-analysis-ta-page .jo-band-track-sm .jo-band-marker {
+    width: 10px;
+    height: 10px;
+    border-width: 2px;
+}
+
+.jo-analysis-ta-page .jo-band-bubble {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: .65rem;
+    font-weight: 700;
+    color: #4e73df;
+    background: #eaf0ff;
+    border: 1px solid #cddafe;
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+
+.jo-analysis-ta-page .jo-band-selected {
+    background: #eaf7f1;
+    border-radius: 6px;
+}
+
+.jo-analysis-ta-page .jo-proposal-recommended {
+    border-color: #1cc88a !important;
+    box-shadow: 0 0 0 1px #1cc88a, 0 .15rem .5rem rgba(28, 200, 138, .15) !important;
+}
+
+.jo-analysis-ta-page .jo-benefits-table td {
+    padding: .4rem .5rem;
+}

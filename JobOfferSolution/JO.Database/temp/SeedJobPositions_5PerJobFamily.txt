@@ -1,0 +1,31 @@
+INSERT INTO [dbo].[JobPositions] ([PositionName], [JobFamilyId])
+SELECT Seed.[PositionName], Seed.[JobFamilyId]
+FROM (
+    VALUES
+        (N'Software Developer', 1),
+        (N'System Analyst', 1),
+        (N'Network Engineer', 1),
+        (N'QA Engineer', 1),
+        (N'Data Analyst', 1),
+        (N'Accountant', 2),
+        (N'Financial Analyst', 2),
+        (N'Payroll Specialist', 2),
+        (N'Auditor', 2),
+        (N'Budget Officer', 2),
+        (N'Operations Manager', 3),
+        (N'Logistics Coordinator', 3),
+        (N'Procurement Specialist', 3),
+        (N'Facilities Coordinator', 3),
+        (N'Process Improvement Analyst', 3)
+) AS Seed([PositionName], [JobFamilyId])
+WHERE EXISTS (
+    SELECT 1
+    FROM [dbo].[JobFamilies] AS Family
+    WHERE Family.[Id] = Seed.[JobFamilyId]
+)
+AND NOT EXISTS (
+    SELECT 1
+    FROM [dbo].[JobPositions] AS Existing
+    WHERE Existing.[PositionName] = Seed.[PositionName]
+      AND Existing.[JobFamilyId] = Seed.[JobFamilyId]
+);

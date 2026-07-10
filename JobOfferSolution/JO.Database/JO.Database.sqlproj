@@ -62,6 +62,7 @@
     <Folder Include="dbo\Tables\" />
     <Folder Include="dbo\Views\" />
     <Folder Include="Scripts\" />
+    <Folder Include="temp" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetRoles.sql" />
@@ -144,10 +145,15 @@
     <Build Include="dbo\Tables\CompensationBenefits.sql" />
     <Build Include="dbo\Tables\CompBenTypes.sql" />
     <Build Include="dbo\Tables\CompBenPackages.sql" />
-    <Build Include="Scripts\SeedCompensationBenefitsSampleData.sql" />
+    <Build Include="dbo\Tables\JobOfferAnalysis.sql" />
+    <Build Include="dbo\Tables\CompBenItems.sql" />
+    <Build Include="dbo\Views\vw_JobOfferProposal.sql" />
+    <Build Include="dbo\Views\vw_JobOfferAnalysis.sql" />
+    <Build Include="dbo\Views\vw_CompensationBenefits.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />
     <None Include="Scripts\ValidateHybridRbacAbacSampleData.sql" />
+    <Build Include="temp\CompBen.txt" />
   </ItemGroup>
 </Project>

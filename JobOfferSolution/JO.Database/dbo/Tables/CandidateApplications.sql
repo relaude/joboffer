@@ -5,6 +5,7 @@
     [HiringCompanyId]  INT            NULL,
     [HiringDivisionId] INT            NULL,
     [SalaryMatrixId]   INT            NULL,
+    [JobPositionId]    INT            NULL,
     [ReferenceNumber]  NVARCHAR (150) NULL,
     [CreatedBy]        INT            NULL,
     [CreatedAt]        DATETIME       NULL,

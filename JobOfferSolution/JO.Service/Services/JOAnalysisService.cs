@@ -21,6 +21,20 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<VwJobOfferProposal>> GetJobOfferProposal(int analysisId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJobOfferProposal.AsNoTracking()
+                .Where(jo => jo.JobOfferAnalysisId == analysisId)
+                .ToListAsync();
+        }
+
+        public async Task<VwJobOfferAnalysis> GetJobOfferAnalysis(int id)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJobOfferAnalysis.FirstOrDefaultAsync(jo=>jo.Id==id) ?? new();
+        }
+
         public async Task<List<VwCompensationBenefits>> GetCompensationBenefits(int packageId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -36,22 +50,70 @@ namespace JO.Service.Services
             return await context.ValidationStatus.AsNoTracking().ToListAsync();
         }
 
-        public async Task<int> SaveAllProposals(List<JobOfferProposal> proposals)
+        public async Task<int> SaveProposalsAndAnalysis(
+            List<JobOfferProposal> proposals,
+            int selectedOptionNumber,
+            int selectedPackageId,
+            decimal expectedSalary,
+            string analysisNotes)
         {
+            int totalSaves = 0;
+
+            if (proposals is null || !proposals.Any())
+                return 0;
+
+            var recommended = proposals.FirstOrDefault(jo =>
+                jo.OptionNumber.GetValueOrDefault() == selectedOptionNumber);
+
+            if (recommended is null)
+                return 0;
+
+            int applicationId = recommended.CandidateApplicationId.GetValueOrDefault();
+            int matrixBandId = recommended.SalaryMatrixBandId.GetValueOrDefault();
+
+            if (applicationId == 0 || matrixBandId == 0)
+                return 0;
+
             await using var context = await _dbContext.CreateDbContextAsync();
 
-            int applicationId = proposals.FirstOrDefault().CandidateApplicationId.Value;
-            int matrixBandId = proposals.FirstOrDefault().SalaryMatrixBandId.Value;
+            bool existingProposal = await context.JobOfferProposal.AnyAsync(jo =>
+                jo.CandidateApplicationId == applicationId &&
+                jo.SalaryMatrixBandId == matrixBandId);
 
-            bool existingProposal = await context.JobOfferProposal
-                .Where(jo=>jo.CandidateApplicationId==applicationId
-                    && jo.SalaryMatrixBandId==matrixBandId)
-                .AnyAsync();
+            if (existingProposal)
+                return 0;
 
-            if (existingProposal) return 0;
+            var analysis = new JobOfferAnalysis
+            {
+                CandidateApplicationId = applicationId,
+                RecommendProposalId = recommended.Id,
+                SalaryMatrixBandId = recommended.SalaryMatrixBandId,
+                PackageId = selectedPackageId,
+                ExpectedSalary = expectedSalary,
+                BestProposalSalary = recommended.ProposedSalary.GetValueOrDefault(),
+                ValidationStatusId = recommended.ValidationStatusId.GetValueOrDefault(),
+                AnalysisNotes = analysisNotes,
+                CreatedBy = recommended.CreatedBy.GetValueOrDefault(),
+                CreatedAt = DateTime.Now
+            };
+
+            await context.JobOfferAnalysis.AddAsync(analysis);
+            totalSaves += await context.SaveChangesAsync();
+
+            foreach (var proposal in proposals)
+                proposal.JobOfferAnalysisId = analysis.Id;
 
             await context.JobOfferProposal.AddRangeAsync(proposals);
-            return await context.SaveChangesAsync();
+            totalSaves += await context.SaveChangesAsync();
+
+            var recommended2 = proposals.FirstOrDefault(jo =>
+                jo.OptionNumber.GetValueOrDefault() == selectedOptionNumber);
+
+            analysis.RecommendProposalId = recommended2.Id;
+            context.JobOfferAnalysis.Update(analysis);
+            totalSaves += await context.SaveChangesAsync();
+
+            return analysis.Id;
         }
 
         public async Task<List<JobOfferProposal>> ReComputeProposalAnalysis(List<JobOfferProposal> proposals, List<VwCompensationBenefits> compensationItems)
@@ -66,13 +128,11 @@ namespace JO.Service.Services
                 decimal compaRatio = Math.Round((proposal.ProposedSalary.Value / proposal.SalaryMidpoint.Value), 2);
                 decimal annualSalary = (proposal.ProposedSalary.Value * 12) + packagesAnnualAmount;
                 int statusId = SetValidationStatusId(proposal.ProposedSalary.Value, matrixBand);
-                string justification = SetJustificationNotes(statusId);
 
                 proposal.IncreasePercentage = increasePercentage;
                 proposal.CompaRatio = compaRatio;
                 proposal.AnnualSalary = annualSalary;
                 proposal.ValidationStatusId = statusId;
-                proposal.Justification = justification;
             }
 
             return proposals;

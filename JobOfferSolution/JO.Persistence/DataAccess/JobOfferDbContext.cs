@@ -61,6 +61,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<JobOfferProposal> JobOfferProposal { get; set; }
         public DbSet<ValidationStatus> ValidationStatus { get; set; }
         public DbSet<CompBenPackages> CompBenPackages { get; set; }
+        public DbSet<JobOfferAnalysis> JobOfferAnalysis { get; set; }
 
         //Views
         public DbSet<VwCandidates> VwCandidates { get; set; }
@@ -77,6 +78,8 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwCandidateMSFormRequests> VwCandidateMSFormRequests { get; set; }
         public DbSet<VwCandidateApplications> VwCandidateApplications { get; set; }
         public DbSet<VwCompensationBenefits> VwCompensationBenefits { get; set; }
+        public DbSet<VwJobOfferAnalysis> VwJobOfferAnalysis { get; set; }
+        public DbSet<VwJobOfferProposal> VwJobOfferProposal { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -95,6 +98,8 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwCandidateMSFormRequests>().HasNoKey().ToView("vw_CandidateMSFormRequests");
             modelBuilder.Entity<VwCandidateApplications>().HasNoKey().ToView("vw_CandidateApplications");
             modelBuilder.Entity<VwCompensationBenefits>().HasNoKey().ToView("vw_CompensationBenefits");
+            modelBuilder.Entity<VwJobOfferAnalysis>().HasNoKey().ToView("vw_JobOfferAnalysis");
+            modelBuilder.Entity<VwJobOfferProposal>().HasNoKey().ToView("vw_JobOfferProposal");
         }
     }
 }

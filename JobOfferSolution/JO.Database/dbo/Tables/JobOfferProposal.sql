@@ -2,6 +2,7 @@
     [Id]                     INT             IDENTITY (1, 1) NOT NULL,
     [CandidateApplicationId] INT             NULL,
     [SalaryMatrixBandId]     INT             NULL,
+    [JobOfferAnalysisId]     INT             NULL,
     [OptionNumber]           INT             NULL,
     [CurrentSalary]          DECIMAL (18, 2) NULL,
     [ProposedSalary]         DECIMAL (18, 2) NULL,
@@ -10,8 +11,7 @@
     [IncreasePercentage]     DECIMAL (18, 2) NULL,
     [AnnualSalary]           DECIMAL (18, 2) NULL,
     [ValidationStatusId]     INT             NULL,
-    [Justification]          NVARCHAR (200)  NULL,
-    [AnalysisNotes]          NVARCHAR (500)  NULL,
+    [Justification]          NVARCHAR (150)  NULL,
     [CreatedBy]              INT             NULL,
     [CreatedAt]              DATETIME        NULL,
     CONSTRAINT [PK_JobOfferProposal] PRIMARY KEY CLUSTERED ([Id] ASC)

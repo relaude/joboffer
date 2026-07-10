@@ -1,3 +1,4 @@
+/*
 IF NOT EXISTS (SELECT 1 FROM [dbo].[CompBenTypes] WHERE [TypeName] = N'Allowance')
 BEGIN
     INSERT INTO [dbo].[CompBenTypes] ([TypeName])
@@ -110,3 +111,4 @@ BEGIN
         (@ElitePackageId, N'Signing Bonus', NULL, @BonusTypeId, 50000.00, @PhpCurrencyId, 1, NULL, 0, @OneTimeFrequencyId, 5, 1, 1, GETDATE()),
         (@ElitePackageId, N'Benefit Package', N'Premium HMO + dependents + leave conversion', @BenefitTypeId, NULL, NULL, 0, NULL, 1, @OngoingFrequencyId, 6, 1, 1, GETDATE());
 END
+*/

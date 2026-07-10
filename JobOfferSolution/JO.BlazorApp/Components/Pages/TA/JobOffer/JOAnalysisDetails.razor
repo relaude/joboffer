@@ -1,8 +1,348 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.JOAnalysisDetails + "/{applicationId:int}")]
+@attribute [Route(JORoutes.TA.JOAnalysisDetails + "/{analysisId:int}")]
 
-<h1>@applicationId</h1>
+@inject IJOAnalysisService JOAnalysisService
+@inject IUtilitiesService UtilitiesService
+
+<div class="card shadow mb-4 border-left-primary small jo-analysis-ta-page">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-chart-line fa-fw mr-2"></i>
+                    Job Offer Analysis
+                </h6>
+                <small class="text-muted">
+                    @joAnalysis.ReferenceNumber &middot; @joAnalysis.CandidateName &middot; @joAnalysis.PositionAppliedFor
+                </small>
+            </div>
+
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1">
+                    <i class="fas fa-user-tie fa-fw text-primary mr-1"></i>
+                    TA Partner View
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-4">
+
+        <!-- KPI summary strip -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-3 mb-xl-0">
+                <div class="card border-left-primary shadow-sm h-100 py-2">
+                    <div class="card-body py-2 px-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Recommended Offer</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@(UtilitiesService.ToCurrency(joAnalysis.BestProposalSalary, joAnalysis.Currency))</div>
+                                <div class="text-xs text-muted">@($"Benefits Package: {joAnalysis.PackageName}")</div>
+                            </div>
+                            <i class="fas fa-hand-holding-usd fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-xl-3 col-md-6 mb-3 mb-xl-0">
+                <div class="card border-left-success shadow-sm h-100 py-2">
+                    <div class="card-body py-2 px-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Increase vs Current</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@($"{joAnalysis.IncreasePercentage}%")</div>
+                                <div class="text-xs text-muted">From @(UtilitiesService.ToCurrency(joAnalysis.CurrentSalary,joAnalysis.Currency))</div>
+                            </div>
+                            <i class="fas fa-arrow-trend-up fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-3 mb-xl-0">
+                <div class="card border-left-info shadow-sm h-100 py-2">
+                    <div class="card-body py-2 px-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Compa-Ratio</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@joAnalysis.CompaRatio</div>
+                                <div class="text-xs text-muted">Against band midpoint</div>
+                            </div>
+                            <i class="fas fa-balance-scale fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-xl-3 col-md-6 mb-0">
+                <div class="card border-left-warning shadow-sm h-100 py-2">
+                    <div class="card-body py-2 px-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Negotiation Risk</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@joAnalysis.RiskLevelName</div>
+                                <div class="text-xs text-muted">TA assessment</div>
+                            </div>
+                            <i class="fas fa-triangle-exclamation fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row align-items-start">
+            <div class="col-lg-6 pr-lg-3 mb-4 mb-lg-0">
+                <!-- Application -->
+                <div class="card border shadow-sm w-100 mb-3">
+                    <div class="card-header bg-white py-2">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            <i class="fas fa-building fa-fw text-primary mr-2"></i>
+                            Application Details
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted">Reference No.</div>
+                            <div class="col-sm-8 font-weight-bold text-gray-900">@application.ReferenceNumber</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted">Company</div>
+                            <div class="col-sm-8">@application.CompanyName</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted">Division</div>
+                            <div class="col-sm-8 font-weight-bold text-gray-900">@application.DivisionName</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted">Salary Matrix</div>
+                            <div class="col-sm-8 font-weight-bold text-gray-900">@application.MatrixName</div>
+                        </div>
+                        <hr class="my-3" />
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted">Candidate</div>
+                            <div class="col-sm-8 font-weight-bold text-gray-900">@joAnalysis.CandidateName</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted">Position</div>
+                            <div class="col-sm-8">@joAnalysis.PositionAppliedFor</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted">Current Salary</div>
+                            <div class="col-sm-8">@(UtilitiesService.ToCurrency(joAnalysis.CurrentSalary,joAnalysis.Currency))</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 text-muted">Expected Salary</div>
+                            <div class="col-sm-8 font-weight-bold text-gray-900">@(UtilitiesService.ToCurrency(joAnalysis.ExpectedSalary, joAnalysis.Currency))</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Salary Matrix with band position bar -->
+                <div class="card border shadow-sm w-100 mb-3">
+                    <div class="card-header bg-white py-2">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            <i class="fas fa-table fa-fw text-primary mr-2"></i>
+                            Salary Matrix &amp; Band Position
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Matrix Code</div>
+                            <div class="col-sm-7 font-weight-bold text-gray-900">@joAnalysis.MatrixCode</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-5 text-muted">Job Level</div>
+                            <div class="col-sm-7">@joAnalysis.JobLevelName</div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-sm-5 text-muted">Salary Grade</div>
+                            <div class="col-sm-7">@joAnalysis.PositionGrade</div>
+                        </div>
+
+                        <div class="jo-band-track mb-1">
+                            <div class="jo-band-mid"></div>
+                            <div class="jo-band-marker" 
+                                style="left:@(GetSliderMovementPercent(joAnalysis.BestProposalSalary.GetValueOrDefault()))%"
+                                title="@(UtilitiesService.ToCurrency(joAnalysis.BestProposalSalary, joAnalysis.Currency))">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between text-xs text-gray-700 font-weight-bold">
+                            <span>Min<br /><span class="text-muted font-weight-normal">@(UtilitiesService.ToCurrency(joAnalysis.BandMinimum, joAnalysis.Currency))</span></span>
+                            <span class="text-center">Mid<br /><span class="text-muted font-weight-normal">@(UtilitiesService.ToCurrency(joAnalysis.BandMidpoint, joAnalysis.Currency))</span></span>
+                            <span class="text-right">Max<br /><span class="text-muted font-weight-normal">@(UtilitiesService.ToCurrency(joAnalysis.BandMaximum, joAnalysis.Currency))</span></span>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Negotiation Assessment -->
+                <div class="card border shadow-sm w-100 mb-3">
+                    <div class="card-header bg-white py-2">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            <i class="fas fa-handshake fa-fw text-primary mr-2"></i>
+                            Negotiation Assessment
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row mb-2">
+                            <div class="col-6 text-muted">Expected Salary</div>
+                            <div class="col-6 text-right font-weight-bold text-gray-900">@(UtilitiesService.ToCurrency(joAnalysis.ExpectedSalary, joAnalysis.Currency))</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6 text-muted">Recommended Offer</div>
+                            <div class="col-6 text-right font-weight-bold text-gray-900">@(UtilitiesService.ToCurrency(joAnalysis.BestProposalSalary,joAnalysis.Currency))</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6 text-muted">Risk Level</div>
+                            <div class="col-6 text-right"><span class="badge badge-warning">@joAnalysis.RiskLevelName</span></div>
+                        </div>
+                        <div class="border-left-info bg-light px-3 py-2 rounded">
+                            <div class="font-weight-bold text-gray-900 mb-1">
+                                <i class="fas fa-lightbulb fa-fw text-info mr-1"></i>Assessment
+                            </div>
+                            <div class="text-muted">@joAnalysis.RiskLevelReason</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analysis Notes -->
+                <div class="card border shadow-sm w-100 mb-0">
+                    <div class="card-header bg-white py-2">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            <i class="fas fa-pen-square fa-fw text-primary mr-2"></i>
+                            TA Partner Notes
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <textarea class="form-control form-control-sm form-ctrl-sml" rows="10" readonly>@joAnalysis.AnalysisNotes</textarea>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-lg-6 pl-lg-3">
+                <!-- JO Proposals -->
+                <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-2">
+                    <i class="fas fa-list-ol fa-fw mr-1"></i>Proposal Options
+                </div>
+                @foreach (var option in joProposals)
+                {
+                    <div class="mb-3">
+                        <div class="border rounded shadow-sm h-100 w-100 @(option.Id == joAnalysis.RecommendProposalId ? "jo-proposal-recommended" : "")">
+                            <div class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center @(option.Id == joAnalysis.RecommendProposalId ? "bg-success text-white" : "bg-light")">
+                                <span class="font-weight-bold @(option.Id == joAnalysis.RecommendProposalId ? "text-white" : "text-gray-900")">
+                                    @if (option.Id == joAnalysis.RecommendProposalId)
+                                    {
+                                        <i class="fas fa-star fa-fw mr-1"></i>
+                                    }
+                                    @($"Option {option.OptionNumber}")
+                                    @if (option.Id == joAnalysis.RecommendProposalId)
+                                    {
+                                        <span class="ml-1">&middot; Recommended</span>
+                                    }
+                                </span>
+                                <span class="badge @(option.Id == joAnalysis.RecommendProposalId ? "badge-light" : "badge-success")">@option.ValidationStatusName</span>
+                            </div>
+                            <div class="p-3">
+                                <div class="d-flex align-items-baseline justify-content-between mb-3">
+                                    <div>
+                                        <div class="text-xs text-muted">Base Salary</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(UtilitiesService.ToCurrency(option.ProposedSalary, joAnalysis.Currency))</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-xs text-muted">Annual + Packages</div>
+                                        <div class="font-weight-bold text-gray-900">@(UtilitiesService.ToCurrency(option.AnnualSalary, joAnalysis.Currency))</div>
+                                    </div>
+                                </div>
+
+                                <div class="row text-center mb-3">
+                                    <div class="col-6">
+                                        <div class="text-xs text-muted">Increase</div>
+                                        <div class="font-weight-bold text-success">@($"{option.IncreasePercentage}%")</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-xs text-muted">Compa-Ratio</div>
+                                        <div class="font-weight-bold text-info">@option.CompaRatio</div>
+                                    </div>
+                                </div>
+
+                                <div class="jo-band-track jo-band-track-sm mb-2">
+                                    <div class="jo-band-mid"></div>
+                                    <div class="jo-band-marker" style="left:@($"{GetSliderMovementPercent(option.ProposedSalary.GetValueOrDefault())}%")"></div>
+                                </div>
+
+                                <div class="text-xs text-muted mb-1">Justification</div>
+                                <div class="text-gray-800">@option.Justification</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Compensation & Benefits Snapshot -->
+                <div class="card border shadow-sm w-100 mb-3">
+                    <div class="card-header bg-white py-2 d-flex align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            <i class="fas fa-gift fa-fw text-primary mr-2"></i>
+                            Compensation &amp; Benefits - @joAnalysis.PackageName
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0 jo-benefits-table">
+                                <tbody>
+                                    @foreach (var item in compensationItems)
+                                    {
+                                        <tr>
+                                            <td class="text-muted">@item.ItemName</td>
+                                            <td class="text-right font-weight-bold text-gray-900">@(SetCompBenItemValue(item))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 @code {
-    [Parameter] public int applicationId { get; set; }
+    [Parameter] public int analysisId { get; set; }
+
+    private VwJobOfferAnalysis joAnalysis = new();
+    private VwCandidateApplications application = new();
+    private List<VwJobOfferProposal> joProposals = new();
+    private List<VwCompensationBenefits> compensationItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        joAnalysis = await JOAnalysisService.GetJobOfferAnalysis(analysisId);
+        application = await JOAnalysisService.GetCandidateApplication(joAnalysis.CandidateApplicationId.GetValueOrDefault());
+        joProposals = await JOAnalysisService.GetJobOfferProposal(analysisId);
+        compensationItems = await JOAnalysisService.GetCompensationBenefits(joAnalysis.PackageId.GetValueOrDefault());
+    }
+
+    private decimal GetSliderMovementPercent(decimal value)
+    {
+        decimal min = joAnalysis.BandMinimum.GetValueOrDefault();
+        decimal mid = joAnalysis.BandMidpoint.GetValueOrDefault();
+        decimal max = joAnalysis.BandMaximum.GetValueOrDefault();
+
+        if (value <= min) return 0;
+        if (value >= max) return 100;
+
+        if (value <= mid)
+            return Math.Round((((value - min) / (mid - min)) * 50), 2);
+
+        return Math.Round((50 + ((value - mid) / (max - mid)) * 50), 2);
+    }
+
+    private string SetCompBenItemValue(VwCompensationBenefits item)
+    {
+        if (item.Amount.HasValue)
+            return UtilitiesService.ToCurrency(item.Amount, item.Currency);
+
+        return item.ItemDescription ?? "";
+    }
 }
