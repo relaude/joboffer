@@ -14,7 +14,8 @@ namespace JO.Service.Services.Contracts
         Task<List<DropdownDto>> GetJobFamilies();
         Task<List<DropdownDto>> GetJobLevels();
         Task<List<DropdownDto>> GetJobPositionGrades();
-        Task<IEnumerable<DropdownDto>> GetJobPositions();
+        Task<List<DropdownDto>> GetJobPositions();
+        Task<List<DropdownDto>> GetJobPositions(int familyId);
         Task<IEnumerable<DropdownDto>> GetMainStatus();
         Task<IEnumerable<DropdownDto>> GetReturnReasons();
         Task<List<DropdownDto>> GetSalaryMatrixByDivisionId(int id);

@@ -9,6 +9,7 @@ namespace JO.Service.Services.Contracts
         Task<List<VwCandidateApplications>> GetCandidateApplications();
         Task<List<VwCompensationBenefits>> GetCompensationBenefits(int packageId);
         Task<VwJobOfferAnalysis> GetJobOfferAnalysis(int id);
+        Task<List<VwJobOfferAnalysis>> GetJobOfferAnalysis();
         Task<List<VwJobOfferProposal>> GetJobOfferProposal(int analysisId);
         Task<List<ValidationStatus>> GetValidationStatus();
         Task<List<JobOfferProposal>> InitializeProposal(int applicationId, int salaryMatrixId, int salaryMatrixBandId, decimal currentSalary, int createdBy, List<VwCompensationBenefits> compensationItems);

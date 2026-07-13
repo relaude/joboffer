@@ -29,6 +29,12 @@ namespace JO.Service.Services
                 .ToListAsync();
         }
 
+        public async Task<List<VwJobOfferAnalysis>> GetJobOfferAnalysis()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJobOfferAnalysis.ToListAsync() ?? new();
+        }
+
         public async Task<VwJobOfferAnalysis> GetJobOfferAnalysis(int id)
         {
             await using var context = await _dbContext.CreateDbContextAsync();

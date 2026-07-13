@@ -146,11 +146,24 @@ namespace JO.Service.Services
                     Value = jo.StatusName
                 }).ToListAsync();
         }
-        public async Task<IEnumerable<DropdownDto>> GetJobPositions()
+        public async Task<List<DropdownDto>> GetJobPositions()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
             return await context.JobPositions
                 .AsNoTracking()
+                .Select(jo => new DropdownDto
+                {
+                    Id = jo.Id,
+                    Value = jo.PositionName
+                }).ToListAsync();
+        }
+
+        public async Task<List<DropdownDto>> GetJobPositions(int familyId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.JobPositions
+                .AsNoTracking()
+                .Where(jo=>jo.JobFamilyId == familyId)
                 .Select(jo => new DropdownDto
                 {
                     Id = jo.Id,

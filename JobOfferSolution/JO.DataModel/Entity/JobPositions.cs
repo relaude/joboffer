@@ -10,5 +10,6 @@ namespace JO.DataModel.Entity
     {
         [Key] public int Id { get; set; }
         public string? PositionName { get; set; }
+        public int? JobFamilyId { get; set; }
     }
 }

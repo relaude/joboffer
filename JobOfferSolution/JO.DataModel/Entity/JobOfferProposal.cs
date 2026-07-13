@@ -20,6 +20,7 @@ namespace JO.DataModel.Entity
         public decimal? AnnualSalary { get; set; }
         public int? ValidationStatusId { get; set; }
         public string? Justification { get; set; }
+        public int? ProposalStatusId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
     }

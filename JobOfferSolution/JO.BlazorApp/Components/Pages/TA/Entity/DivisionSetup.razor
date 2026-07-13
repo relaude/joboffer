@@ -69,11 +69,11 @@
                 </div>
             </div>
         </div>
-        <!-- Summary -->
 
         <div class="row">
+
             <!-- Division -->
-            <div class="col-lg-4 mb-4">
+            <div class="col-lg-6 mb-4">
                 <div class="card">
                     <div class="card-header bg-white">
                         <h6 class="m-0 font-weight-bold text-gray-800">
@@ -132,8 +132,8 @@
             </div>
 
             <!-- Matrix -->
-            <div class="col-lg-8 mb-4">
-                <div class="card">
+            <div class="col-lg-6 mb-4">
+                <div class="card mb-4">
                     <div class="card-header bg-white">
                         <h6 class="m-0 font-weight-bold text-gray-800">
                             <i class="fas fa-table fa-fw text-primary mr-2"></i>
@@ -172,7 +172,26 @@
                         </div>
                     </div>
                 </div>
+            
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="form-group mb-3">
+                            <label class="font-weight-bold text-gray-800">
+                                Position Applied For <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-control form-control-sm"
+                                    @bind="application.JobPositionId"
+                                    disabled="@(ddPositions.Count == 0)">
+                                @foreach (var option in ddPositions)
+                                {
+                                    <option value="@option.Id">@option.Value</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 
@@ -195,6 +214,7 @@
     private List<DropdownDto> ddCompanies = new();
     private List<DropdownDto> ddDivisions = new();
     private List<DropdownDto> ddMatrix = new();
+    private List<DropdownDto> ddPositions = new();
     private List<VwSalaryMatrixBand> salaryBands = new();
     private CandidateApplications application = new();
 
@@ -210,11 +230,19 @@
 
     private async Task HandleSubmit()
     {
-        if (application.SalaryMatrixId == 0)
-        {
-            await AlertService.Error("Salary Matrix is required."); return;
-        }
+        List<string> errors = new();
 
+        if (application.SalaryMatrixId.GetValueOrDefault() <= 0)
+            errors.Add("Salary Matrix is required.");
+
+        if (application.JobPositionId.GetValueOrDefault() <= 0 )
+            errors.Add("Job Position is required.");
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors); return;
+        }
+        
         if (!await AlertService.Confirm("Are you sure you want to save this Legal Entity Setup?")) return;
 
         application.CandidateId = requestInfo.CandidateId;
@@ -230,13 +258,18 @@
         ddDivisions.Clear();
         ddMatrix.Clear();
         salaryBands.Clear();
+        ddPositions.Clear();
+
         application.HiringDivisionId = 0;
         application.SalaryMatrixId = 0;
+        application.JobPositionId = 0;
 
-        if (application.HiringCompanyId > 0)
-            ddDivisions = await DropDownListService.GetDivisionsByCompnayId(application.HiringCompanyId.Value);
-
-        application.HiringDivisionId = ddDivisions.FirstOrDefault()?.Id ?? 0;
+        var companyId = application.HiringCompanyId.GetValueOrDefault();
+        if (companyId > 0)
+        {
+            ddDivisions = await DropDownListService.GetDivisionsByCompnayId(companyId);
+            application.HiringDivisionId = ddDivisions.FirstOrDefault()?.Id ?? 0;
+        }
 
         await OnDivisionChanged();
     }
@@ -245,12 +278,17 @@
     {
         ddMatrix.Clear();
         salaryBands.Clear();
-        application.SalaryMatrixId = 0;
-        
-        if (application.HiringDivisionId > 0)
-            ddMatrix = await DropDownListService.GetSalaryMatrixByDivisionId(application.HiringDivisionId.Value);
+        ddPositions.Clear();
 
-        application.SalaryMatrixId = ddMatrix.FirstOrDefault()?.Id ?? 0;
+        application.SalaryMatrixId = 0;
+        application.JobPositionId = 0;
+
+        var divisionId = application.HiringDivisionId.GetValueOrDefault();
+        if (divisionId > 0)
+        {
+            ddMatrix = await DropDownListService.GetSalaryMatrixByDivisionId(divisionId);
+            application.SalaryMatrixId = ddMatrix.FirstOrDefault()?.Id ?? 0;
+        }
 
         await OnMatrixChanged();
     }
@@ -258,8 +296,20 @@
     private async Task OnMatrixChanged()
     {
         salaryBands.Clear();
-        
-        if (application.SalaryMatrixId > 0)
-            salaryBands = await SalaryMatrixService.GetSalaryBands(application.SalaryMatrixId.Value);
+        ddPositions.Clear();
+        application.JobPositionId = 0;
+
+        var matrixId = application.SalaryMatrixId.GetValueOrDefault();
+        if (matrixId <= 0)
+            return;
+
+        salaryBands = await SalaryMatrixService.GetSalaryBands(matrixId);
+
+        var familyId = salaryBands.FirstOrDefault()?.JobFamilyId.GetValueOrDefault() ?? 0;
+        if (familyId <= 0)
+            return;
+
+        ddPositions = await DropDownListService.GetJobPositions(familyId);
+        application.JobPositionId = ddPositions.FirstOrDefault()?.Id ?? 0;
     }
 }
