@@ -34,6 +34,7 @@ namespace JO.Service
             services.AddScoped<IRequestTrackerService, RequestTrackerService>();
             services.AddScoped<IMSFormRequestService, MSFormRequestService>();
             services.AddScoped<IJOAnalysisService, JOAnalysisService>();
+            services.AddScoped<IApprovalService, ApprovalService>();
 
             return services;
         }

@@ -80,6 +80,7 @@ namespace JO.Service.Constants
             public const string Dashboard = PrefixDH + "/dashboard";
             public const string Approvals = PrefixDH + "/approvals";
             public const string Approve = PrefixDH + "/approve";
+            public const string ApproveDetails = PrefixDH + "/approve-details";
         }
 
         public static class MockUp

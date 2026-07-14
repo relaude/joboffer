@@ -3,6 +3,7 @@
     public interface IUtilitiesService
     {
         string AttachmentRelativePath(string fullPath);
+        string FormatDate(DateTime? inputDate, string format = "MMM dd, yyyy");
         string HumanizeMinutes(double? minutes);
         bool IsValidEmail(string email);
         bool IsValidSeriesOfEmail(string emails, char separator = ';');

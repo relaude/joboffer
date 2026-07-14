@@ -63,6 +63,9 @@ namespace JO.Persistence.DataAccess
         public DbSet<CompBenPackages> CompBenPackages { get; set; }
         public DbSet<JobOfferAnalysis> JobOfferAnalysis { get; set; }
 
+        //Approval
+        public DbSet<DHJOProposal> DHJOProposal { get; set; }
+
         //Views
         public DbSet<VwCandidates> VwCandidates { get; set; }
         public DbSet<VwJobOffers> VwJobOffers { get; set; }

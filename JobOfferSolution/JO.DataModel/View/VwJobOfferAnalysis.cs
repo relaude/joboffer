@@ -34,5 +34,7 @@ namespace JO.DataModel.View
         public decimal? BandMinimum { get; set; }
         public decimal? BandMidpoint { get; set; }
         public decimal? BandMaximum { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public string? CreatedByName { get; set; }
     }
 }

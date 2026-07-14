@@ -1,0 +1,455 @@
+@attribute [Route(JORoutes.MockUp.Accept)]
+
+<div class="card shadow mb-4 border-left-info small">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-info">
+                    <i class="fas fa-comments fa-fw mr-2"></i>
+                    Job Offer Candidate Discussion
+                </h6>
+                <small class="text-muted">@offer.JobOfferNo | @offer.CandidateName | @offer.PositionTitle | Mockup data only</small>
+            </div>
+
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1">
+                    <i class="fas fa-user-tie fa-fw text-primary mr-1"></i>
+                    TA Partner View
+                </span>
+                <span class="badge badge-info">
+                    <i class="fas fa-hourglass-half fa-fw mr-1"></i>
+                    @offer.Status
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-light border-left-info py-2 mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle fa-fw text-info mr-2"></i>
+                <span>Use this discussion view to compare approved offer options, record candidate feedback, and decide the next step.</span>
+            </div>
+        </div>
+
+        <div class="row text-center mb-4">
+            @foreach (var step in workflowSteps)
+            {
+                <div class="col-xl col-md-4 col-6 mb-2">
+                    <div class="border rounded bg-light px-2 py-2 h-100">
+                        <div class="@step.TextClass mb-1"><i class="@step.Icon"></i></div>
+                        <div class="text-xs font-weight-bold text-gray-800">@step.Name</div>
+                        <span class="badge @step.BadgeClass mt-1">@step.Status</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-xl-8 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                        <div>
+                            <h6 class="m-0 font-weight-bold text-gray-800">
+                                <i class="fas fa-layer-group fa-fw text-info mr-2"></i>
+                                Approved Offer Options
+                            </h6>
+                            <small class="text-muted">Only approved options are visible for candidate discussion.</small>
+                        </div>
+                        <span class="badge badge-success mt-2 mt-md-0 align-self-start align-self-md-center">@offerOptions.Count Approved</span>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="row">
+                            @foreach (var option in offerOptions)
+                            {
+                                <div class="col-lg-6 mb-3">
+                                    <div class="border rounded h-100 @(option.IsRecommended ? "border-info" : string.Empty)">
+                                        <div class="px-3 py-2 border-bottom bg-light d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div class="font-weight-bold text-gray-900">@option.Name</div>
+                                                <small class="text-muted">@option.ApprovalRoute</small>
+                                            </div>
+                                            <span class="badge @(option.IsRecommended ? "badge-info" : "badge-light border")">@option.Label</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span class="text-muted">Base Salary</span>
+                                                <span class="font-weight-bold text-gray-900">@option.BaseSalary</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span class="text-muted">Allowances</span>
+                                                <span>@option.Allowance</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span class="text-muted">Transportation</span>
+                                                <span>@option.Transportation</span>
+                                            </div>
+                                            <hr class="my-2" />
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="font-weight-bold text-gray-800">Monthly Package</span>
+                                                <span class="font-weight-bold text-primary">@option.TotalPackage</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="alert alert-light border-left-secondary py-2 mb-0">
+                            <i class="fas fa-eye-slash fa-fw text-secondary mr-1"></i>
+                            Rejected or withdrawn proposals are hidden to keep the conversation focused.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-id-card fa-fw text-info mr-2"></i>
+                            Candidate Snapshot
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in candidateSnapshot)
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">@item.Label</span>
+                                <span class="@(item.IsStrong ? "font-weight-bold text-gray-900" : string.Empty)">@item.Value</span>
+                            </div>
+                        }
+
+                        <hr class="my-3" />
+
+                        <div class="d-flex align-items-center">
+                            <div class="icon-circle bg-info text-white mr-3">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div class="font-weight-bold text-gray-900">@offer.TAPartner</div>
+                                <div class="text-muted">Assigned TA Partner</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-clipboard-list fa-fw text-info mr-2"></i>
+                            Discussion Entry
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold text-gray-700 mb-1">Discussion Date</label>
+                                <input class="form-control form-control-sm" value="@discussion.Date" readonly />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold text-gray-700 mb-1">Channel</label>
+                                <input class="form-control form-control-sm" value="@discussion.Channel" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Candidate Response</label>
+                            <div class="btn-group btn-group-sm d-flex" role="group" aria-label="Candidate response options">
+                                @foreach (var response in responses)
+                                {
+                                    <button type="button" class="btn @(response.IsSelected ? "btn-info" : "btn-outline-secondary") flex-fill" disabled>
+                                        <i class="@response.Icon fa-fw mr-1"></i>
+                                        @response.Label
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Selected Option</label>
+                            <select class="form-control form-control-sm" disabled>
+                                <option>@discussion.SelectedOption</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Discussion Notes</label>
+                            <textarea class="form-control form-control-sm" rows="4" readonly>@discussion.Notes</textarea>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label class="font-weight-bold text-gray-700 mb-1">Candidate Feedback</label>
+                            <textarea class="form-control form-control-sm" rows="3" readonly>@discussion.Feedback</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                        <div>
+                            <h6 class="m-0 font-weight-bold text-gray-800">
+                                <i class="fas fa-history fa-fw text-info mr-2"></i>
+                                Discussion Timeline
+                            </h6>
+                            <small class="text-muted">Recent contact history and candidate signals.</small>
+                        </div>
+                        <span class="badge badge-light border mt-2 mt-md-0 align-self-start align-self-md-center">3 Touchpoints</span>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in timeline)
+                        {
+                            <div class="d-flex pb-3 mb-3 border-bottom">
+                                <div class="btn-circle btn-sm @item.IconBg text-white mr-3">
+                                    <i class="@item.Icon"></i>
+                                </div>
+                                <div class="flex-fill">
+                                    <div class="d-flex flex-column flex-md-row justify-content-between">
+                                        <div class="font-weight-bold text-gray-900">@item.Title</div>
+                                        <small class="text-muted">@item.Timestamp</small>
+                                    </div>
+                                    <div class="text-muted">@item.Notes</div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="row text-center">
+                            @foreach (var metric in discussionMetrics)
+                            {
+                                <div class="col-md-4 mb-2 mb-md-0">
+                                    <div class="border rounded bg-light px-2 py-2 h-100">
+                                        <div class="text-xs text-uppercase text-muted">@metric.Label</div>
+                                        <div class="font-weight-bold @metric.TextClass">@metric.Value</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-8 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-tasks fa-fw text-info mr-2"></i>
+                            Next Step Checklist
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="row">
+                            @foreach (var item in nextSteps)
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-start border rounded bg-light px-3 py-2 h-100">
+                                        <i class="@item.Icon fa-fw @item.TextClass mt-1 mr-2"></i>
+                                        <div>
+                                            <div class="font-weight-bold text-gray-900">@item.Title</div>
+                                            <div class="text-muted">@item.Description</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-flag-checkered fa-fw text-info mr-2"></i>
+                            Discussion Summary
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        @foreach (var item in summary)
+                        {
+                            <div class="row mb-2">
+                                <div class="col-5 text-muted">@item.Label</div>
+                                <div class="col-7 @(item.IsStrong ? "font-weight-bold text-gray-900" : string.Empty)">@item.Value</div>
+                            </div>
+                        }
+
+                        <div class="alert alert-success py-2 mt-3 mb-0">
+                            <i class="fas fa-check-circle fa-fw mr-1"></i>
+                            Ready to record acceptance after final candidate confirmation.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column flex-md-row justify-content-end">
+            <button type="button" class="btn btn-outline-secondary btn-sm mb-2 mb-md-0 mr-md-2" disabled>
+                <i class="fas fa-save fa-fw mr-1"></i>
+                Save Notes
+            </button>
+            <button type="button" class="btn btn-outline-warning btn-sm mb-2 mb-md-0 mr-md-2" disabled>
+                <i class="fas fa-sync-alt fa-fw mr-1"></i>
+                Request Re-Proposal
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm mb-2 mb-md-0 mr-md-2" disabled>
+                <i class="fas fa-times fa-fw mr-1"></i>
+                Mark Declined
+            </button>
+            <button type="button" class="btn btn-info btn-sm" disabled>
+                <i class="fas fa-handshake fa-fw mr-1"></i>
+                Proceed to Acceptance
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly MockOffer offer = new(
+        "JO-2026-000145",
+        "Juan Dela Cruz",
+        "Territory Sales Representative",
+        "Ready For Candidate Discussion",
+        "Andrea Reyes");
+
+    private readonly List<MockStep> workflowSteps =
+    [
+        new("Analysis", "fas fa-chart-line", "Done", "badge-success", "text-success"),
+        new("Validation", "fas fa-balance-scale", "Done", "badge-success", "text-success"),
+        new("Approval", "fas fa-route", "Done", "badge-success", "text-success"),
+        new("Discussion", "fas fa-comments", "Current", "badge-info", "text-info"),
+        new("Acceptance", "fas fa-handshake", "Next", "badge-light border", "text-gray-500")
+    ];
+
+    private readonly List<MockOfferOption> offerOptions =
+    [
+        new("Option A", "PHP 42,000.00", "PHP 3,000.00", "PHP 1,500.00", "PHP 46,500.00", "HROD / Division Approved", "Backup", false),
+        new("Option B", "PHP 45,000.00", "PHP 3,000.00", "PHP 1,500.00", "PHP 49,500.00", "HROD / Division Approved", "Recommended", true)
+    ];
+
+    private readonly List<MockPair> candidateSnapshot =
+    [
+        new("Candidate", "Juan Dela Cruz", true),
+        new("Email", "juan@email.com"),
+        new("Mobile", "0917-123-4567"),
+        new("Expected Salary", "PHP 45,000.00", true),
+        new("Preferred Start", "July 15, 2026"),
+        new("Hiring Manager", "Maria Santos")
+    ];
+
+    private readonly MockDiscussion discussion = new(
+        "June 16, 2026",
+        "MS Teams",
+        "Option B - PHP 49,500.00",
+        "Candidate asked about allowance timing, HMO coverage, and offer validity. TA clarified that the selected option must match the approved package.",
+        "Candidate is comfortable with Option B and requested the formal offer letter for final review.");
+
+    private readonly List<MockResponse> responses =
+    [
+        new("Interested", "fas fa-thumbs-up", false),
+        new("Needs Review", "fas fa-search", false),
+        new("Verbally Accepted", "fas fa-check", true)
+    ];
+
+    private readonly List<MockTimeline> timeline =
+    [
+        new("Initial Call", "Jun 15, 2026 09:20 AM", "Candidate confirmed interest and asked for compensation details.", "fas fa-phone", "bg-info"),
+        new("Package Review", "Jun 16, 2026 10:30 AM", "TA presented approved options and highlighted Option B as recommended.", "fas fa-list", "bg-primary"),
+        new("Verbal Confirmation", "Jun 16, 2026 02:35 PM", "Candidate verbally accepted Option B, pending formal offer letter.", "fas fa-check", "bg-success")
+    ];
+
+    private readonly List<MockMetric> discussionMetrics =
+    [
+        new("Attempts", "3", "text-gray-900"),
+        new("Last Contact", "Today", "text-info"),
+        new("Candidate Signal", "Positive", "text-success")
+    ];
+
+    private readonly List<MockNextStep> nextSteps =
+    [
+        new("Confirm final response", "Capture candidate's final decision from the latest discussion.", "fas fa-comment-check", "text-info"),
+        new("Proceed to acceptance", "Use the accepted approved option for the next screen.", "fas fa-handshake", "text-success"),
+        new("Keep audit trail", "Retain notes, channel, date, and selected option.", "fas fa-history", "text-secondary"),
+        new("Avoid rework", "Start re-proposal only if candidate requests a different package.", "fas fa-sync-alt", "text-warning")
+    ];
+
+    private readonly List<MockPair> summary =
+    [
+        new("Current Status", "Verbally Accepted", true),
+        new("Selected Option", "Option B", true),
+        new("Total Package", "PHP 49,500.00", true),
+        new("Offer Valid Until", "June 21, 2026"),
+        new("Next Screen", "Acceptance", true)
+    ];
+
+    private sealed record MockOffer(
+        string JobOfferNo,
+        string CandidateName,
+        string PositionTitle,
+        string Status,
+        string TAPartner);
+
+    private sealed record MockStep(
+        string Name,
+        string Icon,
+        string Status,
+        string BadgeClass,
+        string TextClass);
+
+    private sealed record MockOfferOption(
+        string Name,
+        string BaseSalary,
+        string Allowance,
+        string Transportation,
+        string TotalPackage,
+        string ApprovalRoute,
+        string Label,
+        bool IsRecommended);
+
+    private sealed record MockPair(
+        string Label,
+        string Value,
+        bool IsStrong = false);
+
+    private sealed record MockDiscussion(
+        string Date,
+        string Channel,
+        string SelectedOption,
+        string Notes,
+        string Feedback);
+
+    private sealed record MockResponse(
+        string Label,
+        string Icon,
+        bool IsSelected);
+
+    private sealed record MockTimeline(
+        string Title,
+        string Timestamp,
+        string Notes,
+        string Icon,
+        string IconBg);
+
+    private sealed record MockMetric(
+        string Label,
+        string Value,
+        string TextClass);
+
+    private sealed record MockNextStep(
+        string Title,
+        string Description,
+        string Icon,
+        string TextClass);
+}

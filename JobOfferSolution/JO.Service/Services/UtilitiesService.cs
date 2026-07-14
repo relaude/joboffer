@@ -1,4 +1,5 @@
-﻿using JO.Service.Services.Contracts;
+﻿using JO.Service.Constants;
+using JO.Service.Services.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,6 +11,13 @@ namespace JO.Service.Services
 {
     public class UtilitiesService : IUtilitiesService
     {
+        public string FormatDate(DateTime? inputDate, string format = CommonConstant.DefaultShortDateTimeFormat)
+        {
+            if (!inputDate.HasValue) return "";
+
+            return inputDate.GetValueOrDefault().ToString(format);
+        }
+
         public string ToPeso(decimal? amount)
         {
             return amount?.ToString("C", new CultureInfo("en-PH")) ?? "";
