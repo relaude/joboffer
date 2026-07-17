@@ -15,6 +15,7 @@ namespace JO.DataModel.Entity
         public int? SalaryMatrixId { get; set; }
         public int? JobPositionId { get; set; }
         public string? ReferenceNumber { get; set; }
+        public int? CandApplStatusId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
     }

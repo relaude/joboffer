@@ -20,6 +20,9 @@ namespace JO.DataModel.View
         public string? MatrixCode { get; set; }
         public string? MatrixName { get; set; }
         public string? Currency { get; set; }
+        public string? StatusName { get; set; }
+        public string? BootstrapClass { get; set; }
+        public int? CandApplStatusId { get; set; }
         public string? CreatedByName { get; set; }
         public DateTime? CreatedAt { get; set; }
     }

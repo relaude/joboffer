@@ -11,19 +11,91 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Net;
 using System.Text;
 
 namespace JO.Service.Services
 {
     public class CandidateService : ICandidateService
     {
-        private readonly IDbContextFactory<JobOfferDbContext> _contextFactory;
-        public CandidateService(
-            IDbContextFactory<JobOfferDbContext> contextFactory)
+        private readonly IDbContextFactory<JobOfferDbContext> _dbContext;
+        private readonly IEmailService _email;
+        public CandidateService(IDbContextFactory<JobOfferDbContext> dbContext, IEmailService email)
         {
-            _contextFactory = contextFactory;
+            _dbContext = dbContext;
+            _email = email;
         }
 
+        public async Task<List<Candidates>> GetCandidates()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.Candidates.ToListAsync();
+        }
+
+        public async Task<Candidates> GetCandidate(int id)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.Candidates.FindAsync(id);
+        }
+
+        public async Task<int> EmailRequest(Requests entity)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            //email
+            //var candidate = await context.Candidates.FindAsync(entity.CandidateId);
+            //EmailRequest emailRequest = new EmailRequest
+            //{
+            //    To = candidate.Email,
+            //    Subject = entity.Subject,
+            //    Body = entity.Message
+            //};
+
+            //await _email.SendAsync(emailRequest);
+
+            //save request
+            await context.Requests.AddAsync(entity);
+            await context.SaveChangesAsync();
+
+            //job offer
+            int countJO = await context.JobOffers.CountAsync() +1;
+            var newJO = new JobOffers
+            {
+                RefNum = $"JO-{DateTime.Now.Year}-{countJO:D5}",
+                CandidateId = entity.CandidateId,
+                RequestId = entity.Id,
+                StatusId = JOStatus.Request.Awaiting,
+                CreatedAt = DateTime.Now,
+                CreatedBy = entity.CreatedBy
+            };
+            await context.JobOffers.AddAsync(newJO);
+            await context.SaveChangesAsync();
+
+            //workflow
+            var flowStatus = await context.WorkFlowStatus
+                .AsNoTracking()
+                .OrderBy(jo => jo.DisplayOrder)
+                .ToListAsync();
+
+            List<WorkFlow> workFlows = new();
+            foreach (var item in flowStatus)
+            {
+                workFlows.Add(new WorkFlow
+                {
+                    JoOfferId = newJO.Id,
+                    StatusId = item.Id,
+                    ActionId = item.DisplayOrder == 2 ? JOStatus.Action.Next 
+                        : (item.DisplayOrder == 1 ? JOStatus.Action.Current 
+                            : JOStatus.Action.Open)
+                });
+            }
+            await context.WorkFlow.AddRangeAsync(workFlows);
+            await context.SaveChangesAsync();
+
+            return entity.Id;
+        }
+
+        /*
         public async Task<PagedResult<VwCandidates>> SearchCandidatesAsync(
                 int statusId,
                 string? candidate,
@@ -81,10 +153,10 @@ namespace JO.Service.Services
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
             var candidate = await context.Candidates.FindAsync(id);
-            candidate.FirstName = firstName;
-            candidate.LastName = lastName;
+            candidate.FName = firstName;
+            candidate.LName = lastName;
             candidate.Email = email;
-            candidate.ContactNumber = contactNumber;
+            candidate.Contact = contactNumber;
 
             context.Candidates.Update(candidate);
             return await context.SaveChangesAsync();
@@ -104,6 +176,6 @@ namespace JO.Service.Services
             await using var context = await _contextFactory.CreateDbContextAsync();
 
             return await context.VwCandidates.AsNoTracking().ToListAsync();
-        }
+        }*/
     }
 }

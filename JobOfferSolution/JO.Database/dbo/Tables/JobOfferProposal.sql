@@ -12,6 +12,7 @@
     [AnnualSalary]           DECIMAL (18, 2) NULL,
     [ValidationStatusId]     INT             NULL,
     [Justification]          NVARCHAR (150)  NULL,
+    [ProposalStatusId]       INT             NULL,
     [CreatedBy]              INT             NULL,
     [CreatedAt]              DATETIME        NULL,
     CONSTRAINT [PK_JobOfferProposal] PRIMARY KEY CLUSTERED ([Id] ASC)

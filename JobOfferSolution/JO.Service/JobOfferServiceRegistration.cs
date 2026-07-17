@@ -20,14 +20,9 @@ namespace JO.Service
             services.AddScoped<ICandidateService, CandidateService>();
             services.AddScoped<IFileUploadService, FileUploadService>();
             services.AddScoped<IDropDownListService, DropDownListService>();
-            services.AddScoped<IJobOfferService, JobOfferService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IReturnJobOfferService, ReturnJobOfferService>();
-            services.AddScoped<IHRService, HRService>();
-            services.AddScoped<IDHService, DHService>();
-            services.AddScoped<ITAService, TAService>();
             services.AddScoped<ISingleSignOnService, SingleSignOnService>();
             services.AddScoped<ISalaryMatrixService, SalaryMatrixService>();
             services.AddScoped<IMassUploadService, MassUploadService>();
@@ -35,6 +30,7 @@ namespace JO.Service
             services.AddScoped<IMSFormRequestService, MSFormRequestService>();
             services.AddScoped<IJOAnalysisService, JOAnalysisService>();
             services.AddScoped<IApprovalService, ApprovalService>();
+            services.AddScoped<ICandidateDiscussionService, CandidateDiscussionService>();
 
             return services;
         }

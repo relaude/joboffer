@@ -50,7 +50,7 @@
                     <div class="card-body py-3">
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Candidate Name</div>
-                            <div class="col-7 font-weight-bold text-gray-800">@($"{candidate.FirstName} {candidate.LastName}")</div>
+                            <div class="col-7 font-weight-bold text-gray-800">@($"{candidate.FName} {candidate.LName}")</div>
                         </div>
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Email Address</div>
@@ -58,20 +58,20 @@
                         </div>
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Contact Number</div>
-                            <div class="col-7">@candidate.ContactNumber</div>
+                            <div class="col-7">@candidate.Contact</div>
                         </div>
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Position Applied</div>
-                            <div class="col-7">@candidate.PositionAppliedFor</div>
+                            <div class="col-7">@candidate.ApplyFor</div>
                         </div>
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Current Employer</div>
-                            <div class="col-7">@candidate.CurrentEmployer</div>
+                            <div class="col-7">@candidate.Employer</div>
                         </div>
                         <div class="row small">
                             <div class="col-5 text-muted">Expected Salary</div>
                             <div class="col-7 font-weight-bold text-success">
-                                @UtilitiesService.ToPeso(candidate.ExpectedSalary)
+                                @UtilitiesService.ToPeso(candidate.Salary)
                             </div>
                         </div>
                     </div>
@@ -90,19 +90,11 @@
                     <div class="card-body py-3">
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Current Employer</div>
-                            <div class="col-7 font-weight-bold">@candidate.CurrentEmployer</div>
+                            <div class="col-7 font-weight-bold">@candidate.Employer</div>
                         </div>
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Last Position</div>
-                            <div class="col-7">@candidate.LastPositionHeld</div>
-                        </div>
-                        <div class="row small mb-2">
-                            <div class="col-5 text-muted">Employment Status</div>
-                            <div class="col-7">@candidate.EmploymentStatusName</div>
-                        </div>
-                        <div class="row small mb-2">
-                            <div class="col-5 text-muted">Experience</div>
-                            <div class="col-7">@candidate.WorkExperienceName</div>
+                            <div class="col-7">@candidate.LstPosition</div>
                         </div>
                     </div>
                 </div>
@@ -171,7 +163,7 @@
                         <div class="mb-4">
                             <div class="mb-3">
                                 <label class="font-weight-bold text-gray-700 mb-1">Expected Due Date</label>
-                                <input type="date" class="form-control form-control-sm" @bind-value="msrequest.DueDate" />
+                                <input type="date" class="form-control form-control-sm" @bind-value="msrequest.DueAt" />
                             </div>
 
                             <div class="mb-3">
@@ -179,7 +171,7 @@
                                 <div class="border rounded bg-light px-3 py-2">
                                     <div class="custom-control custom-checkbox mb-1">
                                         <input type="checkbox" class="custom-control-input" id="reminderAfter3Days" 
-                                            @bind="msrequest.Reminder1"  />
+                                            @bind="reminder1"  />
                                         <label class="custom-control-label text-gray-700" for="reminderAfter3Days">
                                             Send reminder after 3 days
                                         </label>
@@ -187,7 +179,7 @@
 
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="reminderAfter5Days"
-                                               @bind="msrequest.Reminder2" />
+                                               @bind="reminder2" />
                                         <label class="custom-control-label text-gray-700" for="reminderAfter5Days">
                                             Send reminder after 5 days
                                         </label>
@@ -208,7 +200,7 @@
                         <div class="mb-3">
                             <label class="font-weight-bold text-gray-700 mb-1">Subject</label>
                             <input type="text" class="form-control form-control-sm" disabled
-                                @bind-value="msrequest.EmailSubject"/>
+                                @bind-value="msrequest.Subject"/>
                         </div>
 
                         <div class="mb-3">
@@ -286,10 +278,13 @@
 @code {
     [Parameter] public int candidateId { get; set; }
 
-    private VwCandidates candidate = new();
+    private Candidates candidate = new();
     private Modal modalInputEmail = default!;
     private EmailRequest emailRequest = new();
-    private CandidateMSFormRequestDto msrequest = new();
+    //private CandidateMSFormRequestDto msrequest = new();
+    private Requests msrequest = new();
+    private bool reminder1 = true;
+    private bool reminder2 = false;
 
     BlazoredTextEditor QuillHtml;
     private string QuillHTMLContent = @"<p>Dear #CandidateName,</p><p><br></p><p>Congratulations!</p><p><br></p><p>Please complete the Compensation and Benefits Form using the link below.</p><p>Kindly upload the required documents:</p><ol><li data-list='bullet'><span class='ql-ui' contenteditable='false'></span>Updated Resume</li><li data-list='bullet'><span class='ql-ui' contenteditable='false'></span>Latest Payslip</li></ol><p><br></p><p>Submission Link: <a href='https://duckduckgo.com/' rel='noopener noreferrer' target='_blank'>MS-Forms</a></p><p><br></p><p>Thank you.</p>";
@@ -306,11 +301,11 @@
     private async Task SetRequest()
     {
         msrequest.CandidateId = candidateId;
-        msrequest.CandidateEmail = candidate.Email;
         msrequest.CreatedBy = await AccountService.GetJobOfferUserId();
-        msrequest.DueDate = DateTime.Now.AddDays(1);
-        msrequest.Reminder1 = true;
-        msrequest.EmailSubject = "Compensation and Benefits Information Request";
+        msrequest.DueAt = DateTime.Now.AddDays(1);
+        msrequest.Reminder1 = reminder1 == true ? msrequest.DueAt.Value.AddDays(3) : null;
+        msrequest.Reminder2 = reminder2 == true ? msrequest.DueAt.Value.AddDays(5) : null;
+        msrequest.Subject = "Compensation and Benefits Information Request";
     }
 
     private async Task SendEmail()
@@ -325,8 +320,13 @@
 
         if (!await AlertService.Confirm()) return;
 
-        int requestId = await RequestTrackerService.CreateAndEmailMsFormRequest(msrequest);
-        Navigation.NavigateTo($"{JORoutes.TA.MSFormDetails}/{requestId}");
+        msrequest.Reminder1 = reminder1 == true ? msrequest.DueAt.Value.AddDays(3) : null;
+        msrequest.Reminder2 = reminder2 == true ? msrequest.DueAt.Value.AddDays(5) : null;
+        msrequest.SentAt = DateTime.Now;
+        msrequest.CreatedAt = DateTime.Now;
+        int requestId = await CandidateService.EmailRequest(msrequest);
+
+        //Navigation.NavigateTo($"{JORoutes.TA.MSFormDetails}/{requestId}");
     }
 
     private async Task SendTestMail()
@@ -339,7 +339,7 @@
             return;
         }
 
-        emailRequest.Body = msrequest.EmailBody;
+        emailRequest.Body = msrequest.Message;
 
         await EmailService.SendAsync(emailRequest);
         modalInputEmail.Close();
@@ -347,8 +347,8 @@
 
     private async Task<List<string>> CollectErrors(List<string> errors, bool isTestMail)
     {
-        msrequest.EmailBody = await QuillHtml.GetHTML();
-        msrequest.EmailBody = msrequest.EmailBody.Replace("#CandidateName", $"{candidate.FirstName} {candidate.LastName}");
+        msrequest.Message = await QuillHtml.GetHTML();
+        msrequest.Message = msrequest.Message.Replace("#CandidateName", $"{candidate.FName} {candidate.LName}");
 
         if (isTestMail)
         {
@@ -357,10 +357,10 @@
                 errors.Add("Please enter a valid email address.");
         }
 
-        if (string.IsNullOrEmpty(msrequest.EmailSubject))
+        if (string.IsNullOrEmpty(msrequest.Subject))
             errors.Add("Email Subject is required.");
 
-        if (string.IsNullOrEmpty(msrequest.EmailBody) || msrequest.EmailBody == "<p><br></p>")
+        if (string.IsNullOrEmpty(msrequest.Message) || msrequest.Message == "<p><br></p>")
             errors.Add("Email Message is required.");
 
         return errors;

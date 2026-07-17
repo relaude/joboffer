@@ -2,6 +2,7 @@
 @attribute [Route(JORoutes.TA.RequestTracker)]
 
 @inject IMSFormRequestService MSFormRequestService
+@inject IUtilitiesService UtilitiesService
 
 <div class="card shadow mb-4 border-left-primary small">
     <div class="card-header py-3 bg-white">
@@ -167,33 +168,44 @@
                             @foreach (var request in requestList)
                             {
                                 <tr>
-                                    <td>@DisplayText(request.ReferenceNumber)</td>
+                                    <td>@request.ReferenceNumber</td>
                                     <td>@GetCandidateName(request)</td>
-                                    <td>@DisplayText(request.Email)</td>
-                                    <td class="text-center">@FormatDateTime(request.RequestSentDate)</td>
+                                    <td>@request.Email</td>
                                     <td class="text-center">
-                                        <span class="badge badge-@GetStatusBadgeColor(request.StatusName)">
-                                            @DisplayText(request.StatusName)
+                                        @UtilitiesService.FormatDate(request.RequestSentDate, 
+                                            CommonConstant.DefaultShortDateTimeFormat)
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge badge-@request.BootstrapClass">
+                                            @request.StatusName
                                         </span>
                                     </td>
                                     <td class="text-center">
+
                                         <a href="@($"{JORoutes.TA.MSFormDetails}/{request.Id}")"
                                            class="btn btn-outline-primary btn-sm mr-1"
                                            title="View">
                                             <i class="fas fa-eye fa-fw"></i>
                                         </a>
 
-                                        <a href="@($"{JORoutes.TA.MSFormFileUpload}/{request.Id}")"
-                                           class="btn btn-outline-info btn-sm mr-1"
-                                           title="Upload">
-                                            <i class="fas fa-upload fa-fw"></i>
-                                        </a>
-
-                                        <a href="@($"{JORoutes.TA.DivisionSetup}/{request.Id}")"
-                                           class="btn btn-outline-info btn-sm mr-1"
-                                           title="Legal">
-                                            <i class="fas fa-gavel fa-fw"></i>
-                                        </a>
+                                        @if(request.StatusId == JOStatus.Request.Awaiting)
+                                        {
+                                            <a href="@($"{JORoutes.TA.MSFormFileUpload}/{request.Id}")"
+                                               class="btn btn-outline-info btn-sm mr-1"
+                                               title="Upload">
+                                                <i class="fas fa-upload fa-fw"></i>
+                                            </a>
+                                        }
+                                        
+                                        @if (request.StatusId == JOStatus.Request.Submitted)
+                                        {
+                                            <a href="@($"{JORoutes.TA.DivisionSetup}/{request.Id}")"
+                                               class="btn btn-outline-info btn-sm mr-1"
+                                               title="Legal">
+                                                <i class="fas fa-gavel fa-fw"></i>
+                                            </a>
+                                        }
+                                        
                                     </td>
                                 </tr>
                             }

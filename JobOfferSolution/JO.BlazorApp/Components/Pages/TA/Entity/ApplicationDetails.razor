@@ -21,10 +21,6 @@
                     <i class="fas fa-user-tie fa-fw text-primary mr-1"></i>
                     TA Partner View
                 </span>
-                <span class="badge badge-success">
-                    <i class="fas fa-check-circle fa-fw mr-1"></i>
-                    Matrix Matched
-                </span>
             </div>
         </div>
     </div>
@@ -32,13 +28,13 @@
     <div class="card-body">
 
         <div class="row text-center mb-4">
-            @foreach (var step in processSteps)
+            @foreach (var step in workFlow.Take(6))
             {
-                <div class="col-md-2 col-6 mb-2">
+                <div class="col-xl col-md-4 col-6 mb-2">
                     <div class="border rounded bg-light px-2 py-2 h-100">
-                        <div class="text-primary mb-1"><i class="@step.Icon"></i></div>
-                        <div class="text-xs font-weight-bold text-gray-800">@step.Name</div>
-                        <span class="badge @step.BadgeClass mt-1">@step.Status</span>
+                        <div class="text-@step.ActionClass mb-1"><i class="@step.Icon"></i></div>
+                        <div class="text-xs font-weight-bold text-gray-800">@step.ShortName</div>
+                        <span class="badge badge-@step.ActionClass mt-1">@step.ActionName</span>
                     </div>
                 </div>
             }
@@ -62,11 +58,11 @@
                         </div>
                         <div class="row mb-2">
                             <div class="col-sm-4 text-muted">Position Applied</div>
-                            <div class="col-sm-8">@candidate.PositionAppliedFor</div>
+                            <div class="col-sm-8">@candidate.ApplyFor</div>
                         </div>
                         <div class="row mb-2">
                             <div class="col-sm-4 text-muted">Expected Salary</div>
-                            <div class="col-sm-8 font-weight-bold text-gray-900">@candidate.ExpectedSalary</div>
+                            <div class="col-sm-8 font-weight-bold text-gray-900">@candidate.Salary</div>
                         </div>
                     </div>
                 </div>
@@ -165,24 +161,14 @@
 
     private VwCandidateApplications application = new();
     private List<VwSalaryMatrixBand> salaryBands = new();
-    private VwCandidates candidate = new();
-
-    private readonly List<MockStep> processSteps =
-    [
-        new("Validate Data", "fas fa-user-check", "Done", "badge-success"),
-        new("Confirm Entity", "fas fa-building", "Done", "badge-success"),
-        new("Load Matrix", "fas fa-table", "Done", "badge-success"),
-        new("Create Options", "fas fa-list-ol", "Draft", "badge-primary"),
-        new("Validate Band", "fas fa-check-double", "Ready", "badge-info"),
-        new("Approval Route", "fas fa-route", "Pending", "badge-light border")
-    ];
+    private Candidates candidate = new();
+    private List<VwJobOfferWorkFlow> workFlow = new();
 
     protected override async Task OnInitializedAsync()
     {
         application = await JOAnalysisService.GetCandidateApplication(applicationId) ?? new();
+        workFlow = await JOAnalysisService.GetJobOfferWorkFlow(applicationId);
         salaryBands = await SalaryMatrixService.GetSalaryBands(application.SalaryMatrixId.Value) ?? new();
         candidate = await CandidateService.GetCandidate(application.CandidateId.Value) ?? new();
     }
-
-    private sealed record MockStep(string Name, string Icon, string Status, string BadgeClass);
 }

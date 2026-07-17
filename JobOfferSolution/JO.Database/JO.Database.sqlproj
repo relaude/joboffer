@@ -73,7 +73,6 @@
     <Build Include="dbo\Tables\AspNetUserPasskeys.sql" />
     <Build Include="dbo\Tables\AspNetUserRoles.sql" />
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
-    <Build Include="dbo\Tables\MainStatus.sql" />
     <Build Include="dbo\Tables\JobOfferUsers.sql" />
     <Build Include="dbo\Tables\FileTypes.sql" />
     <Build Include="dbo\Tables\Candidates.sql" />
@@ -85,7 +84,6 @@
     <Build Include="dbo\Tables\Departments.sql" />
     <Build Include="dbo\Tables\Companies.sql" />
     <Build Include="dbo\Views\vw_JobOffers.sql" />
-    <Build Include="dbo\Views\vw_Candidates.sql" />
     <Build Include="dbo\Tables\ReturnReasons.sql" />
     <Build Include="dbo\Tables\ReturnLogs.sql" />
     <Build Include="dbo\Tables\EmailNotifRoleRecipients.sql" />
@@ -113,7 +111,6 @@
     <Build Include="dbo\Tables\CandidateTempData.sql" />
     <Build Include="dbo\Tables\CandidateMassUploadLogs.sql" />
     <Build Include="dbo\Tables\CandidateExcelRawData.sql" />
-    <Build Include="dbo\Tables\CandidateMSFormRequests.sql" />
     <Build Include="dbo\Tables\CandidateFormRequestStatus.sql" />
     <Build Include="dbo\Tables\UserLegalEntityAccess.sql" />
     <Build Include="dbo\Tables\UserAttributes.sql" />
@@ -124,7 +121,6 @@
     <Build Include="dbo\Tables\JobOfferCases.sql" />
     <Build Include="dbo\Tables\AuthorizationPolicies.sql" />
     <Build Include="dbo\Tables\ApprovalLevels.sql" />
-    <Build Include="dbo\Views\vw_CandidateMSFormRequests.sql" />
     <Build Include="dbo\Tables\UserRoleCategories.sql" />
     <Build Include="dbo\Tables\UserDivisionAccess.sql" />
     <Build Include="dbo\Tables\JOUserRoles.sql" />
@@ -150,6 +146,18 @@
     <Build Include="dbo\Views\vw_JobOfferProposal.sql" />
     <Build Include="dbo\Views\vw_JobOfferAnalysis.sql" />
     <Build Include="dbo\Views\vw_CompensationBenefits.sql" />
+    <Build Include="dbo\Tables\ProposalStatus.sql" />
+    <Build Include="dbo\Tables\DiscussionSteps.sql" />
+    <Build Include="dbo\Tables\DHJOProposal.sql" />
+    <Build Include="dbo\Tables\ChannelTypes.sql" />
+    <Build Include="dbo\Tables\CandidateResponses.sql" />
+    <Build Include="dbo\Tables\DiscussionEntries.sql" />
+    <Build Include="dbo\Tables\WorkFlowActions.sql" />
+    <Build Include="dbo\Tables\WorkFlow.sql" />
+    <Build Include="dbo\Tables\Requests.sql" />
+    <Build Include="dbo\Tables\JobOfferStatus.sql" />
+    <Build Include="dbo\Tables\CandApplStatus.sql" />
+    <Build Include="dbo\Views\vw_JobOfferWorkFlow.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

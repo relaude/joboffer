@@ -11,6 +11,7 @@ namespace JO.Service.Services.Contracts
         Task<VwJobOfferAnalysis> GetJobOfferAnalysis(int id);
         Task<List<VwJobOfferAnalysis>> GetJobOfferAnalysis();
         Task<List<VwJobOfferProposal>> GetJobOfferProposal(int analysisId);
+        Task<List<VwJobOfferWorkFlow>> GetJobOfferWorkFlow(int applicationId);
         Task<List<ValidationStatus>> GetValidationStatus();
         Task<List<JobOfferProposal>> InitializeProposal(int applicationId, int salaryMatrixId, int salaryMatrixBandId, decimal currentSalary, int createdBy, List<VwCompensationBenefits> compensationItems);
         Task<int> LegalEntitySetup(CandidateApplications entity);

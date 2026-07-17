@@ -1,0 +1,80 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.Candidates)]
+
+@inject ICandidateService CandidateService
+@inject IUtilitiesService UtilitiesService
+@inject NavigationManager Navigation
+
+<div class="card shadow mb-4 border-left-primary small">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-user-tie mr-2"></i>
+                    Candidates
+                </h6>
+            </div>
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1">
+                    <i class="fas fa-user-shield fa-fw text-primary mr-1">
+                    </i>Talent Aquisition View
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-sm text-nowrap">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Position Applied For</th>
+                        <th>Expected Salary</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (candidates.Any())
+                    {
+                        @foreach (var item in candidates)
+                        {
+                            <tr>
+                                <td>@($"{item.FName} {item.LName}")</td>
+                                <td>@item.Email</td>
+                                <td>@item.ApplyFor</td>
+                                <td>@UtilitiesService.ToPeso(item.Expected)</td>
+                                <td class="text-center">
+                                    <a href="@($"{JORoutes.TA.MSFormCandidate}/{item.Id}")"
+                                       class="btn btn-outline-primary btn-sm mr-1"
+                                       title="Send access request email">
+                                        <i class="fas fa-envelope fa-fw"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                <i class="fas fa-info-circle mr-1"></i> No records found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private List<Candidates> candidates = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        candidates = await CandidateService.GetCandidates();
+    }
+}

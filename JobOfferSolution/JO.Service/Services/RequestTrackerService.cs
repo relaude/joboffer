@@ -40,22 +40,46 @@ namespace JO.Service.Services
             //await _email.SendAsync(emailRequest);
 
             //save request
-            CandidateMSFormRequests newRequest = new CandidateMSFormRequests
+            Requests newRequest = new Requests
             {
                 CandidateId = dto.CandidateId,
-                RequestSentDate = DateTime.Now,
-                DueDate = dto.DueDate,
-                ReferenceNumber = await CreateReferenceNumber(),
-                StatusId = FormRequestStatus.Awaiting,
-                EmailSubject = dto.EmailSubject,
-                EmailBody = dto.EmailBody,
-                Reminder1SentDate = dto.Reminder1 ? dto.DueDate.AddDays(3) : null,
-                Reminder2SentDate = dto.Reminder2 ? dto.DueDate.AddDays(5) : null,
+                SentAt = DateTime.Now,
+                DueAt = dto.DueDate,
+                //ReferenceNumber = await CreateReferenceNumber(),
+                //StatusId = JOStatus.FormRequestStatus.Awaiting,
+                Subject = dto.EmailSubject,
+                Message = dto.EmailBody,
+                Reminder1 = dto.Reminder1 ? dto.DueDate.AddDays(3) : null,
+                Reminder2 = dto.Reminder2 ? dto.DueDate.AddDays(5) : null,
                 CreatedBy = dto.CreatedBy,
                 CreatedAt = DateTime.Now
             };
 
-            await context.CandidateMSFormRequests.AddAsync(newRequest);
+            await context.Requests.AddAsync(newRequest);
+            await context.SaveChangesAsync();
+
+            //init workflow
+            var workFlow = await context.WorkFlowStatus
+                .AsNoTracking()
+                .OrderBy(jo=> jo.DisplayOrder)
+                .ToListAsync();
+
+            List<JobOfferWorkFlow> joWorkFlows = new();
+            
+            foreach (var item in workFlow)
+            {
+                joWorkFlows.Add(new JobOfferWorkFlow
+                {
+                    CandidateMSFormRequestId = newRequest.Id,
+                    DisplayOrder = item.DisplayOrder,
+                    WorkFlowStatusId = item.Id,
+                    WorkFlowActionId = item.DisplayOrder == 2 ? JOStatus.Action.Next
+                        : (item.DisplayOrder == 1 ? JOStatus.Action.Current 
+                            : JOStatus.Action.Open)
+                }); 
+            }
+
+            await context.JobOfferWorkFlow.AddRangeAsync(joWorkFlows);
             await context.SaveChangesAsync();
 
             return newRequest.Id;
@@ -65,7 +89,7 @@ namespace JO.Service.Services
         {
             await using var context = await _dbContext.CreateDbContextAsync();
 
-            var countPlusOne = context.CandidateMSFormRequests.Count() + 1;
+            var countPlusOne = context.Requests.Count() + 1;
             return $"JO-REQ-{DateTime.Now.Year}-{countPlusOne:D5}";
         }
     }

@@ -18,6 +18,8 @@ namespace JO.DataModel.View
         public string? Email { get; set; }
         public string? PositionAppliedFor { get; set; }
         public string? StatusName { get; set; }
+        public string? BootstrapClass { get; set; }
         public string? TAOwner { get; set; }
+        public int? StatusId { get; set; }
     }
 }

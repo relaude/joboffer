@@ -175,7 +175,7 @@
                                     <td>@application.DivisionName</td>
                                     <td>@application.MatrixName</td>
                                     <td class="text-center">
-                                        <span class="badge badge-warning">For Analysis</span>
+                                        <span class="badge badge-@application.BootstrapClass">@application.StatusName</span>
                                     </td>
                                     <td class="text-center">
                                         <a href="@($"{JORoutes.TA.ApplicationDetails}/{application.Id}")"
@@ -184,10 +184,20 @@
                                             <i class="fas fa-eye fa-fw"></i>
                                         </a>
 
-                                        <a href="@($"{JORoutes.TA.JOAnalysis}/{application.Id}")"
+                                        @if (application.CandApplStatusId == JOStatus.Application.MatrixSelected)
+                                        {
+                                            <a href="@($"{JORoutes.TA.JOAnalysis}/{application.Id}")"
+                                               class="btn btn-outline-info btn-sm mr-1"
+                                               title="Analysis">
+                                                <i class="fas fa-chart-line fa-fw"></i>
+                                            </a>
+                                        }
+                                        
+
+                                        <a href="@($"{JORoutes.TA.Discussion}/{application.Id}")"
                                            class="btn btn-outline-info btn-sm mr-1"
-                                           title="Analysis">
-                                            <i class="fas fa-chart-line fa-fw"></i>
+                                           title="Discussion">
+                                            <i class="fas fa-comments fa-fw"></i>
                                         </a>
                                     </td>
                                 </tr>

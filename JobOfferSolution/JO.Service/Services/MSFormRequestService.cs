@@ -18,14 +18,34 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<VwJobOfferWorkFlow>> GetJobOfferWorkFlow(int requestId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJobOfferWorkFlow
+                .Where(jo => jo.CandidateMSFormRequestId == requestId)
+                .OrderBy(jo => jo.DisplayOrder)
+                .ToListAsync();
+        }
+
         public async Task<int> TagMSFormRequestAsSubmitted(int id)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
 
-            var msFormRequest = await context.CandidateMSFormRequests.FindAsync(id);
-            msFormRequest.StatusId = FormRequestStatus.Submitted;
-            context.CandidateMSFormRequests.Update(msFormRequest);
+            var msFormRequest = await context.Requests.FindAsync(id);
+            //msFormRequest.StatusId = JOStatus.FormRequestStatus.Submitted;
 
+            var joWorkFlows = await context.JobOfferWorkFlow
+                .Where(jo=>jo.CandidateMSFormRequestId==id)
+                .Take(4)
+                .ToListAsync();
+
+            joWorkFlows[0].WorkFlowActionId = JOStatus.Action.Done;
+            joWorkFlows[1].WorkFlowActionId = JOStatus.Action.Current;
+            joWorkFlows[2].WorkFlowActionId = JOStatus.Action.Next;
+            joWorkFlows[3].WorkFlowActionId = JOStatus.Action.Next;
+
+            context.Requests.Update(msFormRequest);
+            context.JobOfferWorkFlow.UpdateRange(joWorkFlows);
             return await context.SaveChangesAsync();
         }
 

@@ -58,6 +58,10 @@ namespace JO.Service.Constants
             public const string JOAnalysis = PrefixTA + "/joboffer-analysis";
             public const string JOAnalysisDetails = PrefixTA + "/analysis-details";
 
+            //Discussion
+            public const string Discussion = PrefixTA + "/discussion";
+
+            //Tracker
             public const string RequestTracker = PrefixTA + "/request-tracker";
             public const string JobOfferTracker = PrefixTA + "/joboffer-tracker";
 

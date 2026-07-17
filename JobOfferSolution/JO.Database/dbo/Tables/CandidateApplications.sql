@@ -7,6 +7,7 @@
     [SalaryMatrixId]   INT            NULL,
     [JobPositionId]    INT            NULL,
     [ReferenceNumber]  NVARCHAR (150) NULL,
+    [CandApplStatusId] INT            NULL,
     [CreatedBy]        INT            NULL,
     [CreatedAt]        DATETIME       NULL,
     CONSTRAINT [PK_CandidateApplications] PRIMARY KEY CLUSTERED ([Id] ASC)

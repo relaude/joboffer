@@ -21,6 +21,15 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<VwJobOfferWorkFlow>> GetJobOfferWorkFlow(int applicationId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJobOfferWorkFlow
+                .Where(jo => jo.CandidateApplicationId == applicationId)
+                .OrderBy(jo => jo.DisplayOrder)
+                .ToListAsync();
+        }
+
         public async Task<List<VwJobOfferProposal>> GetJobOfferProposal(int analysisId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -63,7 +72,7 @@ namespace JO.Service.Services
             decimal expectedSalary,
             string analysisNotes)
         {
-            int totalSaves = 0;
+            //int totalSaves = 0;
 
             if (proposals is null || !proposals.Any())
                 return 0;
@@ -89,6 +98,7 @@ namespace JO.Service.Services
             if (existingProposal)
                 return 0;
 
+            //jo analysis
             var analysis = new JobOfferAnalysis
             {
                 CandidateApplicationId = applicationId,
@@ -103,21 +113,43 @@ namespace JO.Service.Services
                 CreatedAt = DateTime.Now
             };
 
+            //add jo analysis
             await context.JobOfferAnalysis.AddAsync(analysis);
-            totalSaves += await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
+            //add jo proposal
             foreach (var proposal in proposals)
                 proposal.JobOfferAnalysisId = analysis.Id;
 
             await context.JobOfferProposal.AddRangeAsync(proposals);
-            totalSaves += await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             var recommended2 = proposals.FirstOrDefault(jo =>
                 jo.OptionNumber.GetValueOrDefault() == selectedOptionNumber);
 
+            //update jo analysis
             analysis.RecommendProposalId = recommended2.Id;
             context.JobOfferAnalysis.Update(analysis);
-            totalSaves += await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
+
+            //workflow
+            var joWorkFlow = await context.JobOfferWorkFlow
+                .Where(jo => jo.CandidateApplicationId == applicationId)
+                .OrderBy(jo=>jo.DisplayOrder)
+                .ToListAsync();
+
+            joWorkFlow[2].WorkFlowActionId = JOStatus.Action.Done;
+            joWorkFlow[3].WorkFlowActionId = JOStatus.Action.Done;
+            joWorkFlow[4].WorkFlowActionId = JOStatus.Action.Current;
+
+            //application
+            var canApp = await context.CandidateApplications.FindAsync(applicationId);
+            canApp.CandApplStatusId = JOStatus.Application.ProposalCreated;
+
+            //update workflow & application
+            context.JobOfferWorkFlow.UpdateRange(joWorkFlow);
+            context.CandidateApplications.Update(canApp);
+            await context.SaveChangesAsync();
 
             return analysis.Id;
         }
@@ -268,16 +300,44 @@ namespace JO.Service.Services
             return await context.VwCandidateApplications.FirstOrDefaultAsync(jo => jo.Id == id);
         }
 
-        public async Task<int> LegalEntitySetup(CandidateApplications entity)
+        public async Task<int> LegalEntitySetup(CandidateApplications application)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
 
-            entity.ReferenceNumber = await CreateReferenceNumber();
-            entity.CreatedAt = DateTime.Now;
-            await context.CandidateApplications.AddAsync(entity);
+            //reuest
+            var request = await context.Requests.FindAsync(application.MSFormRequestId);
+            //request.StatusId = JOStatus.FormRequestStatus.Validated;
 
+            //application
+            application.CandApplStatusId = JOStatus.Application.MatrixSelected;
+            application.ReferenceNumber = await CreateReferenceNumber();
+            application.CreatedAt = DateTime.Now;
+
+            //updating...
+            context.Requests.Update(request);
+            await context.CandidateApplications.AddAsync(application);
             await context.SaveChangesAsync();
-            return entity.Id;
+
+            //workflow
+            var joWorkFlow = await context.JobOfferWorkFlow
+                .Where(jo => jo.CandidateMSFormRequestId == application.MSFormRequestId)
+                .OrderBy(jo=> jo.DisplayOrder)
+                .ToListAsync();
+
+            joWorkFlow[1].WorkFlowActionId = JOStatus.Action.Done;
+            joWorkFlow[2].WorkFlowActionId = JOStatus.Action.Current;
+            joWorkFlow[3].WorkFlowActionId = JOStatus.Action.Current;
+            joWorkFlow[4].WorkFlowActionId = JOStatus.Action.Next;
+
+            foreach (var workFlow in joWorkFlow)
+            {
+                workFlow.CandidateApplicationId = application.Id;
+            }
+
+            context.JobOfferWorkFlow.UpdateRange(joWorkFlow);
+            await context.SaveChangesAsync();
+
+            return application.Id;
         }
 
         private async Task<string> CreateReferenceNumber()

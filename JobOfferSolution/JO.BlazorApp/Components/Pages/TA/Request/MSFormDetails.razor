@@ -17,17 +17,13 @@
                         Compensation & Benefits Form Request Details
                     </h6>
                     <div class="text-xs text-gray-500">
-                        Talent Acquisition request overview
+                        @requestInfo.ReferenceNumber
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="d-flex flex-wrap align-items-center">
-            <span class="badge badge-primary mr-1">
-                <i class="fas fa-hashtag fa-fw mr-1"></i>
-                @DisplayText(requestInfo.ReferenceNumber)
-            </span>
             <span class="badge badge-light border mr-1">
                 <i class="fas fa-user-shield fa-fw text-primary mr-1"></i>
                 Talent Acquisition View
@@ -36,6 +32,19 @@
     </div>
 
     <div class="card-body">
+        <div class="row text-center mb-4">
+            @foreach (var step in workFlow.Take(4))
+            {
+                <div class="col-xl col-md-4 col-6 mb-2">
+                    <div class="border rounded bg-light px-2 py-2 h-100">
+                        <div class="text-@step.ActionClass mb-1"><i class="@step.Icon"></i></div>
+                        <div class="text-xs font-weight-bold text-gray-800">@step.ShortName</div>
+                        <span class="badge badge-@step.ActionClass mt-1">@step.ActionName</span>
+                    </div>
+                </div>
+            }
+        </div>
+
         <div class="row">
             <!-- Candidate Info -->
             <div class="col-lg-4 mb-4">
@@ -48,28 +57,28 @@
                     <div class="card-body py-3">
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Candidate Name</div>
-                            <div class="col-7 font-weight-bold text-gray-800">@CandidateName</div>
+                            <div class="col-7 font-weight-bold text-gray-800">@candidate.FName @candidate.LName</div>
                         </div>
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Email Address</div>
-                            <div class="col-7">@DisplayText(candidate.Email)</div>
+                            <div class="col-7">@candidate.Email</div>
                         </div>
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Contact Number</div>
-                            <div class="col-7">@DisplayText(candidate.ContactNumber)</div>
+                            <div class="col-7">@candidate.Contact</div>
                         </div>
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Position Applied</div>
-                            <div class="col-7">@DisplayText(candidate.PositionAppliedFor)</div>
+                            <div class="col-7">@candidate.ApplyFor</div>
                         </div>
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Current Employer</div>
-                            <div class="col-7">@DisplayText(candidate.CurrentEmployer)</div>
+                            <div class="col-7">@candidate.Employer</div>
                         </div>
                         <div class="row small">
                             <div class="col-5 text-muted">Expected Salary</div>
                             <div class="col-7 font-weight-bold text-success">
-                                @UtilitiesService.ToPeso(candidate.ExpectedSalary)
+                                @UtilitiesService.ToPeso(candidate.Salary)
                             </div>
                         </div>
                     </div>
@@ -87,19 +96,11 @@
                     <div class="card-body py-3">
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Current Employer</div>
-                            <div class="col-7 font-weight-bold">@DisplayText(candidate.CurrentEmployer)</div>
+                            <div class="col-7 font-weight-bold">@candidate.Employer</div>
                         </div>
                         <div class="row small mb-2">
                             <div class="col-5 text-muted">Last Position</div>
-                            <div class="col-7">@DisplayText(candidate.LastPositionHeld)</div>
-                        </div>
-                        <div class="row small mb-2">
-                            <div class="col-5 text-muted">Employment Status</div>
-                            <div class="col-7">@DisplayText(candidate.EmploymentStatusName)</div>
-                        </div>
-                        <div class="row small mb-2">
-                            <div class="col-5 text-muted">Experience</div>
-                            <div class="col-7">@DisplayText(candidate.WorkExperienceName)</div>
+                            <div class="col-7">@candidate.LstPosition</div>
                         </div>
                     </div>
                 </div>
@@ -120,7 +121,7 @@
                             </div>
                             <div>
                                 <div class="font-weight-bold text-gray-800">Request Status</div>
-                                <div class="small text-gray-500">@DisplayText(requestInfo.StatusName)</div>
+                                <div class="small text-gray-500">@requestInfo.StatusName</div>
                             </div>
                         </div>
 
@@ -239,35 +240,16 @@
     [Parameter] public int requestId { get; set; }
 
     private VwCandidateMSFormRequests requestInfo = new();
-    private VwCandidates candidate = new();
+    private Candidates candidate = new();
+    private List<VwJobOfferWorkFlow> workFlow = new();
 
     protected override async Task OnInitializedAsync()
     {
         requestInfo = await MSFormRequestService.GetMSFormRequest(requestId) ?? new();
+        workFlow = await MSFormRequestService.GetJobOfferWorkFlow(requestId);
 
         if (requestInfo?.CandidateId is int candidateId)
             candidate = await CandidateService.GetCandidate(candidateId) ?? new();
-    }
-
-    private string CandidateName
-    {
-        get
-        {
-            var firstName = string.IsNullOrWhiteSpace(candidate.FirstName)
-                ? requestInfo.FirstName
-                : candidate.FirstName;
-
-            var lastName = string.IsNullOrWhiteSpace(candidate.LastName)
-                ? requestInfo.LastName
-                : candidate.LastName;
-
-            return DisplayText($"{firstName} {lastName}".Trim());
-        }
-    }
-
-    private static string DisplayText(string? value)
-    {
-        return string.IsNullOrWhiteSpace(value) ? "N/A" : value;
     }
 
     private static string FormatDateTime(DateTime? value)

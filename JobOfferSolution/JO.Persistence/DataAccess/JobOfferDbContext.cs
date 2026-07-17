@@ -31,6 +31,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<CandidateApplications> CandidateApplications { get; set; }
 
         //Status
+        public DbSet<WorkFlow> WorkFlow { get; set; }
         public DbSet<MainStatus> MainStatus { get; set; }
         public DbSet<CandidateStatus> CandidateStatus { get; set; }
 
@@ -54,7 +55,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<CandidateMassUploadLogs> CandidateMassUploadLogs { get; set; }
 
         //MS Forms
-        public DbSet<CandidateMSFormRequests> CandidateMSFormRequests { get; set; }
+        public DbSet<Requests> Requests { get; set; }
         public DbSet<SubmittedDocuments> SubmittedDocuments { get; set; }
 
         //Analysis
@@ -66,8 +67,11 @@ namespace JO.Persistence.DataAccess
         //Approval
         public DbSet<DHJOProposal> DHJOProposal { get; set; }
 
+        //WorkFlow
+        public DbSet<JobOfferWorkFlow> JobOfferWorkFlow { get; set; } 
+        public DbSet<WorkFlowStatus> WorkFlowStatus { get; set; } 
+
         //Views
-        public DbSet<VwCandidates> VwCandidates { get; set; }
         public DbSet<VwJobOffers> VwJobOffers { get; set; }
         public DbSet<VwReturnLogs> VwReturnLogs { get; set; }
         public DbSet<VwActivityLogs> VwActivityLogs { get; set; }
@@ -83,11 +87,11 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwCompensationBenefits> VwCompensationBenefits { get; set; }
         public DbSet<VwJobOfferAnalysis> VwJobOfferAnalysis { get; set; }
         public DbSet<VwJobOfferProposal> VwJobOfferProposal { get; set; }
+        public DbSet<VwJobOfferWorkFlow> VwJobOfferWorkFlow { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Views
-            modelBuilder.Entity<VwCandidates>().HasNoKey().ToView("vw_Candidates");
             modelBuilder.Entity<VwJobOffers>().HasNoKey().ToView("vw_JobOffers");
             modelBuilder.Entity<VwReturnLogs>().HasNoKey().ToView("vw_ReturnLogs");
             modelBuilder.Entity<VwActivityLogs>().HasNoKey().ToView("vw_ActivityLogs");
@@ -103,6 +107,7 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwCompensationBenefits>().HasNoKey().ToView("vw_CompensationBenefits");
             modelBuilder.Entity<VwJobOfferAnalysis>().HasNoKey().ToView("vw_JobOfferAnalysis");
             modelBuilder.Entity<VwJobOfferProposal>().HasNoKey().ToView("vw_JobOfferProposal");
+            modelBuilder.Entity<VwJobOfferWorkFlow>().HasNoKey().ToView("vw_JobOfferWorkFlow");
         }
     }
 }
