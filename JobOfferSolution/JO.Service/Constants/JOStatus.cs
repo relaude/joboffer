@@ -26,15 +26,13 @@ namespace JO.Service.Constants
         {
             public const int Awaiting = 1;
             public const int Submitted = 2;
-            public const int Validated = 3;
             public const int Cancelled = 4;
             public const int Overdue = 5;
         }
 
         public static class Application
         {
-            public const int New = 1;
-            public const int MatrixSelected = 2;
+            public const int MatrixSelected = 3;
             public const int ProposalCreated = 3;
         }
     }

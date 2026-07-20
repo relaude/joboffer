@@ -20,17 +20,15 @@ namespace JO.Service
             services.AddScoped<ICandidateService, CandidateService>();
             services.AddScoped<IFileUploadService, FileUploadService>();
             services.AddScoped<IDropDownListService, DropDownListService>();
-            services.AddScoped<IDashboardService, DashboardService>();
-            services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ISingleSignOnService, SingleSignOnService>();
             services.AddScoped<ISalaryMatrixService, SalaryMatrixService>();
             services.AddScoped<IMassUploadService, MassUploadService>();
-            services.AddScoped<IRequestTrackerService, RequestTrackerService>();
-            services.AddScoped<IMSFormRequestService, MSFormRequestService>();
             services.AddScoped<IJOAnalysisService, JOAnalysisService>();
             services.AddScoped<IApprovalService, ApprovalService>();
             services.AddScoped<ICandidateDiscussionService, CandidateDiscussionService>();
+            services.AddScoped<ITrackerService, TrackerService>();
+            services.AddScoped<IJODetailsService, JODetailsService>();
 
             return services;
         }

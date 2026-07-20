@@ -1,0 +1,183 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.Upload + "/{jobOfferId:int}")]
+
+@inject IJODetailsService JODetailsService
+@inject IFileUploadService FileUploadService
+@inject IAlertService AlertService
+@inject NavigationManager Navigation
+
+<div class="card shadow mb-4 border-left-primary small jo-form-page">
+    <div class="card-header py-3 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div class="mb-2 mb-md-0">
+            <div class="d-flex align-items-center mb-1">
+                <div class="icon-circle bg-primary text-white mr-2">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Upload Files
+                    </h6>
+                    <div class="text-xs text-gray-500">
+                        @jobOffer.RefNum
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-5 mb-4">
+                <div class="card h-100">
+                    <div class="card-header py-2 bg-white d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            Upload File
+                        </h6>
+                        <span class="badge badge-light border text-gray-600">
+                            Mock Layout
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="border rounded bg-light text-center p-4 mb-3">
+                            <div class="icon-circle bg-primary text-white mx-auto mb-3">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="font-weight-bold text-gray-800 mb-1">
+                                Drop candidate documents here
+                            </div>
+                            <div class="small text-gray-500 mb-3">
+                                Supported files: PDF, DOCX, PNG, JPG
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm" disabled>
+                                <i class="fas fa-folder-open fa-fw mr-1"></i>
+                                Browse Files
+                            </button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 mb-2">
+                                <label class="text-xs font-weight-bold text-gray-600 text-uppercase mb-1">
+                                    Candidate ID
+                                </label>
+                                <input class="form-control form-control-sm" value="" disabled />
+                            </div>
+                            <div class="form-group col-md-6 mb-2">
+                                <label class="text-xs font-weight-bold text-gray-600 text-uppercase mb-1">
+                                    MS Form Request ID
+                                </label>
+                                <input class="form-control form-control-sm" value="" disabled />
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label class="text-xs font-weight-bold text-gray-600 text-uppercase mb-1">
+                                File Type
+                            </label>
+                            <select class="form-control form-control-sm" disabled>
+                                <option>Pre-employment Requirement</option>
+                                <option>Valid ID</option>
+                                <option>Signed Offer</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 mb-4">
+                <div class="card h-100">
+                    <div class="card-header py-2 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
+                            Submitted Documents
+                        </h6>
+                        <span class="small text-gray-500 mt-1 mt-md-0">
+                            Mock data based on submitted document records
+                        </span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="border-0 pl-3">File Name</th>
+                                        <th class="border-0">Type ID</th>
+                                        <th class="border-0">Size</th>
+                                        <th class="border-0">Uploaded By</th>
+                                        <th class="border-0 pr-3">Uploaded Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="pl-3">
+                                            <div class="font-weight-bold text-gray-800">signed-offer-letter.pdf</div>
+                                            <div class="text-xs text-gray-500">/mock/uploads/signed-offer-letter.pdf</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-primary">3</span>
+                                        </td>
+                                        <td>248 KB</td>
+                                        <td>TA Admin</td>
+                                        <td class="pr-3">Jun 24, 2026 09:15 AM</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pl-3">
+                                            <div class="font-weight-bold text-gray-800">government-id-front.jpg</div>
+                                            <div class="text-xs text-gray-500">/mock/uploads/government-id-front.jpg</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-info">2</span>
+                                        </td>
+                                        <td>512 KB</td>
+                                        <td>Candidate</td>
+                                        <td class="pr-3">Jun 25, 2026 02:40 PM</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pl-3">
+                                            <div class="font-weight-bold text-gray-800">pre-employment-form.docx</div>
+                                            <div class="text-xs text-gray-500">/mock/uploads/pre-employment-form.docx</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-success">1</span>
+                                        </td>
+                                        <td>184 KB</td>
+                                        <td>Candidate</td>
+                                        <td class="pr-3">Jun 26, 2026 11:05 AM</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card-footer text-right">
+        <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left fa-fw mr-1"></i>Back to Tracker
+        </a>
+
+        <button type="button" class="btn btn-primary btn-sm mr-1" @onclick="SubmitRequest">
+            <i class="fas fa-check fa-fw mr-1"></i>Submitted
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int jobOfferId { get; set; }
+    private JobOffers jobOffer = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        jobOffer = await JODetailsService.GetJobOffer(jobOfferId);
+    }
+
+    private async Task SubmitRequest()
+    {
+        if (!await AlertService.Confirm("Tag this Transaction as Submitted?", "Submit"))
+            return;
+
+        await FileUploadService.TagSubmitted(jobOfferId);
+        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}");
+    }
+}

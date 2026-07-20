@@ -8,5 +8,6 @@ namespace JO.Service.Services.Contracts
         string GetRootPath();
         string GetWwwRootPath();
         Task<byte[]> ReadFileAsync(IBrowserFile file);
+        Task<int> TagSubmitted(int jobOfferId);
     }
 }

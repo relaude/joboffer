@@ -27,8 +27,9 @@ namespace JO.Persistence.DataAccess
         public DbSet<Departments> Departments { get; set; }
         public DbSet<JobOffers> JobOffers { get; set; }
 
-        //Company Setup
+        //Legal
         public DbSet<CandidateApplications> CandidateApplications { get; set; }
+        public DbSet<LegalEntities> LegalEntities { get; set; }
 
         //Status
         public DbSet<WorkFlow> WorkFlow { get; set; }
@@ -88,6 +89,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwJobOfferAnalysis> VwJobOfferAnalysis { get; set; }
         public DbSet<VwJobOfferProposal> VwJobOfferProposal { get; set; }
         public DbSet<VwJobOfferWorkFlow> VwJobOfferWorkFlow { get; set; }
+        public DbSet<VwLegalEntities> VwLegalEntities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -108,6 +110,7 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwJobOfferAnalysis>().HasNoKey().ToView("vw_JobOfferAnalysis");
             modelBuilder.Entity<VwJobOfferProposal>().HasNoKey().ToView("vw_JobOfferProposal");
             modelBuilder.Entity<VwJobOfferWorkFlow>().HasNoKey().ToView("vw_JobOfferWorkFlow");
+            modelBuilder.Entity<VwLegalEntities>().HasNoKey().ToView("vw_LegalEntities");
         }
     }
 }

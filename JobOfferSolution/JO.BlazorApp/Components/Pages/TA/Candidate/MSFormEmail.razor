@@ -1,12 +1,11 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.MSFormCandidate + "/{candidateId:int}")]
+@attribute [Route(JORoutes.TA.Email + "/{candidateId:int}")]
 
 @inject ICandidateService CandidateService
 @inject IUtilitiesService UtilitiesService
 @inject IAlertService AlertService
 @inject IEmailService EmailService
 @inject IAccountService AccountService
-@inject IRequestTrackerService RequestTrackerService
 
 @inject NavigationManager Navigation
 
@@ -324,9 +323,9 @@
         msrequest.Reminder2 = reminder2 == true ? msrequest.DueAt.Value.AddDays(5) : null;
         msrequest.SentAt = DateTime.Now;
         msrequest.CreatedAt = DateTime.Now;
-        int requestId = await CandidateService.EmailRequest(msrequest);
+        int jobOfferId = await CandidateService.EmailRequest(msrequest);
 
-        //Navigation.NavigateTo($"{JORoutes.TA.MSFormDetails}/{requestId}");
+        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}");
     }
 
     private async Task SendTestMail()

@@ -1,7 +1,6 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.DivisionSetup + "/{requestId:int}")]
+@attribute [Route(JORoutes.TA.Legal + "/{jobOfferId:int}")]
 
-@inject IMSFormRequestService MSFormRequestService
 @inject IDropDownListService DropDownListService
 @inject ISalaryMatrixService SalaryMatrixService
 @inject IJOAnalysisService JOAnalysisService
@@ -27,55 +26,14 @@
                 </span>
             </div>
         </div>
-
-
     </div>
 
     <div class="card-body">
-
-        <div class="row text-center mb-4">
-            @foreach (var step in workFlow.Take(4))
-            {
-                <div class="col-xl col-md-4 col-6 mb-2">
-                    <div class="border rounded bg-light px-2 py-2 h-100">
-                        <div class="text-@step.ActionClass mb-1"><i class="@step.Icon"></i></div>
-                        <div class="text-xs font-weight-bold text-gray-800">@step.ShortName</div>
-                        <span class="badge badge-@step.ActionClass mt-1">@step.ActionName</span>
-                    </div>
-                </div>
-            }
-        </div>
 
         <div class="alert alert-light border-left-info py-2 mb-4" role="alert">
             <div class="d-flex align-items-center">
                 <i class="fas fa-info-circle fa-fw text-info mr-2"></i>
                 <span>Select the hiring company and legal entity for this offer so compensation rules, payroll setup, and compliance checks use the correct entity.</span>
-            </div>
-        </div>
-
-        <!-- Summary -->
-        <div class="row mb-4">
-            <div class="col-xl-4 col-md-6 mb-3 mb-xl-0">
-                <div class="border-left-primary bg-light px-3 py-2 h-100">
-                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Candidate</div>
-                    <div class="font-weight-bold text-gray-900">@($"{requestInfo.FirstName} {requestInfo.LastName}")</div>
-                    <div class="text-muted">@requestInfo.Email</div>
-                </div>
-            </div>
-
-            <div class="col-xl-4 col-md-6 mb-3 mb-xl-0">
-                <div class="border-left-info bg-light px-3 py-2 h-100">
-                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Requisition</div>
-                    <div class="font-weight-bold text-gray-900">@requestInfo.ReferenceNumber</div>
-                    <div class="text-muted">@requestInfo.StatusName</div>
-                </div>
-            </div>
-
-            <div class="col-xl-4 col-md-6">
-                <div class="border-left-warning bg-light px-3 py-2 h-100">
-                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">TA Owner</div>
-                    <div class="font-weight-bold text-gray-900">@requestInfo.TAOwner</div>
-                </div>
             </div>
         </div>
 
@@ -98,7 +56,7 @@
                                 Company <span class="text-danger">*</span>
                             </label>
                             <select class="form-control form-control-sm"
-                                    @bind="application.HiringCompanyId"
+                                    @bind="legal.CompanyId"
                                     @bind:after="OnCompanyChanged">
                                 @foreach (var option in ddCompanies)
                                 {
@@ -112,7 +70,7 @@
                                 Division <span class="text-danger">*</span>
                             </label>
                             <select class="form-control form-control-sm"
-                                    @bind="application.HiringDivisionId"
+                                    @bind="legal.DivisionId"
                                     @bind:after="OnDivisionChanged"
                                     disabled="@(ddDivisions.Count == 0)">
                                 @foreach (var option in ddDivisions)
@@ -127,7 +85,7 @@
                                 Salary Matrix <span class="text-danger">*</span>
                             </label>
                             <select class="form-control form-control-sm"
-                                    @bind="application.SalaryMatrixId"
+                                    @bind="legal.MatrixId"
                                     @bind:after="OnMatrixChanged"
                                     disabled="@(ddMatrix.Count == 0)">
                                 @foreach (var option in ddMatrix)
@@ -189,7 +147,7 @@
                                 Position Applied For <span class="text-danger">*</span>
                             </label>
                             <select class="form-control form-control-sm"
-                                    @bind="application.JobPositionId"
+                                    @bind="legal.JobPositionId"
                                     disabled="@(ddPositions.Count == 0)">
                                 @foreach (var option in ddPositions)
                                 {
@@ -205,7 +163,7 @@
     </div>
 
     <div class="card-footer text-right">
-        <a href="@JORoutes.TA.RequestTracker" class="btn btn-outline-secondary btn-sm">
+        <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-left fa-fw mr-1"></i>Back to Tracker
         </a>
 
@@ -217,7 +175,7 @@
 </div>
 
 @code {
-    [Parameter] public int requestId { get; set; }
+    [Parameter] public int jobOfferId { get; set; }
 
     private VwCandidateMSFormRequests requestInfo = new();
     private List<DropdownDto> ddCompanies = new();
@@ -225,15 +183,12 @@
     private List<DropdownDto> ddMatrix = new();
     private List<DropdownDto> ddPositions = new();
     private List<VwSalaryMatrixBand> salaryBands = new();
-    private CandidateApplications application = new();
-    private List<VwJobOfferWorkFlow> workFlow = new();
+    private LegalEntities legal = new();
 
     protected override async Task OnInitializedAsync()
     {
-        requestInfo = await MSFormRequestService.GetMSFormRequest(requestId) ?? new();
-        workFlow = await MSFormRequestService.GetJobOfferWorkFlow(requestId);
         ddCompanies = await DropDownListService.GetCompanies();
-        application.HiringCompanyId = ddCompanies.FirstOrDefault()?.Id ?? 0;
+        legal.CompanyId = ddCompanies.FirstOrDefault()?.Id ?? 0;
 
         await OnCompanyChanged();
     }
@@ -242,25 +197,22 @@
     {
         List<string> errors = new();
 
-        if (application.SalaryMatrixId.GetValueOrDefault() <= 0)
+        if (legal.MatrixId.GetValueOrDefault() <= 0)
             errors.Add("Salary Matrix is required.");
 
-        if (application.JobPositionId.GetValueOrDefault() <= 0 )
+        if (legal.JobPositionId.GetValueOrDefault() <= 0)
             errors.Add("Job Position is required.");
 
         if (errors.Any())
         {
             await AlertService.Errors(errors); return;
         }
-        
+
         if (!await AlertService.Confirm("Are you sure you want to save this Legal Entity Setup?")) return;
 
-        application.CandidateId = requestInfo.CandidateId;
-        application.MSFormRequestId = requestId;
-        application.CreatedBy = await AccountService.GetJobOfferUserId();
-        int id = await JOAnalysisService.LegalEntitySetup(application);
-
-        Navigation.NavigateTo($"{JORoutes.TA.ApplicationDetails}/{id}");
+        legal.JobOfferId = jobOfferId;
+        await JOAnalysisService.LegalEntitySetup(legal);
+        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}");
     }
 
     private async Task OnCompanyChanged()
@@ -270,15 +222,15 @@
         salaryBands.Clear();
         ddPositions.Clear();
 
-        application.HiringDivisionId = 0;
-        application.SalaryMatrixId = 0;
-        application.JobPositionId = 0;
+        legal.DivisionId = 0;
+        legal.MatrixId = 0;
+        legal.JobPositionId = 0;
 
-        var companyId = application.HiringCompanyId.GetValueOrDefault();
+        var companyId = legal.CompanyId.GetValueOrDefault();
         if (companyId > 0)
         {
             ddDivisions = await DropDownListService.GetDivisionsByCompnayId(companyId);
-            application.HiringDivisionId = ddDivisions.FirstOrDefault()?.Id ?? 0;
+            legal.DivisionId = ddDivisions.FirstOrDefault()?.Id ?? 0;
         }
 
         await OnDivisionChanged();
@@ -290,14 +242,14 @@
         salaryBands.Clear();
         ddPositions.Clear();
 
-        application.SalaryMatrixId = 0;
-        application.JobPositionId = 0;
+        legal.MatrixId = 0;
+        legal.JobPositionId = 0;
 
-        var divisionId = application.HiringDivisionId.GetValueOrDefault();
+        var divisionId = legal.DivisionId.GetValueOrDefault();
         if (divisionId > 0)
         {
             ddMatrix = await DropDownListService.GetSalaryMatrixByDivisionId(divisionId);
-            application.SalaryMatrixId = ddMatrix.FirstOrDefault()?.Id ?? 0;
+            legal.MatrixId = ddMatrix.FirstOrDefault()?.Id ?? 0;
         }
 
         await OnMatrixChanged();
@@ -307,9 +259,9 @@
     {
         salaryBands.Clear();
         ddPositions.Clear();
-        application.JobPositionId = 0;
+        legal.JobPositionId = 0;
 
-        var matrixId = application.SalaryMatrixId.GetValueOrDefault();
+        var matrixId = legal.MatrixId.GetValueOrDefault();
         if (matrixId <= 0)
             return;
 
@@ -320,6 +272,6 @@
             return;
 
         ddPositions = await DropDownListService.GetJobPositions(familyId);
-        application.JobPositionId = ddPositions.FirstOrDefault()?.Id ?? 0;
+        legal.JobPositionId = ddPositions.FirstOrDefault()?.Id ?? 0;
     }
 }

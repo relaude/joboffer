@@ -9,9 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Components\Pages\HROD\**" />
     <Compile Remove="wwwroot\documents\**" />
+    <Content Remove="Components\Pages\HROD\**" />
     <Content Remove="wwwroot\documents\**" />
+    <EmbeddedResource Remove="Components\Pages\HROD\**" />
     <EmbeddedResource Remove="wwwroot\documents\**" />
+    <None Remove="Components\Pages\HROD\**" />
     <None Remove="wwwroot\documents\**" />
   </ItemGroup>
 
@@ -38,7 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Pages\HROD\" />
     <Folder Include="wwwroot\template\" />
   </ItemGroup>
 

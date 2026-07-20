@@ -25,7 +25,7 @@ namespace JO.Service.Services
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.VwJobOfferWorkFlow
-                .Where(jo => jo.CandidateApplicationId == applicationId)
+                .Where(jo => jo.JobOfferId == applicationId)
                 .OrderBy(jo => jo.DisplayOrder)
                 .ToListAsync();
         }
@@ -298,6 +298,34 @@ namespace JO.Service.Services
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.VwCandidateApplications.FirstOrDefaultAsync(jo => jo.Id == id);
+        }
+
+        public async Task<int> LegalEntitySetup(LegalEntities legal)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var jobOffer = await context.JobOffers.FindAsync(legal.JobOfferId);
+
+            legal.CandidateId = jobOffer.CandidateId;
+            await context.LegalEntities.AddAsync(legal);
+            await context.SaveChangesAsync();
+
+            jobOffer.LegalId = legal.Id;
+            jobOffer.StatusId = JOStatus.Application.MatrixSelected;
+
+            var workFlow = await context.WorkFlow
+                .Where(jo => jo.JobOfferId == legal.JobOfferId)
+                .Take(5)
+                .ToListAsync();
+
+            workFlow[1].ActionId = JOStatus.Action.Done;
+            workFlow[2].ActionId = JOStatus.Action.Current;
+            workFlow[3].ActionId = JOStatus.Action.Current;
+            workFlow[4].ActionId = JOStatus.Action.Next;
+            
+            context.JobOffers.Update(jobOffer);
+            context.WorkFlow.UpdateRange(workFlow);
+
+            return await context.SaveChangesAsync();
         }
 
         public async Task<int> LegalEntitySetup(CandidateApplications application)

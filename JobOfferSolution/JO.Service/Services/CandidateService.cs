@@ -82,7 +82,7 @@ namespace JO.Service.Services
             {
                 workFlows.Add(new WorkFlow
                 {
-                    JoOfferId = newJO.Id,
+                    JobOfferId = newJO.Id,
                     StatusId = item.Id,
                     ActionId = item.DisplayOrder == 2 ? JOStatus.Action.Next 
                         : (item.DisplayOrder == 1 ? JOStatus.Action.Current 
@@ -92,7 +92,7 @@ namespace JO.Service.Services
             await context.WorkFlow.AddRangeAsync(workFlows);
             await context.SaveChangesAsync();
 
-            return entity.Id;
+            return newJO.Id;
         }
 
         /*

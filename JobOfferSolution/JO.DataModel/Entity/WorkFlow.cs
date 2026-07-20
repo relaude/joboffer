@@ -8,7 +8,7 @@ namespace JO.DataModel.Entity
     public class WorkFlow
     {
         [Key] public int Id { get; set; }
-        public int? JoOfferId { get; set; }
+        public int? JobOfferId { get; set; }
         public int? StatusId { get; set; }
         public int? ActionId { get; set; }
     }

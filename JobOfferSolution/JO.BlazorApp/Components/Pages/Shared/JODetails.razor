@@ -1,0 +1,458 @@
+﻿@attribute [Authorize]
+@attribute [Route(JORoutes.Transaction.JobOffer + "/{jobOfferId:int}")]
+
+@inject IJODetailsService JODetailsService
+@inject ISalaryMatrixService SalaryMatrixService
+@inject IUtilitiesService UtilitiesService
+
+<div class="card shadow mb-4 border-left-primary small jo-form-page">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-building fa-fw mr-2"></i>
+                    Job Offer Details
+                </h6>
+                <small class="text-muted">@jobOffer.RefNum</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row text-center mb-4">
+            @foreach (var step in workFlow.Where(jo=>jo.ActionId != JOStatus.Action.Open))
+            {
+                <div class="col-xl col-md-4 col-6 mb-2">
+                    <div class="border rounded bg-light px-2 py-2 h-100">
+                        <div class="text-@step.ActionClass mb-1"><i class="@step.Icon"></i></div>
+                        <div class="text-xs font-weight-bold text-gray-800">@step.ShortName</div>
+                        <span class="badge badge-@step.ActionClass mt-1">@step.ActionName</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <ul class="nav nav-tabs flex-column flex-md-row mb-4" role="tablist">
+            @foreach (var tab in tabs)
+            {
+                if(tab.Show)
+                {
+                    <li class="nav-item px-1" role="presentation">
+                        <button type="button"
+                                class="nav-link @(activeTab == tab.Key ? "active" : string.Empty)"
+                                role="tab"
+                                aria-selected="@(activeTab == tab.Key)"
+                                @onclick="() => activeTab = tab.Key">
+                            <i class="@tab.Icon fa-fw mr-1"></i>
+                            @tab.Label
+                        </button>
+                    </li>
+                }
+            }
+        </ul>
+
+        <div>
+            @if (activeTab == "candidate")
+            {
+                <div role="tabpanel">
+                    <!-- Candidate Info -->
+                    <div class="row">
+                        <div class="col-lg-4 mb-3">
+                            <div class="card bg-light border-0 h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-primary mb-2"><i class="fas fa-user-circle fa-4x"></i></div>
+                                    <h6 class="font-weight-bold text-gray-900 mb-1">@($"{candidate.FName} {candidate.LName}")</h6>
+                                    <div class="text-muted">@candidate.LstPosition</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 mb-3">
+                            <div class="row">
+                                <div class="col-md-6 mb-3"><small class="text-muted d-block">Email Address</small><span class="font-weight-bold text-gray-800">@candidate.Email</span></div>
+                                <div class="col-md-6 mb-3"><small class="text-muted d-block">Mobile Number</small><span class="font-weight-bold text-gray-800">@candidate.Contact</span></div>
+                                <div class="col-md-6 mb-3"><small class="text-muted d-block">Applying For</small><span class="font-weight-bold text-gray-800">@candidate.ApplyFor</span></div>
+                                <div class="col-md-6 mb-3"><small class="text-muted d-block">Employer</small><span class="font-weight-bold text-gray-800">@candidate.Employer</span></div>
+                                <div class="col-md-6 mb-3"><small class="text-muted d-block">Salary</small><span class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(candidate.Salary)</span></div>
+                                <div class="col-md-6 mb-3"><small class="text-muted d-block">Expected Salary</small><span class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(candidate.Expected)</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (activeTab == "email")
+            {
+                <div role="tabpanel">
+                    <div class="row">
+                        <!-- Email -->
+                        <div class="col-lg-6 mb-3">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="border-bottom pb-3 mb-3">
+                                        <div><span class="text-muted">To:</span> @candidate.Email</div>
+                                        <div><span class="text-muted">Subject:</span> @request.Subject</div>
+                                    </div>
+
+                                    <div class="text-muted mb-2">Message:</div>
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            @((MarkupString)request.Message)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 mb-3">
+                            <div class="row">
+                                <!-- First Row: Email Schedule -->
+                                <div class="col-12 mb-3">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body">
+                                            <h6 class="font-weight-bold text-gray-800 border-bottom pb-3 mb-3">
+                                                <i class="fas fa-calendar-alt text-primary fa-fw mr-2"></i>
+                                                Email Schedule
+                                            </h6>
+
+                                            <div class="row">
+                                                <div class="col-md-6 border-bottom pb-3 mb-3">
+                                                    <i class="fas fa-paper-plane text-success fa-fw mr-2"></i>
+                                                    <span class="text-muted">Sent on</span>
+                                                    <div class="font-weight-bold text-gray-800 ml-4">
+                                                        @UtilitiesService.FormatDate(request.SentAt, CommonConstant.DefaultDateFormat)
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6 border-bottom pb-3 mb-3">
+                                                    <i class="fas fa-calendar-check text-danger fa-fw mr-2"></i>
+                                                    <span class="text-muted">Response due</span>
+                                                    <div class="font-weight-bold text-gray-800 ml-4">
+                                                        @UtilitiesService.FormatDate(request.DueAt, CommonConstant.DefaultDateFormat)
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <i class="fas fa-bell text-warning fa-fw mr-2"></i>
+                                                    <span class="text-muted">First reminder</span>
+                                                    <div class="font-weight-bold text-gray-800 ml-4">
+                                                        @UtilitiesService.FormatDate(request.Reminder1, CommonConstant.DefaultDateFormat)
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <i class="fas fa-bell text-warning fa-fw mr-2"></i>
+                                                    <span class="text-muted">Final reminder</span>
+                                                    <div class="font-weight-bold text-gray-800 ml-4">
+                                                        @UtilitiesService.FormatDate(request.Reminder2, CommonConstant.DefaultDateFormat)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Second Row: Submitted Documents -->
+                                <div class="col-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-white py-3">
+                                            <h6 class="m-0 font-weight-bold text-gray-800">
+                                                <i class="fas fa-file-alt text-primary fa-fw mr-2"></i>
+                                                Submitted Documents
+                                            </h6>
+                                        </div>
+
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-hover mb-0">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th class="pl-3">File Name</th>
+                                                            <th>Type</th>
+                                                            <th>Size</th>
+                                                            <th>Uploaded By</th>
+                                                            <th class="pr-3">Uploaded Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="pl-3">
+                                                                <i class="fas fa-file-pdf text-danger fa-fw mr-2"></i>
+                                                                <span class="font-weight-bold text-gray-800">
+                                                                    signed-offer-letter.pdf
+                                                                </span>
+                                                            </td>
+                                                            <td><span class="badge badge-primary">Offer Letter</span></td>
+                                                            <td>248 KB</td>
+                                                            <td>TA Admin</td>
+                                                            <td class="pr-3">Jun 24, 2026 09:15 AM</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="pl-3">
+                                                                <i class="fas fa-file-image text-info fa-fw mr-2"></i>
+                                                                <span class="font-weight-bold text-gray-800">
+                                                                    government-id-front.jpg
+                                                                </span>
+                                                            </td>
+                                                            <td><span class="badge badge-info">Government ID</span></td>
+                                                            <td>512 KB</td>
+                                                            <td>Candidate</td>
+                                                            <td class="pr-3">Jun 25, 2026 02:40 PM</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="pl-3">
+                                                                <i class="fas fa-file-word text-primary fa-fw mr-2"></i>
+                                                                <span class="font-weight-bold text-gray-800">
+                                                                    pre-employment-form.docx
+                                                                </span>
+                                                            </td>
+                                                            <td><span class="badge badge-success">Form</span></td>
+                                                            <td>184 KB</td>
+                                                            <td>Candidate</td>
+                                                            <td class="pr-3">Jun 26, 2026 11:05 AM</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+            else if (activeTab == "legal")
+            {
+                <div role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <h6 class="m-0 font-weight-bold text-gray-800">
+                                        <i class="fas fa-sitemap fa-fw text-primary mr-2"></i>
+                                        Division Assignment
+                                    </h6>
+                                    <small class="text-muted">Company and Division</small>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group mb-3">
+                                        <label class="font-weight-bold text-gray-800">Company</label>
+                                        <input class="form-control form-control-sm" value="@legal.CompanyCodeName" readonly />
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <label class="font-weight-bold text-gray-800">Division</label>
+                                        <input class="form-control form-control-sm" value="@legal.DivisionCodeName" readonly />
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <label class="font-weight-bold text-gray-800">Salary Matrix</label>
+                                        <input class="form-control form-control-sm" value="@legal.MatrixCodeName" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 mb-3">
+                            <div class="card mb-4">
+                                <div class="card-header bg-white">
+                                    <h6 class="m-0 font-weight-bold text-gray-800">
+                                        <i class="fas fa-table fa-fw text-primary mr-2"></i>
+                                        Salary Matrix
+                                    </h6>
+                                    <small class="text-muted">Salary ranges based on SalaryMatrix and SalaryMatrixBand references.</small>
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-sm text-nowrap mb-0">
+                                            <thead class="thead-light text-center">
+                                                <tr>
+                                                    <th>Job Level</th>
+                                                    <th>Job Family</th>
+                                                    <th>Position Grade</th>
+                                                    <th>Minimum</th>
+                                                    <th>Midpoint</th>
+                                                    <th>Maximum</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var band in salaryBands)
+                                                {
+                                                    <tr>
+                                                        <td>@band.JobLevelName</td>
+                                                        <td>@band.JobFamilyName</td>
+                                                        <td>@band.PositionGrade</td>
+                                                        <td class="text-right">@band.BandMinimum</td>
+                                                        <td class="text-right font-weight-bold text-gray-900">@band.BandMidpoint</td>
+                                                        <td class="text-right">@band.BandMaximum</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="form-group mb-3">
+                                        <label class="font-weight-bold text-gray-800">Position Applied For</label>
+                                        <input class="form-control form-control-sm" value="@legal.PositionName" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (activeTab == "offers")
+            {
+                <div role="tabpanel">
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
+                        <div>
+                            <h6 class="font-weight-bold text-gray-800 mb-1"><i class="fas fa-file-signature text-primary fa-fw mr-2"></i>Job Offers</h6>
+                            <span class="text-muted">Proposed compensation package overview.</span>
+                        </div>
+                        <span class="badge badge-info mt-2 mt-md-0 align-self-start">Option 1 · Recommended</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3"><div class="card border-left-primary shadow-sm h-100"><div class="card-body"><div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Monthly Base Salary</div><div class="h5 font-weight-bold text-gray-800 mb-0">PHP 85,000.00</div></div></div></div>
+                        <div class="col-md-4 mb-3"><div class="card border-left-success shadow-sm h-100"><div class="card-body"><div class="text-xs font-weight-bold text-success text-uppercase mb-1">Annual Guaranteed Pay</div><div class="h5 font-weight-bold text-gray-800 mb-0">PHP 1,105,000.00</div></div></div></div>
+                        <div class="col-md-4 mb-3"><div class="card border-left-info shadow-sm h-100"><div class="card-body"><div class="text-xs font-weight-bold text-info text-uppercase mb-1">Target Start Date</div><div class="h5 font-weight-bold text-gray-800 mb-0">August 3, 2026</div></div></div></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="thead-light"><tr><th>Package Item</th><th>Details</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr><td class="font-weight-bold">Allowance</td><td>PHP 5,000 monthly</td><td><span class="badge badge-success">Included</span></td></tr>
+                                <tr><td class="font-weight-bold">Health Coverage</td><td>Employee + 1 dependent</td><td><span class="badge badge-success">Included</span></td></tr>
+                                <tr><td class="font-weight-bold">Incentive</td><td>Up to 15% annual performance bonus</td><td><span class="badge badge-info">Variable</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else if (activeTab == "approvals")
+            {
+                <div role="tabpanel">
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold text-gray-800 mb-1"><i class="fas fa-user-check text-primary fa-fw mr-2"></i>Approvals</h6>
+                        <span class="text-muted">Current approval route for the recommended offer.</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="thead-light"><tr><th>Step</th><th>Approver</th><th>Role</th><th>Date</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr><td>1</td><td class="font-weight-bold">Roberto Cruz</td><td>Hiring Manager</td><td>July 10, 2026</td><td><span class="badge badge-success"><i class="fas fa-check mr-1"></i>Approved</span></td></tr>
+                                <tr><td>2</td><td class="font-weight-bold">Elena Garcia</td><td>Division Head</td><td>July 11, 2026</td><td><span class="badge badge-success"><i class="fas fa-check mr-1"></i>Approved</span></td></tr>
+                                <tr><td>3</td><td class="font-weight-bold">Antonio Reyes</td><td>HROD Head</td><td>—</td><td><span class="badge badge-warning"><i class="fas fa-clock mr-1"></i>Pending</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="alert alert-warning mt-3 mb-0"><i class="fas fa-info-circle fa-fw mr-2"></i>The offer is awaiting final HROD approval.</div>
+                </div>
+            }
+            else if (activeTab == "negotiations")
+            {
+                <div role="tabpanel">
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
+                        <div>
+                            <h6 class="font-weight-bold text-gray-800 mb-1"><i class="fas fa-comments-dollar text-primary fa-fw mr-2"></i>Negotiations</h6>
+                            <span class="text-muted">Candidate discussion and offer revision history.</span>
+                        </div>
+                        <span class="badge badge-warning mt-2 mt-md-0 align-self-start">Round 2</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8 mb-3">
+                            <div class="border rounded p-3 mb-2">
+                                <div class="d-flex justify-content-between"><strong class="text-gray-800">Candidate Request</strong><small class="text-muted">July 14, 2026</small></div>
+                                <p class="mb-0 mt-2">Requested a monthly base salary of PHP 90,000 and one additional dependent for health coverage.</p>
+                            </div>
+                            <div class="border rounded p-3">
+                                <div class="d-flex justify-content-between"><strong class="text-gray-800">Company Response</strong><small class="text-muted">July 15, 2026</small></div>
+                                <p class="mb-0 mt-2">Revised base salary to PHP 88,000. Additional health dependent remains under review.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <div class="card bg-light border-0 h-100"><div class="card-body">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-3">Latest Position</div>
+                                <small class="text-muted d-block">Proposed Salary</small><strong class="text-gray-800">PHP 88,000.00</strong>
+                                <small class="text-muted d-block mt-3">Next Follow-up</small><strong class="text-gray-800">July 18, 2026</strong>
+                                <div class="mt-3"><span class="badge badge-info">Candidate Reviewing</span></div>
+                            </div></div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div role="tabpanel">
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-3">
+                        <div>
+                            <h6 class="font-weight-bold text-gray-800 mb-1"><i class="fas fa-envelope-open-text text-primary fa-fw mr-2"></i>Offer Letter</h6>
+                            <span class="text-muted">Generated document and candidate response status.</span>
+                        </div>
+                        <span class="badge badge-secondary mt-2 mt-md-0 align-self-start">Draft</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-8 mb-3">
+                            <div class="border rounded p-3 d-flex align-items-center">
+                                <div class="mr-3 text-danger"><i class="fas fa-file-pdf fa-3x"></i></div>
+                                <div class="flex-fill">
+                                    <div class="font-weight-bold text-gray-900">Maria_Santos_Offer_Letter_v2.pdf</div>
+                                    <small class="text-muted">Prepared July 16, 2026 · Version 2 · Mock document</small>
+                                </div>
+                                <span class="badge badge-light border">248 KB</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <div class="card border-left-secondary shadow-sm h-100"><div class="card-body">
+                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-2">Document Status</div>
+                                <div class="font-weight-bold text-gray-800">For Final Review</div>
+                                <small class="text-muted">Not yet sent to candidate</small>
+                            </div></div>
+                        </div>
+                    </div>
+                    <div class="alert alert-light border mb-0"><i class="fas fa-lock text-muted fa-fw mr-2"></i>The offer letter will be available for sending after all approvals are complete.</div>
+                </div>
+            }
+        </div>
+
+    </div>
+
+    <div class="card-footer text-right">
+        <a href="@JORoutes.TA.JobOfferTracker"
+           class="btn btn-outline-secondary btn-sm mr-2">
+            <i class="fas fa-arrow-left fa-fw mr-1"></i>Back to Tracker
+        </a>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int jobOfferId { get; set; }
+    private List<VwJobOfferWorkFlow> workFlow = new();
+    private Candidates candidate = new();
+    private JobOffers jobOffer = new();
+    private Requests request = new();
+    private VwLegalEntities legal = new();
+    private List<JOTabs> tabs = new();
+    private List<VwSalaryMatrixBand> salaryBands = new();
+
+    private string activeTab = "candidate";
+
+    protected override async Task OnInitializedAsync()
+    {
+        workFlow = await JODetailsService.GetJobOfferWorkFlow(jobOfferId);
+        tabs = JODetailsService.SetTabs(workFlow);
+
+        jobOffer = await JODetailsService.GetJobOffer(jobOfferId);
+        candidate = await JODetailsService.GetCandidate(jobOffer.CandidateId.GetValueOrDefault());
+        request = await JODetailsService.GetRequest(jobOffer.RequestId.GetValueOrDefault());
+        legal = await JODetailsService.GetLegalEntity(jobOfferId); 
+
+        if (legal != null)
+            salaryBands = await SalaryMatrixService.GetSalaryBands(legal.MatrixId.GetValueOrDefault());
+    }
+}

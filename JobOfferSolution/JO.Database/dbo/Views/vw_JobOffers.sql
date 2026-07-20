@@ -1,15 +1,12 @@
-﻿
-CREATE View [dbo].[vw_JobOffers]
+﻿CREATE View vw_JobOffers
 As
-Select jof.* 
-,(can.FirstName + ' ' +can.LastName) CandidateName
-,jop.PositionName
-,dpt.DepartmentName
-,mst.StatusName
-,drs.Reason DeclineReason
-From JobOffers jof 
-Left Join Candidates can On can.Id=jof.Candidate_Id
-Left Join JobPositions jop On jop.Id=jof.JobPosition_Id
-Left Join Departments dpt On dpt.Id=jof.Department_Id
-Left Join MainStatus mst On mst.Id=jof.MainStatus_Id
-Left Join DeclineReasons drs On drs.Id=jof.DeclineReason_Id;
+Select jof.Id
+,jof.RefNum
+,jos.StatusName 
+,(can.FName + ' ' + can.LName) CandidateName, can.Email
+,jos.BootstrapClass
+,jof.StatusId
+,jof.RequestId
+From JobOffers jof
+Left Join JobOfferStatus jos On jos.Id=jof.StatusId
+Left Join Candidates can On can.Id=jof.CandidateId;

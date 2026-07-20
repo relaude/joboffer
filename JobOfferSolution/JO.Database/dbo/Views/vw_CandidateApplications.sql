@@ -1,8 +1,9 @@
 ﻿
+
 CREATE View [dbo].[vw_CandidateApplications]
 As
 Select cap.Id,cap.ReferenceNumber
-,cap.CandidateId,(cnd.FirstName + ' ' + cnd.LastName) CandidateName,cnd.Email CandidateEmail
+,cap.CandidateId,(cnd.FName + ' ' + cnd.LName) CandidateName,cnd.Email CandidateEmail
 ,cmp.CompanyCode,cmp.CompanyName
 ,div.DivisionCode,div.DivisionName
 ,jop.PositionName PositionAppliedFor

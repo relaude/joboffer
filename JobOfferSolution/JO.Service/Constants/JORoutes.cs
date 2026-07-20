@@ -46,16 +46,16 @@ namespace JO.Service.Constants
             public const string Dashboard = PrefixTA + "/dashboard";
             public const string Candidates = PrefixTA + "/candidates";
 
-            public const string MSFormCandidate = PrefixTA + "/msform-candidate";
+            //public const string MSFormCandidate = PrefixTA + "/msform-candidate";
             public const string MSFormDetails = PrefixTA + "/msform-details";
-            public const string MSFormFileUpload = PrefixTA + "/msform-file-upload";
+            public const string Upload = PrefixTA + "/upload";
 
             //Legal Entity
-            public const string DivisionSetup = PrefixTA + "/division-setup";
+            public const string Legal = PrefixTA + "/legal";
 
             //JO Analysis
             public const string ApplicationDetails = PrefixTA + "/application-details";
-            public const string JOAnalysis = PrefixTA + "/joboffer-analysis";
+            public const string Analysis = PrefixTA + "/analysis";
             public const string JOAnalysisDetails = PrefixTA + "/analysis-details";
 
             //Discussion

@@ -1,8 +1,11 @@
 ﻿using JO.DataModel.DTOs;
+using JO.Persistence.DataAccess;
+using JO.Service.Constants;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,13 +15,41 @@ namespace JO.Service.Services
     public class FileUploadService : IFileUploadService
     {
         private readonly IWebHostEnvironment _env;
+        private readonly IDbContextFactory<JobOfferDbContext> _dbContext;
+        
         private string mainUploadDirectory;
 
         const long MaxFileSize = 10 * 1024 * 1024;// 10 MB
-        public FileUploadService(IWebHostEnvironment env)
+        public FileUploadService(IWebHostEnvironment env, 
+            IDbContextFactory<JobOfferDbContext> dbContext)
         {
             _env = env;
+            _dbContext = dbContext;
+
             mainUploadDirectory = $@"{_env.WebRootPath}\documents";
+        }
+
+        public async Task<int> TagSubmitted(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
+            var workFlow = await context.WorkFlow
+                .Where(jo => jo.JobOfferId == jobOfferId)
+                .Take(4)
+                .ToListAsync();
+
+            jobOffer.StatusId = JOStatus.Request.Submitted;
+
+            workFlow[0].ActionId = JOStatus.Action.Done;
+            workFlow[1].ActionId = JOStatus.Action.Current;
+            workFlow[2].ActionId = JOStatus.Action.Next;
+            workFlow[3].ActionId = JOStatus.Action.Next;
+
+            context.JobOffers.Update(jobOffer);
+            context.WorkFlow.UpdateRange(workFlow);
+
+            return await context.SaveChangesAsync();
         }
 
         public string GetRootPath()
