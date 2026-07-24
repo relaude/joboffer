@@ -1,7 +1,7 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
 @attribute [Route(JORoutes.TA.JobOfferTracker)]
 
-@inject ITrackerService TrackerService
+@inject IJODetailsService JODetailsService
 
 <div class="card shadow mb-4 border-left-primary small">
     <div class="card-header py-3 bg-white">
@@ -70,6 +70,15 @@
                                         <i class="fas fa-chart-line fa-fw"></i>
                                     </a>
                                 }
+
+                                @if (jobOffer.StatusId == JOStatus.Application.Approved)
+                                {
+                                    <a href="@($"{JORoutes.TA.Discussion}/{jobOffer.Id}")"
+                                       class="btn btn-outline-info btn-sm mr-1"
+                                       title="Discussions">
+                                        <i class="fas fa-comments fa-fw"></i>
+                                    </a>
+                                }
                             </td>
                         </tr>
                     }
@@ -84,6 +93,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        jobOffers = await TrackerService.GetJobOffers();
+        jobOffers = await JODetailsService.GetJobOffers();
     }
 }

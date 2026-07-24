@@ -1,13 +1,14 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.Analysis + "/{applicationId:int}")]
+@attribute [Route(JORoutes.TA.Analysis + "/{jobOfferId:int}")]
 
 @inject IJOAnalysisService JOAnalysisService
 @inject ISalaryMatrixService SalaryMatrixService
-@inject ICandidateService CandidateService
 @inject IAccountService AccountService
 @inject IUtilitiesService UtilitiesService
 @inject IAlertService AlertService
 @inject IDropDownListService DropDownListService
+@inject IJODetailsService JODetailsService
+
 @inject NavigationManager Navigation
 
 <div class="card shadow mb-4 border-left-primary small">
@@ -20,7 +21,7 @@
                     </h6>
                     <span class="badge badge-warning ml-2">3 options awaiting creation</span>
                 </div>
-                <div class="text-muted">ReferenceNumber</div>
+                <div class="text-muted">@jobOffer.RefNum</div>
             </div>
             <div class="d-flex align-items-center mt-3 mt-lg-0">
                 <span class="badge badge-light border mr-2">
@@ -44,27 +45,27 @@
             @foreach (var option in joProposals)
             {
                 <div class="col-xl-4 mb-3">
-                    <div class="card shadow-sm h-100 @(IsRecommended(option.OptionNumber) ? "border-primary" : "border")">
-                        <div class="card-header px-3 py-3 @(IsRecommended(option.OptionNumber) ? "bg-primary text-white" : "bg-light")">
+                    <div class="card shadow-sm h-100 @(IsRecommended(option.OptionNum) ? "border-primary" : "border")">
+                        <div class="card-header px-3 py-3 @(IsRecommended(option.OptionNum) ? "bg-primary text-white" : "bg-light")">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <div class="d-flex align-items-center font-weight-bold">
                                         <input class="mr-2"
                                                type="checkbox"
                                                name="recommend"
-                                               value="@option.OptionNumber"
-                                               checked="@(selectedOptionNumber == option.OptionNumber)"
-                                               @onchange="@(() => OnRecommendChange(option.OptionNumber))" />
+                                               value="@option.OptionNum"
+                                               checked="@(selectedOptionNumber == option.OptionNum)"
+                                               @onchange="@(() => OnRecommendChange(option.OptionNum))" />
 
-                                        @if (IsRecommended(option.OptionNumber))
+                                        @if (IsRecommended(option.OptionNum))
                                         {
                                             <i class="fas fa-star mr-1"></i>
                                         }
 
-                                        <span>@($"Option {option.OptionNumber}")</span>
+                                        <span>@($"Option {option.OptionNum}")</span>
                                     </div>
 
-                                    @if (IsRecommended(option.OptionNumber))
+                                    @if (IsRecommended(option.OptionNum))
                                     {
                                         <small class="text-white-50">TA Recommended</small>
                                     }
@@ -74,8 +75,8 @@
                                     }
                                 </div>
 
-                                <span class="badge @(IsRecommended(option.OptionNumber) ? "badge-light" : "badge-success")">
-                                    @ValidationStatusName(option.ValidationStatusId)
+                                <span class="badge @(IsRecommended(option.OptionNum) ? "badge-light" : "badge-success")">
+                                    @BandStatusName(option.StatusId)
                                 </span>
                             </div>
                         </div>
@@ -86,23 +87,19 @@
                                 <div>
                                     <div class="text-xs text-muted text-uppercase">Monthly base</div>
                                     <div class="h5 font-weight-bold text-gray-900 mb-0">
-                                        <input class="form-control form-control-sm form-ctrl-sml" type="number" step="1000" @bind="option.ProposedSalary" />
+                                        <input class="form-control form-control-sm form-ctrl-sml" type="number" step="1000" @bind="option.ProposeSalary" />
                                     </div>
                                 </div>
                                 <div class="text-right">
                                     <div class="text-xs text-muted">Annual + Packages</div>
-                                    <strong>@UtilitiesService.ToPeso(option.AnnualSalary)</strong>
+                                    <strong>@UtilitiesService.ToPeso(option.Annual)</strong>
                                 </div>
                             </div>
                         
                             <div class="row text-center no-gutters border rounded mb-3">
-                                <div class="col-6 py-2 border-right"><small class="text-muted d-block">Increase</small><strong class="text-success">@option.IncreasePercentage%</strong></div>
+                                <div class="col-6 py-2 border-right"><small class="text-muted d-block">Increase</small><strong class="text-success">@option.Increase%</strong></div>
                                 <div class="col-6 py-2 border-right"><small class="text-muted d-block">Compa-ratio</small><strong>@option.CompaRatio</strong></div>
                             </div>
-
-                            <label class="font-weight-bold text-gray-700 mb-1">Justification</label>
-                            <textarea class="form-control form-control-sm" rows="3" @bind="option.Justification"></textarea>
-
                         </div>
                     </div>
                 </div>
@@ -208,38 +205,36 @@
 </div>
 
 @code {
-    [Parameter] public int applicationId { get; set; }
+    [Parameter] public int jobOfferId { get; set; }
 
-    //private VwCandidateApplications application = new();
     private VwSalaryMatrixBand selectedBand = new();
-    //private VwCandidates candidate = new();
+    private LegalEntities legal = new();
+    private JobOffers jobOffer = new();
+    private Candidates candidate = new();
 
     private List<VwSalaryMatrixBand> salaryBands = new();
-    private List<JobOfferProposal> joProposals = new();
-    private List<ValidationStatus> validStatus = new();
+    private List<Proposal> joProposals = new();
+    private List<SalaryBandStatus> bandStatus = new();
     private List<VwCompensationBenefits> compensationItems = new();
     private List<DropdownDto> ddPackages = new();
-    private List<VwJobOfferWorkFlow> workFlow = new();
 
     private int userId = 0;
     private int selectedBandId = 0;
     private int selectedOptionNumber = 0;
     private int selectedPackageId = 0;
 
-    private string analysisNotes = "";
-
     protected override async Task OnInitializedAsync()
     {
-        validStatus = await JOAnalysisService.GetValidationStatus();
-        ddPackages = await DropDownListService.GetCompBenPackages();
-
-        //application = await JOAnalysisService.GetCandidateApplication(applicationId);
-        workFlow = await JOAnalysisService.GetJobOfferWorkFlow(applicationId);
-        //salaryBands = await SalaryMatrixService.GetSalaryBands(application.SalaryMatrixId.Value);
-        //candidate = await CandidateService.GetCandidate(application.CandidateId.Value);
         userId = await AccountService.GetJobOfferUserId();
 
+        jobOffer = await JODetailsService.GetJobOffer(jobOfferId);
+        candidate = await JODetailsService.GetCandidate(jobOffer.CandidateId.GetValueOrDefault());
+
+        bandStatus = await JOAnalysisService.GetValidationStatus();
+        ddPackages = await DropDownListService.GetCompBenPackages();
+        salaryBands = await SalaryMatrixService.GetSalaryBandsByJOId(jobOfferId);
         selectedPackageId = ddPackages.FirstOrDefault()?.Id ?? 0;
+
         await OnPackageChange();
 
         var firstBand = salaryBands.FirstOrDefault();
@@ -247,46 +242,27 @@
             await OnSalaryBandChange(firstBand.Id);
 
         if (joProposals.Any())
-            OnRecommendChange(joProposals.FirstOrDefault()?.OptionNumber ?? 0);
+            OnRecommendChange(joProposals.FirstOrDefault()?.OptionNum ?? 0);
     }
 
     private async Task SaveAllProposals()
     {
-        List<string> errors = new();
-        errors = CollectErrors(errors);
-
-        if (errors.Any())
-        { await AlertService.Errors(errors); return; }
-
         if (!await AlertService.Confirm()) return;
 
-        joProposals = await JOAnalysisService.ReComputeProposalAnalysis(joProposals, compensationItems);
+        joProposals = JOAnalysisService.ReComputeAnalysis(joProposals, selectedBand, compensationItems);
 
-        int analysisId = await JOAnalysisService.SaveProposalsAndAnalysis(joProposals,
-            selectedOptionNumber,
-            selectedPackageId,
-            0,
-            analysisNotes);
-
-        Navigation.NavigateTo($"{JORoutes.TA.JOAnalysisDetails}/{analysisId}");
-    }
-
-    private List<string> CollectErrors(List<string> errors, bool includeAnalysis = false)
-    {
-        bool hasError = joProposals
-            .Any(jo => !jo.ProposedSalary.HasValue
-                || string.IsNullOrWhiteSpace(jo.Justification));
-
-        if (hasError)
-            errors.Add("Base salary and justification remarks are required.");
-
-        if (includeAnalysis)
+        foreach (var item in joProposals)
         {
-            if (string.IsNullOrWhiteSpace(analysisNotes))
-                errors.Add("Analysis notes is required.");
+            item.Recommend = selectedOptionNumber == item.OptionNum;
+            item.PackageId = selectedPackageId;
+            item.Escalate = item.ProposeSalary > selectedBand.BandMaximum;
+            item.CreatedBy = userId;
+            item.CreatedAt = DateTime.Now;
         }
 
-        return errors;
+        await JOAnalysisService.SaveProposal(joProposals);
+
+        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}");
     }
 
     private async Task OnPackageChange()
@@ -305,30 +281,15 @@
     private async Task OnSalaryBandChange(int bandId)
     {
         selectedBandId = bandId;
-        selectedBand = salaryBands.FirstOrDefault(x => x.Id == selectedBandId) ?? new();
+        selectedBand = salaryBands.FirstOrDefault(x => x.Id == selectedBandId);
 
-        // if (!application.SalaryMatrixId.HasValue || !candidate.CurrentSalary.HasValue)
-        // {
-        //     joProposals = new();
-        //     return;
-        // }
-
-        // if (!application.SalaryMatrixId.HasValue)
-        // {
-        //     joProposals = new();
-        //     return;
-        // }
-
-        joProposals = await JOAnalysisService.InitializeProposal(
-            applicationId,
-            0,
+        joProposals = JOAnalysisService.InitializeProposal(
+            jobOfferId,
             selectedBandId,
-            0,
-            userId,
-            compensationItems);
-
-        if (!joProposals.Any(jo => jo.OptionNumber.GetValueOrDefault() == selectedOptionNumber))
-            OnRecommendChange(joProposals.FirstOrDefault()?.OptionNumber ?? 0);
+            candidate.Salary.GetValueOrDefault(),
+            selectedBand,
+            compensationItems
+        );
     }
 
     private void OnRecommendChange(int? optionNumber)
@@ -336,51 +297,20 @@
         selectedOptionNumber = optionNumber.GetValueOrDefault();
     }
 
-    private JobOfferProposal? GetSelectedProposal()
+    private Proposal? GetSelectedProposal()
     {
-        return joProposals.FirstOrDefault(jo => jo.OptionNumber.GetValueOrDefault() == selectedOptionNumber);
+        return joProposals.FirstOrDefault(jo => jo.OptionNum.GetValueOrDefault() == selectedOptionNumber);
     }
 
     private async Task ReComputeProposalAnalysis()
     {
-        List<string> errors = new();
-        errors = CollectErrors(errors, false);
-
-        if (errors.Any())
-        { await AlertService.Errors(errors); return; }
-
-        joProposals = await JOAnalysisService.ReComputeProposalAnalysis(joProposals, compensationItems);
+        joProposals = JOAnalysisService.ReComputeAnalysis(joProposals, selectedBand, compensationItems);
         await AlertService.Success("Analysis recomputed successfully.");
     }
 
-    private bool HasOptionExceed()
+    private string BandStatusName(int? statusId)
     {
-        return joProposals.Where(jo => jo.ValidationStatusId == JOValidationStatus.Exceed).Any();
-    }
-
-    private string ValidationStatusName(int? statusId)
-    {
-        return validStatus.FirstOrDefault(jo => jo.Id == statusId)?.ValidationStatusName ?? "";
-    }
-
-    private string RiskLevel()
-    {
-        int statusId = 0;
-        var selectedProposal = GetSelectedProposal();
-        if (selectedProposal is not null)
-            statusId = selectedProposal.ValidationStatusId.GetValueOrDefault();
-
-        return validStatus.FirstOrDefault(jo => jo.Id == statusId)?.RiskLevelName ?? "";
-    }
-
-    private string RiskLevelReason()
-    {
-        int statusId = 0;
-        var selectedProposal = GetSelectedProposal();
-        if (selectedProposal is not null)
-            statusId = selectedProposal.ValidationStatusId.GetValueOrDefault();
-
-        return validStatus.FirstOrDefault(jo => jo.Id == statusId)?.RiskLevelReason ?? "";
+        return bandStatus.FirstOrDefault(jo => jo.Id == statusId)?.StatusName ?? "";
     }
 
     private bool IsRecommended(int? optionNumber)

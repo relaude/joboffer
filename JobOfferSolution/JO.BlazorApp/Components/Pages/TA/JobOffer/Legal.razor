@@ -2,6 +2,7 @@
 @attribute [Route(JORoutes.TA.Legal + "/{jobOfferId:int}")]
 
 @inject IDropDownListService DropDownListService
+@inject IJODetailsService JODetailsService
 @inject ISalaryMatrixService SalaryMatrixService
 @inject IJOAnalysisService JOAnalysisService
 @inject IAlertService AlertService
@@ -16,7 +17,7 @@
                     <i class="fas fa-building fa-fw mr-2"></i>
                     Company and Legal Entity Setup
                 </h6>
-                <small class="text-muted">@requestInfo.ReferenceNumber</small>
+                <small class="text-muted">@jobOffer.RefNum</small>
             </div>
 
             <div class="mt-2 mt-lg-0">
@@ -177,16 +178,18 @@
 @code {
     [Parameter] public int jobOfferId { get; set; }
 
-    private VwCandidateMSFormRequests requestInfo = new();
     private List<DropdownDto> ddCompanies = new();
     private List<DropdownDto> ddDivisions = new();
     private List<DropdownDto> ddMatrix = new();
     private List<DropdownDto> ddPositions = new();
     private List<VwSalaryMatrixBand> salaryBands = new();
+
     private LegalEntities legal = new();
+    private JobOffers jobOffer = new();
 
     protected override async Task OnInitializedAsync()
     {
+        jobOffer = await JODetailsService.GetJobOffer(jobOfferId);
         ddCompanies = await DropDownListService.GetCompanies();
         legal.CompanyId = ddCompanies.FirstOrDefault()?.Id ?? 0;
 

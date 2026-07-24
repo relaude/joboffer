@@ -121,31 +121,7 @@ namespace JO.Service.Services
                     Value = $"{jo.CompanyCode} - {jo.CompanyName}"
                 }).ToListAsync();
         }
-        public async Task<IEnumerable<DropdownDto>> GetMainStatus()
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            return await context.MainStatus
-                .AsNoTracking()
-                .OrderBy(jo => jo.OrderBy)
-                .Select(jo => new DropdownDto
-                {
-                    Id = jo.Id,
-                    Value = jo.StatusName
-                }).ToListAsync();
-        }
 
-        public async Task<IEnumerable<DropdownDto>> GetCandidateStatus()
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            return await context.CandidateStatus
-                .AsNoTracking()
-                .OrderBy(jo => jo.OrderBy)
-                .Select(jo => new DropdownDto
-                {
-                    Id = jo.Id,
-                    Value = jo.StatusName
-                }).ToListAsync();
-        }
         public async Task<List<DropdownDto>> GetJobPositions()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
@@ -180,30 +156,6 @@ namespace JO.Service.Services
                 {
                     Id = jo.Id,
                     Value = jo.DepartmentName
-                }).ToListAsync();
-        }
-
-        public async Task<IEnumerable<DropdownDto>> GetDeclineReasons()
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            return await context.DeclineReasons
-                .AsNoTracking()
-                .Select(jo => new DropdownDto
-                {
-                    Id = jo.Id,
-                    Value = jo.Reason
-                }).ToListAsync();
-        }
-
-        public async Task<IEnumerable<DropdownDto>> GetReturnReasons()
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            return await context.ReturnReasons
-                .AsNoTracking()
-                .Select(jo => new DropdownDto
-                {
-                    Id = jo.Id,
-                    Value = jo.Reason
                 }).ToListAsync();
         }
     }

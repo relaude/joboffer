@@ -26,9 +26,8 @@ namespace JO.Service
             services.AddScoped<IMassUploadService, MassUploadService>();
             services.AddScoped<IJOAnalysisService, JOAnalysisService>();
             services.AddScoped<IApprovalService, ApprovalService>();
-            services.AddScoped<ICandidateDiscussionService, CandidateDiscussionService>();
-            services.AddScoped<ITrackerService, TrackerService>();
             services.AddScoped<IJODetailsService, JODetailsService>();
+            services.AddScoped<IDiscussionService, DiscussionService>();
 
             return services;
         }

@@ -9,6 +9,7 @@ namespace JO.Service.Services.Contracts
         Task<VwSalaryMatrix> GetMatrix(int matrixId);
         Task<List<VwSalaryMatrix>> GetMatrixList();
         Task<List<VwSalaryMatrixBand>> GetSalaryBands(int matrixId);
+        Task<List<VwSalaryMatrixBand>> GetSalaryBandsByJOId(int jobOfferId);
         Task<int> UpdateMatrixEffectiveDate(int matrixId, DateTime effectiveTo, bool isActive, int modifiedBy);
     }
 }

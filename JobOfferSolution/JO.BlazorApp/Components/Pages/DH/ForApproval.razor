@@ -1,0 +1,227 @@
+﻿@attribute [Authorize(Roles = JOUserRole.DH)]
+@attribute [Route(JORoutes.DH.Approve + "/{jobOfferId:int}")]
+
+@inject IJODetailsService JODetailsService
+@inject IApprovalService ApprovalService
+@inject IUtilitiesService UtilitiesService
+@inject IAlertService AlertService
+@inject IAccountService AccountService
+@inject NavigationManager Navigation
+
+<div class="card shadow mb-4 border-left-primary small">
+    <div class="card-header bg-white py-3">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between">
+            <div>
+                <div class="d-flex align-items-center mb-1">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-file-signature fa-fw mr-2"></i>Job Offer Approval
+                    </h6>
+                    <span class="badge badge-warning ml-2">3 options awaiting approval</span>
+                </div>
+                <div class="text-muted">@jobOffer.RefNum</div>
+            </div>
+            <div class="d-flex align-items-center mt-3 mt-lg-0">
+                <span class="badge badge-light border mr-2">
+                    <i class="fas fa-user-shield text-primary mr-1"></i>
+                    Division Head
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-3 p-lg-4">
+        <div class="alert alert-light border d-flex flex-column flex-md-row align-items-md-center justify-content-between py-2 mb-3">
+            <div><i class="fas fa-circle-info text-info mr-2"></i>Decide on each option independently. Comments are required only for <strong>Return</strong> or <strong>Reject</strong>.</div>
+        </div>
+
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-2">
+            <div>
+                <h6 class="font-weight-bold text-gray-900 mb-0">Proposal options</h6>
+                <span class="text-muted">Review the key differences and record one decision per card.</span>
+            </div>
+        </div>
+
+        <!-- Proposals -->
+        <div class="row">
+            @foreach (var option in joProposals)
+            {
+                <div class="col-xl-4 mb-3">
+                    <div class="card shadow-sm h-100 @(option.Recommend.GetValueOrDefault() ? "border-primary" : "border")">
+                        <div class="card-header px-3 py-3 @(option.Recommend.GetValueOrDefault() ? "bg-primary text-white" : "bg-light")">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="font-weight-bold">
+                                        @if (option.Recommend.GetValueOrDefault())
+                                        {
+                                            <i class="fas fa-star mr-1"></i>
+                                        }
+                                        @($"Option {option.OptionNum}")
+                                    </div>
+                                    @if (option.Recommend.GetValueOrDefault())
+                                    {
+                                        <small class="text-white-50">TA Recommended</small>
+                                    }
+                                    else
+                                    {
+
+                                        <small class="text-muted">Other Offer</small>
+                                    }
+                                </div>
+                                <span class="badge @(option.Recommend.GetValueOrDefault() ? "badge-light" : "badge-success")">@option.StatusName</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-3">
+
+                            <div class="d-flex justify-content-between align-items-end mb-3">
+                                <div>
+                                    <div class="text-xs text-muted text-uppercase">Monthly base</div>
+                                    <div class="h5 font-weight-bold text-gray-900 mb-0">
+                                        @UtilitiesService.ToPeso(option.ProposeSalary)
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs text-muted">Annual + Packages</div>
+                                    <strong>@UtilitiesService.ToPeso(option.Annual)</strong>
+                                </div>
+                            </div>
+
+                            <div class="row text-center no-gutters border rounded mb-3">
+                                <div class="col-6 py-2 border-right"><small class="text-muted d-block">Increase</small><strong class="text-success">@option.Increase%</strong></div>
+                                <div class="col-6 py-2 border-right"><small class="text-muted d-block">Compa-ratio</small><strong>@option.CompaRatio</strong></div>
+                            </div>
+
+                            <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-2">Your decision</div>
+                            <div class="btn-group btn-group-sm d-flex mb-3" role="group" aria-label="Decision for Option @option.OptionNum">
+                                <button type="button"
+                                        class="@SetClassButton("Approve", option.ApproveStatusId.GetValueOrDefault())"
+                                        @onclick="() => option.ApproveStatusId = JOStatus.Proposal.Approve">
+                                    <i class="fas fa-check mr-1"></i>Approve
+                                </button>
+
+                                <button type="button"
+                                        class="@SetClassButton("Return", option.ApproveStatusId.GetValueOrDefault())"
+                                        @onclick="() => option.ApproveStatusId = JOStatus.Proposal.Return">
+                                    <i class="fas fa-rotate-left mr-1"></i>Return
+                                </button>
+
+                                <button type="button"
+                                        class="@SetClassButton("Reject", option.ApproveStatusId.GetValueOrDefault())"
+                                        @onclick="() => option.ApproveStatusId = JOStatus.Proposal.Reject">
+                                    <i class="fas fa-times mr-1"></i>Reject
+                                </button>
+                            </div>
+
+                            <label class="font-weight-bold text-gray-700 mb-1">Comments</label>
+                            <textarea class="form-control form-control-sm" rows="3" @bind="option.Comments"></textarea>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Summary -->
+        <div class="border rounded bg-light p-3 mt-1">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="font-weight-bold text-gray-900"><i class="fas fa-clipboard-check text-primary mr-2"></i>Decision summary</div>
+                    <div class="mt-2">
+                        <span class="badge badge-success mr-2">
+                            <i class="fas fa-check mr-1"></i>
+                            @joProposals.Count(jo => jo.ApproveStatusId == JOStatus.Proposal.Approve) approved
+                        </span>
+
+                        <span class="badge badge-warning mr-2">
+                            <i class="fas fa-rotate-left mr-1"></i>
+                            @joProposals.Count(jo => jo.ApproveStatusId == JOStatus.Proposal.Return) returned
+                        </span>
+
+                        <span class="badge badge-danger">
+                            <i class="fas fa-times mr-1"></i>
+                            @joProposals.Count(jo => jo.ApproveStatusId == JOStatus.Proposal.Reject) rejected
+                        </span>
+                    </div>
+                    <small class="text-muted d-block mt-2">All three options have a decision and required comments are complete.</small>
+                </div>
+
+                <div class="col-lg-4 text-lg-right mt-3 mt-lg-0">
+                    <a href="@JORoutes.DH.Approvals"
+                       class="btn btn-outline-secondary btn-sm mr-2">
+                        <i class="fas fa-arrow-left fa-fw mr-1"></i>Back to Tracker
+                    </a>
+
+                    <button type="button" class="btn btn-primary btn-sm px-4"
+                            @onclick="SubmitDecisions">
+                        <i class="fas fa-paper-plane mr-1"></i>Submit 3 decisions
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public int jobOfferId { get; set; }
+    private JobOffers jobOffer = new();
+
+    private List<ProposalDto> joProposals = new();
+    private List<JO.DataModel.Entity.Approvals> dhApprovals = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        jobOffer = await JODetailsService.GetJobOffer(jobOfferId);
+        joProposals = await ApprovalService.GetProposalDto(jobOfferId);
+    }
+
+    private async Task SubmitDecisions()
+    {
+        var rejectStatuses = new[]
+        {
+            JOStatus.Proposal.Return,
+            JOStatus.Proposal.Reject
+        };
+
+        var errors = joProposals
+            .Where(jo =>
+                jo.ApproveStatusId == JOStatus.Proposal.New ||
+                (rejectStatuses.Contains(jo.ApproveStatusId.Value) &&
+                 string.IsNullOrWhiteSpace(jo.Comments)))
+            .Select(jo => jo.ApproveStatusId == JOStatus.Proposal.New
+                ? $"A decision is required for option {jo.OptionNum}."
+                : $"Comments are required for option {jo.OptionNum}.")
+            .ToList();
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        if (!await AlertService.Confirm())
+            return;
+
+        int userId = await AccountService.GetJobOfferUserId();
+        foreach (var item in joProposals)
+            item.ApproveBy = userId;
+
+        await ApprovalService.DHApprovals(joProposals);
+        Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}");
+    }
+
+    private string SetClassButton(string statusName, int statusId)
+    {
+        var status = statusName switch
+        {
+            "Approve" => (JOStatus.Proposal.Approve, "success"),
+            "Return" => (JOStatus.Proposal.Return, "warning"),
+            "Reject" => (JOStatus.Proposal.Reject, "danger"),
+            _ => ((int?)null, "info")
+        };
+
+        return status.Item1 == statusId
+            ? $"btn flex-fill btn-{status.Item2}"
+            : $"btn flex-fill btn-outline-{status.Item2}";
+    }
+}

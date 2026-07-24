@@ -25,6 +25,64 @@ namespace JO.Service.Services
             return await context.JobOffers.FindAsync(id);
         }
 
+        public async Task<List<VwJobOffers>> GetJobOffers()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJobOffers.ToListAsync();
+        }
+
+        public async Task<List<VwApprovals>> GetVwApprovals(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwApprovals
+                .AsNoTracking()
+                .Where(jo => jo.JobOfferId == jobOfferId)
+                .ToListAsync();
+        }
+
+        public async Task<List<GroupApprovalsDto>> GetGroupApprovals(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var approvals = await context.VwApprovals
+                .AsNoTracking()
+                .Where(jo => jo.JobOfferId == jobOfferId)
+                .ToListAsync();
+
+            return approvals
+                .GroupBy(jo => new
+                {
+                    jo.RefNum,
+                    jo.ApproverType,
+                    jo.ApproverName
+                })
+                .Select(group => new GroupApprovalsDto
+                {
+                    RefNum = group.Key.RefNum,
+                    ApproverType = group.Key.ApproverType,
+                    ApproverName = group.Key.ApproverName,
+                    VwApprovals = group.ToList()
+                })
+                .ToList();
+        }
+
+        public async Task<List<SalaryBandStatus>> GetSalaryBandStatus()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.SalaryBandStatus
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<Proposal>> GetProposal(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.Proposal
+                .AsNoTracking()
+                .Where(jo=>jo.JobOfferId == jobOfferId)
+                .ToListAsync();
+        }
+
         public async Task<Requests> GetRequest(int id)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -41,6 +99,7 @@ namespace JO.Service.Services
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.VwJobOfferWorkFlow
+                .AsNoTracking()
                 .Where(jo => jo.JobOfferId == jobOfferId)
                 .ToListAsync();
         }
