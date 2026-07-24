@@ -7,6 +7,7 @@ namespace JO.Service.Services.Contracts
     public interface IJODetailsService
     {
         Task<Candidates> GetCandidate(int id);
+        Task<List<VwDiscussions>> GetDiscussions(int jobOfferId);
         Task<List<GroupApprovalsDto>> GetGroupApprovals(int jobOfferId);
         Task<JobOffers> GetJobOffer(int id);
         Task<List<VwJobOffers>> GetJobOffers();

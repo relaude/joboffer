@@ -1,4 +1,5 @@
-﻿using JO.DataModel.Entity;
+﻿using JO.DataModel.DTOs;
+using JO.DataModel.Entity;
 using JO.DataModel.View;
 
 namespace JO.Service.Services.Contracts
@@ -11,5 +12,6 @@ namespace JO.Service.Services.Contracts
         Task<List<VwDiscussions>> GetDiscussions(int jobOfferId);
         Task<List<DiscussSteps>> GetDiscussSteps();
         Task<int> SaveDiscussion(Discussions discussion);
+        Task<int> SaveDiscussion(DiscussionDto dto);
     }
 }

@@ -3,10 +3,10 @@
 
 @inject IJODetailsService JODetailsService
 @inject IDiscussionService DiscussionService
-@inject IJODetailsService JODetailsService
 @inject IUtilitiesService UtilitiesService
 @inject IAlertService AlertService
 @inject IAccountService AccountService
+@inject NavigationManager Navigation
 
 <div class="card shadow mb-4 border-left-primary small">
     <div class="card-header py-3 bg-white">
@@ -244,7 +244,7 @@
                                             <div>@item.StepName</div>
                                             <small class="text-muted">Option @item.OptionNum</small>
                                         </div>
-                                        <small class="text-muted">@UtilitiesService.FormatDate(item.DiscussAt, CommonConstant.DefaultShortDateTimeFormat)</small>
+                                        <small class="text-muted">@UtilitiesService.FormatDate(item.DiscussAt, CommonConstant.DefaultShortDateFormat)</small>
                                     </div>
                                     <div class="text-muted">Candidate Response: @item.ResponseName</div>
                                 </div>
@@ -282,7 +282,7 @@
 
     private Candidates candidate = new();
     private JobOffers jobOffer = new();
-    private Discussions discussion = new()
+    private DiscussionDto discussion = new()
     {
         DiscussAt = DateTime.Now,
         StepId = 1,
@@ -319,6 +319,7 @@
         if (!await AlertService.Confirm()) return;
 
         await DiscussionService.SaveDiscussion(discussion);
+
         ResetEntries();
         await GetDiscussions();
     }

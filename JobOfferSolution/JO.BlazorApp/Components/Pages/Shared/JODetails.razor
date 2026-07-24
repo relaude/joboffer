@@ -374,7 +374,7 @@
                 <div role="tabpanel">
                     @if (groupApprovals.Count == 0)
                     {
-                        <div class="alert alert-light border mb-0">No approvals found.</div>
+                        <div class="alert alert-light border mb-0">No records found.</div>
                     }
                     else
                     {
@@ -416,6 +416,47 @@
                                         </tr>
                                     </tbody>
                                 }
+                            </table>
+                        </div>
+                    }
+                </div>
+            }
+            else if (activeTab == "discuss")
+            {
+                <div role="tabpanel">
+                    @if (discussions.Count == 0)
+                    {
+                        <div class="alert alert-light border mb-0">No records found.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm text-nowrap mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Option#</th>
+                                        <th>Step</th>
+                                        <th>Discuss Date</th>
+                                        <th>Channel</th>
+                                        <th>Response</th>
+                                        <th>Notes</th>
+                                        <th>Feedack</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var discuss in discussions)
+                                    {
+                                        <tr>
+                                            <td>@($"Option {discuss.OptionNum} - {UtilitiesService.ToPeso(discuss.ProposeSalary)}")</td>
+                                            <td>@discuss.StepName</td>
+                                            <td>@UtilitiesService.FormatDate(discuss.DiscussAt)</td>
+                                            <td>@discuss.ChannelName</td>
+                                            <td>@discuss.ResponseName</td>
+                                            <td>@discuss.Comments</td>
+                                            <td>@discuss.FeedBack</td>
+                                        </tr>
+                                    }
+                                </tbody>
                             </table>
                         </div>
                     }
@@ -511,6 +552,7 @@
     private List<Proposal> joProposals = new();
     private List<SalaryBandStatus> bandStatus = new();
     private List<GroupApprovalsDto> groupApprovals = new();
+    private List<VwDiscussions> discussions = new();
 
     private string activeTab = "candidate";
 
@@ -526,6 +568,7 @@
         joProposals = await JODetailsService.GetProposal(jobOfferId);
         bandStatus = await JODetailsService.GetSalaryBandStatus();
         groupApprovals = await JODetailsService.GetGroupApprovals(jobOfferId);
+        discussions = await JODetailsService.GetDiscussions(jobOfferId);
 
         if (legal != null)
             salaryBands = await SalaryMatrixService.GetSalaryBands(legal.MatrixId.GetValueOrDefault());

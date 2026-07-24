@@ -1,4 +1,5 @@
-﻿using JO.DataModel.Entity;
+﻿using JO.DataModel.DTOs;
+using JO.DataModel.Entity;
 using JO.DataModel.View;
 using JO.Persistence.DataAccess;
 using JO.Service.Constants;
@@ -23,6 +24,7 @@ namespace JO.Service.Services
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.VwDiscussions
                 .Where(jo => jo.JobOfferId == jobOfferId)
+                .OrderByDescending(jo=>jo.DiscussAt)
                 .ToListAsync();
         }
 
@@ -35,6 +37,30 @@ namespace JO.Service.Services
             await context.SaveChangesAsync();
 
             return discussion.Id;
+        }
+
+        public async Task<int> SaveDiscussion(DiscussionDto dto)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var newDiscussion = new Discussions
+            {
+                JobOfferId = dto.JobOfferId,
+                ProposalId = dto.ProposalId,
+                StepId = dto.StepId,
+                ChannelId = dto.ChannelId,
+                ResponseId = dto.ResponseId,
+                Comments = dto.Comments,
+                FeedBack = dto.FeedBack,
+                DiscussAt = dto.DiscussAt,
+                CreatedBy = dto.CreatedBy,
+                CreatedAt = DateTime.Now
+            };
+
+            await context.Discussions.AddAsync(newDiscussion);
+            await context.SaveChangesAsync();
+
+            return newDiscussion.Id;
         }
 
         public async Task<List<CandResponse>> GetCandResponse()

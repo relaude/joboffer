@@ -40,11 +40,12 @@ namespace JO.Service.Services
 
             var workFlow = await context.WorkFlow
                 .Where(jo=>jo.JobOfferId == jobOfferId)
-                .Take(6)
                 .ToListAsync();
 
-            workFlow[4].ActionId = hasEscalate ? JOStatus.Action.Current : JOStatus.Action.Done;
-            workFlow[5].ActionId = hasEscalate ? JOStatus.Action.Next : JOStatus.Action.Open;
+            workFlow[4].ActionId = JOStatus.Action.Done; //Approval
+            workFlow[5].ActionId = hasEscalate ? JOStatus.Action.Current : JOStatus.Action.Open; //Escalation
+            workFlow[6].ActionId = hasEscalate ? JOStatus.Action.Next : JOStatus.Action.Current; //Discussion
+            workFlow[7].ActionId = hasEscalate ? JOStatus.Action.Open : JOStatus.Action.Next; //Acceptance
 
             //updating...
             await context.Approvals.AddRangeAsync(dhApprovals);
