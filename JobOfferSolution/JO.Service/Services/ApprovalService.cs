@@ -55,6 +55,80 @@ namespace JO.Service.Services
             return await context.SaveChangesAsync();
         }
 
+        public async Task<int> PresApprovals(List<ProposalDto> joProposal)
+        {
+            var dhApprovals = joProposal.Select(jo=> new JO.DataModel.Entity.Approvals { 
+                JobOfferId = jo.JobOfferId,
+                ProposalId = jo.Id,
+                TypeId = JOApprovers.President,
+                StatusId = jo.ApproveStatusId,
+                Comments = jo.Comments,
+                ApproveBy = jo.ApproveBy,
+                ApproveAt = DateTime.Now
+            }).ToList();
+
+            int jobOfferId = joProposal.FirstOrDefault().JobOfferId.GetValueOrDefault();
+            bool hasEscalate = joProposal.Any(jo => jo.Escalate == true);
+
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
+            jobOffer.StatusId = JOStatus.Application.Approved;
+
+            var workFlow = await context.WorkFlow
+                .Where(jo=>jo.JobOfferId == jobOfferId)
+                .ToListAsync();
+
+            workFlow[4].ActionId = JOStatus.Action.Done; //Approval
+            workFlow[5].ActionId = JOStatus.Action.Done; //Escalation
+            workFlow[6].ActionId = JOStatus.Action.Current; //Discussion
+            workFlow[7].ActionId = JOStatus.Action.Next; //Acceptance
+
+            //updating...
+            await context.Approvals.AddRangeAsync(dhApprovals);
+            context.JobOffers.Update(jobOffer);
+            context.WorkFlow.UpdateRange(workFlow);
+
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> HRApprovals(List<ProposalDto> joProposal)
+        {
+            var dhApprovals = joProposal.Select(jo=> new JO.DataModel.Entity.Approvals { 
+                JobOfferId = jo.JobOfferId,
+                ProposalId = jo.Id,
+                TypeId = JOApprovers.HROD,
+                StatusId = jo.ApproveStatusId,
+                Comments = jo.Comments,
+                ApproveBy = jo.ApproveBy,
+                ApproveAt = DateTime.Now
+            }).ToList();
+
+            int jobOfferId = joProposal.FirstOrDefault().JobOfferId.GetValueOrDefault();
+            bool hasEscalate = joProposal.Any(jo => jo.Escalate == true);
+
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
+            jobOffer.StatusId = JOStatus.Application.HRODApproved;
+
+            //var workFlow = await context.WorkFlow
+            //    .Where(jo=>jo.JobOfferId == jobOfferId)
+            //    .ToListAsync();
+
+            //workFlow[4].ActionId = JOStatus.Action.Done; //Approval
+            //workFlow[5].ActionId = hasEscalate ? JOStatus.Action.Current : JOStatus.Action.Open; //Escalation
+            //workFlow[6].ActionId = hasEscalate ? JOStatus.Action.Next : JOStatus.Action.Current; //Discussion
+            //workFlow[7].ActionId = hasEscalate ? JOStatus.Action.Open : JOStatus.Action.Next; //Acceptance
+
+            //updating...
+            await context.Approvals.AddRangeAsync(dhApprovals);
+            context.JobOffers.Update(jobOffer);
+            //context.WorkFlow.UpdateRange(workFlow);
+
+            return await context.SaveChangesAsync();
+        }
+
         public async Task<List<ProposalDto>> GetProposalDto(int jobOfferId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();

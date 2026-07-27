@@ -50,32 +50,6 @@ namespace JO.Service.Services
                 .ToListAsync();
         }
 
-        public async Task<List<GroupApprovalsDto>> GetGroupApprovals(int jobOfferId)
-        {
-            await using var context = await _dbContext.CreateDbContextAsync();
-
-            var approvals = await context.VwApprovals
-                .AsNoTracking()
-                .Where(jo => jo.JobOfferId == jobOfferId)
-                .ToListAsync();
-
-            return approvals
-                .GroupBy(jo => new
-                {
-                    jo.RefNum,
-                    jo.ApproverType,
-                    jo.ApproverName
-                })
-                .Select(group => new GroupApprovalsDto
-                {
-                    RefNum = group.Key.RefNum,
-                    ApproverType = group.Key.ApproverType,
-                    ApproverName = group.Key.ApproverName,
-                    VwApprovals = group.ToList()
-                })
-                .ToList();
-        }
-
         public async Task<List<SalaryBandStatus>> GetSalaryBandStatus()
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -130,9 +104,10 @@ namespace JO.Service.Services
             tabs.AddRange(
                 new JOTabs { Key = "candidate", Label = "Candidate", Icon = "fas fa-user", Show = true },
                 new JOTabs { Key = "email", Label = "Email Request", Icon = "fas fa-envelope", Show = true },
-                new JOTabs { Key = "legal", Label = "Legal Entities", Icon = "fas fa-building", Show = workFlow[1].ActionId == JOStatus.Action.Done },
+                new JOTabs { Key = "docs", Label = "Documents", Icon = "fas fa-file-alt", Show = true },
+                new JOTabs { Key = "legal", Label = "Company", Icon = "fas fa-building", Show = workFlow[1].ActionId == JOStatus.Action.Done },
                 new JOTabs { Key = "offers", Label = "Job Offers", Icon = "fas fa-file-signature", Show = workFlow[2].ActionId == JOStatus.Action.Done },
-                new JOTabs { Key = "approve", Label = "Approvals", Icon = "fas fa-user-check", Show = workFlow[4].ActionId == JOStatus.Action.Done },
+                new JOTabs { Key = "approve", Label = "Approvals", Icon = "fas fa-user-check", Show = doneCurrent.Contains(workFlow[4].ActionId.GetValueOrDefault()) },
                 new JOTabs { Key = "discuss", Label = "Discussion", Icon = "fas fa-comments", Show = doneCurrent.Contains(workFlow[6].ActionId.GetValueOrDefault()) },
                 new JOTabs { Key = "accept", Label = "Acceptance", Icon = "fas fa-handshake", Show = workFlow[7].ActionId == JOStatus.Action.Done },
                 new JOTabs { Key = "negotiate", Label = "Negotiations", Icon = "fas fa-comments-dollar", Show = workFlow[8].ActionId == JOStatus.Action.Done },

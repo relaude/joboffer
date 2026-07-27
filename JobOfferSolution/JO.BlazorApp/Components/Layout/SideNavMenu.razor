@@ -13,14 +13,19 @@
             <TAMenu />
         }
 
-        @* @if (user.IsInRole(JOUserRole.HROD) == true)
+        @if (user.IsInRole(JOUserRole.HROD) == true)
         {
             <HRODMenu />
-        } *@
+        }
 
         @if (user.IsInRole(JOUserRole.DH) == true)
         {
             <DHMenu />
+        }
+
+        @if (user.IsInRole(JOUserRole.President) == true)
+        {
+            <PresMenu />
         }
 
         <MockMenu />
@@ -38,6 +43,13 @@
                 <a class="nav-link" href="@JORoutes.Admin.SalaryMatrix">
                     <i class="fa-solid fa-table-cells"></i>
                     <span>Salary Matrix</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="@JORoutes.Admin.JobFamily">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Job Structure</span>
                 </a>
             </li>
         }

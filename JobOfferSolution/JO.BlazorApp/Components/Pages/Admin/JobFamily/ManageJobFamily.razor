@@ -1,0 +1,559 @@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.JobFamily)]
+
+@inject ISalaryMatrixService SalaryMatrixService
+@inject IAlertService AlertService
+
+<PageTitle>Job Structure Maintenance</PageTitle>
+
+<div class="card shadow mb-4 border-left-primary small">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-briefcase fa-fw mr-2"></i>
+                    Job Structure Maintenance
+                </h6>
+                <small class="text-muted">Manage job families, levels, and positions used in job offers and salary matrices.</small>
+            </div>
+            <span class="badge badge-light border mt-2 mt-md-0">
+                <i class="fas fa-cog fa-fw text-primary mr-1"></i>Admin View
+            </span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        @if (isLoading)
+        {
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                <div>Loading job structure...</div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header py-2 bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="m-0 font-weight-bold text-gray-800">
+                                        <i class="fas fa-layer-group fa-fw text-primary mr-1"></i>Job Families
+                                    </h6>
+                                    <small class="text-muted">Group positions by function.</small>
+                                </div>
+                                <span class="badge badge-primary badge-pill">@jobFamilies.Count</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <label for="jobFamilyName" class="font-weight-bold text-gray-700 mb-1">
+                                @(editingFamilyId.HasValue ? "Edit job family" : "New job family")
+                            </label>
+                            <div class="input-group input-group-sm mb-2">
+                                <input id="jobFamilyName"
+                                       class="form-control"
+                                       maxlength="100"
+                                       placeholder="Enter job family name"
+                                       disabled="@isSaving"
+                                       @bind="familyName"
+                                       @bind:event="oninput"
+                                       @onkeydown="HandleFamilyKeyDown" />
+                                <div class="input-group-append">
+                                    <button type="button"
+                                            class="btn btn-primary"
+                                            disabled="@isSaving"
+                                            title="@(editingFamilyId.HasValue ? "Update job family" : "Add job family")"
+                                            @onclick="SaveFamily">
+                                        <i class="fas @(editingFamilyId.HasValue ? "fa-check" : "fa-plus") fa-fw"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            @if (editingFamilyId.HasValue)
+                            {
+                                <button type="button" class="btn btn-link btn-sm p-0 mb-3" disabled="@isSaving" @onclick="CancelFamilyEdit">
+                                    <i class="fas fa-times fa-fw mr-1"></i>Cancel edit
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="text-xs text-muted mb-3">Press Enter or select Add to save.</div>
+                            }
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-sm mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Family Name</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (jobFamilies.Any())
+                                        {
+                                            @foreach (var family in jobFamilies)
+                                            {
+                                                <tr @key="family.Id" class="@(editingFamilyId == family.Id ? "table-primary" : null)">
+                                                    <td class="align-middle">@family.JobFamilyName</td>
+                                                    <td class="text-center">
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary btn-sm"
+                                                                title="Edit job family"
+                                                                disabled="@isSaving"
+                                                                @onclick="() => EditFamily(family)">
+                                                            <i class="fas fa-edit fa-fw"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr><td colspan="2" class="text-center text-muted py-3">No job families found.</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header py-2 bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="m-0 font-weight-bold text-gray-800">
+                                        <i class="fas fa-signal fa-fw text-info mr-1"></i>Job Levels
+                                    </h6>
+                                    <small class="text-muted">Maintain organization levels.</small>
+                                </div>
+                                <span class="badge badge-info badge-pill">@jobLevels.Count</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <label for="jobLevelName" class="font-weight-bold text-gray-700 mb-1">
+                                @(editingLevelId.HasValue ? "Edit job level" : "New job level")
+                            </label>
+                            <div class="input-group input-group-sm mb-2">
+                                <input id="jobLevelName"
+                                       class="form-control"
+                                       maxlength="100"
+                                       placeholder="Enter job level name"
+                                       disabled="@isSaving"
+                                       @bind="levelName"
+                                       @bind:event="oninput"
+                                       @onkeydown="HandleLevelKeyDown" />
+                                <div class="input-group-append">
+                                    <button type="button"
+                                            class="btn btn-primary"
+                                            disabled="@isSaving"
+                                            title="@(editingLevelId.HasValue ? "Update job level" : "Add job level")"
+                                            @onclick="SaveLevel">
+                                        <i class="fas @(editingLevelId.HasValue ? "fa-check" : "fa-plus") fa-fw"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            @if (editingLevelId.HasValue)
+                            {
+                                <button type="button" class="btn btn-link btn-sm p-0 mb-3" disabled="@isSaving" @onclick="CancelLevelEdit">
+                                    <i class="fas fa-times fa-fw mr-1"></i>Cancel edit
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="text-xs text-muted mb-3">Press Enter or select Add to save.</div>
+                            }
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-sm mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Level Name</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (jobLevels.Any())
+                                        {
+                                            @foreach (var level in jobLevels)
+                                            {
+                                                <tr @key="level.Id" class="@(editingLevelId == level.Id ? "table-primary" : null)">
+                                                    <td class="align-middle">@level.JobLevelName</td>
+                                                    <td class="text-center">
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary btn-sm"
+                                                                title="Edit job level"
+                                                                disabled="@isSaving"
+                                                                @onclick="() => EditLevel(level)">
+                                                            <i class="fas fa-edit fa-fw"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr><td colspan="2" class="text-center text-muted py-3">No job levels found.</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-lg-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header py-2 bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="m-0 font-weight-bold text-gray-800">
+                                        <i class="fas fa-id-badge fa-fw text-success mr-1"></i>Job Positions
+                                    </h6>
+                                    <small class="text-muted">Assign positions to a family.</small>
+                                </div>
+                                <span class="badge badge-success badge-pill">@jobPositions.Count</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-2">
+                                <label for="positionFamily" class="font-weight-bold text-gray-700 mb-1">Job Family</label>
+                                <select id="positionFamily"
+                                        class="form-control form-control-sm"
+                                        disabled="@(isSaving || !jobFamilies.Any())"
+                                        @bind="positionFamilyId">
+                                    <option value="0">Select a job family</option>
+                                    @foreach (var family in jobFamilies)
+                                    {
+                                        <option value="@family.Id">@family.JobFamilyName</option>
+                                    }
+                                </select>
+                            </div>
+                            <label for="positionName" class="font-weight-bold text-gray-700 mb-1">
+                                @(editingPositionId.HasValue ? "Edit job position" : "New job position")
+                            </label>
+                            <div class="input-group input-group-sm mb-2">
+                                <input id="positionName"
+                                       class="form-control"
+                                       maxlength="50"
+                                       placeholder="Enter position name"
+                                       disabled="@(isSaving || !jobFamilies.Any())"
+                                       @bind="positionName"
+                                       @bind:event="oninput"
+                                       @onkeydown="HandlePositionKeyDown" />
+                                <div class="input-group-append">
+                                    <button type="button"
+                                            class="btn btn-primary"
+                                            disabled="@(isSaving || !jobFamilies.Any())"
+                                            title="@(editingPositionId.HasValue ? "Update job position" : "Add job position")"
+                                            @onclick="SavePosition">
+                                        <i class="fas @(editingPositionId.HasValue ? "fa-check" : "fa-plus") fa-fw"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            @if (editingPositionId.HasValue)
+                            {
+                                <button type="button" class="btn btn-link btn-sm p-0 mb-3" disabled="@isSaving" @onclick="CancelPositionEdit">
+                                    <i class="fas fa-times fa-fw mr-1"></i>Cancel edit
+                                </button>
+                            }
+                            else if (jobFamilies.Any())
+                            {
+                                <div class="text-xs text-muted mb-3">Press Enter or select Add to save.</div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info py-2 mb-3">
+                                    Add a job family before adding positions.
+                                </div>
+                            }
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-sm mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Position</th>
+                                            <th>Family</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (jobPositions.Any())
+                                        {
+                                            @foreach (var position in jobPositions)
+                                            {
+                                                <tr @key="position.Id" class="@(editingPositionId == position.Id ? "table-primary" : null)">
+                                                    <td class="align-middle">@position.PositionName</td>
+                                                    <td class="align-middle">@GetFamilyName(position.JobFamilyId)</td>
+                                                    <td class="text-center">
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary btn-sm"
+                                                                title="Edit job position"
+                                                                disabled="@isSaving"
+                                                                @onclick="() => EditPosition(position)">
+                                                            <i class="fas fa-edit fa-fw"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr><td colspan="3" class="text-center text-muted py-3">No job positions found.</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<JobFamilies> jobFamilies = new();
+    private List<JobLevels> jobLevels = new();
+    private List<JobPositions> jobPositions = new();
+
+    private string familyName = string.Empty;
+    private string levelName = string.Empty;
+    private string positionName = string.Empty;
+    private int positionFamilyId;
+
+    private int? editingFamilyId;
+    private int? editingLevelId;
+    private int? editingPositionId;
+
+    private bool isLoading = true;
+    private bool isSaving;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        isLoading = false;
+    }
+
+    private async Task LoadData()
+    {
+        var familyTask = SalaryMatrixService.GetJobFamilies();
+        var levelTask = SalaryMatrixService.GetJobLevels();
+        var positionTask = SalaryMatrixService.GetJobPositions();
+
+        await Task.WhenAll(familyTask, levelTask, positionTask);
+
+        jobFamilies = await familyTask;
+        jobLevels = await levelTask;
+        jobPositions = await positionTask;
+    }
+
+    private async Task SaveFamily()
+    {
+        var name = familyName.Trim();
+        var errors = ValidateName(name, "Job family", 100, jobFamilies
+            .Where(jo => jo.Id != editingFamilyId)
+            .Select(jo => jo.JobFamilyName));
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        await ExecuteSave(async () =>
+        {
+            if (editingFamilyId.HasValue)
+            {
+                await SalaryMatrixService.UpdateJobFamily(new JobFamilies
+                {
+                    Id = editingFamilyId.Value,
+                    JobFamilyName = name
+                });
+            }
+            else
+            {
+                await SalaryMatrixService.SaveJobFamily(new JobFamilies { JobFamilyName = name });
+            }
+
+            CancelFamilyEdit();
+        }, "Job family saved successfully.");
+    }
+
+    private async Task SaveLevel()
+    {
+        var name = levelName.Trim();
+        var errors = ValidateName(name, "Job level", 100, jobLevels
+            .Where(jo => jo.Id != editingLevelId)
+            .Select(jo => jo.JobLevelName));
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        await ExecuteSave(async () =>
+        {
+            if (editingLevelId.HasValue)
+            {
+                await SalaryMatrixService.UpdateJobLevel(new JobLevels
+                {
+                    Id = editingLevelId.Value,
+                    JobLevelName = name
+                });
+            }
+            else
+            {
+                await SalaryMatrixService.SaveJobLevel(new JobLevels { JobLevelName = name });
+            }
+
+            CancelLevelEdit();
+        }, "Job level saved successfully.");
+    }
+
+    private async Task SavePosition()
+    {
+        var name = positionName.Trim();
+        var errors = ValidateName(name, "Job position", 50, jobPositions
+            .Where(jo => jo.Id != editingPositionId && jo.JobFamilyId == positionFamilyId)
+            .Select(jo => jo.PositionName));
+
+        if (positionFamilyId <= 0 || jobFamilies.All(jo => jo.Id != positionFamilyId))
+            errors.Insert(0, "Please select a valid job family.");
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        await ExecuteSave(async () =>
+        {
+            if (editingPositionId.HasValue)
+            {
+                await SalaryMatrixService.UpdateJobPosition(new JobPositions
+                {
+                    Id = editingPositionId.Value,
+                    PositionName = name,
+                    JobFamilyId = positionFamilyId
+                });
+            }
+            else
+            {
+                await SalaryMatrixService.SaveJobPosition(new JobPositions
+                {
+                    PositionName = name,
+                    JobFamilyId = positionFamilyId
+                });
+            }
+
+            CancelPositionEdit();
+        }, "Job position saved successfully.");
+    }
+
+    private async Task ExecuteSave(Func<Task> saveAction, string successMessage)
+    {
+        if (isSaving)
+            return;
+
+        if (!await AlertService.Confirm("Save changes?", "Save"))
+            return;
+
+        try
+        {
+            isSaving = true;
+            await saveAction();
+            await LoadData();
+            await AlertService.Success(successMessage);
+        }
+        catch (Exception ex)
+        {
+            await AlertService.Error(ex.Message, "Unable to save");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private static List<string> ValidateName(
+        string name,
+        string label,
+        int maximumLength,
+        IEnumerable<string?> existingNames)
+    {
+        var errors = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(name))
+            errors.Add($"{label} name is required.");
+        else if (name.Length > maximumLength)
+            errors.Add($"{label} name cannot exceed {maximumLength} characters.");
+
+        if (!string.IsNullOrWhiteSpace(name) &&
+            existingNames.Any(jo => string.Equals(jo?.Trim(), name, StringComparison.OrdinalIgnoreCase)))
+            errors.Add($"{label} already exists.");
+
+        return errors;
+    }
+
+    private void EditFamily(JobFamilies family)
+    {
+        editingFamilyId = family.Id;
+        familyName = family.JobFamilyName ?? string.Empty;
+    }
+
+    private void EditLevel(JobLevels level)
+    {
+        editingLevelId = level.Id;
+        levelName = level.JobLevelName ?? string.Empty;
+    }
+
+    private void EditPosition(JobPositions position)
+    {
+        editingPositionId = position.Id;
+        positionName = position.PositionName ?? string.Empty;
+        positionFamilyId = position.JobFamilyId.GetValueOrDefault();
+    }
+
+    private void CancelFamilyEdit()
+    {
+        editingFamilyId = null;
+        familyName = string.Empty;
+    }
+
+    private void CancelLevelEdit()
+    {
+        editingLevelId = null;
+        levelName = string.Empty;
+    }
+
+    private void CancelPositionEdit()
+    {
+        editingPositionId = null;
+        positionName = string.Empty;
+        positionFamilyId = 0;
+    }
+
+    private string GetFamilyName(int? familyId)
+    {
+        return jobFamilies.FirstOrDefault(jo => jo.Id == familyId)?.JobFamilyName ?? "Unassigned";
+    }
+
+    private async Task HandleFamilyKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+            await SaveFamily();
+    }
+
+    private async Task HandleLevelKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+            await SaveLevel();
+    }
+
+    private async Task HandlePositionKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+            await SavePosition();
+    }
+}

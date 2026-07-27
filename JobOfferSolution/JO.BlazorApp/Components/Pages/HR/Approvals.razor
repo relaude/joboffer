@@ -1,5 +1,5 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.JobOfferTracker)]
+﻿@attribute [Authorize(Roles = JOUserRole.HROD)]
+@attribute [Route(JORoutes.HROD.Approvals)]
 
 @inject IJODetailsService JODetailsService
 
@@ -44,39 +44,12 @@
                                     <i class="fas fa-eye fa-fw"></i>
                                 </a>
 
-                                @if (jobOffer.StatusId == JOStatus.Request.Awaiting)
+                                @if (jobOffer.StatusId == JOStatus.Application.ProposalCreated)
                                 {
-                                    <a href="@($"{JORoutes.TA.Upload}/{jobOffer.Id}")"
+                                    <a href="@($"{JORoutes.HROD.Approve}/{jobOffer.Id}")"
                                        class="btn btn-outline-info btn-sm mr-1"
-                                       title="File upload">
-                                        <i class="fas fa-file-upload fa-fw"></i>
-                                    </a>
-                                }
-
-                                @if (jobOffer.StatusId == JOStatus.Request.Submitted)
-                                {
-                                    <a href="@($"{JORoutes.TA.Legal}/{jobOffer.Id}")"
-                                       class="btn btn-outline-info btn-sm mr-1"
-                                       title="Company">
-                                        <i class="fas fa-building fa-fw"></i>
-                                    </a>
-                                }
-
-                                @if (jobOffer.StatusId == JOStatus.Application.MatrixSelected)
-                                {
-                                    <a href="@($"{JORoutes.TA.Analysis}/{jobOffer.Id}")"
-                                       class="btn btn-outline-info btn-sm mr-1"
-                                       title="Analysis">
-                                        <i class="fas fa-chart-line fa-fw"></i>
-                                    </a>
-                                }
-
-                                @if (jobOffer.StatusId == JOStatus.Application.Approved)
-                                {
-                                    <a href="@($"{JORoutes.TA.Discussion}/{jobOffer.Id}")"
-                                       class="btn btn-outline-info btn-sm mr-1"
-                                       title="Discussions">
-                                        <i class="fas fa-comments fa-fw"></i>
+                                       title="For Approval">
+                                        <i class="fas fa-clipboard-check fa-fw"></i>
                                     </a>
                                 }
                             </td>

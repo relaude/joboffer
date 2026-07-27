@@ -7,5 +7,7 @@ namespace JO.Service.Services.Contracts
     {
         Task<int> DHApprovals(List<ProposalDto> joProposal);
         Task<List<ProposalDto>> GetProposalDto(int jobOfferId);
+        Task<int> HRApprovals(List<ProposalDto> joProposal);
+        Task<int> PresApprovals(List<ProposalDto> joProposal);
     }
 }

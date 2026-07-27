@@ -31,7 +31,6 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Position Applied For</th>
-                        <th>Expected Salary</th>
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
@@ -44,12 +43,12 @@
                                 <td>@($"{item.FName} {item.LName}")</td>
                                 <td>@item.Email</td>
                                 <td>@item.ApplyFor</td>
-                                <td>@UtilitiesService.ToPeso(item.Expected)</td>
                                 <td class="text-center">
-                                    <a href="@($"{JORoutes.TA.Email}/{item.Id}")"
+                                    <a href="@($"{JORoutes.TA.Proposal}/{item.Id}")"
                                        class="btn btn-outline-primary btn-sm mr-1"
                                        title="Send access request email">
-                                        <i class="fas fa-envelope fa-fw"></i>
+                                        <i class="fas fa-file-signature fa-fw"></i>
+                                        Create Job Offer
                                     </a>
                                 </td>
                             </tr>
@@ -76,5 +75,10 @@
     protected override async Task OnInitializedAsync()
     {
         candidates = await CandidateService.GetCandidates();
+    }
+
+    private async Task CreateJobOffer(int candidateId)
+    {
+        
     }
 }

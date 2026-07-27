@@ -1,9 +1,9 @@
 ﻿
 CREATE View [dbo].[vw_JobOfferWorkFlow]
 As
-Select jowf.* 
-,wfs.ShortName,wfs.Icon
+Select jowf.Id,jowf.JobOfferId,jowf.ActionId 
+,wfs.DisplayOrder,wfs.ShortName,wfs.Icon
 ,wfa.ActionName,wfa.BootstrapClass ActionClass
-From JobOfferWorkFlow jowf
-Left Join WorkFlowStatus wfs On wfs.Id=jowf.WorkFlowStatusId
-Left Join WorkFlowActions wfa On wfa.Id=jowf.WorkFlowActionId;
+From WorkFlow jowf
+Left Join WorkFlowStatus wfs On wfs.Id=jowf.StatusId
+Left Join WorkFlowActions wfa On wfa.Id=jowf.ActionId;

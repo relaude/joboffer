@@ -11,6 +11,7 @@ namespace JO.Service.Constants
         private const string PrefixJobOffer = "/joboffer";
         private const string PrefixHROD = "/hrod";
         private const string PrefixDH = "/dh";
+        private const string PrefixPres = "/president";
         private const string PrefixMock = "/mock";
 
         public static class Public
@@ -39,6 +40,7 @@ namespace JO.Service.Constants
             public const string ToggleActive = PrefixAdmin + "/toggle-user";
             public const string SalaryMatrix = PrefixAdmin + "/salary-matrix";
             public const string SalaryMatrixNew = PrefixAdmin + "/salary-matrix/new";
+            public const string JobFamily = PrefixAdmin + "/job-family";
         }
 
         public static class TA
@@ -65,6 +67,9 @@ namespace JO.Service.Constants
             public const string RequestTracker = PrefixTA + "/request-tracker";
             public const string JobOfferTracker = PrefixTA + "/joboffer-tracker";
 
+            //Proposal
+            public const string Proposal = PrefixTA + "/proposal";
+
             public const string JobOffer = PrefixTA + "/joboffer";
             public const string Accept = PrefixTA + "/joboffer/accept";
             public const string Return = PrefixTA + "/joboffer/return";
@@ -87,8 +92,16 @@ namespace JO.Service.Constants
             public const string ApproveDetails = PrefixDH + "/approve-details";
         }
 
+        public static class President
+        {
+            public const string Approvals = PrefixPres + "/approvals";
+            public const string Approve = PrefixPres + "/approve";
+        }
+
         public static class MockUp
         {
+            public const string ImportCandidate = PrefixMock + "/import-candidate";
+            public const string ApplicationLetter = PrefixMock + "/application-letter";
             public const string FormRequest = PrefixMock + "/form-request";
             public const string SendRequest = PrefixMock + "/send-request";
             public const string Legal = PrefixMock + "/legal";

@@ -8,7 +8,6 @@ namespace JO.Service.Services.Contracts
     {
         Task<Candidates> GetCandidate(int id);
         Task<List<VwDiscussions>> GetDiscussions(int jobOfferId);
-        Task<List<GroupApprovalsDto>> GetGroupApprovals(int jobOfferId);
         Task<JobOffers> GetJobOffer(int id);
         Task<List<VwJobOffers>> GetJobOffers();
         Task<List<VwJobOfferWorkFlow>> GetJobOfferWorkFlow(int jobOfferId);
