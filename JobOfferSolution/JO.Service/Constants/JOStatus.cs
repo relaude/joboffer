@@ -32,12 +32,14 @@ namespace JO.Service.Constants
 
         public static class Application
         {
+            public const int New = 1;
             public const int MatrixSelected = 3;
             public const int ProposalCreated = 4;
             public const int TRApproved = 5;
             public const int HRODApproved = 6;
             public const int DHApproved = 7;
             public const int Approved = 8;
+            public const int Accepted = 9;
         }
 
         public static class SalaryBand

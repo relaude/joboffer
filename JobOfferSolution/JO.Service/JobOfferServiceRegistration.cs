@@ -28,6 +28,7 @@ namespace JO.Service
             services.AddScoped<IApprovalService, ApprovalService>();
             services.AddScoped<IJODetailsService, JODetailsService>();
             services.AddScoped<IDiscussionService, DiscussionService>();
+            services.AddScoped<IBenefitsService, BenefitsService>();
 
             return services;
         }

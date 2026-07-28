@@ -1,0 +1,430 @@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.CompensationBenefits)]
+
+@inject IBenefitsService BenefitsService
+@inject IAlertService AlertService
+
+<PageTitle>Compensation &amp; Benefit Maintenance</PageTitle>
+
+<div class="card shadow mb-4 border-left-primary small">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-hand-holding-dollar fa-fw mr-2"></i>
+                    Compensation &amp; Benefit Maintenance
+                </h6>
+                <small class="text-muted">Maintain benefit packages and the items available in each package.</small>
+            </div>
+            <span class="badge badge-light border mt-2 mt-md-0">
+                <i class="fas fa-box-open fa-fw text-primary mr-1"></i>@packages.Count Packages
+            </span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        @if (isLoading)
+        {
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                <div>Loading compensation and benefits...</div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header py-2 bg-light">
+                            <h6 class="m-0 font-weight-bold text-gray-800">
+                                <i class="fas fa-boxes fa-fw text-primary mr-1"></i>Packages
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <label for="packageName" class="font-weight-bold text-gray-700 mb-1">
+                                @(editingPackageId.HasValue ? "Edit package" : "New package")
+                            </label>
+                            <input id="packageName" class="form-control form-control-sm mb-2"
+                                   maxlength="150" placeholder="Enter package name"
+                                   disabled="@isSaving" @bind="packageName" @bind:event="oninput" />
+                            <div class="custom-control custom-checkbox mb-3">
+                                <input id="packageActive" type="checkbox" class="custom-control-input"
+                                       disabled="@isSaving" @bind="packageActive" />
+                                <label class="custom-control-label" for="packageActive">Active package</label>
+                            </div>
+                            <div class="d-flex mb-3">
+                                <button type="button" class="btn btn-primary btn-sm mr-2"
+                                        disabled="@isSaving" @onclick="SavePackage">
+                                    <i class="fas fa-save fa-fw mr-1"></i>@(editingPackageId.HasValue ? "Update" : "Save")
+                                </button>
+                                @if (editingPackageId.HasValue)
+                                {
+                                    <button type="button" class="btn btn-secondary btn-sm" disabled="@isSaving"
+                                            @onclick="CancelPackageEdit">Cancel</button>
+                                }
+                            </div>
+
+                            <div class="list-group">
+                                @foreach (var package in packages)
+                                {
+                                    <button type="button" @key="package.Id"
+                                            class="list-group-item list-group-item-action py-2 @(selectedPackageId == package.Id ? "active" : null)"
+                                            disabled="@isSaving" @onclick="() => SelectPackage(package.Id)">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="font-weight-bold">@package.PackageName</span>
+                                            <span class="badge @(package.IsActive == true ? "badge-success" : "badge-secondary")">
+                                                @(package.IsActive == true ? "Active" : "Inactive")
+                                            </span>
+                                        </div>
+                                    </button>
+                                }
+                            </div>
+                            @if (selectedPackageId > 0)
+                            {
+                                <button type="button" class="btn btn-link btn-sm px-0 mt-2"
+                                        disabled="@isSaving" @onclick="EditSelectedPackage">
+                                    <i class="fas fa-edit fa-fw mr-1"></i>Edit selected package
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header py-2 bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="m-0 font-weight-bold text-gray-800">
+                                        <i class="fas fa-gift fa-fw text-success mr-1"></i>Package Items
+                                    </h6>
+                                    <small class="text-muted">@SelectedPackageName</small>
+                                </div>
+                                <span class="badge badge-primary badge-pill">@packageItems.Count</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            @if (selectedPackageId <= 0)
+                            {
+                                <div class="alert alert-info mb-0">Select or create a package to maintain its items.</div>
+                            }
+                            else
+                            {
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="itemId" class="font-weight-bold mb-1">Item</label>
+                                        <select id="itemId" class="form-control form-control-sm" disabled="@isSaving"
+                                                @bind="packageItem.CompBenItemId">
+                                            <option value="">Select an item</option>
+                                            @foreach (var item in items)
+                                            {
+                                                <option value="@item.Id">@item.ItemName (@GetTypeName(item.TypeId))</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="amount" class="font-weight-bold mb-1">Amount</label>
+                                        <input id="amount" type="number" min="0" step="0.01"
+                                               class="form-control form-control-sm" disabled="@isSaving"
+                                               @bind="packageItem.Amount" />
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="currency" class="font-weight-bold mb-1">Currency</label>
+                                        <select id="currency" class="form-control form-control-sm" disabled="@isSaving"
+                                                @bind="packageItem.CurrencyId">
+                                            <option value="">None</option>
+                                            @foreach (var currency in currencies)
+                                            {
+                                                <option value="@currency.Id">@currency.Currency</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-3">
+                                        <label for="tax" class="font-weight-bold mb-1">Tax</label>
+                                        <input id="tax" type="number" min="0" step="0.01"
+                                               class="form-control form-control-sm"
+                                               disabled="@(isSaving || packageItem.IsTaxable != true)" @bind="packageItem.Tax" />
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="frequency" class="font-weight-bold mb-1">Frequency</label>
+                                        <select id="frequency" class="form-control form-control-sm"
+                                                disabled="@(isSaving || packageItem.IsRecurring != true)"
+                                                @bind="packageItem.FrequencyId">
+                                            <option value="">Select frequency</option>
+                                            @foreach (var frequency in frequencies)
+                                            {
+                                                <option value="@frequency.Id">@frequency.FrequencyName</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="displayOrder" class="font-weight-bold mb-1">Order</label>
+                                        <input id="displayOrder" type="number" min="0" class="form-control form-control-sm"
+                                               disabled="@isSaving" @bind="packageItem.DisplayOrder" />
+                                    </div>
+                                    <div class="form-group col-md-3 pt-md-4">
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="taxable" type="checkbox" class="custom-control-input"
+                                                   disabled="@isSaving" @bind="packageItem.IsTaxable" />
+                                            <label class="custom-control-label" for="taxable">Taxable</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="recurring" type="checkbox" class="custom-control-input"
+                                                   disabled="@isSaving" @bind="packageItem.IsRecurring" />
+                                            <label class="custom-control-label" for="recurring">Recurring</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="itemActive" type="checkbox" class="custom-control-input"
+                                                   disabled="@isSaving" @bind="packageItem.IsActive" />
+                                            <label class="custom-control-label" for="itemActive">Active</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-primary btn-sm mr-2" disabled="@isSaving"
+                                            @onclick="SavePackageItem">
+                                        <i class="fas fa-save fa-fw mr-1"></i>@(packageItem.Id > 0 ? "Update Item" : "Add Item")
+                                    </button>
+                                    @if (packageItem.Id > 0)
+                                    {
+                                        <button type="button" class="btn btn-secondary btn-sm" disabled="@isSaving"
+                                                @onclick="ResetPackageItem">Cancel</button>
+                                    }
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover table-sm mb-0">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Type</th>
+                                                <th class="text-right">Amount</th>
+                                                <th>Frequency</th>
+                                                <th class="text-center">Taxable</th>
+                                                <th class="text-center">Active</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (isLoadingItems)
+                                            {
+                                                <tr><td colspan="7" class="text-center text-muted py-3">Loading package items...</td></tr>
+                                            }
+                                            else if (packageItems.Any())
+                                            {
+                                                @foreach (var item in packageItems)
+                                                {
+                                                    <tr @key="item.Id" class="@(packageItem.Id == item.Id ? "table-primary" : null)">
+                                                        <td>
+                                                            <span class="font-weight-bold">@item.ItemName</span>
+                                                            @if (!string.IsNullOrWhiteSpace(item.ItemDescription))
+                                                            {
+                                                                <div class="text-muted text-xs">@item.ItemDescription</div>
+                                                            }
+                                                        </td>
+                                                        <td>@DisplayText(item.TypeName)</td>
+                                                        <td class="text-right">@FormatAmount(item)</td>
+                                                        <td>@DisplayText(item.FrequencyName)</td>
+                                                        <td class="text-center">@(item.IsTaxable == true ? "Yes" : "No")</td>
+                                                        <td class="text-center">
+                                                            <span class="badge @(item.ActiveItem == true ? "badge-success" : "badge-secondary")">
+                                                                @(item.ActiveItem == true ? "Active" : "Inactive")
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button type="button" class="btn btn-outline-primary btn-sm"
+                                                                    disabled="@isSaving" title="Edit package item"
+                                                                    @onclick="() => EditPackageItem(item.Id)">
+                                                                <i class="fas fa-edit fa-fw"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr><td colspan="7" class="text-center text-muted py-3">No items are assigned to this package.</td></tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<CompBenPackages> packages = new();
+    private List<CompBenItems> items = new();
+    private List<CompBenTypes> types = new();
+    private List<Frequencies> frequencies = new();
+    private List<Currencies> currencies = new();
+    private List<VwCompensationBenefits> packageItems = new();
+    private CompensationBenefits packageItem = NewPackageItem();
+
+    private int selectedPackageId;
+    private int? editingPackageId;
+    private string packageName = string.Empty;
+    private bool packageActive = true;
+    private bool isLoading = true;
+    private bool isLoadingItems;
+    private bool isSaving;
+
+    private string SelectedPackageName =>
+        packages.FirstOrDefault(jo => jo.Id == selectedPackageId)?.PackageName ?? "No package selected";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReferenceData();
+        if (packages.Any())
+            await SelectPackage(packages[0].Id);
+        isLoading = false;
+    }
+
+    private async Task LoadReferenceData()
+    {
+        var packageTask = BenefitsService.GetPackages();
+        var itemTask = BenefitsService.GetItems();
+        var typeTask = BenefitsService.GetTypes();
+        var frequencyTask = BenefitsService.GetFrequencies();
+        var currencyTask = BenefitsService.GetCurrencies();
+        await Task.WhenAll(packageTask, itemTask, typeTask, frequencyTask, currencyTask);
+        packages = await packageTask;
+        items = await itemTask;
+        types = await typeTask;
+        frequencies = await frequencyTask;
+        currencies = await currencyTask;
+    }
+
+    private async Task SelectPackage(int packageId)
+    {
+        selectedPackageId = packageId;
+        ResetPackageItem();
+        isLoadingItems = true;
+        packageItems = await BenefitsService.GetCompensationBenefit(packageId);
+        isLoadingItems = false;
+    }
+
+    private async Task SavePackage()
+    {
+        var name = packageName.Trim();
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            await AlertService.Error("Package name is required.", "Unable to save");
+            return;
+        }
+
+        await ExecuteSave(async () =>
+        {
+            if (editingPackageId.HasValue)
+                await BenefitsService.UpdatePackage(new() { Id = editingPackageId.Value, PackageName = name, IsActive = packageActive });
+            else
+                await BenefitsService.SavePackage(new() { PackageName = name, IsActive = packageActive });
+
+            var previousSelection = selectedPackageId;
+            CancelPackageEdit();
+            await LoadReferenceData();
+            selectedPackageId = packages.Any(jo => jo.Id == previousSelection)
+                ? previousSelection
+                : packages.FirstOrDefault(jo => jo.PackageName == name)?.Id ?? 0;
+            if (selectedPackageId > 0)
+                await SelectPackage(selectedPackageId);
+        }, "Package saved successfully.");
+    }
+
+    private async Task SavePackageItem()
+    {
+        if (!packageItem.CompBenItemId.HasValue)
+        {
+            await AlertService.Error("Please select an item.", "Unable to save");
+            return;
+        }
+        if (packageItem.IsRecurring == true && !packageItem.FrequencyId.HasValue)
+        {
+            await AlertService.Error("Please select a frequency for recurring items.", "Unable to save");
+            return;
+        }
+
+        await ExecuteSave(async () =>
+        {
+            packageItem.PackageId = selectedPackageId;
+            if (packageItem.Id > 0)
+                await BenefitsService.UpdatePackageItem(packageItem);
+            else
+                await BenefitsService.SavePackageItem(packageItem);
+            ResetPackageItem();
+            await SelectPackage(selectedPackageId);
+        }, "Package item saved successfully.");
+    }
+
+    private async Task EditPackageItem(int id)
+    {
+        packageItem = await BenefitsService.GetPackageItem(id) ?? NewPackageItem();
+    }
+
+    private void EditSelectedPackage()
+    {
+        var package = packages.FirstOrDefault(jo => jo.Id == selectedPackageId);
+        if (package == null)
+            return;
+        editingPackageId = package.Id;
+        packageName = package.PackageName ?? string.Empty;
+        packageActive = package.IsActive == true;
+    }
+
+    private void CancelPackageEdit()
+    {
+        editingPackageId = null;
+        packageName = string.Empty;
+        packageActive = true;
+    }
+
+    private void ResetPackageItem()
+    {
+        packageItem = NewPackageItem();
+    }
+
+    private async Task ExecuteSave(Func<Task> action, string successMessage)
+    {
+        if (isSaving || !await AlertService.Confirm("Save changes?", "Save"))
+            return;
+        try
+        {
+            isSaving = true;
+            await action();
+            await AlertService.Success(successMessage);
+        }
+        catch (Exception ex)
+        {
+            await AlertService.Error(ex.Message, "Unable to save");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private string GetTypeName(int? typeId) =>
+        types.FirstOrDefault(jo => jo.Id == typeId)?.TypeName ?? "Unclassified";
+
+    private static string DisplayText(string? value) => string.IsNullOrWhiteSpace(value) ? "-" : value;
+
+    private static string FormatAmount(VwCompensationBenefits item) =>
+        item.Amount.HasValue ? $"{item.Currency} {item.Amount.Value:N2}".Trim() : "-";
+
+    private static CompensationBenefits NewPackageItem() => new()
+    {
+        Amount = 0,
+        Tax = 0,
+        DisplayOrder = 0,
+        IsTaxable = false,
+        IsRecurring = false,
+        IsActive = true
+    };
+}

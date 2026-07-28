@@ -116,5 +116,22 @@ namespace JO.Service.Services
 
             return tabs;
         }
+
+        public List<JOTabs> SetTabs()
+        {
+            List<JOTabs> tabs = new();
+
+            tabs.AddRange(
+                new JOTabs { Key = "candidate", Label = "Candidate", Icon = "fas fa-user", Show = true },
+                new JOTabs { Key = "docs", Label = "Documents", Icon = "fas fa-file-alt", Show = true },
+                new JOTabs { Key = "legal", Label = "Company", Icon = "fas fa-building", Show = true },
+                new JOTabs { Key = "offers", Label = "Offers", Icon = "fas fa-file-signature", Show =true},
+                new JOTabs { Key = "approve", Label = "Approvals", Icon = "fas fa-user-check", Show = true },
+                new JOTabs { Key = "discuss", Label = "Discussion", Icon = "fas fa-comments", Show = true },
+                new JOTabs { Key = "letter", Label = "Offer Letter", Icon = "fas fa-envelope-open-text", Show = true }
+            );
+
+            return tabs;
+        }
     }
 }

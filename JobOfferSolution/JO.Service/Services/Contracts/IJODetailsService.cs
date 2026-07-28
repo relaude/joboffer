@@ -17,5 +17,6 @@ namespace JO.Service.Services.Contracts
         Task<List<SalaryBandStatus>> GetSalaryBandStatus();
         Task<List<VwApprovals>> GetVwApprovals(int jobOfferId);
         List<JOTabs> SetTabs(List<VwJobOfferWorkFlow> workFlow);
+        List<JOTabs> SetTabs();
     }
 }

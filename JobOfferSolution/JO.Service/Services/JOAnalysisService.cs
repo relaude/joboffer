@@ -50,15 +50,15 @@ namespace JO.Service.Services
             bool hasEscalation = proposals.Any(jo => jo.Escalate == true);
             var joWorkFlow = await context.WorkFlow
                 .Where(jo => jo.JobOfferId == jobOfferId)
-                .Take(7)
                 .ToListAsync();
 
-            joWorkFlow[2].ActionId = JOStatus.Action.Done;
-            joWorkFlow[3].ActionId = JOStatus.Action.Done;
-            joWorkFlow[4].ActionId = JOStatus.Action.Current;
+            joWorkFlow[1].ActionId = JOStatus.Action.Done; //Company
+            joWorkFlow[2].ActionId = JOStatus.Action.Done; //JO Analysis
+            joWorkFlow[3].ActionId = JOStatus.Action.Done; //Salary Check
+            joWorkFlow[4].ActionId = JOStatus.Action.Current; //Approval
 
-            joWorkFlow[5].ActionId = hasEscalation ? JOStatus.Action.Next : JOStatus.Action.Open;
-            joWorkFlow[6].ActionId = hasEscalation ? JOStatus.Action.Open : JOStatus.Action.Next;
+            joWorkFlow[5].ActionId = hasEscalation ? JOStatus.Action.Next : JOStatus.Action.Open; //Escalation
+            joWorkFlow[6].ActionId = hasEscalation ? JOStatus.Action.Open : JOStatus.Action.Next; //Discussion
 
             //updating...
             context.JobOffers.Update(jobOffer);
@@ -73,7 +73,7 @@ namespace JO.Service.Services
             VwSalaryMatrixBand matrixBand,
             List<VwCompensationBenefits> compBen)
         {
-            decimal packages = ComputePackagesAnnualAmount(compBen);
+            decimal packages = 0; //ComputePackagesAnnualAmount(compBen);
 
             foreach (var proposal in proposals)
             {
@@ -105,7 +105,7 @@ namespace JO.Service.Services
             List<Proposal> proposals = new();
 
             decimal midpoint = matrixBand.BandMidpoint.GetValueOrDefault();
-            decimal packages = ComputePackagesAnnualAmount(compBen);
+            decimal packages = 0;//ComputePackagesAnnualAmount(compBen);
             
             for (int i = 1; i <= 3; i++)
             {
@@ -189,20 +189,20 @@ namespace JO.Service.Services
             await context.SaveChangesAsync();
 
             jobOffer.LegalId = legal.Id;
-            jobOffer.StatusId = JOStatus.Application.MatrixSelected;
+            //jobOffer.StatusId = JOStatus.Application.MatrixSelected;
 
-            var workFlow = await context.WorkFlow
-                .Where(jo => jo.JobOfferId == legal.JobOfferId)
-                .Take(5)
-                .ToListAsync();
+            //var workFlow = await context.WorkFlow
+            //    .Where(jo => jo.JobOfferId == legal.JobOfferId)
+            //    .Take(5)
+            //    .ToListAsync();
 
-            workFlow[1].ActionId = JOStatus.Action.Done;
-            workFlow[2].ActionId = JOStatus.Action.Current;
-            workFlow[3].ActionId = JOStatus.Action.Current;
-            workFlow[4].ActionId = JOStatus.Action.Next;
+            //workFlow[1].ActionId = JOStatus.Action.Done;
+            //workFlow[2].ActionId = JOStatus.Action.Current;
+            //workFlow[3].ActionId = JOStatus.Action.Current;
+            //workFlow[4].ActionId = JOStatus.Action.Next;
             
             context.JobOffers.Update(jobOffer);
-            context.WorkFlow.UpdateRange(workFlow);
+            //context.WorkFlow.UpdateRange(workFlow);
 
             return await context.SaveChangesAsync();
         }

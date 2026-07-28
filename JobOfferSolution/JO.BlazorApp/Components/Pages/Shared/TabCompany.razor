@@ -1,0 +1,109 @@
+﻿@inject IJODetailsService JODetailsService
+@inject ISalaryMatrixService SalaryMatrixService
+
+@if (legal == null)
+{
+    <div class="card border-left-secondary shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-user-check fa-3x text-gray-300 mb-3"></i>
+            <h6 class="font-weight-bold text-gray-800 mb-1">No records</h6>
+            <p class="text-muted mb-0">Company details will appear here once they are available.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-lg-6 mb-3">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h6 class="m-0 font-weight-bold text-gray-800">
+                        <i class="fas fa-sitemap fa-fw text-primary mr-2"></i>
+                        Division Assignment
+                    </h6>
+                    <small class="text-muted">Company and Division</small>
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label class="font-weight-bold text-gray-800">Company</label>
+                        <input class="form-control form-control-sm" value="@legal.CompanyCodeName" readonly />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="font-weight-bold text-gray-800">Division</label>
+                        <input class="form-control form-control-sm" value="@legal.DivisionCodeName" readonly />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="font-weight-bold text-gray-800">Salary Matrix</label>
+                        <input class="form-control form-control-sm" value="@legal.MatrixCodeName" readonly />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="m-0 font-weight-bold text-gray-800">
+                        <i class="fas fa-table fa-fw text-primary mr-2"></i>
+                        Salary Matrix
+                    </h6>
+                    <small class="text-muted">Salary ranges based on SalaryMatrix and SalaryMatrixBand references.</small>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm text-nowrap mb-0">
+                            <thead class="thead-light text-center">
+                                <tr>
+                                    <th>Job Level</th>
+                                    <th>Job Family</th>
+                                    <th>Position Grade</th>
+                                    <th>Minimum</th>
+                                    <th>Midpoint</th>
+                                    <th>Maximum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var band in salaryBands)
+                                {
+                                    <tr>
+                                        <td>@band.JobLevelName</td>
+                                        <td>@band.JobFamilyName</td>
+                                        <td>@band.PositionGrade</td>
+                                        <td class="text-right">@band.BandMinimum</td>
+                                        <td class="text-right font-weight-bold text-gray-900">@band.BandMidpoint</td>
+                                        <td class="text-right">@band.BandMaximum</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label class="font-weight-bold text-gray-800">Position Applied For</label>
+                        <input class="form-control form-control-sm" value="@legal.PositionName" readonly />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int JobOfferId { get; set; }
+    private VwLegalEntities legal = new();
+    private List<VwSalaryMatrixBand> salaryBands = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        legal = await JODetailsService.GetLegalEntity(JobOfferId);
+        if (legal != null)
+            salaryBands = await SalaryMatrixService.GetSalaryBands(legal.MatrixId.GetValueOrDefault());
+    }
+}

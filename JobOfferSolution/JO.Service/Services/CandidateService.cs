@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net;
 using System.Text;
+using static Dapper.SqlMapper;
 
 namespace JO.Service.Services
 {
@@ -36,6 +37,52 @@ namespace JO.Service.Services
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.Candidates.FindAsync(id);
+        }
+
+        public async Task<int> CreateJobOffer(int candidateId, int createdBy)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            //job offer
+            int countJO = await context.JobOffers.CountAsync() + 1;
+            var newJO = new JobOffers
+            {
+                RefNum = $"JO-{DateTime.Now.Year}-{countJO:D5}",
+                CandidateId = candidateId,
+                StatusId = JOStatus.Application.New,
+                CreatedAt = DateTime.Now,
+                CreatedBy = createdBy
+            };
+            await context.JobOffers.AddAsync(newJO);
+            await context.SaveChangesAsync();
+
+            //workflow
+            var flowStatus = await context.WorkFlowStatus
+                .AsNoTracking()
+                .OrderBy(jo => jo.DisplayOrder)
+                .ToListAsync();
+
+            List<WorkFlow> workFlows = new();
+            foreach (var item in flowStatus)
+            {
+                workFlows.Add(new WorkFlow
+                {
+                    JobOfferId = newJO.Id,
+                    StatusId = item.Id,
+                    ActionId = JOStatus.Action.Open
+                });
+            }
+
+            workFlows[0].ActionId = JOStatus.Action.Done; //Pre-Analysis
+            workFlows[1].ActionId = JOStatus.Action.Current; //Company
+            workFlows[2].ActionId = JOStatus.Action.Current; //JO Analysis
+            workFlows[3].ActionId = JOStatus.Action.Current; //Salary Check
+            workFlows[4].ActionId = JOStatus.Action.Next; //Approval
+
+            await context.WorkFlow.AddRangeAsync(workFlows);
+            await context.SaveChangesAsync();
+
+            return newJO.Id;
         }
 
         public async Task<int> EmailRequest(Requests entity)
@@ -84,11 +131,16 @@ namespace JO.Service.Services
                 {
                     JobOfferId = newJO.Id,
                     StatusId = item.Id,
-                    ActionId = item.DisplayOrder == 2 ? JOStatus.Action.Next 
-                        : (item.DisplayOrder == 1 ? JOStatus.Action.Current 
-                            : JOStatus.Action.Open)
+                    ActionId = JOStatus.Action.Open
                 });
             }
+
+            workFlows[0].ActionId = JOStatus.Action.Done;
+            workFlows[1].ActionId = JOStatus.Action.Current;
+            workFlows[2].ActionId = JOStatus.Action.Current;
+            workFlows[3].ActionId = JOStatus.Action.Current;
+            workFlows[4].ActionId = JOStatus.Action.Next;
+
             await context.WorkFlow.AddRangeAsync(workFlows);
             await context.SaveChangesAsync();
 

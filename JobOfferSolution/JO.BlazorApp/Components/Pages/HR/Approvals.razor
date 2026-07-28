@@ -2,6 +2,7 @@
 @attribute [Route(JORoutes.HROD.Approvals)]
 
 @inject IJODetailsService JODetailsService
+@inject NavigationManager Navigation
 
 <div class="card shadow mb-4 border-left-primary small">
     <div class="card-header py-3 bg-white">
@@ -41,17 +42,14 @@
                                 <a href="@($"{JORoutes.Transaction.JobOffer}/{jobOffer.Id}")"
                                    class="btn btn-outline-primary btn-sm mr-1"
                                    title="Details">
-                                    <i class="fas fa-eye fa-fw"></i>
+                                    <i class="fas fa-eye fa-fw mr-1"></i>Details
                                 </a>
 
-                                @if (jobOffer.StatusId == JOStatus.Application.ProposalCreated)
-                                {
-                                    <a href="@($"{JORoutes.HROD.Approve}/{jobOffer.Id}")"
-                                       class="btn btn-outline-info btn-sm mr-1"
-                                       title="For Approval">
-                                        <i class="fas fa-clipboard-check fa-fw"></i>
-                                    </a>
-                                }
+                                <button class="btn btn-outline-info btn-sm mr-1"
+                                        disabled="@(!(jobOffer.StatusId == JOStatus.Application.ProposalCreated))"
+                                        @onclick="() => GoToPage(jobOffer.StatusId, jobOffer.Id)">
+                                    <i class="fas fa-clipboard-check fa-fw mr-1"></i>For Approval
+                                </button>
                             </td>
                         </tr>
                     }
@@ -67,5 +65,11 @@
     protected override async Task OnInitializedAsync()
     {
         jobOffers = await JODetailsService.GetJobOffers();
+    }
+
+    private void GoToPage(int? statusId, int id)
+    {
+        if (statusId == JOStatus.Application.ProposalCreated)
+            Navigation.NavigateTo($"{JORoutes.HROD.Approve}/{id}");
     }
 }

@@ -13,5 +13,6 @@ namespace JO.Service.Services.Contracts
         Task<List<DiscussSteps>> GetDiscussSteps();
         Task<int> SaveDiscussion(Discussions discussion);
         Task<int> SaveDiscussion(DiscussionDto dto);
+        Task<int> TagAsAccepted(int jobOfferId);
     }
 }

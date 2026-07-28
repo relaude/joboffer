@@ -44,8 +44,15 @@ namespace JO.Persistence.DataAccess
 
         //Analysis
         public DbSet<SalaryBandStatus> SalaryBandStatus { get; set; }
-        public DbSet<CompBenPackages> CompBenPackages { get; set; }
         public DbSet<Proposal> Proposal { get; set; }
+
+        //Compensation & enefits
+        public DbSet<CompBenPackages> CompBenPackages { get; set; }
+        public DbSet<CompBenItems> CompBenItems { get; set; }
+        public DbSet<CompBenTypes> CompBenTypes { get; set; }
+        public DbSet<CompensationBenefits> CompensationBenefits { get; set; }
+        public DbSet<Frequencies> Frequencies { get; set; }
+
 
         //Approval
         public DbSet<Approvals> Approvals { get; set; }

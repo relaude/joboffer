@@ -1,0 +1,37 @@
+﻿@inject IJODetailsService JODetailsService
+@inject IUtilitiesService UtilitiesService
+
+@if (candidate != null)
+{
+    <div class="row">
+        <div class="col-lg-4 mb-3">
+            <div class="card bg-light border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="text-primary mb-2"><i class="fas fa-user-circle fa-4x"></i></div>
+                    <h6 class="font-weight-bold text-gray-900 mb-1">@($"{candidate.FName} {candidate.LName}")</h6>
+                    <div class="text-muted">@candidate.LstPosition</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8 mb-3">
+            <div class="row">
+                <div class="col-md-6 mb-3"><small class="text-muted d-block">Email Address</small><span class="font-weight-bold text-gray-800">@candidate.Email</span></div>
+                <div class="col-md-6 mb-3"><small class="text-muted d-block">Mobile Number</small><span class="font-weight-bold text-gray-800">@candidate.Contact</span></div>
+                <div class="col-md-6 mb-3"><small class="text-muted d-block">Applying For</small><span class="font-weight-bold text-gray-800">@candidate.ApplyFor</span></div>
+                <div class="col-md-6 mb-3"><small class="text-muted d-block">Employer</small><span class="font-weight-bold text-gray-800">@candidate.Employer</span></div>
+                <div class="col-md-6 mb-3"><small class="text-muted d-block">Current Salary</small><span class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(candidate.Salary)</span></div>
+                <div class="col-md-6 mb-3"><small class="text-muted d-block">Expected Salary</small><span class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(candidate.Expected)</span></div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int CandidateId { get; set; }
+    private Candidates candidate = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        candidate = await JODetailsService.GetCandidate(CandidateId);
+    }
+}

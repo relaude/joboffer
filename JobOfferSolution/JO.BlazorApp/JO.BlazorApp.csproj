@@ -43,6 +43,7 @@
 
   <ItemGroup>
     <Folder Include="Components\Pages\Admin\JobFamily\" />
+    <Folder Include="Components\Pages\Admin\CompBen\" />
     <Folder Include="wwwroot\template\" />
   </ItemGroup>
 

@@ -1,0 +1,27 @@
+﻿@inject IJODetailsService JODetailsService
+
+<div class="row text-center mb-4">
+    @if (workFlow.Any())
+    {
+        foreach (var step in workFlow.Where(jo => jo.ActionId != JOStatus.Action.Open))
+        {
+            <div class="col-xl col-md-4 col-6 mb-2">
+                <div class="border rounded bg-light px-2 py-2 h-100">
+                    <div class="text-@step.ActionClass mb-1"><i class="@step.Icon"></i></div>
+                    <div class="text-xs font-weight-bold text-gray-800">@step.ShortName</div>
+                    <span class="badge badge-@step.ActionClass mt-1">@step.ActionName</span>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public int JobOfferId { get; set; }
+    private List<VwJobOfferWorkFlow> workFlow = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        workFlow = await JODetailsService.GetJobOfferWorkFlow(JobOfferId);
+    }
+}
