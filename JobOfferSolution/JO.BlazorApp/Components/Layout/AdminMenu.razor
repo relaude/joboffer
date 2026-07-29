@@ -1,0 +1,21 @@
+﻿<li class="nav-item">
+    <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseAdmin" aria-expanded="false"
+       aria-controls="collapseConfig">
+        <i class="fas fa-fw fa-tachometer-alt"></i>
+        <span>Administrator</span>
+    </a>
+
+    <div id="collapseAdmin" class="collapse" aria-labelledby="headingPages" aria-expanded="false"
+         data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="@JORoutes.Admin.Users">Users and Roles</a>
+            <a class="collapse-item" href="@JORoutes.Admin.SalaryMatrix">Salary Matrix</a>
+            <a class="collapse-item" href="@JORoutes.Admin.JobFamily">Job Structure</a>
+            <a class="collapse-item" href="@JORoutes.Admin.CompensationBenefits">Compensation &amp; Benefits</a>
+        </div>
+    </div>
+</li>
+
+@code {
+
+}

@@ -53,6 +53,32 @@ namespace JO.Service.Services
             return confirmResult.IsConfirmed;
         }
 
+        public async Task<int> ConfirmProposalNumber()
+        {
+            var confirmResult = await _swal.FireAsync(new SweetAlertOptions
+            {
+                Icon = SweetAlertIcon.Question,
+                Title = "How many proposal?",
+                Input = SweetAlertInputType.Number,
+                InputValue = "3",
+                InputAttributes = new Dictionary<string, string>
+                {
+                    ["min"] = "1",
+                    ["max"] = "4"
+                },
+                ShowCancelButton = true,
+                ConfirmButtonText = "Continue",
+                CancelButtonText = "Cancel"
+            });
+
+            return confirmResult.IsConfirmed &&
+                   int.TryParse(confirmResult.Value, out var proposalNumber) &&
+                   proposalNumber >= 1 &&
+                   proposalNumber <= 4
+                ? proposalNumber
+                : 0;
+        }
+
         private string BuildUnorderedList(IEnumerable<string> items)
         {
             var sb = new StringBuilder();

@@ -8,6 +8,7 @@ namespace JO.Service.Services.Contracts
         Task<List<VwCompensationBenefits>> GetCompensationBenefits(int packageId);
         Task<List<SalaryBandStatus>> GetValidationStatus();
         List<Proposal> InitializeProposal(int jobOfferId, int salaryBandId, decimal current, VwSalaryMatrixBand matrixBand, List<VwCompensationBenefits> compBen);
+        List<Proposal> InitializeProposal(int jobOfferId, int salaryBandId, decimal current, VwSalaryMatrixBand matrixBand, List<VwCompensationBenefits> compBen, int numberProposal);
         Task<int> LegalEntitySetup(LegalEntities legal);
         List<Proposal> ReComputeAnalysis(List<Proposal> proposals, VwSalaryMatrixBand matrixBand, List<VwCompensationBenefits> compBen);
         Task<int> SaveProposal(List<Proposal> proposals);

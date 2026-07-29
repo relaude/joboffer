@@ -80,11 +80,13 @@
 
     private async Task CreateJobOffer(int candidateId)
     {
-        if(!await AlertService.Confirm()) return;
+        int numProposal = await AlertService.ConfirmProposalNumber();
+
+        if (numProposal == 0) return;
 
         int createdBy = await AccountService.GetJobOfferUserId();
         int jobOfferId = await CandidateService.CreateJobOffer(candidateId, createdBy);
 
-        Navigation.NavigateTo($"{JORoutes.TA.NewOffer}/{jobOfferId}");
+        Navigation.NavigateTo($"{JORoutes.TA.NewOffer}/{jobOfferId}/{numProposal}");
     }
 }

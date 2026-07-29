@@ -28,38 +28,12 @@
             <PresMenu />
         }
 
-        <MockMenu />
-
         @if (user.IsInRole(JOUserRole.Admin) == true)
         {
-            <li class="nav-item">
-                <a class="nav-link" href="@JORoutes.Admin.Users">
-                    <i class="fa-solid fa-user-gear"></i>
-                    <span>Users and Roles</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="@JORoutes.Admin.SalaryMatrix">
-                    <i class="fa-solid fa-table-cells"></i>
-                    <span>Salary Matrix</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="@JORoutes.Admin.JobFamily">
-                    <i class="fa-solid fa-briefcase"></i>
-                    <span>Job Structure</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="@JORoutes.Admin.CompensationBenefits">
-                    <i class="fa-solid fa-hand-holding-dollar"></i>
-                    <span>Compensation &amp; Benefits</span>
-                </a>
-            </li>
+            <AdminMenu />
         }
+
+        <MockMenu />
     }
 
 </ul>

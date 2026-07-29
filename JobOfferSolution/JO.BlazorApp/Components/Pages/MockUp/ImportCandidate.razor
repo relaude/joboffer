@@ -225,7 +225,6 @@
                             <tr>
                                 <th class="text-center"><input type="checkbox" aria-label="Select all candidates" /></th>
                                 <th>Candidate</th>
-                                <th>Source</th>
                                 <th>Position / Requisition</th>
                                 <th>Contact</th>
                                 <th>Received</th>
@@ -246,11 +245,6 @@
                                     <td class="align-middle">
                                         <div class="font-weight-bold text-gray-900">@candidate.FullName</div>
                                         <div class="text-muted">@candidate.CandidateReference</div>
-                                    </td>
-                                    <td class="align-middle">
-                                        <span class="badge @candidate.SourceBadgeClass">
-                                            <i class="@candidate.SourceIcon fa-fw mr-1"></i>@candidate.Source
-                                        </span>
                                     </td>
                                     <td class="align-middle">
                                         <div>@candidate.Position</div>
@@ -428,12 +422,7 @@
                     Source record: @selectedCandidate.Source · Received @selectedCandidate.DateReceived at @selectedCandidate.TimeReceived
                 </small>
                 <div class="mt-2 mt-md-0">
-                    <button type="button" class="btn btn-outline-warning btn-sm mr-1" disabled>
-                        <i class="fas fa-flag fa-fw mr-1"></i>Mark for Review
-                    </button>
-                    <button type="button" class="btn btn-success btn-sm" disabled>
-                        <i class="fas fa-check fa-fw mr-1"></i>Confirm Import
-                    </button>
+                    
                 </div>
             </div>
         </div>

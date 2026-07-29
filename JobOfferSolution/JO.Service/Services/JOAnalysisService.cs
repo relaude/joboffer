@@ -132,6 +132,44 @@ namespace JO.Service.Services
             return proposals;
         }
 
+        public List<Proposal> InitializeProposal(
+            int jobOfferId,
+            int salaryBandId,
+            decimal current,
+            VwSalaryMatrixBand matrixBand,
+            List<VwCompensationBenefits> compBen,
+            int numberProposal)
+        {
+            List<Proposal> proposals = new();
+
+            decimal midpoint = matrixBand.BandMidpoint.GetValueOrDefault();
+            decimal packages = 0;//ComputePackagesAnnualAmount(compBen);
+            
+            for (int i = 1; i <= numberProposal; i++)
+            {
+                decimal increase = i * 10;
+                decimal propose = ComputeProposedSalary(current, increase);
+                decimal annual = (propose * 12) + packages;
+                decimal compaRatio = Math.Round((propose / midpoint), 2);
+                int statusId = SetValidationStatusId(propose, matrixBand);
+
+                proposals.Add(new Proposal {
+                    JobOfferId = jobOfferId,
+                    SalaryBandId = salaryBandId,
+                    OptionNum = i,
+                    CurrentSalary = current,
+                    ProposeSalary = propose,
+                    CompaRatio = compaRatio,
+                    Increase = increase,
+                    Annual = annual,
+                    StatusId = statusId,
+                    Recommend = i==1
+                });
+            }
+
+            return proposals;
+        }
+
         private decimal ComputePackagesAnnualAmount(List<VwCompensationBenefits> compensationItems)
         {
             return compensationItems

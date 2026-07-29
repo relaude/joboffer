@@ -36,7 +36,7 @@
                             <td>@jobOffer.CandidateName</td>
                             <td>@jobOffer.Email</td>
                             <td class="text-center">
-                                <span class="badge badge-@jobOffer.BootstrapClass">@jobOffer.StatusName</span>
+                                <span class="text-@jobOffer.BootstrapClass">@jobOffer.StatusName</span>
                             </td>
                             <td class="text-center">
                                 <a href="@($"{JORoutes.Transaction.JobOffer}/{jobOffer.Id}")"

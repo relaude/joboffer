@@ -43,6 +43,8 @@
             {
                 <div role="tabpanel">
                     <TabCandidate CandidateId="jobOffer.CandidateId.GetValueOrDefault()" />
+
+                    <TabCompany JobOfferId="jobOfferId" />
                 </div>
             }
             else if (activeTab == "docs")
@@ -51,12 +53,12 @@
                     <TabDocs />
                 </div>
             }
-            else if (activeTab == "legal")
+            @* else if (activeTab == "legal")
             {
                 <div role="tabpanel">
                     <TabCompany JobOfferId="jobOfferId" />
                 </div>
-            }
+            } *@
             else if (activeTab == "offers")
             {
                 <div role="tabpanel">
@@ -67,14 +69,16 @@
             {
                 <div role="tabpanel">
                     <TabApprove JobOfferId="jobOfferId" />
+
+                    <TabDiscuss JobOfferId="jobOfferId" />
                 </div>
             }
-            else if (activeTab == "discuss")
+            @* else if (activeTab == "discuss")
             {
                 <div role="tabpanel">
                     <TabDiscuss JobOfferId="jobOfferId" />
                 </div>
-            }
+            } *@
             else
             {
                 <div role="tabpanel">
@@ -112,5 +116,8 @@
     {
         tabs = JODetailsService.SetTabs();
         jobOffer = await JODetailsService.GetJobOffer(jobOfferId);
+
+        tabs[2].Show = false;
+        tabs[5].Show = false;
     }
 }

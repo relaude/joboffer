@@ -91,7 +91,7 @@
                                 <div class="col-6 py-2 border-right"><small class="text-muted d-block">Compa-ratio</small><strong>@option.CompaRatio</strong></div>
                             </div>
 
-                            <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-2">Your decision</div>
+                            @* <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-2">Your decision</div>
                             <div class="btn-group btn-group-sm d-flex mb-3" role="group" aria-label="Decision for Option @option.OptionNum">
                                 <button type="button"
                                         class="@SetClassButton("Approve", option.ApproveStatusId.GetValueOrDefault())"
@@ -110,7 +110,7 @@
                                         @onclick="() => option.ApproveStatusId = JOStatus.Proposal.Reject">
                                     <i class="fas fa-times mr-1"></i>Reject
                                 </button>
-                            </div>
+                            </div> *@
 
                             <label class="font-weight-bold text-gray-700 mb-1">Comments</label>
                             <textarea class="form-control form-control-sm" rows="3" @bind="option.Comments"></textarea>
@@ -122,7 +122,7 @@
         </div>
 
         <!-- Summary -->
-        <div class="border rounded bg-light p-3 mt-1">
+        @* <div class="border rounded bg-light p-3 mt-1">
             <div class="row align-items-center">
                 <div class="col-lg-8">
                     <div class="font-weight-bold text-gray-900"><i class="fas fa-clipboard-check text-primary mr-2"></i>Decision summary</div>
@@ -157,9 +157,23 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </div> *@
     </div>
 
+    <div class="card-footer text-right">
+        <a href="@JORoutes.DH.Approvals"
+           class="btn btn-outline-secondary btn-sm mr-2">
+            <i class="fas fa-arrow-left fa-fw mr-1"></i>Back to Tracker
+        </a>
+
+        <button type="button" class="btn btn-warning btn-sm mr-2" disabled>Return</button>
+        <button type="button" class="btn btn-danger btn-sm mr-2" disabled>Reject</button>
+
+        <button type="button" class="btn btn-primary btn-sm"
+                @onclick="SubmitDecisions">
+            Approve
+        </button>
+    </div>
 </div>
 
 @code {
@@ -177,34 +191,37 @@
 
     private async Task SubmitDecisions()
     {
-        var rejectStatuses = new[]
-        {
-            JOStatus.Proposal.Return,
-            JOStatus.Proposal.Reject
-        };
+        // var rejectStatuses = new[]
+        // {
+        //     JOStatus.Proposal.Return,
+        //     JOStatus.Proposal.Reject
+        // };
 
-        var errors = joProposals
-            .Where(jo =>
-                jo.ApproveStatusId == JOStatus.Proposal.New ||
-                (rejectStatuses.Contains(jo.ApproveStatusId.Value) &&
-                 string.IsNullOrWhiteSpace(jo.Comments)))
-            .Select(jo => jo.ApproveStatusId == JOStatus.Proposal.New
-                ? $"A decision is required for option {jo.OptionNum}."
-                : $"Comments are required for option {jo.OptionNum}.")
-            .ToList();
+        // var errors = joProposals
+        //     .Where(jo =>
+        //         jo.ApproveStatusId == JOStatus.Proposal.New ||
+        //         (rejectStatuses.Contains(jo.ApproveStatusId.Value) &&
+        //          string.IsNullOrWhiteSpace(jo.Comments)))
+        //     .Select(jo => jo.ApproveStatusId == JOStatus.Proposal.New
+        //         ? $"A decision is required for option {jo.OptionNum}."
+        //         : $"Comments are required for option {jo.OptionNum}.")
+        //     .ToList();
 
-        if (errors.Any())
-        {
-            await AlertService.Errors(errors);
-            return;
-        }
+        // if (errors.Any())
+        // {
+        //     await AlertService.Errors(errors);
+        //     return;
+        // }
 
         if (!await AlertService.Confirm())
             return;
 
         int userId = await AccountService.GetJobOfferUserId();
         foreach (var item in joProposals)
+        {
+            item.ApproveStatusId = JOStatus.Proposal.Approve;
             item.ApproveBy = userId;
+        }
 
         await ApprovalService.DHApprovals(joProposals);
         Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{jobOfferId}");

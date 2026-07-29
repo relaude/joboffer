@@ -133,5 +133,18 @@ namespace JO.Service.Services
 
             return tabs;
         }
+
+        public List<JOTabs> SetNewOfferTabs()
+        {
+            List<JOTabs> tabs = new();
+
+            tabs.AddRange(
+                new JOTabs { Key = "candidate", Label = "Candidate", Icon = "fas fa-user", Show = true },
+                new JOTabs { Key = "offers", Label = "Offers", Icon = "fas fa-file-signature", Show = true },
+                new JOTabs { Key = "docs", Label = "Documents", Icon = "fas fa-file-alt", Show = true }
+            );
+
+            return tabs;
+        }
     }
 }
