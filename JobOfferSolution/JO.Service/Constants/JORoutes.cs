@@ -74,6 +74,9 @@ namespace JO.Service.Constants
             //Letter
             public const string Letter = PrefixTA + "/letter";
 
+            //MS Form
+            public const string MSFormResponse = PrefixTA + "/msform-response";
+
             public const string JobOffer = PrefixTA + "/joboffer";
             public const string Accept = PrefixTA + "/joboffer/accept";
             public const string Return = PrefixTA + "/joboffer/return";

@@ -1,5 +1,1 @@
-**Codex Pending
-Modify [Approve.razor](JO.BlazorApp/Components/Pages/DH/Approve.razor) and [Approve.razor](JO.BlazorApp/Components/Pages/HROD/Approve.razor)  base on this
-- make "<Modal @ref="modalReturn" Title="Reason">" a reusable component
-- create a resusable component that can be use by both page
-- put the new shared componenet under \JO.BlazorApp\Components\Pages\Shared Folder
+https://forms.office.com/Pages/ResponsePage.aspx?id=UzTI9rjtt0SGOW0JDgEaYwAJ7O5W5oNHqeVpcGYO6jhUMkhNRE5USjE2MVJNN1JTVFQwOFhGNVFBTi4u
