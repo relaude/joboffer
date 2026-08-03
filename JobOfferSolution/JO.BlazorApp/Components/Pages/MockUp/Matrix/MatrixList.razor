@@ -1,0 +1,30 @@
+@page "/mockup/salary-matrix"
+
+<link href="css/salary-matrix-mockup.css" rel="stylesheet" />
+
+<div class="salary-mockup">
+ <main class="sm-page">
+  <header class="sm-page-header d-md-flex justify-content-between align-items-start mb-4">
+   <div><h2 class="sm-title mb-1">Salary Matrix</h2><p class="sm-subtitle mb-0">Design and govern compensation ranges across the organization.</p></div>
+   <button type="button" class="btn btn-primary px-4"><i class="fas fa-plus mr-2"></i>New matrix</button>
+  </header>
+  <div class="row mb-4">
+   <div class="col-xl-3 col-md-6 mb-3"><div class="sm-panel sm-kpi p-3"><div class="d-flex"><span class="sm-kpi-icon sm-pill-blue mr-3"><i class="fas fa-th-large"></i></span><div><div class="sm-kpi-label">Total matrices</div><div class="sm-kpi-value">12</div></div></div><span class="sm-pill sm-pill-blue mt-3">+2 this year</span></div></div>
+   <div class="col-xl-3 col-md-6 mb-3"><div class="sm-panel sm-kpi p-3"><div class="d-flex"><span class="sm-kpi-icon sm-pill-green mr-3"><i class="fas fa-check"></i></span><div><div class="sm-kpi-label">Active</div><div class="sm-kpi-value">9</div></div></div><span class="sm-pill sm-pill-green mt-3">75% coverage</span></div></div>
+   <div class="col-xl-3 col-md-6 mb-3"><div class="sm-panel sm-kpi p-3"><div class="d-flex"><span class="sm-kpi-icon sm-pill-amber mr-3"><i class="fas fa-hourglass-half"></i></span><div><div class="sm-kpi-label">Pending approval</div><div class="sm-kpi-value">2</div></div></div><span class="sm-pill sm-pill-amber mt-3">Needs review</span></div></div>
+   <div class="col-xl-3 col-md-6 mb-3"><div class="sm-panel sm-kpi p-3"><div class="d-flex"><span class="sm-kpi-icon sm-pill-red mr-3"><i class="fas fa-calendar-times"></i></span><div><div class="sm-kpi-label">Expiring soon</div><div class="sm-kpi-value">1</div></div></div><span class="sm-pill sm-pill-red mt-3">Within 30 days</span></div></div>
+  </div>
+  <section class="sm-panel p-3 mb-4"><div class="form-row"><div class="col-lg-4 mb-2"><label>Search</label><input class="form-control" placeholder="Search name or code" /></div><div class="col-lg-3 mb-2"><label>Company</label><select class="custom-select"><option>All companies</option></select></div><div class="col-lg-3 mb-2"><label>Division</label><select class="custom-select"><option>All divisions</option></select></div><div class="col-lg-2 mb-2 d-flex align-items-end"><button type="button" class="btn btn-outline-secondary btn-block">More filters</button></div></div></section>
+  <section class="sm-panel overflow-hidden">
+   <div class="d-flex justify-content-between align-items-center p-3"><div><h5 class="sm-title mb-1">Matrix list</h5><div class="sm-subtitle">12 matrices · Updated 3 Aug 2026</div></div><button type="button" class="btn btn-outline-secondary px-4">Export CSV</button></div>
+   <div class="table-responsive"><table class="table mb-0"><thead><tr><th>Matrix</th><th>Company</th><th>Effective period</th><th>Bands</th><th>Division</th><th>Status</th><th>Updated</th><th></th></tr></thead><tbody>
+    <tr><td><strong>Corporate Professional</strong><div class="sm-code">CORP-PRO-2026</div></td><td>Acme Global</td><td>01 Jan – 31 Dec 2026</td><td><strong>18</strong></td><td>Corporate</td><td><span class="sm-pill sm-pill-green">Active</span></td><td class="text-muted">31 Jul 2026</td><td>•••</td></tr>
+    <tr><td><strong>Technology &amp; Data</strong><div class="sm-code">TECH-DATA-26</div></td><td>Acme Global</td><td>01 Apr 2026 – Open</td><td><strong>24</strong></td><td>Technology</td><td><span class="sm-pill sm-pill-green">Active</span></td><td class="text-muted">28 Jul 2026</td><td>•••</td></tr>
+    <tr><td><strong>Retail Operations</strong><div class="sm-code">RTL-OPS-2026</div></td><td>Acme Malaysia</td><td>01 Jan – 31 Dec 2026</td><td><strong>12</strong></td><td>Retail</td><td><span class="sm-pill sm-pill-green">Active</span></td><td class="text-muted">26 Jul 2026</td><td>•••</td></tr>
+    <tr><td><strong>Executive Leadership</strong><div class="sm-code">EXEC-2026</div></td><td>Acme Global</td><td>01 Jan – 31 Dec 2026</td><td><strong>6</strong></td><td>Executive</td><td><span class="sm-pill sm-pill-gray">Inactive</span></td><td class="text-muted">20 Jul 2026</td><td>•••</td></tr>
+    <tr><td><strong>Shared Services</strong><div class="sm-code">SHR-SVC-2026</div></td><td>Acme Singapore</td><td>01 Mar 2026 – 28 Feb 2027</td><td><strong>15</strong></td><td>Shared Services</td><td><span class="sm-pill sm-pill-green">Active</span></td><td class="text-muted">18 Jul 2026</td><td>•••</td></tr>
+    <tr><td><strong>Graduate Program</strong><div class="sm-code">GRAD-2026</div></td><td>Acme Malaysia</td><td>01 Jul 2026 – Open</td><td><strong>5</strong></td><td>People</td><td><span class="sm-pill sm-pill-green">Active</span></td><td class="text-muted">10 Jul 2026</td><td>•••</td></tr>
+   </tbody></table></div><div class="d-flex justify-content-between p-3 sm-subtitle"><span>Showing 1–6 of 12</span><strong class="text-dark">‹ &nbsp; 1 &nbsp; 2 &nbsp; ›</strong></div>
+  </section>
+ </main>
+</div>
