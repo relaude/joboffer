@@ -23,5 +23,6 @@ namespace JO.Service.Services.Contracts
         Task<int> SaveJobPosition(JobPositions jobPosition);
         Task<int> UpdateJobPosition(JobPositions jobPosition);
         Task<List<JobPositions>> GetJobPositions();
+        Task<List<VwCompanySalaryGrades>> GetCompanySalaryGrades(int companyId);
     }
 }

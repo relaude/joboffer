@@ -1,11 +1,54 @@
-<section class="sm-panel p-4 mb-4"><h5 class="sm-title mb-1">Matrix details</h5><p class="sm-subtitle mb-4">Ownership, naming and validity information.</p><div class="form-row">
- <div class="col-lg-4 mb-3"><label>Company *</label><select class="custom-select"><option>@(IsUpdate ? "Acme Global" : "Select company")</option></select></div><div class="col-lg-4 mb-3"><label>Division *</label><select class="custom-select"><option>@(IsUpdate ? "Corporate" : "Select division")</option></select></div><div class="col-lg-4 mb-3"><label>Currency *</label><select class="custom-select"><option>@(IsUpdate ? "USD — US Dollar" : "Select currency")</option></select></div>
- <div class="col-lg-5 mb-3"><label>Matrix name *</label><input class="form-control" value="@(IsUpdate ? "Corporate Professional" : null)" placeholder="e.g. Corporate Professional" /></div><div class="col-lg-3 mb-3"><label>Matrix code *</label><input class="form-control" value="@(IsUpdate ? "CORP-PRO-2026" : null)" placeholder="e.g. CORP-PRO-2026" /></div><div class="col-lg-2 mb-3"><label>Effective from *</label><input class="form-control" value="@(IsUpdate ? "01 Jan 2026" : null)" placeholder="dd / mm / yyyy" /></div><div class="col-lg-2 mb-3"><label>Effective to</label><input class="form-control" value="@(IsUpdate ? "31 Dec 2026" : null)" placeholder="dd / mm / yyyy" /></div>
-</div></section>
-<section class="sm-panel overflow-hidden mb-4"><div class="d-flex justify-content-between p-4"><div><h5 class="sm-title mb-1">Salary bands</h5><p class="sm-subtitle mb-0">Minimum ≤ Midpoint ≤ Maximum · Values use selected currency.</p></div><button class="btn btn-outline-primary">+ Add band</button></div><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Job level</th><th>Job family</th><th>Grade</th><th>Minimum</th><th>Midpoint</th><th>Maximum</th><th>Range flags</th><th></th></tr></thead><tbody>
- @if (IsUpdate) {<tr><td><div class="sm-band-cell">L2</div></td><td><div class="sm-band-cell">Finance</div></td><td><div class="sm-band-cell">P2</div></td><td><div class="sm-band-cell font-weight-bold">42,000</div></td><td><div class="sm-band-cell font-weight-bold">50,000</div></td><td><div class="sm-band-cell font-weight-bold">58,000</div></td><td><span class="sm-pill sm-pill-blue mr-1">Below</span><span class="sm-pill sm-pill-green">Above</span></td><td class="text-danger">×</td></tr><tr><td><div class="sm-band-cell">L3</div></td><td><div class="sm-band-cell">Finance</div></td><td><div class="sm-band-cell">P3</div></td><td><div class="sm-band-cell font-weight-bold">55,000</div></td><td><div class="sm-band-cell font-weight-bold">65,000</div></td><td><div class="sm-band-cell font-weight-bold">76,000</div></td><td><span class="sm-pill sm-pill-blue mr-1">Below</span><span class="sm-pill sm-pill-green">Above</span></td><td class="text-danger">×</td></tr><tr><td><div class="sm-band-cell">L4</div></td><td><div class="sm-band-cell">Technology</div></td><td><div class="sm-band-cell">P4</div></td><td><div class="sm-band-cell font-weight-bold">78,000</div></td><td><div class="sm-band-cell font-weight-bold">92,000</div></td><td><div class="sm-band-cell font-weight-bold">108,000</div></td><td><span class="sm-pill sm-pill-blue mr-1">Below</span><span class="sm-pill sm-pill-green">Above</span></td><td class="text-danger">×</td></tr>}
- else {<tr><td><div class="sm-band-cell text-muted">Select level</div></td><td><div class="sm-band-cell text-muted">Select family</div></td><td><div class="sm-band-cell text-muted">Select grade</div></td><td><div class="sm-band-cell">0</div></td><td><div class="sm-band-cell">0</div></td><td><div class="sm-band-cell">0</div></td><td><span class="sm-pill sm-pill-blue mr-1">Below</span><span class="sm-pill sm-pill-green">Above</span></td><td class="text-danger">×</td></tr><tr><td><div class="sm-band-cell text-muted">Select level</div></td><td><div class="sm-band-cell text-muted">Select family</div></td><td><div class="sm-band-cell text-muted">Select grade</div></td><td><div class="sm-band-cell">0</div></td><td><div class="sm-band-cell">0</div></td><td><div class="sm-band-cell">0</div></td><td><span class="sm-pill sm-pill-blue mr-1">Below</span><span class="sm-pill sm-pill-green">Above</span></td><td class="text-danger">×</td></tr>}
- </tbody></table></div></section>
+<section class="sm-panel p-4 mb-4">
+    <h5 class="sm-title mb-1">Matrix details</h5>
+    <p class="sm-subtitle mb-4">Company and validity information.</p>
+    <div class="form-row">
+        <div class="col-lg-4 mb-3">
+            <label>Company *</label>
+            <select class="custom-select"><option>@(IsUpdate ? "Acme Global" : "Select company")</option></select>
+        </div>
+        <div class="col-lg-4 mb-3">
+            <label>Effective from *</label>
+            <input class="form-control" value="@(IsUpdate ? "01 Jan 2026" : null)" placeholder="dd / mm / yyyy" />
+        </div>
+        <div class="col-lg-4 mb-3">
+            <label>Effective to</label>
+            <input class="form-control" value="@(IsUpdate ? "31 Dec 2026" : null)" placeholder="dd / mm / yyyy" />
+        </div>
+    </div>
+</section>
+
+<section class="sm-panel overflow-hidden mb-4">
+    <div class="d-flex justify-content-between p-4">
+        <div>
+            <h5 class="sm-title mb-1">Salary bands</h5>
+            <p class="sm-subtitle mb-0">Minimum ≤ Midpoint ≤ Maximum · Values use selected currency.</p>
+        </div>
+        <button class="btn btn-outline-primary">+ Add band</button>
+    </div>
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead><tr><th>Grade</th><th>Minimum</th><th>Midpoint</th><th>Maximum</th><th></th></tr></thead>
+            <tbody>
+                @if (IsUpdate)
+                {
+                    <tr><td><div class="sm-band-cell">P2</div></td><td><div class="sm-band-cell font-weight-bold">42,000</div></td><td><div class="sm-band-cell font-weight-bold">50,000</div></td><td><div class="sm-band-cell font-weight-bold">58,000</div></td><td><button type="button" class="btn btn-outline-danger btn-circle btn-sm" title="Remove band" aria-label="Remove band"><i class="fas fa-trash-alt fa-fw"></i></button></td></tr>
+                    <tr><td><div class="sm-band-cell">P3</div></td><td><div class="sm-band-cell font-weight-bold">55,000</div></td><td><div class="sm-band-cell font-weight-bold">65,000</div></td><td><div class="sm-band-cell font-weight-bold">76,000</div></td><td><button type="button" class="btn btn-outline-danger btn-circle btn-sm" title="Remove band" aria-label="Remove band"><i class="fas fa-trash-alt fa-fw"></i></button></td></tr>
+                    <tr><td><div class="sm-band-cell">P4</div></td><td><div class="sm-band-cell font-weight-bold">78,000</div></td><td><div class="sm-band-cell font-weight-bold">92,000</div></td><td><div class="sm-band-cell font-weight-bold">108,000</div></td><td><button type="button" class="btn btn-outline-danger btn-circle btn-sm" title="Remove band" aria-label="Remove band"><i class="fas fa-trash-alt fa-fw"></i></button></td></tr>
+                }
+                else
+                {
+                    <tr><td><div class="sm-band-cell text-muted">Select grade</div></td><td><div class="sm-band-cell">0</div></td><td><div class="sm-band-cell">0</div></td><td><div class="sm-band-cell">0</div></td><td><button type="button" class="btn btn-outline-danger btn-circle btn-sm" title="Remove band" aria-label="Remove band"><i class="fas fa-trash-alt fa-fw"></i></button></td></tr>
+                    <tr><td><div class="sm-band-cell text-muted">Select grade</div></td><td><div class="sm-band-cell">0</div></td><td><div class="sm-band-cell">0</div></td><td><div class="sm-band-cell">0</div></td><td><button type="button" class="btn btn-outline-danger btn-circle btn-sm" title="Remove band" aria-label="Remove band"><i class="fas fa-trash-alt fa-fw"></i></button></td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
 <div class="rounded p-3 mb-3 @(IsUpdate ? "sm-note-amber" : "sm-note-blue")"><strong>@(IsUpdate ? "Unsaved changes · 2 fields modified since 31 Jul 2026" : "Tip · Save as draft before submitting for approval.")</strong></div>
 <div class="sm-sticky-actions text-right"><button class="btn btn-outline-secondary mr-2">Cancel</button><button class="btn btn-outline-primary mr-2">Save as draft</button><button class="btn btn-primary px-4">@(IsUpdate ? "Save changes" : "Create matrix")</button></div>
-@code { [Parameter] public bool IsUpdate { get; set; } }
+
+@code {
+    [Parameter]
+    public bool IsUpdate { get; set; }
+}

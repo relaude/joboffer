@@ -1,0 +1,24 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TR)]
+@attribute [Route(JORoutes.TR.SalaryMatrix)]
+
+<div class="salary-mockup">
+
+    <main class="sm-page">
+        <header class="sm-page-header d-md-flex justify-content-between align-items-start mb-4">
+            <div>
+                <h2 class="sm-title mb-1">Salary Matrix</h2>
+                    <p class="sm-subtitle mb-0">Design and govern compensation ranges across the organization.</p>
+            </div>
+            <a class="btn btn-primary px-4" href="@($"{JORoutes.TR.SalaryMatrix}/new")"><i class="fas fa-plus mr-2"></i>New matrix</a>
+        </header>
+
+        <!--KPI-->
+        <MatrixxKPI />
+
+    </main>
+
+</div>
+
+@code {
+    
+}

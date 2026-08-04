@@ -8,6 +8,7 @@ namespace JO.Service.Constants
     {
         private const string PrefixAdmin = "/admin";
         private const string PrefixTA = "/ta";
+        private const string PrefixTR = "/tr";
         private const string PrefixJobOffer = "/joboffer";
         private const string PrefixHROD = "/hrod";
         private const string PrefixDH = "/dh";
@@ -89,6 +90,11 @@ namespace JO.Service.Constants
             public const string Dashboard = PrefixHROD + "/dashboard";
             public const string Approvals = PrefixHROD + "/approvals";
             public const string Approve = PrefixHROD + "/approve";
+        }
+
+        public static class TR
+        {
+            public const string SalaryMatrix = PrefixTR + "/salary-matrix";
         }
 
         public static class DH

@@ -69,6 +69,7 @@ namespace JO.Persistence.DataAccess
 
         //Views
         public DbSet<VwApprovals> VwApprovals { get; set; }
+        public DbSet<VwCompanySalaryGrades> VwCompanySalaryGrades { get; set; }
         public DbSet<VwCompensationBenefits> VwCompensationBenefits { get; set; }
         public DbSet<VwDiscussions> VwDiscussions { get; set; }
         public DbSet<VwDivisions> VwDivisions { get; set; }
@@ -86,6 +87,7 @@ namespace JO.Persistence.DataAccess
         {
             //Views
             modelBuilder.Entity<VwApprovals>().HasNoKey().ToView("vw_Approvals");
+            modelBuilder.Entity<VwCompanySalaryGrades>().HasNoKey().ToView("vw_CompanySalaryGrades");
             modelBuilder.Entity<VwCompensationBenefits>().HasNoKey().ToView("vw_CompensationBenefits");
             modelBuilder.Entity<VwDiscussions>().HasNoKey().ToView("vw_Discussions");
             modelBuilder.Entity<VwDivisions>().HasNoKey().ToView("vw_Divisions");

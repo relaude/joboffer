@@ -13,6 +13,11 @@
             <TAMenu />
         }
 
+        @if (user.IsInRole(JOUserRole.TR) == true)
+        {
+            <TRMenu />
+        }
+
         @if (user.IsInRole(JOUserRole.HROD) == true)
         {
             <HRODMenu />

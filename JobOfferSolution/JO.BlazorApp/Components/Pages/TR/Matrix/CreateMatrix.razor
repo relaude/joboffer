@@ -1,0 +1,182 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TR)]
+@attribute [Route(JORoutes.TR.SalaryMatrix + "/new")]
+
+<div class="salary-mockup">
+    <main class="sm-page">
+        <header class="sm-page-header d-md-flex justify-content-between mb-4">
+            <div>
+                <h2 class="sm-title mb-1">
+                    Create Salary Matrix
+                </h2>
+                <p class="sm-subtitle">Set ownership, effective dates and compensation ranges.</p>
+            </div>
+        </header>
+    
+        <section class="sm-panel p-4 mb-4">
+            <h5 class="sm-title mb-1">Matrix details</h5>
+            <p class="sm-subtitle mb-4">Company and validity information.</p>
+            <div class="form-row">
+                <div class="col-lg-4 mb-3">
+                    <label>Company <span class="text-danger">*</span></label>
+                    <select id="company"
+                            class="custom-select"
+                            value="@salaryMatrix.CompanyId"
+                            @onchange="OnCompanyChanged">
+                        <option value="">Select company</option>
+                        @foreach (var option in companies)
+                        {
+                            <option value="@option.Id">@option.Value</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <label>Effective from <span class="text-danger">*</span></label>
+                    <input type="date"
+                           class="form-control"
+                           @bind="salaryMatrix.EffectiveFrom"
+                           @bind:format="yyyy-MM-dd" />
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <label>Effective to</label>
+                    <input type="date"
+                           class="form-control"
+                           @bind="salaryMatrix.EffectiveTo"
+                           @bind:format="yyyy-MM-dd" />
+                </div>
+            </div>
+        </section>
+
+        <section class="sm-panel overflow-hidden mb-4">
+            <div class="d-flex justify-content-between p-4">
+                <div>
+                    <h5 class="sm-title mb-1">Salary bands</h5>
+                    <p class="sm-subtitle mb-0">Minimum ≤ Midpoint ≤ Maximum · Values use selected currency.</p>
+                </div>
+                <button class="btn btn-outline-primary" @onclick="AddBand">+ Add band</button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Grade</th>
+                            <th>Minimum</th>
+                            <th>Midpoint</th>
+                            <th>Maximum</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var band in salaryBands)
+                        {
+                            <tr @key="band">
+                                <td>
+                                    <select class="form-control form-control-sm" @bind="band.PositionGradeId">
+                                        <option value="">Select grade</option>
+                                        @foreach (var option in salaryGrades)
+                                        {
+                                            <option value="@option.Id">@option.GradeName</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           class="form-control form-control-sm text-right"
+                                           min="0"
+                                           step="1000"
+                                           @bind="band.BandMinimum" />
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           class="form-control form-control-sm text-right"
+                                           min="0"
+                                           step="1000"
+                                           @bind="band.BandMidpoint" />
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           class="form-control form-control-sm text-right"
+                                           min="0"
+                                           step="1000"
+                                           @bind="band.BandMaximum" />
+                                </td>
+                                <td class="text-center align-middle">
+                                    <button type="button"
+                                            class="btn btn-sm btn-link text-danger p-0"
+                                            title="Remove band"
+                                            @onclick="() => RemoveBand(band)">
+                                        <i class="fas fa-trash-alt fa-fw"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+@inject IDropDownListService DropDownListService
+@inject IAccountService AccountService
+@inject IAlertService AlertService
+@inject ISalaryMatrixService SalaryMatrixService
+
+@inject NavigationManager Navigation
+
+@code {
+    private readonly SalaryMatrix salaryMatrix = new()
+    {
+        CompanyId = 1,
+        DivisionId = 0,
+        MatrixName = "",
+        MatrixCode = "",
+        CurrencyId = 1,
+        EffectiveFrom = DateTime.Now,
+        EffectiveTo = DateTime.Now.AddYears(1),
+        ApprovalStatusId = 0,
+        IsActive = true
+    };
+
+    private List<DropdownDto> companies = new();
+    private List<VwCompanySalaryGrades> salaryGrades = new();
+    private readonly List<SalaryMatrixBand> salaryBands = new();
+
+    private int userId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userId = await AccountService.GetJobOfferUserId();
+        companies = await DropDownListService.GetCompanies();
+    }
+
+    private async Task OnCompanyChanged(ChangeEventArgs e)
+    {
+        salaryMatrix.CompanyId = int.TryParse(e.Value?.ToString(), out var companyId)
+            ? companyId
+            : null;
+
+        salaryMatrix.DivisionId = null;
+        salaryGrades.Clear();
+
+        if (salaryMatrix.CompanyId.HasValue)
+            salaryGrades = await SalaryMatrixService.GetCompanySalaryGrades(salaryMatrix.CompanyId.GetValueOrDefault());
+    }
+
+    private void AddBand()
+    {
+        salaryBands.Add(new SalaryMatrixBand
+        {
+            BelowBandFlagEnabled = true,
+            AboveBandFlagEnabled = true,
+            CreatedBy = userId,
+            CreatedAt = DateTime.Now
+        });
+    }
+
+    private void RemoveBand(SalaryMatrixBand band)
+    {
+        salaryBands.Remove(band);
+    }
+}

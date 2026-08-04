@@ -18,6 +18,15 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
+        public async Task<List<VwCompanySalaryGrades>> GetCompanySalaryGrades(int companyId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.VwCompanySalaryGrades
+                .Where(jo => jo.CompanyId == companyId)
+                .ToListAsync();
+        }
+
         public async Task<List<VwSalaryMatrixBand>> GetSalaryBandsByJOId(int jobOfferId)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
