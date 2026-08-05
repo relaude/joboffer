@@ -1,4 +1,5 @@
-﻿using JO.DataModel.Entity;
+﻿using JO.DataModel.DTOs;
+using JO.DataModel.Entity;
 using JO.DataModel.View;
 
 namespace JO.Service.Services.Contracts
@@ -7,7 +8,6 @@ namespace JO.Service.Services.Contracts
     {
         Task<int> CreateMatrix(SalaryMatrix matrix, List<SalaryMatrixBand> salaryBands);
         Task<VwSalaryMatrix> GetMatrix(int matrixId);
-        Task<List<VwSalaryMatrix>> GetMatrixList();
         Task<List<VwSalaryMatrixBand>> GetSalaryBands(int matrixId);
         Task<List<VwSalaryMatrixBand>> GetSalaryBandsByJOId(int jobOfferId);
         Task<int> UpdateMatrixEffectiveDate(int matrixId, DateTime effectiveTo, bool isActive, int modifiedBy);
@@ -24,5 +24,8 @@ namespace JO.Service.Services.Contracts
         Task<int> UpdateJobPosition(JobPositions jobPosition);
         Task<List<JobPositions>> GetJobPositions();
         Task<List<VwCompanySalaryGrades>> GetCompanySalaryGrades(int companyId);
+        Task<int> CreateMatrix(SalaryMatrix matrix, List<SalaryBandsDto> salaryBands);
+        Task<List<VwSalaryBands>> GetVwSalaryBands(int matrixId);
+        Task<List<VwSalaryMatrix>> GetVwSalaryMatrix();
     }
 }

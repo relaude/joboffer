@@ -1,0 +1,119 @@
+/* Main content-page stylesheet for job-offer, compensation/benefits, and salary-matrix views. */
+:root {
+    --job-offer-navy: #182451;
+    --job-offer-blue: #3157d5;
+    --job-offer-bg: #f5f7fb;
+    --job-offer-ink: #172033;
+    --job-offer-muted: #667085;
+    --job-offer-line: #e4e8f0;
+}
+
+/* Compensation and benefits */
+.cb-mockup{--cb-blue:var(--job-offer-blue);--cb-navy:var(--job-offer-navy);--cb-bg:var(--job-offer-bg);--cb-ink:var(--job-offer-ink);--cb-muted:var(--job-offer-muted);--cb-line:var(--job-offer-line);background:var(--cb-bg);color:var(--cb-ink);font-family:"Nunito",sans-serif;min-height:100vh;padding:3rem 4rem}.cb-page{max-width:1312px;margin:auto}.cb-header{display:flex;justify-content:space-between;align-items:flex-start;min-height:136px}.cb-header h1{font-size:2rem;font-weight:800;margin:.45rem 0 .25rem}.cb-header p,.cb-section-title p{color:var(--cb-muted);font-size:.82rem;margin:0}.cb-eyebrow{color:var(--cb-blue);font-size:.75rem;font-weight:800}.cb-primary{background:var(--cb-blue);border-color:var(--cb-blue);border-radius:.7rem;font-size:.8rem;font-weight:700;padding:.75rem 1.5rem}.cb-panel{background:#fff;border:1px solid var(--cb-line);border-radius:.75rem}.cb-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-bottom:1.5rem}.cb-kpi{position:relative;background:#fff;border:1px solid var(--cb-line);border-radius:.75rem;min-height:132px;padding:1.5rem 1.5rem 1rem 2.75rem}.cb-kpi:before{position:absolute;left:1.2rem;top:1.5rem;bottom:1.5rem;width:4px;border-radius:2px;content:""}.cb-kpi span,.cb-kpi small{display:block;color:var(--cb-muted);font-size:.68rem}.cb-kpi span{font-weight:800}.cb-kpi strong{display:block;font-size:1.75rem;margin:.7rem 0 .4rem}.cb-blue:before{background:#3157d5}.cb-amber:before{background:#a15c00}.cb-green:before{background:#16805b}.cb-red:before{background:#b42318}.cb-filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1.5rem;padding:1rem 1.25rem;margin-bottom:1.5rem}.cb-mockup label{color:var(--cb-muted);font-size:.65rem;font-weight:800;margin:0}.cb-mockup .form-control,.cb-mockup .custom-select{background:#f8fafc;border-color:var(--cb-line);border-radius:.5rem;font-size:.75rem;height:42px;margin-top:.45rem}.cb-list,.cb-benefits{padding:1.5rem}.cb-section-title h2,.cb-notes h2{font-size:1.1rem;font-weight:800;margin:0 0 .25rem}.cb-table{color:var(--cb-ink);font-size:.73rem;margin-top:1.2rem}.cb-table thead th{background:#f8fafc;border:0;color:var(--cb-muted);font-size:.62rem;text-transform:uppercase}.cb-table td,.cb-table th{border-color:var(--cb-line);padding:.9rem 1rem;vertical-align:middle;white-space:nowrap}.cb-table tbody tr:nth-child(even){background:#fbfcfe}.cb-table td:nth-last-child(2),.cb-table td:last-child{color:var(--cb-muted)}.cb-table a,.cb-link{color:var(--cb-blue)!important}.cb-status,.cb-pill{font-size:.68rem;font-weight:800}.cb-status.active,.cb-pill.active{color:#16805b}.cb-status.draft{color:#a15c00}.cb-status.expiring{color:#b42318}.cb-form-header{min-height:146px}.cb-breadcrumb{color:var(--cb-blue);font-size:.7rem;font-weight:700;margin-top:1rem}.cb-form-section{padding:1.5rem;margin-bottom:1.5rem}.cb-plan-grid{grid-template-columns:1.55fr 1fr 1.15fr .9fr!important}.cb-form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem 1.5rem;margin-top:1.5rem}.cb-two-column{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}.cb-toggle-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem 1rem;margin-top:1.8rem}.cb-toggle-grid label{display:flex;align-items:center;color:var(--cb-ink);font-size:.72rem}.cb-toggle-grid input{position:absolute;opacity:0}.cb-toggle-grid span{position:relative;width:38px;height:22px;background:#d1d5e2;border-radius:20px;margin-right:.75rem}.cb-toggle-grid span:after{position:absolute;left:3px;top:3px;width:16px;height:16px;background:#fff;border-radius:50%;content:""}.cb-toggle-grid input:checked+span{background:#16805b}.cb-toggle-grid input:checked+span:after{left:19px}.cb-title-actions,.cb-actions{display:flex;justify-content:space-between;align-items:center}.cb-soft{background:#eaf0ff;color:var(--cb-blue);border:0;border-radius:.65rem;font-size:.75rem;font-weight:700;padding:.7rem 1.25rem}.cb-actions{padding:1rem 1.5rem;margin-top:1.5rem}.cb-actions p{color:var(--cb-muted);font-size:.7rem;margin:0}.cb-actions .btn{margin-left:.5rem;min-width:110px;font-size:.75rem;font-weight:700}.cb-notice{background:#fff3d6;color:#a15c00;border-radius:.65rem;font-size:.72rem;font-weight:700;margin-bottom:1.5rem;padding:1rem 1.25rem}.cb-pill{background:#e7f6ef;border-radius:999px;padding:.65rem 1rem}.cb-summary{display:grid;grid-template-columns:40% 60%;padding:1.5rem;margin-bottom:1.5rem}.cb-summary h2{font-size:1.35rem;font-weight:800;margin:1rem 0 .25rem}.cb-summary p{color:var(--cb-muted);font-size:.75rem}.cb-summary dl{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin:0}.cb-summary dt,.cb-snapshot dt{color:var(--cb-muted);font-size:.58rem;font-weight:800}.cb-summary dd,.cb-snapshot dd{font-size:.75rem;font-weight:700;margin:.35rem 0 0}.cb-snapshot{background:var(--cb-navy);border-radius:.75rem;color:#fff;margin-bottom:1.5rem;padding:2rem}.cb-snapshot dl{display:grid;grid-template-columns:repeat(5,1fr);margin:0 0 1.5rem}.cb-snapshot dt{color:#b9c8f2}.cb-snapshot dd{font-size:.92rem}.cb-snapshot p{font-size:.75rem;margin:0}.cb-snapshot p span{color:#b9c8f2;font-size:.58rem;font-weight:800;margin-right:2rem}.cb-details-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem}.cb-notes{padding:1.5rem}.cb-notes h3{color:var(--cb-muted);font-size:.58rem;font-weight:800;margin:2rem 0 .7rem}.cb-notes p{font-size:.75rem}.cb-audit{background:#eaf0ff;border-radius:.65rem;margin-top:2rem;padding:1rem}.cb-audit span,.cb-audit strong{display:block}.cb-audit span{color:var(--cb-blue);font-size:.58rem;font-weight:800;margin-bottom:.7rem}.cb-audit strong{font-size:.7rem}@media(max-width:991.98px){.cb-mockup{padding:2rem}.cb-kpis{grid-template-columns:repeat(2,1fr)}.cb-plan-grid,.cb-form-grid,.cb-two-column,.cb-details-grid{grid-template-columns:1fr!important}.cb-summary{grid-template-columns:1fr;gap:1.5rem}.cb-snapshot dl{grid-template-columns:repeat(2,1fr);gap:1.5rem}}@media(max-width:575.98px){.cb-mockup{padding:1rem}.cb-header,.cb-actions{flex-direction:column;gap:1rem}.cb-kpis,.cb-filters,.cb-toggle-grid,.cb-summary dl{grid-template-columns:1fr}.cb-actions>div{display:flex;width:100%}.cb-actions .btn{flex:1;min-width:0;margin:0 .25rem}}
+
+/* Job offer analysis */
+.job-offer-analysis {
+    --joa-navy: var(--job-offer-navy);
+    --joa-blue: var(--job-offer-blue);
+    --joa-bg: var(--job-offer-bg);
+    --joa-ink: var(--job-offer-ink);
+    --joa-muted: var(--job-offer-muted);
+    --joa-line: var(--job-offer-line);
+    min-height: 100vh;
+    padding: 3rem 4rem;
+    background: var(--joa-bg);
+    color: var(--joa-ink);
+    font-family: "Nunito", sans-serif;
+}
+
+.joa-page { max-width: 1312px; margin: 0 auto; }
+.joa-header, .joa-candidate-panel, .joa-kpis, .joa-snapshot, .joa-detail-grid, .joa-decision, .joa-actions { display: flex; }
+.joa-header { min-height: 112px; justify-content: space-between; align-items: flex-start; }
+.joa-header h1 { margin: .45rem 0 .35rem; color: var(--joa-ink); font-size: 2rem; font-weight: 800; }
+.joa-header p, .joa-section-heading p, .joa-decision p { margin: 0; color: var(--joa-muted); font-size: .82rem; }
+.joa-eyebrow, .joa-label, .joa-table-label, .joa-subpanel h3 { color: var(--joa-muted); font-size: .68rem; font-weight: 800; letter-spacing: .01em; }
+.joa-eyebrow { color: var(--joa-blue); }
+.joa-status { padding: .62rem 1.1rem; border-radius: 999px; background: #eaf0ff; color: var(--joa-blue); font-size: .72rem; font-weight: 800; }
+
+.joa-panel { margin-bottom: 1.5rem; border: 1px solid var(--joa-line); border-radius: .75rem; background: #fff; }
+.joa-candidate-panel { min-height: 188px; align-items: center; padding: 1.75rem; gap: 2rem; }
+.joa-candidate { flex: 1 1 34%; }
+.joa-candidate h2 { margin: .6rem 0 .25rem; font-size: 1.35rem; font-weight: 800; }
+.joa-candidate p { margin-bottom: 1.25rem; color: var(--joa-muted); font-size: .8rem; }
+.joa-candidate a { color: var(--joa-blue); font-size: .8rem; font-weight: 700; }
+.joa-kpis { flex: 1 1 66%; gap: 1rem; }
+.joa-kpi { position: relative; flex: 1; min-height: 132px; padding: 1.15rem 1.25rem 1rem 2.35rem; border: 1px solid var(--joa-line); border-radius: .65rem; background: #f8fafc; }
+.joa-kpi::before { position: absolute; top: 1.15rem; bottom: 1.15rem; left: 1rem; width: 4px; border-radius: 2px; content: ""; }
+.joa-kpi-blue::before { background: var(--joa-blue); }
+.joa-kpi-green::before { background: #16805b; }
+.joa-kpi-amber::before { background: #a15c00; }
+.joa-kpi strong { display: block; margin: .8rem 0 .45rem; font-size: 1.5rem; font-weight: 800; }
+.joa-kpi small { color: var(--joa-muted); font-size: .68rem; }
+
+.joa-compensation, .joa-details { padding: 1.75rem; }
+.joa-section-heading h2, .joa-decision h2 { margin: 0 0 .35rem; font-size: 1.1rem; font-weight: 800; }
+.joa-snapshot { margin: 1.5rem 0; padding: 1.5rem; border-radius: .65rem; background: var(--joa-navy); color: #fff; }
+.joa-snapshot > div { flex: 1; padding: 0 1.5rem; border-right: 1px solid rgba(255,255,255,.15); }
+.joa-snapshot > div:first-child { padding-left: 0; }
+.joa-snapshot > div:last-child { border-right: 0; }
+.joa-snapshot span { display: block; margin-bottom: .65rem; color: #b9c8f2; font-size: .62rem; font-weight: 800; }
+.joa-snapshot strong { font-size: 1.45rem; font-weight: 800; }
+.joa-table-label { margin: .25rem 0 .8rem; }
+.joa-table { color: var(--joa-ink); font-size: .75rem; }
+.joa-table thead th { border: 0; background: #f8fafc; color: var(--joa-muted); font-size: .62rem; text-transform: uppercase; }
+.joa-table th, .joa-table td { padding: .75rem 1rem; border-color: var(--joa-line); vertical-align: middle; white-space: nowrap; }
+.joa-table tbody tr:nth-child(even) { background: #fbfcfe; }
+.joa-table tbody td:not(:first-child), .joa-table tfoot td { font-weight: 700; }
+.joa-table td:last-child { color: var(--joa-muted); font-size: .68rem; font-weight: 400; }
+.joa-table .joa-proposed { color: var(--joa-blue); }
+.joa-table tfoot { background: #eaf0ff; font-weight: 800; }
+
+.joa-detail-grid { margin-top: 1.5rem; gap: 1.5rem; }
+.joa-subpanel { flex: 1; padding: 1.25rem; border: 1px solid var(--joa-line); border-radius: .65rem; background: #f8fafc; }
+.joa-subpanel h3 { margin-bottom: 1rem; color: var(--joa-ink); }
+.joa-benefits, .joa-employment { margin: 0; }
+.joa-benefits > div { display: grid; grid-template-columns: minmax(190px, 1fr) 1fr; gap: 1rem; padding: .6rem 0; }
+.joa-benefits dt, .joa-benefits dd, .joa-employment dt, .joa-employment dd { margin: 0; }
+.joa-benefits dt { font-size: .75rem; font-weight: 700; }
+.joa-benefits dd { color: var(--joa-muted); font-size: .75rem; }
+.joa-dot { display: inline-block; width: 8px; height: 8px; margin-right: .85rem; border-radius: 50%; }
+.joa-dot-blue { background: var(--joa-blue); }
+.joa-dot-green { background: #16805b; }
+.joa-employment { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.15rem 2rem; }
+.joa-employment dt { margin-bottom: .25rem; color: var(--joa-muted); font-size: .56rem; font-weight: 800; }
+.joa-employment dd { font-size: .75rem; font-weight: 700; }
+
+.joa-decision { align-items: center; justify-content: space-between; gap: 2rem; padding: 1.5rem; }
+.joa-decision .joa-label { margin-bottom: .5rem; text-transform: none; }
+.joa-actions { flex-shrink: 0; gap: .75rem; }
+.joa-actions .btn { min-width: 112px; border-radius: .5rem; font-size: .75rem; font-weight: 700; }
+.joa-actions .btn-primary { min-width: 132px; background: var(--joa-blue); border-color: var(--joa-blue); }
+
+@media (max-width: 991.98px) {
+    .job-offer-analysis { padding: 2rem; }
+    .joa-candidate-panel, .joa-detail-grid { flex-direction: column; align-items: stretch; }
+    .joa-kpis { width: 100%; }
+    .joa-snapshot { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem 0; }
+    .joa-snapshot > div:nth-child(2) { border-right: 0; }
+}
+
+@media (max-width: 767.98px) {
+    .job-offer-analysis { padding: 1.25rem; }
+    .joa-header, .joa-kpis, .joa-decision { flex-direction: column; }
+    .joa-header { gap: 1rem; }
+    .joa-kpi { width: 100%; }
+    .joa-snapshot { grid-template-columns: 1fr; }
+    .joa-snapshot > div { padding: 0 0 1rem; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.15); }
+    .joa-snapshot > div:last-child { padding-bottom: 0; border-bottom: 0; }
+    .joa-benefits > div, .joa-employment { grid-template-columns: 1fr; }
+    .joa-actions { width: 100%; }
+    .joa-actions .btn { flex: 1; min-width: 0; }
+}
+
+/* Salary matrix */
+.salary-mockup{--sm-navy:var(--job-offer-navy);--sm-blue:var(--job-offer-blue);--sm-bg:var(--job-offer-bg);--sm-ink:var(--job-offer-ink);--sm-muted:var(--job-offer-muted);--sm-line:var(--job-offer-line);background:var(--sm-bg);color:var(--sm-ink);font-family:"Nunito",sans-serif;min-height:100vh;padding:2rem}
+.salary-mockup .sm-page{max-width:1180px;margin:auto}.salary-mockup .sm-subtitle{color:var(--sm-muted);font-size:.82rem}.salary-mockup .sm-panel{background:#fff;border:1px solid var(--sm-line);border-radius:.75rem}.salary-mockup .sm-title{font-weight:800;color:var(--sm-ink)}
+.salary-mockup .sm-kpi{min-height:124px}.salary-mockup .sm-kpi-icon{align-items:center;border-radius:.65rem;display:flex;height:40px;justify-content:center;width:40px}.salary-mockup .sm-kpi-label{color:var(--sm-muted);font-size:.66rem;font-weight:800;text-transform:uppercase}.salary-mockup .sm-kpi-value{font-size:1.7rem;font-weight:800;line-height:1.1}
+.salary-mockup .sm-pill{border-radius:999px;display:inline-block;font-size:.68rem;font-weight:800;line-height:1;padding:.45rem .75rem}.salary-mockup .sm-pill-blue{background:#eaf0ff;color:#3157d5}.salary-mockup .sm-pill-green{background:#e7f6ef;color:#16805b}.salary-mockup .sm-pill-amber{background:#fff3d6;color:#a15c00}.salary-mockup .sm-pill-red{background:#feeceb;color:#b42318}.salary-mockup .sm-pill-gray{background:#eef1f6;color:#667085}
+.salary-mockup .btn-primary{background:#3157d5;border-color:#3157d5}.salary-mockup .form-control,.salary-mockup .custom-select{border-color:var(--sm-line);border-radius:.5rem;font-size:.78rem;height:42px}.salary-mockup label{color:var(--sm-ink);font-size:.7rem;font-weight:800;margin-bottom:.35rem}.salary-mockup .table{color:var(--sm-ink);font-size:.75rem}.salary-mockup .table thead th{background:#f8fafc;border:0;color:var(--sm-muted);font-size:.63rem;letter-spacing:.02em;padding:.85rem;text-transform:uppercase}.salary-mockup .table td{border-color:var(--sm-line);padding:.85rem;vertical-align:middle}.salary-mockup .table tbody tr:nth-child(even){background:#fbfcfe}.salary-mockup .sm-code{color:var(--sm-muted);font-size:.66rem}.salary-mockup .sm-snapshot{background:var(--sm-navy);border-radius:.75rem;color:#fff}.salary-mockup .sm-snapshot small{color:#b9c8f2}.salary-mockup .sm-meta-label{color:var(--sm-muted);font-size:.62rem;font-weight:800;text-transform:uppercase}.salary-mockup .sm-meta-value{font-size:.78rem;font-weight:800}.salary-mockup .sm-step{background:#f1f3f7;color:var(--sm-muted);border-radius:999px;font-size:.7rem;font-weight:800;padding:.55rem 1rem}.salary-mockup .sm-step.active{background:#eaf0ff;color:#3157d5}.salary-mockup .sm-band-cell{background:#fff;border:1px solid var(--sm-line);border-radius:.4rem;min-height:42px;padding:.7rem}.salary-mockup .sm-note-blue{background:#eaf0ff;color:#3157d5}.salary-mockup .sm-note-amber{background:#fff3d6;color:#a15c00}.salary-mockup .sm-sticky-actions{background:rgba(245,247,251,.94);border-top:1px solid var(--sm-line);bottom:0;padding:1rem 0;position:sticky;z-index:2}@media(max-width:767.98px){.salary-mockup{padding:1rem}.salary-mockup .sm-page-header .btn{margin-top:1rem}.salary-mockup .sm-snapshot .col-md-3{margin-bottom:1rem}}
+

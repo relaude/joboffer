@@ -37,7 +37,7 @@
                            @bind:format="yyyy-MM-dd" />
                 </div>
                 <div class="col-lg-4 mb-3">
-                    <label>Effective to</label>
+                    <label>Effective to <span class="text-danger">*</span></label>
                     <input type="date"
                            class="form-control"
                            @bind="salaryMatrix.EffectiveTo"
@@ -50,9 +50,13 @@
             <div class="d-flex justify-content-between p-4">
                 <div>
                     <h5 class="sm-title mb-1">Salary bands</h5>
-                    <p class="sm-subtitle mb-0">Minimum ≤ Midpoint ≤ Maximum · Values use selected currency.</p>
+                    <p class="sm-subtitle mb-0">Minimum ≤ Midpoint ≤ Maximum</p>
                 </div>
-                <button class="btn btn-outline-primary" @onclick="AddBand">+ Add band</button>
+                <button class="btn btn-outline-primary" 
+                    @onclick="AddBand"
+                    disabled="@(!salaryGrades.Any())">
+                    + Add band
+                </button>
             </div>
 
             <div class="table-responsive">
@@ -71,40 +75,39 @@
                         {
                             <tr @key="band">
                                 <td>
-                                    <select class="form-control form-control-sm" @bind="band.PositionGradeId">
-                                        <option value="">Select grade</option>
+                                    <select class="form-control form-control-sm" @bind="band.CSGId">
                                         @foreach (var option in salaryGrades)
                                         {
-                                            <option value="@option.Id">@option.GradeName</option>
+                                            <option value="@option.Id">@($"{option.TypeName} - {option.GradeName}")</option>
                                         }
                                     </select>
                                 </td>
                                 <td>
                                     <input type="number"
                                            class="form-control form-control-sm text-right"
-                                           min="0"
-                                           step="1000"
-                                           @bind="band.BandMinimum" />
+                                           min="10000"
+                                           step="10000"
+                                           @bind="band.Minimum" />
                                 </td>
                                 <td>
                                     <input type="number"
                                            class="form-control form-control-sm text-right"
-                                           min="0"
-                                           step="1000"
-                                           @bind="band.BandMidpoint" />
+                                           min="10000"
+                                           step="10000"
+                                           @bind="band.Midpoint" />
                                 </td>
                                 <td>
                                     <input type="number"
                                            class="form-control form-control-sm text-right"
-                                           min="0"
-                                           step="1000"
-                                           @bind="band.BandMaximum" />
+                                           min="10000"
+                                           step="10000"
+                                           @bind="band.Maximum" />
                                 </td>
-                                <td class="text-center align-middle">
-                                    <button type="button"
-                                            class="btn btn-sm btn-link text-danger p-0"
-                                            title="Remove band"
-                                            @onclick="() => RemoveBand(band)">
+                                <td>
+                                    <button class="btn btn-outline-danger btn-circle btn-sm" 
+                                        title="Remove band" 
+                                        aria-label="Remove band"
+                                        @onclick="() => RemoveBand(band)">
                                         <i class="fas fa-trash-alt fa-fw"></i>
                                     </button>
                                 </td>
@@ -115,6 +118,10 @@
             </div>
         </section>
 
+        <div class="sm-sticky-actions text-right">
+            <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary mr-2">Cancel</a>
+            <button class="btn btn-primary px-4" @onclick="SaveMatrix">Create matrix</button>
+        </div>
     </main>
 </div>
 
@@ -129,26 +136,132 @@
     private readonly SalaryMatrix salaryMatrix = new()
     {
         CompanyId = 1,
-        DivisionId = 0,
-        MatrixName = "",
-        MatrixCode = "",
-        CurrencyId = 1,
         EffectiveFrom = DateTime.Now,
         EffectiveTo = DateTime.Now.AddYears(1),
-        ApprovalStatusId = 0,
         IsActive = true
     };
 
     private List<DropdownDto> companies = new();
     private List<VwCompanySalaryGrades> salaryGrades = new();
-    private readonly List<SalaryMatrixBand> salaryBands = new();
-
-    private int userId = 0;
+    private List<SalaryBandsDto> salaryBands = new();
 
     protected override async Task OnInitializedAsync()
     {
-        userId = await AccountService.GetJobOfferUserId();
         companies = await DropDownListService.GetCompanies();
+
+        salaryMatrix.CompanyId = companies.FirstOrDefault().Id;
+        salaryMatrix.CreatedBy = await AccountService.GetJobOfferUserId();
+
+        await OnCompanyChanged(new ChangeEventArgs
+        {
+            Value = salaryMatrix.CompanyId
+        });
+    }
+
+    private async Task SaveMatrix()
+    {
+        var errors = CollectErrors(new List<string>());
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        if (!await AlertService.Confirm()) return;
+
+        int matrixId = await SalaryMatrixService.CreateMatrix(salaryMatrix, salaryBands);
+        Navigation.NavigateTo($"{JORoutes.TR.SalaryMatrix}/{matrixId}");
+    }
+
+    private List<string> CollectErrors(List<string> errors)
+    {
+        if (!salaryMatrix.CompanyId.HasValue || salaryMatrix.CompanyId <= 0)
+            errors.Add("Company is required.");
+
+        if (!salaryMatrix.EffectiveFrom.HasValue)
+            errors.Add("Effective Date From is required.");
+
+        if (!salaryMatrix.EffectiveTo.HasValue)
+            errors.Add("Effective Date To is required.");
+
+        if (salaryMatrix.EffectiveFrom.HasValue
+            && salaryMatrix.EffectiveTo.HasValue
+            && salaryMatrix.EffectiveFrom > salaryMatrix.EffectiveTo)
+        {
+            errors.Add("Effective Date From cannot be later than Effective Date To.");
+        }
+
+        if (!salaryBands.Any())
+            errors.Add("Please add at least one salary band.");
+
+        else
+            CollectSalaryBandErrors(errors);
+
+        return errors;
+    }
+
+    private void CollectSalaryBandErrors(List<string> errors)
+    {
+        var csgIds = new HashSet<int>();
+
+        for (var index = 0; index < salaryBands.Count; index++)
+        {
+            var band = salaryBands[index];
+            var rowNumber = index + 1;
+
+            if (!band.CSGId.HasValue || band.CSGId <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Salary Grade is required.");
+            else if (!csgIds.Add(band.CSGId.Value))
+                errors.Add($"Salary Band Row {rowNumber}: Salary Grade is duplicated.");
+
+            if (!band.Minimum.HasValue || band.Minimum <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Minimum amount is required.");
+
+            if (!band.Midpoint.HasValue || band.Midpoint <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Midpoint amount is required.");
+
+            if (!band.Maximum.HasValue || band.Maximum <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Maximum amount is required.");
+
+            if (band.Minimum.HasValue
+                && band.Midpoint.HasValue
+                && band.Maximum.HasValue
+                && band.Maximum > 0
+                && band.Midpoint > 0
+                && band.Maximum > 0
+                && !(band.Minimum < band.Midpoint && band.Midpoint < band.Maximum))
+            {
+                errors.Add($"Salary Band Row {rowNumber}: Minimum, Midpoint, and Maximum must be in ascending order.");
+            }
+        }
+    }
+
+    private void AddBand()
+    {
+        var assignedGradeIds = salaryBands
+            .Where(band => band.CSGId.HasValue)
+            .Select(band => band.CSGId.Value)
+            .ToHashSet();
+
+        var nextSalaryGrade = salaryGrades
+            .FirstOrDefault(grade => !assignedGradeIds.Contains(grade.Id));
+
+        if (nextSalaryGrade is null)
+            return;
+
+        salaryBands.Add(new SalaryBandsDto
+        {
+            CSGId = nextSalaryGrade.Id,
+            Minimum = 30000,
+            Midpoint = 50000,
+            Maximum = 70000
+        });
+    }
+
+    private void RemoveBand(SalaryBandsDto band)
+    {
+        salaryBands.Remove(band);
     }
 
     private async Task OnCompanyChanged(ChangeEventArgs e)
@@ -157,26 +270,14 @@
             ? companyId
             : null;
 
-        salaryMatrix.DivisionId = null;
         salaryGrades.Clear();
+        salaryBands.Clear();
 
         if (salaryMatrix.CompanyId.HasValue)
-            salaryGrades = await SalaryMatrixService.GetCompanySalaryGrades(salaryMatrix.CompanyId.GetValueOrDefault());
-    }
-
-    private void AddBand()
-    {
-        salaryBands.Add(new SalaryMatrixBand
         {
-            BelowBandFlagEnabled = true,
-            AboveBandFlagEnabled = true,
-            CreatedBy = userId,
-            CreatedAt = DateTime.Now
-        });
-    }
-
-    private void RemoveBand(SalaryMatrixBand band)
-    {
-        salaryBands.Remove(band);
+            salaryGrades = await SalaryMatrixService
+                .GetCompanySalaryGrades(salaryMatrix.CompanyId.GetValueOrDefault());
+        }
+        
     }
 }

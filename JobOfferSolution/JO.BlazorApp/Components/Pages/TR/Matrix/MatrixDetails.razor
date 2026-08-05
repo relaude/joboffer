@@ -1,0 +1,123 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TR)]
+@attribute [Route(JORoutes.TR.SalaryMatrix + "/{matrixId:int}")]
+
+<div class="salary-mockup">
+    <main class="sm-page">
+        <header class="sm-page-header d-md-flex justify-content-between mb-4">
+            <div>
+                <h2 class="sm-title mb-1">Salary Matrix Details </h2>
+            </div>
+            <div>
+                <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary mr-2">← Back</a>
+                <button class="btn btn-primary px-4">Edit matrix</button>
+            </div>
+        </header>
+
+        <section class="sm-panel p-4 mb-4">
+            <div class="row">
+                <div class="col-lg-4 mb-3">
+                    @if(matrix.IsActive == true)
+                    { <span class="sm-pill sm-pill-green mr-2">ACTIVE</span> }
+
+                    @if(matrix.IsActive == false)
+                    { <span class="sm-pill sm-pill-gray mr-2">INACTIVE</span> }
+                    
+                    <h4 class="sm-title mt-3 mb-1">@matrix.CompanyName</h4>
+                    <div class="sm-code">@matrix.CompanyCode</div>
+                </div>
+
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="sm-meta-label">Effective period</div>
+                        <div class="sm-meta-value">
+                            @(matrix.EffectiveFrom?.ToString("dd MMM yyyy") ?? "-") – @(matrix.EffectiveTo?.ToString("dd MMM yyyy") ?? "-")
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="sm-meta-label">Salary bands</div>
+                        <div class="sm-meta-value">@(matrix.BandCount?.ToString() ?? "-")</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="sm-meta-label">Created by</div>
+                        <div class="sm-meta-value">@(string.IsNullOrWhiteSpace(matrix.CreatedByName) ? "-" : matrix.CreatedByName)</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="sm-meta-label">Created at</div>
+                        <div class="sm-meta-value">@(matrix.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="sm-meta-label">Modified by</div>
+                        <div class="sm-meta-value">@(string.IsNullOrWhiteSpace(matrix.ModifiedByName) ? "-" : matrix.ModifiedByName)</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="sm-meta-label">Modified at</div>
+                        <div class="sm-meta-value">@(matrix.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+        <section class="sm-panel overflow-hidden">
+            <div class="d-md-flex justify-content-between align-items-end p-3">
+                <div>
+                    <h5 class="sm-title mb-1">Salary bands</h5>
+                    <p class="sm-subtitle mb-0">Ranges by salary grade</p>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Grade</th>
+                            <th>Minimum</th>
+                            <th>Midpoint</th>
+                            <th>Maximum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (salaryBands.Any())
+                        {
+                            @foreach (var salaryBand in salaryBands)
+                            {
+                                <tr @key="salaryBand.Id">
+                                    <td>@(string.IsNullOrWhiteSpace(salaryBand.TypeName) ? "-" : salaryBand.TypeName)</td>
+                                    <td><strong>@(string.IsNullOrWhiteSpace(salaryBand.GradeName) ? "-" : salaryBand.GradeName)</strong></td>
+                                    <td><strong>@UtilitiesService.ToPeso(salaryBand.Minimum)</strong></td>
+                                    <td><strong>@UtilitiesService.ToPeso(salaryBand.Midpoint)</strong></td>
+                                    <td><strong>@UtilitiesService.ToPeso(salaryBand.Maximum)</strong></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-3">No salary bands configured.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+</main>
+</div>
+
+@inject ISalaryMatrixService SalaryMatrixService
+@inject IUtilitiesService UtilitiesService
+
+@code {
+    [Parameter] public int matrixId { get; set; }
+
+    private VwSalaryMatrix matrix = new();
+    private List<VwSalaryBands> salaryBands = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        matrix = await SalaryMatrixService.GetMatrix(matrixId);
+        salaryBands = await SalaryMatrixService.GetVwSalaryBands(matrixId);
+    }
+}

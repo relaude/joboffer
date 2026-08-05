@@ -1,0 +1,97 @@
+.job-offer-analysis {
+    --joa-navy: #182451;
+    --joa-blue: #3157d5;
+    --joa-bg: #f5f7fb;
+    --joa-ink: #172033;
+    --joa-muted: #667085;
+    --joa-line: #e4e8f0;
+    min-height: 100vh;
+    padding: 3rem 4rem;
+    background: var(--joa-bg);
+    color: var(--joa-ink);
+    font-family: "Nunito", sans-serif;
+}
+
+.joa-page { max-width: 1312px; margin: 0 auto; }
+.joa-header, .joa-candidate-panel, .joa-kpis, .joa-snapshot, .joa-detail-grid, .joa-decision, .joa-actions { display: flex; }
+.joa-header { min-height: 112px; justify-content: space-between; align-items: flex-start; }
+.joa-header h1 { margin: .45rem 0 .35rem; color: var(--joa-ink); font-size: 2rem; font-weight: 800; }
+.joa-header p, .joa-section-heading p, .joa-decision p { margin: 0; color: var(--joa-muted); font-size: .82rem; }
+.joa-eyebrow, .joa-label, .joa-table-label, .joa-subpanel h3 { color: var(--joa-muted); font-size: .68rem; font-weight: 800; letter-spacing: .01em; }
+.joa-eyebrow { color: var(--joa-blue); }
+.joa-status { padding: .62rem 1.1rem; border-radius: 999px; background: #eaf0ff; color: var(--joa-blue); font-size: .72rem; font-weight: 800; }
+
+.joa-panel { margin-bottom: 1.5rem; border: 1px solid var(--joa-line); border-radius: .75rem; background: #fff; }
+.joa-candidate-panel { min-height: 188px; align-items: center; padding: 1.75rem; gap: 2rem; }
+.joa-candidate { flex: 1 1 34%; }
+.joa-candidate h2 { margin: .6rem 0 .25rem; font-size: 1.35rem; font-weight: 800; }
+.joa-candidate p { margin-bottom: 1.25rem; color: var(--joa-muted); font-size: .8rem; }
+.joa-candidate a { color: var(--joa-blue); font-size: .8rem; font-weight: 700; }
+.joa-kpis { flex: 1 1 66%; gap: 1rem; }
+.joa-kpi { position: relative; flex: 1; min-height: 132px; padding: 1.15rem 1.25rem 1rem 2.35rem; border: 1px solid var(--joa-line); border-radius: .65rem; background: #f8fafc; }
+.joa-kpi::before { position: absolute; top: 1.15rem; bottom: 1.15rem; left: 1rem; width: 4px; border-radius: 2px; content: ""; }
+.joa-kpi-blue::before { background: var(--joa-blue); }
+.joa-kpi-green::before { background: #16805b; }
+.joa-kpi-amber::before { background: #a15c00; }
+.joa-kpi strong { display: block; margin: .8rem 0 .45rem; font-size: 1.5rem; font-weight: 800; }
+.joa-kpi small { color: var(--joa-muted); font-size: .68rem; }
+
+.joa-compensation, .joa-details { padding: 1.75rem; }
+.joa-section-heading h2, .joa-decision h2 { margin: 0 0 .35rem; font-size: 1.1rem; font-weight: 800; }
+.joa-snapshot { margin: 1.5rem 0; padding: 1.5rem; border-radius: .65rem; background: var(--joa-navy); color: #fff; }
+.joa-snapshot > div { flex: 1; padding: 0 1.5rem; border-right: 1px solid rgba(255,255,255,.15); }
+.joa-snapshot > div:first-child { padding-left: 0; }
+.joa-snapshot > div:last-child { border-right: 0; }
+.joa-snapshot span { display: block; margin-bottom: .65rem; color: #b9c8f2; font-size: .62rem; font-weight: 800; }
+.joa-snapshot strong { font-size: 1.45rem; font-weight: 800; }
+.joa-table-label { margin: .25rem 0 .8rem; }
+.joa-table { color: var(--joa-ink); font-size: .75rem; }
+.joa-table thead th { border: 0; background: #f8fafc; color: var(--joa-muted); font-size: .62rem; text-transform: uppercase; }
+.joa-table th, .joa-table td { padding: .75rem 1rem; border-color: var(--joa-line); vertical-align: middle; white-space: nowrap; }
+.joa-table tbody tr:nth-child(even) { background: #fbfcfe; }
+.joa-table tbody td:not(:first-child), .joa-table tfoot td { font-weight: 700; }
+.joa-table td:last-child { color: var(--joa-muted); font-size: .68rem; font-weight: 400; }
+.joa-table .joa-proposed { color: var(--joa-blue); }
+.joa-table tfoot { background: #eaf0ff; font-weight: 800; }
+
+.joa-detail-grid { margin-top: 1.5rem; gap: 1.5rem; }
+.joa-subpanel { flex: 1; padding: 1.25rem; border: 1px solid var(--joa-line); border-radius: .65rem; background: #f8fafc; }
+.joa-subpanel h3 { margin-bottom: 1rem; color: var(--joa-ink); }
+.joa-benefits, .joa-employment { margin: 0; }
+.joa-benefits > div { display: grid; grid-template-columns: minmax(190px, 1fr) 1fr; gap: 1rem; padding: .6rem 0; }
+.joa-benefits dt, .joa-benefits dd, .joa-employment dt, .joa-employment dd { margin: 0; }
+.joa-benefits dt { font-size: .75rem; font-weight: 700; }
+.joa-benefits dd { color: var(--joa-muted); font-size: .75rem; }
+.joa-dot { display: inline-block; width: 8px; height: 8px; margin-right: .85rem; border-radius: 50%; }
+.joa-dot-blue { background: var(--joa-blue); }
+.joa-dot-green { background: #16805b; }
+.joa-employment { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.15rem 2rem; }
+.joa-employment dt { margin-bottom: .25rem; color: var(--joa-muted); font-size: .56rem; font-weight: 800; }
+.joa-employment dd { font-size: .75rem; font-weight: 700; }
+
+.joa-decision { align-items: center; justify-content: space-between; gap: 2rem; padding: 1.5rem; }
+.joa-decision .joa-label { margin-bottom: .5rem; text-transform: none; }
+.joa-actions { flex-shrink: 0; gap: .75rem; }
+.joa-actions .btn { min-width: 112px; border-radius: .5rem; font-size: .75rem; font-weight: 700; }
+.joa-actions .btn-primary { min-width: 132px; background: var(--joa-blue); border-color: var(--joa-blue); }
+
+@media (max-width: 991.98px) {
+    .job-offer-analysis { padding: 2rem; }
+    .joa-candidate-panel, .joa-detail-grid { flex-direction: column; align-items: stretch; }
+    .joa-kpis { width: 100%; }
+    .joa-snapshot { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem 0; }
+    .joa-snapshot > div:nth-child(2) { border-right: 0; }
+}
+
+@media (max-width: 767.98px) {
+    .job-offer-analysis { padding: 1.25rem; }
+    .joa-header, .joa-kpis, .joa-decision { flex-direction: column; }
+    .joa-header { gap: 1rem; }
+    .joa-kpi { width: 100%; }
+    .joa-snapshot { grid-template-columns: 1fr; }
+    .joa-snapshot > div { padding: 0 0 1rem; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.15); }
+    .joa-snapshot > div:last-child { padding-bottom: 0; border-bottom: 0; }
+    .joa-benefits > div, .joa-employment { grid-template-columns: 1fr; }
+    .joa-actions { width: 100%; }
+    .joa-actions .btn { flex: 1; min-width: 0; }
+}

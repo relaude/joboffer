@@ -1,4 +1,5 @@
-﻿using JO.DataModel.Entity;
+﻿using JO.DataModel.DTOs;
+using JO.DataModel.Entity;
 using JO.DataModel.View;
 using JO.Persistence.DataAccess;
 using JO.Service.Constants;
@@ -6,6 +7,7 @@ using JO.Service.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Text;
 
 namespace JO.Service.Services
@@ -16,6 +18,15 @@ namespace JO.Service.Services
         public SalaryMatrixService(IDbContextFactory<JobOfferDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
+        }
+
+        public async Task<List<VwSalaryBands>> GetVwSalaryBands(int matrixId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.VwSalaryBands
+                .Where(jo => jo.MatrixId == matrixId)
+                .ToListAsync();
         }
 
         public async Task<List<VwCompanySalaryGrades>> GetCompanySalaryGrades(int companyId)
@@ -52,7 +63,7 @@ namespace JO.Service.Services
             return await context.VwSalaryMatrix.FirstOrDefaultAsync(jo=>jo.Id==matrixId);
         }
 
-        public async Task<List<VwSalaryMatrix>> GetMatrixList()
+        public async Task<List<VwSalaryMatrix>> GetVwSalaryMatrix()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
             return await context.VwSalaryMatrix.AsNoTracking().ToListAsync();
@@ -62,9 +73,9 @@ namespace JO.Service.Services
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
 
-            matrix.CreatedAt = DateTime.Now;
+            //matrix.CreatedAt = DateTime.Now;
             matrix.IsActive = true;
-            matrix.ApprovalStatusId = JOSalaryMatrixStatus.PendingApproval;
+            //matrix.ApprovalStatusId = JOSalaryMatrixStatus.PendingApproval;
 
             await context.SalaryMatrix.AddAsync(matrix);
             await context.SaveChangesAsync();
@@ -73,6 +84,35 @@ namespace JO.Service.Services
                 item.SalaryMatrixId = matrix.Id;
 
             await context.SalaryMatrixBand.AddRangeAsync(salaryBands);
+            await context.SaveChangesAsync();
+
+            return matrix.Id;
+        }
+
+        public async Task<int> CreateMatrix(SalaryMatrix matrix, List<SalaryBandsDto> salaryBands)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            matrix.CreatedAt = DateTime.Now;
+            matrix.IsActive = true;
+
+            await context.SalaryMatrix.AddAsync(matrix);
+            await context.SaveChangesAsync();
+
+            List<SalaryBands> newBands = new();
+            foreach (var item in salaryBands)
+            {
+                newBands.Add(new SalaryBands
+                {
+                    MatrixId = matrix.Id,
+                    CSGId = item.CSGId,
+                    Minimum = item.Minimum,
+                    Midpoint = item.Midpoint,
+                    Maximum = item.Maximum
+                });
+            }
+
+            await context.SalaryBands.AddRangeAsync(newBands);
             await context.SaveChangesAsync();
 
             return matrix.Id;

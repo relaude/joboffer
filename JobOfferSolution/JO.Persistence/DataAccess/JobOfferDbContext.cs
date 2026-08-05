@@ -32,6 +32,7 @@ namespace JO.Persistence.DataAccess
         //Salary
         public DbSet<SalaryMatrix> SalaryMatrix { get; set; }
         public DbSet<SalaryMatrixBand> SalaryMatrixBand { get; set; }
+        public DbSet<SalaryBands> SalaryBands { get; set; }
         public DbSet<Currencies> Currencies { get; set; }
         public DbSet<JobLevels> JobLevels { get; set; }
         public DbSet<JobFamilies> JobFamilies { get; set; }
@@ -79,6 +80,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwJOUsersInRoles> VwJOUsersInRoles { get; set; }
         public DbSet<VwLegalEntities> VwLegalEntities { get; set; }
         public DbSet<VwRolePermissions> VwRolePermissions { get; set; }
+        public DbSet<VwSalaryBands> VwSalaryBands { get; set; }
         public DbSet<VwSalaryMatrix> VwSalaryMatrix { get; set; }
         public DbSet<VwSalaryMatrixBand> VwSalaryMatrixBand { get; set; }
         public DbSet<VwUserDivisionAccess> VwUserDivisionAccess { get; set; }
@@ -97,6 +99,7 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwJOUsersInRoles>().HasNoKey().ToView("vw_JOUsersInRoles");
             modelBuilder.Entity<VwLegalEntities>().HasNoKey().ToView("vw_LegalEntities");
             modelBuilder.Entity<VwRolePermissions>().HasNoKey().ToView("vw_RolePermissions");
+            modelBuilder.Entity<VwSalaryBands>().HasNoKey().ToView("vw_SalaryBands");
             modelBuilder.Entity<VwSalaryMatrix>().HasNoKey().ToView("vw_SalaryMatrix");
             modelBuilder.Entity<VwSalaryMatrixBand>().HasNoKey().ToView("vw_SalaryMatrixBand");
             modelBuilder.Entity<VwUserDivisionAccess>().HasNoKey().ToView("vw_UserDivisionAccess");

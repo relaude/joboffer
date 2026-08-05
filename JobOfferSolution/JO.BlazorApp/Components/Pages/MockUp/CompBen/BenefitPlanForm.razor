@@ -1,0 +1,29 @@
+<section class="cb-panel cb-form-section"><div class="cb-section-title"><h2>Plan information</h2><p>Basic identity and applicability</p></div><div class="cb-form-grid cb-plan-grid">
+    <label>PLAN NAME<input class="form-control" value="@(IsUpdate ? "Regular Hire — Standard" : "")" placeholder="e.g. Regular Hire — Standard" /></label>
+    <label>EMPLOYMENT TYPE<select class="custom-select"><option>@(IsUpdate ? "Regular" : "Select type")</option></select></label>
+    <label>COMPANY<select class="custom-select"><option>@(IsUpdate ? "Unilab, Inc." : "Select company")</option></select></label>
+    <label>EFFECTIVE DATE<input class="form-control" value="@(IsUpdate ? "01 / 01 / 2026" : "")" placeholder="dd / mm / yyyy" /></label>
+</div></section>
+<div class="cb-two-column">
+    <section class="cb-panel cb-form-section"><div class="cb-section-title"><h2>Employment setup</h2><p>Hiring rules inherited by the offer</p></div><div class="cb-form-grid">
+        <label>WORK AREA<select class="custom-select"><option>@(IsUpdate ? "Office Provincial" : "Select work area")</option></select></label>
+        <label>SHIFT CODE<select class="custom-select"><option>@(IsUpdate ? "NPO — Non-punching" : "Select shift")</option></select></label>
+        <label>WORK SCHEDULE<select class="custom-select"><option>@(IsUpdate ? "Compressed" : "Select schedule")</option></select></label>
+        <label>JOB CLASS<select class="custom-select"><option>@(IsUpdate ? "Supervisory" : "Select class")</option></select></label>
+    </div></section>
+    <section class="cb-panel cb-form-section"><div class="cb-section-title"><h2>Eligibility rules</h2><p>Package flags from the source form</p></div><div class="cb-toggle-grid">
+        <label><input type="checkbox" checked /><span></span>Company car / motorized</label><label><input type="checkbox" checked /><span></span>Incentive program</label>
+        <label><input type="checkbox" /><span></span>Transportation allowance</label><label><input type="checkbox" /><span></span>Annual bonus</label>
+        <label><input type="checkbox" /><span></span>Special allowance</label><label><input type="checkbox" checked /><span></span>Non-swiping eligibility</label>
+    </div></section>
+</div>
+<section class="cb-panel cb-benefits"><div class="cb-section-title cb-title-actions"><div><h2>Benefit items</h2><p>Add entitlement rows and payout conditions</p></div><button class="btn cb-soft">+&nbsp; Add benefit item</button></div><div class="table-responsive"><table class="table cb-table"><thead><tr><th>Category</th><th>Benefit</th><th>Entitlement / Value</th><th>Payout / Conditions</th><th></th></tr></thead><tbody>
+    <tr><td class="cb-link">Health</td><td><strong>Hospitalization — employee</strong></td><td>₱150,000 maximum limit</td><td>Annual coverage</td><td>×</td></tr>
+    <tr><td class="cb-link">Health</td><td><strong>Medicine reimbursement</strong></td><td>₱5,000 / year</td><td>Reimbursable</td><td>×</td></tr>
+    <tr><td class="cb-link">Leaves</td><td><strong>Vacation leave</strong></td><td>7 days</td><td>Annual entitlement</td><td>×</td></tr>
+    <tr><td class="cb-link">Insurance</td><td><strong>Life insurance</strong></td><td>₱500,000 coverage</td><td>Company paid</td><td>×</td></tr>
+</tbody></table></div></section>
+<section class="cb-panel cb-actions"><p>Required fields are marked and validated before publishing.</p><div><a class="btn btn-outline-secondary" href="/mockup/compensation-benefits">Cancel</a><button class="btn cb-soft">Save draft</button><button class="btn btn-primary cb-primary">@(IsUpdate ? "Save changes" : "Create plan")</button></div></section>
+
+@code { [Parameter] public bool IsUpdate { get; set; } }
+<link href="css/job-offer.css" rel="stylesheet" />
