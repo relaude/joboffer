@@ -132,6 +132,20 @@
     <Build Include="dbo\Views\vw_LegalEntities.sql" />
     <Build Include="dbo\Views\vw_Discussions.sql" />
     <Build Include="dbo\Views\vw_Approvals.sql" />
+    <Build Include="dbo\Tables\SalaryGrades.sql" />
+    <Build Include="dbo\Tables\SalaryBands.sql" />
+    <Build Include="dbo\Tables\GradeTypes.sql" />
+    <Build Include="dbo\Tables\CompBenShift.sql" />
+    <Build Include="dbo\Tables\CompBenSched.sql" />
+    <Build Include="dbo\Tables\CompBenPlans.sql" />
+    <Build Include="dbo\Tables\CompBenMRI.sql" />
+    <Build Include="dbo\Tables\CompBenFreq.sql" />
+    <Build Include="dbo\Tables\CompBenEmpType.sql" />
+    <Build Include="dbo\Tables\CompBenClass.sql" />
+    <Build Include="dbo\Tables\CompBenArea.sql" />
+    <Build Include="dbo\Tables\CompanySalaryGrades.sql" />
+    <Build Include="dbo\Views\vw_SalaryBands.sql" />
+    <Build Include="dbo\Views\vw_CompanySalaryGrades.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

@@ -95,6 +95,12 @@ namespace JO.Service.Constants
         public static class TR
         {
             public const string SalaryMatrix = PrefixTR + "/salary-matrix";
+            public const string SalaryMatrixNew = PrefixTR + "/salary-matrix/new";
+            public const string SalaryMatrixEdit = PrefixTR + "/salary-matrix/edit";
+
+            public const string CompBen = PrefixTR + "/benefits";
+            public const string CompBenNew = PrefixTR + "/benefit/new";
+            public const string CompBenEdit = PrefixTR + "/benefit/edit";
         }
 
         public static class DH

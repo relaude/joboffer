@@ -20,6 +20,24 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
+        public async Task<List<DropdownDto>> GetNewMatrixCompanies()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.Companies
+                .AsNoTracking()
+                .Where(company => !context.VwSalaryMatrix.Any(matrix =>
+                    matrix.CompanyId == company.Id 
+                    && matrix.IsActive == true))
+                .OrderBy(company => company.CompanyCode)
+                .Select(company => new DropdownDto
+                {
+                    Id = company.Id,
+                    Value = $"{company.CompanyCode} - {company.CompanyName}"
+                })
+                .ToListAsync();
+        }
+
         public async Task<List<VwSalaryBands>> GetVwSalaryBands(int matrixId)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
@@ -57,36 +75,22 @@ namespace JO.Service.Services
                 .ToListAsync();
         }
 
-        public async Task<VwSalaryMatrix> GetMatrix(int matrixId)
+        public async Task<VwSalaryMatrix> GetVwSalaryMatrix(int matrixId)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
             return await context.VwSalaryMatrix.FirstOrDefaultAsync(jo=>jo.Id==matrixId);
+        }
+
+        public async Task<SalaryMatrix> GetSalaryMatrix(int matrixId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.SalaryMatrix.FindAsync(matrixId);
         }
 
         public async Task<List<VwSalaryMatrix>> GetVwSalaryMatrix()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
             return await context.VwSalaryMatrix.AsNoTracking().ToListAsync();
-        }
-
-        public async Task<int> CreateMatrix(SalaryMatrix matrix, List<SalaryMatrixBand> salaryBands)
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-
-            //matrix.CreatedAt = DateTime.Now;
-            matrix.IsActive = true;
-            //matrix.ApprovalStatusId = JOSalaryMatrixStatus.PendingApproval;
-
-            await context.SalaryMatrix.AddAsync(matrix);
-            await context.SaveChangesAsync();
-
-            foreach (var item in salaryBands)
-                item.SalaryMatrixId = matrix.Id;
-
-            await context.SalaryMatrixBand.AddRangeAsync(salaryBands);
-            await context.SaveChangesAsync();
-
-            return matrix.Id;
         }
 
         public async Task<int> CreateMatrix(SalaryMatrix matrix, List<SalaryBandsDto> salaryBands)
@@ -118,26 +122,30 @@ namespace JO.Service.Services
             return matrix.Id;
         }
 
-        public async Task<int> UpdateMatrixEffectiveDate(int matrixId,
-            DateTime effectiveTo,
-            bool isActive,
-            int modifiedBy)
+        public async Task<int> UpdateMatrix(SalaryMatrix matrix, List<SalaryBandsDto> salaryBands)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
 
-            var entity = await context.SalaryMatrix.FindAsync(matrixId);
+            var deleteBands = await context.SalaryBands
+                .Where(jo=>jo.MatrixId == matrix.Id)
+                .ToListAsync();
 
-            if (entity == null)
-                return 0;
-
-            entity.IsActive = isActive;
-
-            if (isActive)
+            List<SalaryBands> newBands = new();
+            foreach (var item in salaryBands)
             {
-                entity.EffectiveTo = effectiveTo;
-                entity.ModifiedBy = modifiedBy;
-                entity.ModifiedAt = DateTime.Now;
+                newBands.Add(new SalaryBands
+                {
+                    MatrixId = matrix.Id,
+                    CSGId = item.CSGId,
+                    Minimum = item.Minimum,
+                    Midpoint = item.Midpoint,
+                    Maximum = item.Maximum
+                });
             }
+
+            context.SalaryMatrix.Update(matrix);
+            context.SalaryBands.RemoveRange(deleteBands);
+            await context.SalaryBands.AddRangeAsync(newBands);
 
             return await context.SaveChangesAsync();
         }

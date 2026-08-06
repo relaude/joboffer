@@ -1,0 +1,25 @@
+﻿CREATE TABLE [dbo].[CompBenPlans] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [PlanName]   NVARCHAR (200) NULL,
+    [CompanyId]  INT            NULL,
+    [CSGId]      INT            NULL,
+    [TypeId]     INT            NULL,
+    [AreaId]     INT            NULL,
+    [SchedId]    INT            NULL,
+    [ShiftId]    INT            NULL,
+    [ClassId]    INT            NULL,
+    [FreqId]     INT            NULL,
+    [MRIId]      INT            NULL,
+    [Motorized]  BIT            NULL,
+    [AllowTrans] BIT            NULL,
+    [AllowSpec]  BIT            NULL,
+    [Incentive]  BIT            NULL,
+    [Annual]     BIT            NULL,
+    [NonSwipe]   BIT            NULL,
+    [CreatedBy]  INT            NULL,
+    [CreatedAt]  DATETIME       NULL,
+    [ModifiedBy] INT            NULL,
+    [ModifiedAt] DATETIME       NULL,
+    CONSTRAINT [PK_CompBenPlans] PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+

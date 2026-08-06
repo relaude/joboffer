@@ -12,5 +12,6 @@ namespace JO.DataModel.DTOs
         public decimal? Minimum { get; set; }
         public decimal? Midpoint { get; set; }
         public decimal? Maximum { get; set; }
+        public bool? LockCSGId { get; set; } = false;
     }
 }

@@ -9,7 +9,7 @@
             </div>
             <div>
                 <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary mr-2">← Back</a>
-                <button class="btn btn-primary px-4">Edit matrix</button>
+                <a href="@($"{JORoutes.TR.SalaryMatrixEdit}/{matrixId}")" class="btn btn-primary px-4">Edit matrix</a>
             </div>
         </header>
 
@@ -26,39 +26,29 @@
                     <div class="sm-code">@matrix.CompanyCode</div>
                 </div>
 
-            <div class="col-lg-8">
-                <div class="row">
-                    <div class="col-sm-4 mb-3">
-                        <div class="sm-meta-label">Effective period</div>
-                        <div class="sm-meta-value">
-                            @(matrix.EffectiveFrom?.ToString("dd MMM yyyy") ?? "-") – @(matrix.EffectiveTo?.ToString("dd MMM yyyy") ?? "-")
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-sm-4 mb-3">
+                            <div class="sm-meta-label">Created by</div>
+                            <div class="sm-meta-value">@(string.IsNullOrWhiteSpace(matrix.CreatedByName) ? "-" : matrix.CreatedByName)</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="sm-meta-label">Created at</div>
+                            <div class="sm-meta-value">@(matrix.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
                         </div>
                     </div>
-                    <div class="col-sm-4 mb-3">
-                        <div class="sm-meta-label">Salary bands</div>
-                        <div class="sm-meta-value">@(matrix.BandCount?.ToString() ?? "-")</div>
-                    </div>
-                    <div class="col-sm-4 mb-3">
-                        <div class="sm-meta-label">Created by</div>
-                        <div class="sm-meta-value">@(string.IsNullOrWhiteSpace(matrix.CreatedByName) ? "-" : matrix.CreatedByName)</div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-sm-4">
-                        <div class="sm-meta-label">Created at</div>
-                        <div class="sm-meta-value">@(matrix.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="sm-meta-label">Modified by</div>
-                        <div class="sm-meta-value">@(string.IsNullOrWhiteSpace(matrix.ModifiedByName) ? "-" : matrix.ModifiedByName)</div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="sm-meta-label">Modified at</div>
-                        <div class="sm-meta-value">@(matrix.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="sm-meta-label">Modified by</div>
+                            <div class="sm-meta-value">@(string.IsNullOrWhiteSpace(matrix.ModifiedByName) ? "-" : matrix.ModifiedByName)</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="sm-meta-label">Modified at</div>
+                            <div class="sm-meta-value">@(matrix.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                        </div>
                     </div>
                 </div>
-            </div>
         </div>
     </section>
         <section class="sm-panel overflow-hidden">
@@ -117,7 +107,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        matrix = await SalaryMatrixService.GetMatrix(matrixId);
+        matrix = await SalaryMatrixService.GetVwSalaryMatrix(matrixId);
         salaryBands = await SalaryMatrixService.GetVwSalaryBands(matrixId);
     }
 }

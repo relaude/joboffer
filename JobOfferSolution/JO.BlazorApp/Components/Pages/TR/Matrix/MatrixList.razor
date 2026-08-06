@@ -9,7 +9,7 @@
                 <h2 class="sm-title mb-1">Salary Matrix</h2>
                     <p class="sm-subtitle mb-0">Design and govern compensation ranges across the organization.</p>
             </div>
-            <a class="btn btn-primary px-4" href="@($"{JORoutes.TR.SalaryMatrix}/new")"><i class="fas fa-plus mr-2"></i>New matrix</a>
+            <a class="btn btn-primary px-4" href="@JORoutes.TR.SalaryMatrixNew"><i class="fas fa-plus mr-2"></i>New matrix</a>
         </header>
 
         <!--KPI-->
@@ -28,7 +28,6 @@
                     <thead>
                         <tr>
                             <th>Company</th>
-                            <th>Effective period</th>
                             <th>Bands</th>
                             <th>Status</th>
                             <th>Created</th>
@@ -45,9 +44,6 @@
                                     <td>
                                         <strong>@(string.IsNullOrWhiteSpace(matrix.CompanyName) ? "-" : matrix.CompanyName)</strong>
                                         <div class="sm-code">@(string.IsNullOrWhiteSpace(matrix.CompanyCode) ? "-" : matrix.CompanyCode)</div>
-                                    </td>
-                                    <td>
-                                        @(matrix.EffectiveFrom?.ToString("dd MMM yyyy") ?? "-") – @(matrix.EffectiveTo?.ToString("dd MMM yyyy") ?? "Open")
                                     </td>
                                     <td><strong>@(matrix.BandCount?.ToString() ?? "-")</strong></td>
                                     <td>
@@ -84,7 +80,7 @@
                                                     View
                                                 </a>
                                                 <a class="dropdown-item"
-                                                   href="@($"{JORoutes.TR.SalaryMatrix}/{matrix.Id}/edit")">
+                                                   href="@($"{JORoutes.TR.SalaryMatrixEdit}/{matrix.Id}")">
                                                     Edit
                                                 </a>
                                             </div>

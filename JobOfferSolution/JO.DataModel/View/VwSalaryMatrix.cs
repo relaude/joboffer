@@ -8,10 +8,9 @@ namespace JO.DataModel.View
     {
         public int Id { get; set; }
         public bool? IsActive { get; set; }
+        public int? CompanyId { get; set; }
         public string? CompanyCode { get; set; }
         public string? CompanyName { get; set; }
-        public DateTime? EffectiveFrom { get; set; }
-        public DateTime? EffectiveTo { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string? CreatedByName { get; set; }
         public DateTime? ModifiedAt { get; set; }

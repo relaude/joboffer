@@ -17,5 +17,13 @@ namespace JO.Service.Services.Contracts
         Task<int> UpdatePackage(CompBenPackages package);
         Task<int> SavePackageItem(CompensationBenefits packageItem);
         Task<int> UpdatePackageItem(CompensationBenefits packageItem);
+        Task<List<CompBenEmpType>> GetCompBenEmpType();
+        Task<List<Companies>> GetCompanies();
+        Task<List<CompBenArea>> GetCompBenArea();
+        Task<List<CompBenSched>> GetCompBenSched();
+        Task<List<CompBenShift>> GetCompBenShift();
+        Task<List<CompBenClass>> GetCompBenClass();
+        Task<List<CompBenFreq>> GetCompBenFreq();
+        Task<List<CompBenMRI>> GetCompBenMRI();
     }
 }

@@ -15,6 +15,54 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<CompBenMRI>> GetCompBenMRI()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompBenMRI.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<CompBenFreq>> GetCompBenFreq()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompBenFreq.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<CompBenClass>> GetCompBenClass()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompBenClass.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<CompBenShift>> GetCompBenShift()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompBenShift.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<CompBenSched>> GetCompBenSched()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompBenSched.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<CompBenArea>> GetCompBenArea()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompBenArea.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<Companies>> GetCompanies()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.Companies.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<CompBenEmpType>> GetCompBenEmpType()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompBenEmpType.AsNoTracking().ToListAsync();
+        }
+
         public async Task<List<VwCompensationBenefits>> GetCompensationBenefits()
         {
             await using var context = await _dbContext.CreateDbContextAsync();

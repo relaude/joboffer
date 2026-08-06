@@ -6,12 +6,9 @@ namespace JO.Service.Services.Contracts
 {
     public interface ISalaryMatrixService
     {
-        Task<int> CreateMatrix(SalaryMatrix matrix, List<SalaryMatrixBand> salaryBands);
-        Task<VwSalaryMatrix> GetMatrix(int matrixId);
+        Task<VwSalaryMatrix> GetVwSalaryMatrix(int matrixId);
         Task<List<VwSalaryMatrixBand>> GetSalaryBands(int matrixId);
         Task<List<VwSalaryMatrixBand>> GetSalaryBandsByJOId(int jobOfferId);
-        Task<int> UpdateMatrixEffectiveDate(int matrixId, DateTime effectiveTo, bool isActive, int modifiedBy);
-
         Task<int> SaveJobFamily(JobFamilies jobFamily);
         Task<int> UpdateJobFamily(JobFamilies jobFamily);
         Task<List<JobFamilies>> GetJobFamilies();
@@ -27,5 +24,8 @@ namespace JO.Service.Services.Contracts
         Task<int> CreateMatrix(SalaryMatrix matrix, List<SalaryBandsDto> salaryBands);
         Task<List<VwSalaryBands>> GetVwSalaryBands(int matrixId);
         Task<List<VwSalaryMatrix>> GetVwSalaryMatrix();
+        Task<SalaryMatrix> GetSalaryMatrix(int matrixId);
+        Task<int> UpdateMatrix(SalaryMatrix matrix, List<SalaryBandsDto> salaryBands);
+        Task<List<DropdownDto>> GetNewMatrixCompanies();
     }
 }

@@ -1,34 +1,16 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TR)]
-@attribute [Route(JORoutes.TR.SalaryMatrixNew)]
+@attribute [Route(JORoutes.TR.SalaryMatrixEdit + "/{matrixId:int}")]
 
 <div class="salary-mockup">
     <main class="sm-page">
         <header class="sm-page-header d-md-flex justify-content-between mb-4">
             <div>
                 <h2 class="sm-title mb-1">
-                    Create Salary Matrix
+                    @($"{vwSalaryMatrix.CompanyCode} - {vwSalaryMatrix.CompanyName}")
                 </h2>
                 <p class="sm-subtitle">Set ownership, effective dates and compensation ranges.</p>
             </div>
         </header>
-    
-        <section class="sm-panel p-4 mb-4">
-            <h5 class="sm-title mb-1">Matrix details</h5>
-            <p class="sm-subtitle mb-4">Company and validity information.</p>
-            <div class="form-row">
-                <label>Company <span class="text-danger">*</span></label>
-                <select id="company"
-                        class="custom-select"
-                        value="@salaryMatrix.CompanyId"
-                        @onchange="OnCompanyChanged">
-                    <option value="">Select company</option>
-                    @foreach (var option in companies)
-                    {
-                        <option value="@option.Id">@option.Value</option>
-                    }
-                </select>
-            </div>
-        </section>
 
         <section class="sm-panel overflow-hidden mb-4">
             <div class="d-flex justify-content-between p-4">
@@ -59,7 +41,9 @@
                         {
                             <tr @key="band">
                                 <td>
-                                    <select class="form-control form-control-sm" @bind="band.CSGId">
+                                    <select class="form-control form-control-sm" 
+                                        @bind="band.CSGId" 
+                                        disabled="@band.LockCSGId">
                                         @foreach (var option in salaryGrades)
                                         {
                                             <option value="@option.Id">@($"{option.TypeName} - {option.GradeName}")</option>
@@ -91,6 +75,7 @@
                                     <button class="btn btn-outline-danger btn-circle btn-sm" 
                                         title="Remove band" 
                                         aria-label="Remove band"
+                                        disabled="@band.LockCSGId"
                                         @onclick="() => RemoveBand(band)">
                                         <i class="fas fa-trash-alt fa-fw"></i>
                                     </button>
@@ -104,7 +89,7 @@
 
         <div class="sm-sticky-actions text-right">
             <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary mr-2">Cancel</a>
-            <button class="btn btn-primary px-4" @onclick="SaveMatrix">Create matrix</button>
+            <button class="btn btn-primary px-4" @onclick="SaveMatrix">Update matrix</button>
         </div>
     </main>
 </div>
@@ -117,26 +102,44 @@
 @inject NavigationManager Navigation
 
 @code {
-    private readonly SalaryMatrix salaryMatrix = new()
-    {
-        IsActive = true
-    };
+    [Parameter] public int matrixId { get; set; }
+
+    private SalaryMatrix salaryMatrix = new();
+    private VwSalaryMatrix vwSalaryMatrix = new();
 
     private List<DropdownDto> companies = new();
     private List<VwCompanySalaryGrades> salaryGrades = new();
     private List<SalaryBandsDto> salaryBands = new();
+    private List<VwSalaryBands> vwSalaryBands = new();
 
     protected override async Task OnInitializedAsync()
     {
-        companies = await SalaryMatrixService.GetNewMatrixCompanies();
+        salaryMatrix = await SalaryMatrixService.GetSalaryMatrix(matrixId);
+        vwSalaryMatrix = await SalaryMatrixService.GetVwSalaryMatrix(matrixId);
 
-        salaryMatrix.CompanyId = companies.FirstOrDefault().Id;
-        salaryMatrix.CreatedBy = await AccountService.GetJobOfferUserId();
+        salaryGrades = await SalaryMatrixService
+                .GetCompanySalaryGrades(salaryMatrix.CompanyId.GetValueOrDefault());
 
-        await OnCompanyChanged(new ChangeEventArgs
+        await FillSalaryBands();
+    }
+
+    private async Task FillSalaryBands()
+    {
+        vwSalaryBands = await SalaryMatrixService.GetVwSalaryBands(matrixId);
+
+        foreach (var item in vwSalaryBands)
         {
-            Value = salaryMatrix.CompanyId
-        });
+            salaryBands.Add(new SalaryBandsDto
+            {
+                CSGId = item.CSGId,
+                GradeName = item.GradeName,
+                LockCSGId = true,
+                Maximum = item.Maximum,
+                Midpoint = item.Midpoint,
+                Minimum = item.Minimum,
+                TypeName = item.TypeName
+            });
+        }
     }
 
     private async Task SaveMatrix()
@@ -151,15 +154,15 @@
 
         if (!await AlertService.Confirm()) return;
 
-        int matrixId = await SalaryMatrixService.CreateMatrix(salaryMatrix, salaryBands);
+        salaryMatrix.ModifiedBy = await AccountService.GetJobOfferUserId();
+        salaryMatrix.ModifiedAt = DateTime.Now;
+
+        await SalaryMatrixService.UpdateMatrix(salaryMatrix, salaryBands);
         Navigation.NavigateTo($"{JORoutes.TR.SalaryMatrix}/{matrixId}");
     }
 
     private List<string> CollectErrors(List<string> errors)
     {
-        if (!salaryMatrix.CompanyId.HasValue || salaryMatrix.CompanyId <= 0)
-            errors.Add("Company is required.");
-
         if (!salaryBands.Any())
             errors.Add("Please add at least one salary band.");
 
@@ -230,22 +233,5 @@
     private void RemoveBand(SalaryBandsDto band)
     {
         salaryBands.Remove(band);
-    }
-
-    private async Task OnCompanyChanged(ChangeEventArgs e)
-    {
-        salaryMatrix.CompanyId = int.TryParse(e.Value?.ToString(), out var companyId)
-            ? companyId
-            : null;
-
-        salaryGrades.Clear();
-        salaryBands.Clear();
-
-        if (salaryMatrix.CompanyId.HasValue)
-        {
-            salaryGrades = await SalaryMatrixService
-                .GetCompanySalaryGrades(salaryMatrix.CompanyId.GetValueOrDefault());
-        }
-        
     }
 }

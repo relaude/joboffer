@@ -1,0 +1,224 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TR)]
+@attribute [Route(JORoutes.TR.CompBenNew)]
+
+<div class="cb-mockup">
+    <main class="cb-page">
+        <header class="cb-header cb-form-header">
+            <div>
+                <div class="cb-eyebrow">COMPENSATION &amp; BENEFITS</div>
+                <h1>Create Benefit Plan</h1>
+                <p>Define a reusable package for regular, project-hire, or consultant offers.</p>
+            </div>
+        </header>
+
+        <section class="cb-panel cb-form-section">
+            <div class="cb-section-title">
+                <h2>Plan information</h2>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label>NAME</label>
+                    <input class="form-control" 
+                        placeholder="e.g. Regular Hire — Standard" 
+                        value="@compBenPlan.PlanName" />
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>EMPLOYMENT TYPE</label>
+                    <select class="custom-select"
+                        value="@compBenPlan.TypeId">
+                        @foreach (var option in empTypes)
+                        {
+                            <option value="@option.Id">@option.TypeName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>COMPANY</label>
+                    <select class="custom-select"
+                            value="@compBenPlan.CompanyId"
+                            @onchange="OnCompanyChanged">
+                        @foreach (var option in companies)
+                        {
+                            <option value="@option.Id">@($"{option.CompanyCode} - {option.CompanyName}")</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>SALARY GRADE</label>
+                    <select class="custom-select"
+                            value="@compBenPlan.CSGId">
+                        @foreach (var option in salaryGrades)
+                        {
+                            <option value="@option.Id">@($"{option.TypeName} - {option.GradeName}")</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </section>
+    
+        <div class="cb-two-column">
+            <section class="cb-panel cb-form-section">
+                <div class="cb-section-title">
+                    <h2>Employment setup</h2>
+                    <p>Hiring rules inherited by the offer</p>
+                </div>
+                <div class="cb-form-grid">
+                    <label>
+                        WORK AREA
+                        <select class="custom-select" 
+                            value="@compBenPlan.AreaId">
+                            @foreach (var option in workArea)
+                            {
+                                <option value="@option.Id">@option.AreaName</option>
+                            }
+                        </select>
+                    </label>
+                    <label>
+                        SHIFT CODE
+                        <select class="custom-select"
+                                value="@compBenPlan.ShiftId">
+                            @foreach (var option in shiftCode)
+                            {
+                                <option value="@option.Id">@option.ShiftName</option>
+                            }
+                        </select>
+                    </label>
+                    <label>
+                        WORK SCHEDULE
+                        <select class="custom-select"
+                            value="@compBenPlan.SchedId">
+                            @foreach (var option in workSched)
+                            {
+                                <option value="@option.Id">@option.SchedName</option>
+                            }
+                        </select>
+                    </label>
+                    <label>
+                        JOB CLASS
+                        <select class="custom-select"
+                                value="@compBenPlan.ClassId">
+                            @foreach (var option in jobClass)
+                            {
+                                <option value="@option.Id">@option.ClassName</option>
+                            }
+                        </select>
+                    </label>
+                    <label>
+                        FREQUENCY
+                        <select class="custom-select"
+                                value="@compBenPlan.FreqId">
+                            @foreach (var option in compBenFreq)
+                            {
+                                <option value="@option.Id">@option.FreqName</option>
+                            }
+                        </select>
+                    </label>
+                    <label>
+                        MRI
+                        <select class="custom-select"
+                                value="@compBenPlan.MRIId">
+                            @foreach (var option in compBenMRI)
+                            {
+                                <option value="@option.Id">@option.MRIName</option>
+                            }
+                        </select>
+                    </label>
+                </div>
+            </section>
+            <section class="cb-panel cb-form-section">
+                <div class="cb-section-title">
+                    <h2>Eligibility rules</h2>
+                    <p>Package flags from the source form</p>
+                </div>
+                <div class="cb-toggle-grid">
+                    <label>
+                        <input type="checkbox" @bind="compBenPlan.Motorized" />
+                        <span></span>Company car / motorized
+                    </label>
+                    <label>
+                        <input type="checkbox" @bind="compBenPlan.Incentive" />
+                        <span></span>Incentive program
+                    </label>
+                    <label>
+                        <input type="checkbox" @bind="compBenPlan.AllowTrans" />
+                        <span></span>Transportation allowance
+                    </label>
+                    <label>
+                        <input type="checkbox" @bind="compBenPlan.Annual" />
+                        <span></span>Annual bonus
+                    </label>
+                    <label>
+                        <input type="checkbox" @bind="compBenPlan.AllowSpec" />
+                        <span></span>Special allowance
+                    </label>
+                    <label>
+                        <input type="checkbox" @bind="compBenPlan.NonSwipe" />
+                        <span></span>Non-swiping eligibility
+                    </label>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+@inject IBenefitsService BenefitsService
+@inject ISalaryMatrixService SalaryMatrixService
+
+@code {
+    private CompBenPlans compBenPlan = new();
+
+    private List<CompBenEmpType> empTypes = new();
+    private List<Companies> companies = new();
+    private List<CompBenArea> workArea = new();
+    private List<CompBenSched> workSched = new();
+    private List<CompBenShift> shiftCode = new();
+    private List<CompBenClass> jobClass = new();
+    private List<CompBenFreq> compBenFreq = new();
+    private List<CompBenMRI> compBenMRI = new();
+    private List<VwCompanySalaryGrades> salaryGrades = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        empTypes = await BenefitsService.GetCompBenEmpType();
+        companies = await BenefitsService.GetCompanies();
+        workArea = await BenefitsService.GetCompBenArea();
+        workSched = await BenefitsService.GetCompBenSched();
+        shiftCode = await BenefitsService.GetCompBenShift();
+        jobClass = await BenefitsService.GetCompBenClass();
+        compBenFreq = await BenefitsService.GetCompBenFreq();
+        compBenMRI = await BenefitsService.GetCompBenMRI();
+
+        compBenPlan.TypeId = empTypes.FirstOrDefault().Id;
+        compBenPlan.CompanyId = companies.FirstOrDefault().Id;
+        compBenPlan.AreaId = workArea.FirstOrDefault().Id;
+        compBenPlan.SchedId = workSched.FirstOrDefault().Id;
+        compBenPlan.ShiftId = shiftCode.FirstOrDefault().Id;
+        compBenPlan.ClassId = jobClass.FirstOrDefault().Id;
+        compBenPlan.FreqId = compBenFreq.FirstOrDefault().Id;
+        compBenPlan.MRIId = compBenMRI.FirstOrDefault().Id;
+
+        await OnCompanyChanged(new ChangeEventArgs
+        {
+            Value = compBenPlan.CompanyId
+        });
+    }
+
+    private async Task OnCompanyChanged(ChangeEventArgs e)
+    {
+        compBenPlan.CompanyId = int.TryParse(e.Value?.ToString(), out var companyId)
+            ? companyId
+            : null;
+
+        salaryGrades.Clear();
+
+        if (compBenPlan.CompanyId.HasValue)
+        {
+            salaryGrades = await SalaryMatrixService
+                .GetCompanySalaryGrades(compBenPlan.CompanyId.GetValueOrDefault());
+        }
+
+    }
+}

@@ -53,7 +53,14 @@ namespace JO.Persistence.DataAccess
         public DbSet<CompBenTypes> CompBenTypes { get; set; }
         public DbSet<CompensationBenefits> CompensationBenefits { get; set; }
         public DbSet<Frequencies> Frequencies { get; set; }
-
+        public DbSet<CompBenEmpType> CompBenEmpType { get; set; }
+        public DbSet<CompBenPlans> CompBenPlans { get; set; }
+        public DbSet<CompBenArea> CompBenArea { get; set; }
+        public DbSet<CompBenSched> CompBenSched { get; set; }
+        public DbSet<CompBenShift> CompBenShift { get; set; }
+        public DbSet<CompBenClass> CompBenClass { get; set; }
+        public DbSet<CompBenFreq> CompBenFreq { get; set; }
+        public DbSet<CompBenMRI> CompBenMRI { get; set; }
 
         //Approval
         public DbSet<Approvals> Approvals { get; set; }
