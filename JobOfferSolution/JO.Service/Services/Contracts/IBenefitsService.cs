@@ -1,3 +1,4 @@
+using JO.DataModel.DTOs;
 using JO.DataModel.Entity;
 using JO.DataModel.View;
 
@@ -25,5 +26,7 @@ namespace JO.Service.Services.Contracts
         Task<List<CompBenClass>> GetCompBenClass();
         Task<List<CompBenFreq>> GetCompBenFreq();
         Task<List<CompBenMRI>> GetCompBenMRI();
+        Task<List<CompBenItmCat>> GetCompBenItmCat();
+        Task<int> CreateCompBenPlans(CompBenPlans compBenPlan, List<CompBenItemsDto> compBenItems);
     }
 }

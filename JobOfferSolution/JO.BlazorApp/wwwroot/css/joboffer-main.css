@@ -1,0 +1,295 @@
+/* Shared content-page theme based on the Job Offer Analysis design. */
+:root {
+    --jo-navy: #182451;
+    --jo-blue: #3157d5;
+    --jo-background: #f5f7fb;
+    --jo-surface: #ffffff;
+    --jo-surface-muted: #f8fafc;
+    --jo-text: #172033;
+    --jo-text-muted: #667085;
+    --jo-border: #e4e8f0;
+    --jo-green: #16805b;
+    --jo-amber: #a15c00;
+    --jo-red: #b42318;
+    --jo-radius: .75rem;
+}
+
+/* Main page structure */
+.jo-content-page {
+    min-height: 100vh;
+    padding: 3rem 4rem;
+    background: var(--jo-background);
+    color: var(--jo-text);
+    font-family: "Nunito", sans-serif;
+}
+
+.jo-main {
+    width: 100%;
+    max-width: 1312px;
+    margin: 0 auto;
+}
+
+.jo-header {
+    display: flex;
+    min-height: 112px;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.jo-header h1 {
+    margin: .45rem 0 .35rem;
+    color: var(--jo-text);
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.jo-header p,
+.jo-section-heading p {
+    margin: 0;
+    color: var(--jo-text-muted);
+    font-size: .82rem;
+}
+
+.jo-eyebrow,
+.jo-label {
+    color: var(--jo-blue);
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .01em;
+}
+
+/* Common content section */
+.jo-section {
+    margin-bottom: 1.5rem;
+    padding: 1.75rem;
+    border: 1px solid var(--jo-border);
+    border-radius: var(--jo-radius);
+    background: var(--jo-surface);
+}
+
+.jo-section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.jo-section-heading h2 {
+    margin: 0 0 .35rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+/* Compact information panel */
+.jo-panel {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--jo-border);
+    border-radius: var(--jo-radius);
+    background: var(--jo-surface);
+}
+
+.jo-title {
+    color: var(--jo-text);
+    font-weight: 800;
+}
+
+.jo-code {
+    color: var(--jo-text-muted);
+    font-size: .66rem;
+}
+
+.jo-pill {
+    display: inline-block;
+    padding: .45rem .75rem;
+    border-radius: 999px;
+    font-size: .68rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.jo-pill-blue { background: #eaf0ff; color: var(--jo-blue); }
+.jo-pill-green { background: #e7f6ef; color: var(--jo-green); }
+.jo-pill-amber { background: #fff3d6; color: var(--jo-amber); }
+.jo-pill-red { background: #feeceb; color: var(--jo-red); }
+.jo-pill-gray { background: #eef1f6; color: var(--jo-text-muted); }
+
+.jo-meta-label {
+    margin-bottom: .25rem;
+    color: var(--jo-text-muted);
+    font-size: .62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.jo-meta-value {
+    color: var(--jo-text);
+    font-size: .78rem;
+    font-weight: 800;
+}
+
+/* KPI cards */
+.jo-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.jo-kpi {
+    position: relative;
+    min-height: 132px;
+    padding: 1.15rem 1.25rem 1rem 2.35rem;
+    border: 1px solid var(--jo-border);
+    border-radius: .65rem;
+    background: var(--jo-surface);
+}
+
+.jo-kpi::before {
+    position: absolute;
+    top: 1.15rem;
+    bottom: 1.15rem;
+    left: 1rem;
+    width: 4px;
+    border-radius: 2px;
+    background: var(--jo-blue);
+    content: "";
+}
+
+.jo-kpi-green::before { background: var(--jo-green); }
+.jo-kpi-amber::before { background: var(--jo-amber); }
+.jo-kpi-red::before { background: var(--jo-red); }
+
+.jo-kpi-label,
+.jo-kpi small {
+    display: block;
+    color: var(--jo-text-muted);
+    font-size: .68rem;
+}
+
+.jo-kpi-label { font-weight: 800; }
+
+.jo-kpi-value {
+    display: block;
+    margin: .8rem 0 .45rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+/* Highlighted data snapshot */
+.jo-snapshot {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border-radius: .65rem;
+    background: var(--jo-navy);
+    color: #ffffff;
+}
+
+.jo-snapshot-item {
+    padding: 0 1.5rem;
+    border-right: 1px solid rgba(255, 255, 255, .15);
+}
+
+.jo-snapshot-item:first-child { padding-left: 0; }
+.jo-snapshot-item:last-child { border-right: 0; }
+
+.jo-snapshot-label {
+    display: block;
+    margin-bottom: .65rem;
+    color: #b9c8f2;
+    font-size: .62rem;
+    font-weight: 800;
+}
+
+.jo-snapshot-value {
+    display: block;
+    font-size: 1.45rem;
+    font-weight: 800;
+}
+
+/* Common data table; pair with Bootstrap's table-responsive wrapper if needed. */
+.jo-table {
+    width: 100%;
+    margin-bottom: 0;
+    color: var(--jo-text);
+    font-size: .75rem;
+    border-collapse: collapse;
+}
+
+.jo-table thead th {
+    border-top: 0;
+    background: var(--jo-surface-muted);
+    color: var(--jo-text-muted);
+    font-size: .62rem;
+    text-transform: uppercase;
+}
+
+.jo-table th,
+.jo-table td {
+    padding: .75rem 1rem;
+    border-bottom: 1px solid var(--jo-border);
+    vertical-align: middle;
+}
+
+.jo-table tbody tr:nth-child(even) { background: #fbfcfe; }
+.jo-table tbody tr:last-child td { border-bottom: 0; }
+.jo-table tfoot { background: #eaf0ff; font-weight: 800; }
+
+/* Form controls */
+.jo-content-page label {
+    color: var(--jo-text-muted);
+    font-size: .68rem;
+    font-weight: 800;
+}
+
+.jo-content-page .form-control,
+.jo-content-page .custom-select {
+    min-height: 42px;
+    border-color: var(--jo-border);
+    border-radius: .5rem;
+    background-color: var(--jo-surface-muted);
+    font-size: .78rem;
+}
+
+.jo-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 1.5rem;
+}
+
+/* Page and section action containers. Button appearance remains Bootstrap's default. */
+.jo-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .75rem;
+}
+
+.jo-actions-between { justify-content: space-between; }
+
+@media (max-width: 991.98px) {
+    .jo-content-page { padding: 2rem; }
+    .jo-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .jo-snapshot { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 0; }
+    .jo-snapshot-item:nth-child(2) { border-right: 0; }
+}
+
+@media (max-width: 767.98px) {
+    .jo-content-page { padding: 1.25rem; }
+    .jo-header,
+    .jo-section-heading { flex-direction: column; }
+    .jo-kpi-grid,
+    .jo-snapshot,
+    .jo-form-grid { grid-template-columns: 1fr; }
+    .jo-snapshot-item {
+        padding: 0 0 1rem;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, .15);
+    }
+    .jo-snapshot-item:last-child { padding-bottom: 0; border-bottom: 0; }
+    .jo-actions { width: 100%; flex-wrap: wrap; }
+}

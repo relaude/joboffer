@@ -8,8 +8,12 @@ namespace JO.DataModel.Entity
     public class CompBenItems
     {
         [Key] public int Id { get; set; }
-        public string? ItemName { get; set; }
-        public string? ItemDescription { get; set; }
-        public int? TypeId { get; set; }
+        public int? PlanId { get; set; }
+        public int? CatId { get; set; }
+        public string? ItmName { get; set; }
+        public string? ItmDesc { get; set; }
+        public decimal? Amount { get; set; }
+        public decimal? Multiplier { get; set; }
+        
     }
 }

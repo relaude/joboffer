@@ -1,0 +1,8 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TR)]
+@attribute [Route(JORoutes.TR.CompBen + "/{planId:int}")]
+
+<h1>@planId</h1>
+
+@code {
+    [Parameter] public int planId { get; set; }
+}

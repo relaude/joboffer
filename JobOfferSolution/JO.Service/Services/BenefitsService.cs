@@ -1,3 +1,4 @@
+using JO.DataModel.DTOs;
 using JO.DataModel.Entity;
 using JO.DataModel.View;
 using JO.Persistence.DataAccess;
@@ -13,6 +14,40 @@ namespace JO.Service.Services
         public BenefitsService(IDbContextFactory<JobOfferDbContext> dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task<int> CreateCompBenPlans(CompBenPlans compBenPlan, List<CompBenItemsDto> compBenItems)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            compBenPlan.CreatedAt = DateTime.Now;
+            await context.CompBenPlans.AddAsync(compBenPlan);
+            await context.SaveChangesAsync();
+
+            List<CompBenItems> newItems = new();
+            foreach (var item in compBenItems)
+            {
+                newItems.Add(new CompBenItems
+                {
+                    Amount = item.Amount,
+                    CatId = item.CatId,
+                    ItmDesc = item.ItmDesc,
+                    ItmName = item.ItmName,
+                    Multiplier = item.Multiplier,
+                    PlanId = compBenPlan.Id
+                });
+            }
+
+            await context.CompBenItems.AddRangeAsync(newItems);
+            await context.SaveChangesAsync();
+
+            return compBenPlan.Id;
+        }
+
+        public async Task<List<CompBenItmCat>> GetCompBenItmCat()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompBenItmCat.AsNoTracking().ToListAsync();
         }
 
         public async Task<List<CompBenMRI>> GetCompBenMRI()
@@ -89,7 +124,7 @@ namespace JO.Service.Services
         public async Task<List<CompBenItems>> GetItems()
         {
             await using var context = await _dbContext.CreateDbContextAsync();
-            return await context.CompBenItems.AsNoTracking().OrderBy(jo => jo.ItemName).ToListAsync();
+            return await context.CompBenItems.AsNoTracking().OrderBy(jo => jo.ItmName).ToListAsync();
         }
 
         public async Task<List<CompBenTypes>> GetTypes()

@@ -1,11 +1,12 @@
-﻿CREATE View vw_CompensationBenefits
+﻿
+CREATE View [dbo].[vw_CompensationBenefits]
 As
 Select cbs.Id 
 ,cbs.PackageId
 ,cbp.PackageName 
-,cbi.ItemName
-,cbi.ItemDescription
-,cbt.TypeName
+,cbi.ItmName
+,cbi.ItmDesc
+,'' TypeName
 ,cur.Currency
 ,cbs.Amount
 ,cbs.Tax
@@ -19,6 +20,5 @@ Select cbs.Id
 From CompensationBenefits cbs
 Left Join CompBenPackages cbp On cbp.Id=cbs.PackageId
 Left Join CompBenItems cbi On cbi.Id=cbs.CompBenItemId
-Left Join CompBenTypes cbt On cbt.Id=cbi.TypeId
 Left Join Currencies cur On cur.Id=cbs.CurrencyId
 Left Join Frequencies frq On frq.Id=cbs.FrequencyId;

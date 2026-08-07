@@ -1,20 +1,23 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TR)]
 @attribute [Route(JORoutes.TR.SalaryMatrixNew)]
 
-<div class="salary-mockup">
-    <main class="sm-page">
-        <header class="sm-page-header d-md-flex justify-content-between mb-4">
+<div class="jo-content-page">
+    <main class="jo-main">
+        <header class="jo-header">
             <div>
-                <h2 class="sm-title mb-1">
-                    Create Salary Matrix
-                </h2>
-                <p class="sm-subtitle">Set ownership, effective dates and compensation ranges.</p>
+                <span class="jo-eyebrow">TOTAL REWARDS</span>
+                <h1>Create Salary Matrix</h1>
+                <p>Set ownership, effective dates and compensation ranges.</p>
             </div>
         </header>
     
-        <section class="sm-panel p-4 mb-4">
-            <h5 class="sm-title mb-1">Matrix details</h5>
-            <p class="sm-subtitle mb-4">Company and validity information.</p>
+        <section class="jo-section">
+            <div class="jo-section-heading">
+                <div>
+                    <h2>Matrix details</h2>
+                    <p>Company and validity information.</p>
+                </div>
+            </div>
             <div class="form-row">
                 <label>Company <span class="text-danger">*</span></label>
                 <select id="company"
@@ -30,11 +33,11 @@
             </div>
         </section>
 
-        <section class="sm-panel overflow-hidden mb-4">
-            <div class="d-flex justify-content-between p-4">
+        <section class="jo-section">
+            <div class="jo-section-heading">
                 <div>
-                    <h5 class="sm-title mb-1">Salary bands</h5>
-                    <p class="sm-subtitle mb-0">Minimum ≤ Midpoint ≤ Maximum</p>
+                    <h2>Salary bands</h2>
+                    <p>Minimum ≤ Midpoint ≤ Maximum</p>
                 </div>
                 <button class="btn btn-outline-primary" 
                     @onclick="AddBand"
@@ -44,7 +47,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table mb-0">
+                <table class="jo-table">
                     <thead>
                         <tr>
                             <th>Grade</th>
@@ -59,7 +62,7 @@
                         {
                             <tr @key="band">
                                 <td>
-                                    <select class="form-control form-control-sm" @bind="band.CSGId">
+                                    <select class="custom-select custom-select-sm" @bind="band.CSGId">
                                         @foreach (var option in salaryGrades)
                                         {
                                             <option value="@option.Id">@($"{option.TypeName} - {option.GradeName}")</option>
@@ -102,7 +105,7 @@
             </div>
         </section>
 
-        <div class="sm-sticky-actions text-right">
+        <div class="jo-actions">
             <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary mr-2">Cancel</a>
             <button class="btn btn-primary px-4" @onclick="SaveMatrix">Create matrix</button>
         </div>
@@ -151,7 +154,9 @@
 
         if (!await AlertService.Confirm()) return;
 
+        salaryMatrix.CreatedBy = await AccountService.GetJobOfferUserId();
         int matrixId = await SalaryMatrixService.CreateMatrix(salaryMatrix, salaryBands);
+
         Navigation.NavigateTo($"{JORoutes.TR.SalaryMatrix}/{matrixId}");
     }
 

@@ -1,7 +1,8 @@
-﻿Create View vw_SalaryMatrixBand
+﻿
+CREATE View [dbo].[vw_SalaryMatrixBand]
 As
 Select smb.*
-,smx.MatrixCode,smx.MatrixName
+,'' MatrixCode,'' MatrixName
 ,jbl.JobLevelName
 ,jbf.JobFamilyName
 ,jpg.PositionGrade

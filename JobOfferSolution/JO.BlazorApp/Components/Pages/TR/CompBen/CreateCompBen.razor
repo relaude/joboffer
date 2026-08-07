@@ -6,35 +6,24 @@
         <header class="cb-header cb-form-header">
             <div>
                 <div class="cb-eyebrow">COMPENSATION &amp; BENEFITS</div>
-                <h1>Create Benefit Plan</h1>
+                <h1>Create Package</h1>
                 <p>Define a reusable package for regular, project-hire, or consultant offers.</p>
             </div>
         </header>
 
         <section class="cb-panel cb-form-section">
             <div class="cb-section-title">
-                <h2>Plan information</h2>
+                <h2>Package information</h2>
             </div>
             <div class="form-row">
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-6">
                     <label>NAME</label>
                     <input class="form-control" 
                         placeholder="e.g. Regular Hire — Standard" 
-                        value="@compBenPlan.PlanName" />
+                        @bind="compBenPlan.PlanName" />
                 </div>
 
-                <div class="form-group col-md-3">
-                    <label>EMPLOYMENT TYPE</label>
-                    <select class="custom-select"
-                        value="@compBenPlan.TypeId">
-                        @foreach (var option in empTypes)
-                        {
-                            <option value="@option.Id">@option.TypeName</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-6">
                     <label>COMPANY</label>
                     <select class="custom-select"
                             value="@compBenPlan.CompanyId"
@@ -42,17 +31,6 @@
                         @foreach (var option in companies)
                         {
                             <option value="@option.Id">@($"{option.CompanyCode} - {option.CompanyName}")</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="form-group col-md-3">
-                    <label>SALARY GRADE</label>
-                    <select class="custom-select"
-                            value="@compBenPlan.CSGId">
-                        @foreach (var option in salaryGrades)
-                        {
-                            <option value="@option.Id">@($"{option.TypeName} - {option.GradeName}")</option>
                         }
                     </select>
                 </div>
@@ -66,6 +44,26 @@
                     <p>Hiring rules inherited by the offer</p>
                 </div>
                 <div class="cb-form-grid">
+                    <label>
+                        EMPLOYMENT STATUS
+                        <select class="custom-select"
+                                value="@compBenPlan.TypeId">
+                            @foreach (var option in empTypes)
+                            {
+                                <option value="@option.Id">@option.TypeName</option>
+                            }
+                        </select>
+                    </label>
+                    <label>
+                        SALARY GRADE
+                        <select class="custom-select"
+                                value="@compBenPlan.CSGId">
+                            @foreach (var option in salaryGrades)
+                            {
+                                <option value="@option.Id">@($"{option.TypeName} - {option.GradeName}")</option>
+                            }
+                        </select>
+                    </label>
                     <label>
                         WORK AREA
                         <select class="custom-select" 
@@ -161,11 +159,88 @@
                 </div>
             </section>
         </div>
+    
+        <section class="cb-panel cb-benefits">
+            <div class="cb-section-title cb-title-actions">
+                <div>
+                    <h2>Benefit items</h2>
+                    <p>Add entitlement rows and payout conditions</p>
+                </div>
+                <button class="btn cb-soft" @onclick="AddItem">+&nbsp; Add benefit item</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table cb-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Multiplier</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in compBenItems)
+                        {
+                            <tr @key="item">
+                                <td>
+                                    <select class="form-control form-control-sm" @bind="item.CatId">
+                                        @foreach (var option in itemCat)
+                                        {
+                                            <option value="@option.Id">@option.CatName</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input class="form-control form-control-sm text-right" @bind="item.ItmName" />
+                                </td>
+                                <td>
+                                    <input class="form-control form-control-sm text-right" @bind="item.ItmDesc" />
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           class="form-control form-control-sm text-right"
+                                           min="1000"
+                                           step="1000"
+                                           @bind="item.Amount" />
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           class="form-control form-control-sm text-right"
+                                           min="1"
+                                           step="10"
+                                           @bind="item.Multiplier" />
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-danger btn-circle btn-sm"
+                                            title="Remove Item"
+                                            aria-label="Remove Item"
+                                            @onclick="() => RemoveItem(item)">
+                                        <i class="fas fa-trash-alt fa-fw"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="cb-panel cb-actions">
+            <p>Required fields are marked and validated before publishing.</p>
+            <div>
+                <a class="btn btn-outline-secondary" href="@JORoutes.TR.CompBen">Cancel</a>
+                <button class="btn btn-primary cb-primary" @onclick="CreatePlan">Create package</button>
+            </div>
+        </section>
     </main>
 </div>
 
 @inject IBenefitsService BenefitsService
 @inject ISalaryMatrixService SalaryMatrixService
+@inject IAlertService AlertService
+@inject NavigationManager Navigation
 
 @code {
     private CompBenPlans compBenPlan = new();
@@ -178,7 +253,9 @@
     private List<CompBenClass> jobClass = new();
     private List<CompBenFreq> compBenFreq = new();
     private List<CompBenMRI> compBenMRI = new();
+    private List<CompBenItmCat> itemCat = new();
     private List<VwCompanySalaryGrades> salaryGrades = new();
+    private List<CompBenItemsDto> compBenItems = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -190,6 +267,7 @@
         jobClass = await BenefitsService.GetCompBenClass();
         compBenFreq = await BenefitsService.GetCompBenFreq();
         compBenMRI = await BenefitsService.GetCompBenMRI();
+        itemCat = await BenefitsService.GetCompBenItmCat();
 
         compBenPlan.TypeId = empTypes.FirstOrDefault().Id;
         compBenPlan.CompanyId = companies.FirstOrDefault().Id;
@@ -206,6 +284,32 @@
         });
     }
 
+    private async Task CreatePlan()
+    {
+        if (!await AlertService.Confirm()) return;
+
+        int planId = await BenefitsService.CreateCompBenPlans(compBenPlan, compBenItems);
+
+        Navigation.NavigateTo($"{JORoutes.TR.CompBen}/{planId}");
+    }
+
+    private void RemoveItem(CompBenItemsDto item)
+    {
+        compBenItems.Remove(item);
+    }
+
+    private void AddItem()
+    {
+        compBenItems.Add(new CompBenItemsDto
+        {
+            Amount = 0,
+            CatId = 1,
+            ItmDesc = "",
+            ItmName = "",
+            Multiplier = 1
+        });
+    }
+
     private async Task OnCompanyChanged(ChangeEventArgs e)
     {
         compBenPlan.CompanyId = int.TryParse(e.Value?.ToString(), out var companyId)
@@ -218,6 +322,8 @@
         {
             salaryGrades = await SalaryMatrixService
                 .GetCompanySalaryGrades(compBenPlan.CompanyId.GetValueOrDefault());
+
+            compBenPlan.CSGId = salaryGrades.FirstOrDefault().Id;
         }
 
     }

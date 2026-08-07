@@ -1,65 +1,68 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TR)]
 @attribute [Route(JORoutes.TR.SalaryMatrix + "/{matrixId:int}")]
 
-<div class="salary-mockup">
-    <main class="sm-page">
-        <header class="sm-page-header d-md-flex justify-content-between mb-4">
+<div class="jo-content-page">
+    <main class="jo-main">
+        
+        <header class="jo-header">
             <div>
-                <h2 class="sm-title mb-1">Salary Matrix Details </h2>
+                <span class="jo-eyebrow">TOTAL REWARDS</span>
+                <h1>Salary Matrix Details</h1>
             </div>
-            <div>
+            <div class="jo-actions">
                 <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary mr-2">← Back</a>
-                <a href="@($"{JORoutes.TR.SalaryMatrixEdit}/{matrixId}")" class="btn btn-primary px-4">Edit matrix</a>
+                <a href="@($"{JORoutes.TR.SalaryMatrixEdit}/{matrixId}")" class="btn btn-primary">Edit matrix</a>
             </div>
         </header>
 
-        <section class="sm-panel p-4 mb-4">
+        <section class="jo-panel">
             <div class="row">
                 <div class="col-lg-4 mb-3">
                     @if(matrix.IsActive == true)
-                    { <span class="sm-pill sm-pill-green mr-2">ACTIVE</span> }
+                    { <span class="jo-pill jo-pill-green mr-2">ACTIVE</span> }
 
                     @if(matrix.IsActive == false)
-                    { <span class="sm-pill sm-pill-gray mr-2">INACTIVE</span> }
+                    { <span class="jo-pill jo-pill-gray mr-2">INACTIVE</span> }
                     
-                    <h4 class="sm-title mt-3 mb-1">@matrix.CompanyName</h4>
-                    <div class="sm-code">@matrix.CompanyCode</div>
+                    <h4 class="jo-title mt-3 mb-1">@matrix.CompanyName</h4>
+                    <div class="jo-code">@matrix.CompanyCode</div>
                 </div>
 
                 <div class="col-lg-8">
                     <div class="row">
                         <div class="col-sm-4 mb-3">
-                            <div class="sm-meta-label">Created by</div>
-                            <div class="sm-meta-value">@(string.IsNullOrWhiteSpace(matrix.CreatedByName) ? "-" : matrix.CreatedByName)</div>
+                            <div class="jo-meta-label">Created by</div>
+                            <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(matrix.CreatedByName) ? "-" : matrix.CreatedByName)</div>
                         </div>
                         <div class="col-sm-4">
-                            <div class="sm-meta-label">Created at</div>
-                            <div class="sm-meta-value">@(matrix.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                            <div class="jo-meta-label">Created at</div>
+                            <div class="jo-meta-value">@(matrix.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-sm-4">
-                            <div class="sm-meta-label">Modified by</div>
-                            <div class="sm-meta-value">@(string.IsNullOrWhiteSpace(matrix.ModifiedByName) ? "-" : matrix.ModifiedByName)</div>
+                            <div class="jo-meta-label">Modified by</div>
+                            <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(matrix.ModifiedByName) ? "-" : matrix.ModifiedByName)</div>
                         </div>
                         <div class="col-sm-4">
-                            <div class="sm-meta-label">Modified at</div>
-                            <div class="sm-meta-value">@(matrix.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                            <div class="jo-meta-label">Modified at</div>
+                            <div class="jo-meta-value">@(matrix.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
                         </div>
                     </div>
                 </div>
-        </div>
-    </section>
-        <section class="sm-panel overflow-hidden">
-            <div class="d-md-flex justify-content-between align-items-end p-3">
+            </div>
+        </section>
+
+        <section class="jo-section">
+            <div class="jo-section-heading">
                 <div>
-                    <h5 class="sm-title mb-1">Salary bands</h5>
-                    <p class="sm-subtitle mb-0">Ranges by salary grade</p>
+                    <h2>Salary bands</h2>
+                    <p>Ranges by salary grade</p>
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table mb-0">
+                <table class="jo-table">
                     <thead>
                         <tr>
                             <th>Type</th>

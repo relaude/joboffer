@@ -9,15 +9,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Components\Pages\Admin\CompBen\**" />
+    <Compile Remove="Components\Pages\Admin\JobFamily\**" />
     <Compile Remove="Components\Pages\Admin\Matrix\**" />
     <Compile Remove="Components\Pages\HROD\**" />
     <Compile Remove="wwwroot\documents\**" />
+    <Content Remove="Components\Pages\Admin\CompBen\**" />
+    <Content Remove="Components\Pages\Admin\JobFamily\**" />
     <Content Remove="Components\Pages\Admin\Matrix\**" />
     <Content Remove="Components\Pages\HROD\**" />
     <Content Remove="wwwroot\documents\**" />
+    <EmbeddedResource Remove="Components\Pages\Admin\CompBen\**" />
+    <EmbeddedResource Remove="Components\Pages\Admin\JobFamily\**" />
     <EmbeddedResource Remove="Components\Pages\Admin\Matrix\**" />
     <EmbeddedResource Remove="Components\Pages\HROD\**" />
     <EmbeddedResource Remove="wwwroot\documents\**" />
+    <None Remove="Components\Pages\Admin\CompBen\**" />
+    <None Remove="Components\Pages\Admin\JobFamily\**" />
     <None Remove="Components\Pages\Admin\Matrix\**" />
     <None Remove="Components\Pages\HROD\**" />
     <None Remove="wwwroot\documents\**" />
@@ -46,8 +54,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Pages\Admin\JobFamily\" />
-    <Folder Include="Components\Pages\Admin\CompBen\" />
     <Folder Include="Components\Pages\MockUp\CompBen\" />
     <Folder Include="wwwroot\template\" />
   </ItemGroup>
