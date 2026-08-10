@@ -1,14 +1,17 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TR)]
 @attribute [Route(JORoutes.TR.CompBen)]
 
-<div class="cb-mockup">
-    <main class="cb-page">
-        <header class="cb-header">
+<div class="jo-content-page">
+    <main class="jo-main">
+        <header class="jo-header">
             <div>
+                <span class="jo-eyebrow">TOTAL REWARDS</span>
                 <h1>Compensation &amp; Benefits</h1>
-                <p>Manage benefit templates, employment rules, payout schedules, and eligibility settings.</p>
             </div>
-            <a class="btn btn-primary cb-primary" href="@JORoutes.TR.CompBenNew">+&nbsp; Create benefit plan</a>
+            <div class="jo-actions">
+                @* <a class="btn btn-secondary" href="@JORoutes.TR.CompBenNew">+&nbsp; Create Template</a> *@
+                <a class="btn btn-primary" href="@JORoutes.TR.CompBenNew">+&nbsp; Create Package</a>
+            </div>
         </header>
     </main>
 </div>

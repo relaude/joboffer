@@ -1,6 +1,7 @@
-﻿CREATE TABLE [dbo].[CompBenPlans] (
+﻿CREATE TABLE [dbo].[CompBenPckgs] (
     [Id]         INT            IDENTITY (1, 1) NOT NULL,
-    [PlanName]   NVARCHAR (200) NULL,
+    [PckgName]   NVARCHAR (200) NULL,
+    [CompId]     INT            NULL,
     [SGId]       INT            NULL,
     [TypeId]     INT            NULL,
     [AreaId]     INT            NULL,
@@ -19,6 +20,6 @@
     [CreatedAt]  DATETIME       NULL,
     [ModifiedBy] INT            NULL,
     [ModifiedAt] DATETIME       NULL,
-    CONSTRAINT [PK_CompBenPlans] PRIMARY KEY CLUSTERED ([Id] ASC)
+    CONSTRAINT [PK_CompBenPckgs] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

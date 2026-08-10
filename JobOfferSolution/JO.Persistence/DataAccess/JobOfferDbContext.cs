@@ -37,6 +37,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<JobLevels> JobLevels { get; set; }
         public DbSet<JobFamilies> JobFamilies { get; set; }
         public DbSet<JobPositionGrades> JobPositionGrades { get; set; }
+        public DbSet<SalaryGrades> SalaryGrades { get; set; }
 
         //Mass Upload
         public DbSet<CandidateExcelRawData> CandidateExcelRawData { get; set; }
@@ -62,6 +63,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<CompBenFreq> CompBenFreq { get; set; }
         public DbSet<CompBenMRI> CompBenMRI { get; set; }
         public DbSet<CompBenItmCat> CompBenItmCat { get; set; }
+        public DbSet<CompBenPckgs> CompBenPckgs { get; set; }
 
         //Approval
         public DbSet<Approvals> Approvals { get; set; }
@@ -92,6 +94,8 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwSalaryMatrix> VwSalaryMatrix { get; set; }
         public DbSet<VwSalaryMatrixBand> VwSalaryMatrixBand { get; set; }
         public DbSet<VwUserDivisionAccess> VwUserDivisionAccess { get; set; }
+        public DbSet<VwCompBenItems> VwCompBenItems { get; set; }
+        public DbSet<VwCompBenPlans> VwCompBenPlans { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -111,6 +115,8 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwSalaryMatrix>().HasNoKey().ToView("vw_SalaryMatrix");
             modelBuilder.Entity<VwSalaryMatrixBand>().HasNoKey().ToView("vw_SalaryMatrixBand");
             modelBuilder.Entity<VwUserDivisionAccess>().HasNoKey().ToView("vw_UserDivisionAccess");
+            modelBuilder.Entity<VwCompBenItems>().HasNoKey().ToView("vw_CompBenItems");
+            modelBuilder.Entity<VwCompBenPlans>().HasNoKey().ToView("vw_CompBenPlans");
         }
     }
 }

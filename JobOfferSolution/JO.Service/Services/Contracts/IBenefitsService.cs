@@ -28,5 +28,8 @@ namespace JO.Service.Services.Contracts
         Task<List<CompBenMRI>> GetCompBenMRI();
         Task<List<CompBenItmCat>> GetCompBenItmCat();
         Task<int> CreateCompBenPlans(CompBenPlans compBenPlan, List<CompBenItemsDto> compBenItems);
+        Task<List<VwCompBenPlans>> GetVwCompBenPlans();
+        Task<List<SalaryGrades>> GetSalaryGrades();
+        Task<List<CompBenItems>> GetCompBenItems();
     }
 }

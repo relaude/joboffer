@@ -261,6 +261,73 @@
     gap: 1.25rem 1.5rem;
 }
 
+/* Responsive 12-column grid */
+.jo-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.25rem 1.5rem;
+}
+
+.jo-col-1 { grid-column: span 1; }
+.jo-col-2 { grid-column: span 2; }
+.jo-col-3 { grid-column: span 3; }
+.jo-col-4 { grid-column: span 4; }
+.jo-col-5 { grid-column: span 5; }
+.jo-col-6 { grid-column: span 6; }
+.jo-col-7 { grid-column: span 7; }
+.jo-col-8 { grid-column: span 8; }
+.jo-col-9 { grid-column: span 9; }
+.jo-col-10 { grid-column: span 10; }
+.jo-col-11 { grid-column: span 11; }
+.jo-col-12 { grid-column: span 12; }
+
+/* Toggle controls */
+.jo-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1rem;
+}
+
+.jo-toggle {
+    display: flex;
+    align-items: center;
+    color: var(--jo-text);
+    font-size: .72rem;
+    cursor: pointer;
+}
+
+.jo-toggle input {
+    position: absolute;
+    opacity: 0;
+}
+
+.jo-toggle-control {
+    position: relative;
+    flex: 0 0 auto;
+    width: 38px;
+    height: 22px;
+    margin-right: .75rem;
+    border-radius: 20px;
+    background: #d1d5e2;
+    transition: background-color .2s ease;
+}
+
+.jo-toggle-control::after {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--jo-surface);
+    content: "";
+    transition: transform .2s ease;
+}
+
+.jo-toggle input:checked + .jo-toggle-control { background: var(--jo-green); }
+.jo-toggle input:checked + .jo-toggle-control::after { transform: translateX(16px); }
+.jo-toggle input:focus-visible + .jo-toggle-control { outline: 2px solid var(--jo-blue); outline-offset: 2px; }
+
 /* Page and section action containers. Button appearance remains Bootstrap's default. */
 .jo-actions {
     display: flex;
@@ -284,7 +351,9 @@
     .jo-section-heading { flex-direction: column; }
     .jo-kpi-grid,
     .jo-snapshot,
-    .jo-form-grid { grid-template-columns: 1fr; }
+    .jo-form-grid,
+    .jo-toggle-grid { grid-template-columns: 1fr; }
+    .jo-grid > [class*="jo-col-"] { grid-column: 1 / -1; }
     .jo-snapshot-item {
         padding: 0 0 1rem;
         border-right: 0;

@@ -1,18 +1,18 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TR)]
-@attribute [Route(JORoutes.TR.CompBenNew)]
+﻿@* @attribute [Authorize(Roles = JOUserRole.TR)]
+@attribute [Route(JORoutes.TR.CompBenNew)] *@
 
-<div class="cb-mockup">
-    <main class="cb-page">
-        <header class="cb-header cb-form-header">
+<div class="jo-content-page">
+    <main class="jo-main">
+        <header class="jo-header">
             <div>
-                <div class="cb-eyebrow">COMPENSATION &amp; BENEFITS</div>
+                <div class="jo-eyebrow">COMPENSATION &amp; BENEFITS</div>
                 <h1>Create Package</h1>
                 <p>Define a reusable package for regular, project-hire, or consultant offers.</p>
             </div>
         </header>
 
-        <section class="cb-panel cb-form-section">
-            <div class="cb-section-title">
+        <section class="jo-section">
+            <div class="jo-section-heading">
                 <h2>Package information</h2>
             </div>
             <div class="form-row">
@@ -37,13 +37,13 @@
             </div>
         </section>
     
-        <div class="cb-two-column">
-            <section class="cb-panel cb-form-section">
-                <div class="cb-section-title">
+        <div class="row">
+            <section class="col-lg-6 jo-section">
+                <div class="jo-section-heading">
                     <h2>Employment setup</h2>
                     <p>Hiring rules inherited by the offer</p>
                 </div>
-                <div class="cb-form-grid">
+                <div class="jo-form-grid">
                     <label>
                         EMPLOYMENT STATUS
                         <select class="custom-select"
@@ -126,50 +126,50 @@
                     </label>
                 </div>
             </section>
-            <section class="cb-panel cb-form-section">
-                <div class="cb-section-title">
+            <section class="col-lg-6 jo-section">
+                <div class="jo-section-heading">
                     <h2>Eligibility rules</h2>
                     <p>Package flags from the source form</p>
                 </div>
-                <div class="cb-toggle-grid">
-                    <label>
-                        <input type="checkbox" @bind="compBenPlan.Motorized" />
+                <div class="jo-form-grid">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" @bind="compBenPlan.Motorized" />
                         <span></span>Company car / motorized
                     </label>
-                    <label>
-                        <input type="checkbox" @bind="compBenPlan.Incentive" />
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" @bind="compBenPlan.Incentive" />
                         <span></span>Incentive program
                     </label>
-                    <label>
-                        <input type="checkbox" @bind="compBenPlan.AllowTrans" />
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" @bind="compBenPlan.AllowTrans" />
                         <span></span>Transportation allowance
                     </label>
-                    <label>
-                        <input type="checkbox" @bind="compBenPlan.Annual" />
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" @bind="compBenPlan.Annual" />
                         <span></span>Annual bonus
                     </label>
-                    <label>
-                        <input type="checkbox" @bind="compBenPlan.AllowSpec" />
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" @bind="compBenPlan.AllowSpec" />
                         <span></span>Special allowance
                     </label>
-                    <label>
-                        <input type="checkbox" @bind="compBenPlan.NonSwipe" />
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" @bind="compBenPlan.Swipe" />
                         <span></span>Non-swiping eligibility
                     </label>
                 </div>
             </section>
         </div>
     
-        <section class="cb-panel cb-benefits">
-            <div class="cb-section-title cb-title-actions">
+        <section class="jo-section">
+            <div class="jo-section-heading">
                 <div>
                     <h2>Benefit items</h2>
                     <p>Add entitlement rows and payout conditions</p>
                 </div>
-                <button class="btn cb-soft" @onclick="AddItem">+&nbsp; Add benefit item</button>
+                <button class="btn btn-outline-primary" @onclick="AddItem">+&nbsp; Add benefit item</button>
             </div>
             <div class="table-responsive">
-                <table class="table cb-table">
+                <table class="table jo-table">
                     <thead>
                         <tr>
                             <th>Category</th>
@@ -206,11 +206,7 @@
                                            @bind="item.Amount" />
                                 </td>
                                 <td>
-                                    <input type="number"
-                                           class="form-control form-control-sm text-right"
-                                           min="1"
-                                           step="10"
-                                           @bind="item.Multiplier" />
+                                    
                                 </td>
                                 <td>
                                     <button class="btn btn-outline-danger btn-circle btn-sm"
@@ -227,11 +223,11 @@
             </div>
         </section>
 
-        <section class="cb-panel cb-actions">
+        <section class="jo-section jo-actions jo-actions-between">
             <p>Required fields are marked and validated before publishing.</p>
             <div>
                 <a class="btn btn-outline-secondary" href="@JORoutes.TR.CompBen">Cancel</a>
-                <button class="btn btn-primary cb-primary" @onclick="CreatePlan">Create package</button>
+                <button class="btn btn-primary" @onclick="CreatePlan">Create package</button>
             </div>
         </section>
     </main>
@@ -305,8 +301,7 @@
             Amount = 0,
             CatId = 1,
             ItmDesc = "",
-            ItmName = "",
-            Multiplier = 1
+            ItmName = ""
         });
     }
 

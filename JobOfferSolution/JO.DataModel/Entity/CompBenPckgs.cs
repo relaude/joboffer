@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace JO.DataModel.Entity
 {
-    public class CompBenPlans
+    public class CompBenPckgs
     {
-        public int Id { get; set; }
-        public string? PlanName { get; set; }
-        public int? CompanyId { get; set; }
-        public int? CSGId { get; set; }
+        [Key] public int Id { get; set; }
+        public string? PckgName { get; set; }
+        public int? CompId { get; set; }
+        public int? SGId { get; set; }
         public int? TypeId { get; set; }
         public int? AreaId { get; set; }
         public int? SchedId { get; set; }
@@ -24,8 +23,8 @@ namespace JO.DataModel.Entity
         public bool? Annual { get; set; }
         public bool? Swipe { get; set; }
         public int? CreatedBy { get; set; }
-        public int? ModifiedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public int? ModifiedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }
 }

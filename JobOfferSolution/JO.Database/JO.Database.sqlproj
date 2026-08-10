@@ -147,6 +147,10 @@
     <Build Include="dbo\Views\vw_SalaryBands.sql" />
     <Build Include="dbo\Views\vw_CompanySalaryGrades.sql" />
     <Build Include="dbo\Tables\CompBenItmCat.sql" />
+    <Build Include="dbo\Views\vw_CompBenPlans.sql" />
+    <Build Include="dbo\Views\vw_CompBenItems.sql" />
+    <Build Include="dbo\Tables\CompBenPckgs.sql" />
+    <Build Include="dbo\Tables\CBPlnHasItem.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

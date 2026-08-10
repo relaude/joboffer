@@ -16,6 +16,23 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<CompBenItems>> GetCompBenItems()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompBenItems.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<SalaryGrades>> GetSalaryGrades()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.SalaryGrades.AsNoTracking().ToListAsync();
+        }
+        public async Task<List<VwCompBenPlans>> GetVwCompBenPlans()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwCompBenPlans.AsNoTracking().ToListAsync();
+        }
+
         public async Task<int> CreateCompBenPlans(CompBenPlans compBenPlan, List<CompBenItemsDto> compBenItems)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -32,9 +49,7 @@ namespace JO.Service.Services
                     Amount = item.Amount,
                     CatId = item.CatId,
                     ItmDesc = item.ItmDesc,
-                    ItmName = item.ItmName,
-                    Multiplier = item.Multiplier,
-                    PlanId = compBenPlan.Id
+                    ItmName = item.ItmName
                 });
             }
 
