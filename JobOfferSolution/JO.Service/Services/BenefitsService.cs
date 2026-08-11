@@ -16,6 +16,94 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<int> SavePackage(CompBenPckgs compBenPckgs, List<CompBenItemsDto> compBenItemsDto)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            //Package
+            compBenPckgs.CreatedAt = DateTime.Now;
+            await context.CompBenPckgs.AddAsync(compBenPckgs);
+            await context.SaveChangesAsync();
+
+            //Items A
+            var itemsA = compBenItemsDto.Where(jo => jo.Id > 0).ToList();
+            if(itemsA.Any())
+            {
+                List<CBPckHasItem> newItemsA = new();
+                foreach (var item in itemsA)
+                {
+                    newItemsA.Add(new CBPckHasItem
+                    {
+                        PckgId = compBenPckgs.Id,
+                        ItemId = item.Id
+                    });
+                }
+
+                await context.CBPckHasItem.AddRangeAsync(newItemsA);
+                await context.SaveChangesAsync();
+            }
+
+            //Items B
+            var itemsB = compBenItemsDto.Where(jo => jo.Id == 0).ToList();
+            if (itemsB.Any())
+            {
+                List<CompBenItems> newItemB = new();
+                foreach (var item in itemsB)
+                {
+                    newItemB.Add(new CompBenItems
+                    {
+                        Amount = item.Amount,
+                        CatId = item.CatId,
+                        ItmDesc = item.ItmDesc,
+                        ItmName = item.ItmName
+                    });
+                }
+
+                await context.CompBenItems.AddRangeAsync(newItemB);
+                await context.SaveChangesAsync();
+
+                //Items C
+                List<CBPckHasItem> newItemsC = new();
+                foreach (var item in newItemB)
+                {
+                    newItemsC.Add(new CBPckHasItem
+                    {
+                        ItemId = item.Id,
+                        PckgId = compBenPckgs.Id
+                    });
+                }
+
+                await context.CBPckHasItem.AddRangeAsync (newItemsC);
+                await context.SaveChangesAsync();
+            }
+
+            return compBenPckgs.Id;
+        }
+
+        public async Task<bool> HasSalaryGrade(int companyId, int gradeId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwSalaryBands
+                .AsNoTracking()
+                .Where(jo=> jo.CompanyId == companyId && jo.GradeId == gradeId)
+                .AnyAsync();
+        }
+
+        public async Task<List<VwSalaryBands>> GetVwSalaryBands(int companyId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwSalaryBands
+                .AsNoTracking()
+                .Where(jo => jo.CompanyId == companyId)
+                .ToListAsync();
+        }
+
+        public async Task<List<CBPlnHasItem>> GetCBPlnHasItem()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CBPlnHasItem.AsNoTracking().ToListAsync();
+        }
+
         public async Task<List<CompBenItems>> GetCompBenItems()
         {
             await using var context = await _dbContext.CreateDbContextAsync();

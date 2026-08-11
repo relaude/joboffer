@@ -64,6 +64,8 @@ namespace JO.Persistence.DataAccess
         public DbSet<CompBenMRI> CompBenMRI { get; set; }
         public DbSet<CompBenItmCat> CompBenItmCat { get; set; }
         public DbSet<CompBenPckgs> CompBenPckgs { get; set; }
+        public DbSet<CBPlnHasItem> CBPlnHasItem { get; set; }
+        public DbSet<CBPckHasItem> CBPckHasItem { get; set; }
 
         //Approval
         public DbSet<Approvals> Approvals { get; set; }

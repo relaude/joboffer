@@ -1,5 +1,5 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TR)]
-@attribute [Route(JORoutes.TR.CompBenNew)]
+@attribute [Route(JORoutes.TR.TemplateNew)]
 
 <div class="jo-content-page">
     <main class="jo-main">
@@ -27,9 +27,7 @@
 
                 <label class="jo-col-4">
                     Company <span class="text-danger">*</span>
-                    <select class="custom-select" 
-                        @bind="compBenPckgs.CompId">
-                        <option value="0">- Please select -</option>
+                    <select class="custom-select" value="@compBenPckgs.CompId">
                         @foreach (var option in companies)
                         {
                             <option value="@option.Id">@option.CompanyName</option>
@@ -38,11 +36,9 @@
                 </label>
 
                 <label class="jo-col-4">
-                    Employment Setup Template
-                    <select class="custom-select" 
-                        value="@templateId" 
-                        @onchange="OnTemplateChanged">
-                        <option value="0">- Please select -</option>
+                    Template
+                    <select class="custom-select" value="@templateId" @onchange="OnTemplateChanged">
+                        <option value="0">None</option>
                         @foreach (var option in templates)
                         {
                             <option value="@option.Id">@option.PlanName</option>
@@ -62,7 +58,7 @@
                     <div class="jo-form-grid">
                         <label>
                             Status <span class="text-danger">*</span>
-                            <select class="custom-select" @bind="compBenPckgs.TypeId">
+                            <select class="custom-select" value="@compBenPckgs.TypeId">
                                 <option value="0">- Please select -</option>
                                 @foreach (var option in empTypes)
                                 {
@@ -72,7 +68,7 @@
                         </label>
                         <label>
                             Work Area <span class="text-danger">*</span>
-                            <select class="custom-select" @bind="compBenPckgs.AreaId">
+                            <select class="custom-select" value="@compBenPckgs.AreaId">
                                 <option value="0">- Please select -</option>
                                 @foreach (var option in workArea)
                                 {
@@ -82,7 +78,7 @@
                         </label>
                         <label>
                             Shift Code <span class="text-danger">*</span>
-                            <select class="custom-select" @bind="compBenPckgs.ShiftId">
+                            <select class="custom-select" value="@compBenPckgs.ShiftId">
                                 <option value="0">- Please select -</option>
                                 @foreach (var option in shiftCode)
                                 {
@@ -92,7 +88,7 @@
                         </label>
                         <label>
                             Work Schedule <span class="text-danger">*</span>
-                            <select class="custom-select" @bind="compBenPckgs.SchedId">
+                            <select class="custom-select" value="@compBenPckgs.SchedId">
                                 <option value="0">- Please select -</option>
                                 @foreach (var option in workSched)
                                 {
@@ -102,7 +98,7 @@
                         </label>
                         <label>
                             Job Class <span class="text-danger">*</span>
-                            <select class="custom-select" @bind="compBenPckgs.ClassId">
+                            <select class="custom-select" value="@compBenPckgs.ClassId">
                                 <option value="0">- Please select -</option>
                                 @foreach (var option in jobClass)
                                 {
@@ -112,7 +108,7 @@
                         </label>
                         <label>
                             MRI <span class="text-danger">*</span>
-                            <select class="custom-select" @bind="compBenPckgs.MRIId">
+                            <select class="custom-select" value="@compBenPckgs.MRIId">
                                 <option value="0">- Please select -</option>
                                 @foreach (var option in compBenMRI)
                                 {
@@ -122,7 +118,7 @@
                         </label>
                         <label>
                             Frequency <span class="text-danger">*</span>
-                            <select class="custom-select" @bind="compBenPckgs.FreqId">
+                            <select class="custom-select" value="@compBenPckgs.FreqId">
                                 <option value="0">- Please select -</option>
                                 @foreach (var option in compBenFreq)
                                 {
@@ -132,7 +128,7 @@
                         </label>
                         <label>
                             Salaray Grade <span class="text-danger">*</span>
-                            <select class="custom-select" @bind="compBenPckgs.SGId">
+                            <select class="custom-select" value="@compBenPckgs.SGId">
                                 <option value="0">- Please select -</option>
                                 @foreach (var option in salaryGrades)
                                 {
@@ -166,10 +162,7 @@
                 <div>
                     <h2>Benefit items</h2>
                 </div>
-                <div class="jo-actions">
-                    <button class="btn btn-outline-primary" @onclick="AddItem">+&nbsp; Add new item</button>
-                    <button class="btn btn-outline-primary" @onclick="() => ShowItemsModal()">+&nbsp; Add existing item</button>
-                </div>
+                <button class="btn btn-outline-primary" @onclick="AddItem">+&nbsp; Add benefit item</button>
             </div>
             <div class="table-responsive">
                 <table class="jo-table">
@@ -211,6 +204,7 @@
                                            class="form-control form-control-sm"
                                            min="1000"
                                            step="1000"
+                                           readonly="@(item.Id > 0)"
                                            @bind="item.Amount" />
                                 </td>
                                 <td>
@@ -228,89 +222,10 @@
             </div>
         </section>
 
-        <div class="jo-actions">
-            <a href="@JORoutes.TR.CompBen" class="btn btn-outline-secondary">Cancel</a>
-            <button type="button" class="btn btn-primary" @onclick="SavePackage">Save As Template</button>
-            <button type="button" class="btn btn-primary" @onclick="SavePackage">Save</button>
-        </div>
-
     </main>
 </div>
 
-<JOModal @ref="modalExistItem" Title="Items">
-    <ChildContent>
-        <div class="jo-modal-sections">
-            <section class="jo-modal-section" aria-labelledby="item-filter-heading">
-                <div class="jo-filter-field">
-                    <label for="item-category-filter">Category</label>
-                    <select id="item-category-filter" 
-                        class="custom-select form-control"
-                        value="@modalCatId"
-                        @onchange="OnModalCategoryChanged">
-                        @foreach (var option in itemCat)
-                        {
-                            <option value="@option.Id">@option.CatName</option>
-                        }
-                    </select>
-                </div>
-            </section>
-
-            <div class="table-responsive jo-table-frame">
-                <table class="jo-table">
-                    <thead>
-                        <tr>
-                            <th class="jo-select-column">Select</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th class="jo-text-end">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (modalCompBenItems.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="4" class="jo-empty-state">No benefit items are available.</td>
-                            </tr>
-                        }
-                        else
-                        {
-                            @foreach (var item in modalCompBenItems)
-                            {
-                                <tr>
-                                    <td class="jo-select-column">
-                                        <input type="checkbox"
-                                               class="jo-table-checkbox"
-                                               aria-label="Select @item.ItmName" 
-                                               checked="@selectedModalItems.Contains(item.Id)" 
-                                               @onchange="e => UpdateItemSelection(item.Id, (bool)e.Value!)" />
-                                    </td>
-                                    <td class="jo-title">@item.ItmName</td>
-                                    <td>@item.ItmDesc</td>
-                                    <td class="jo-text-end">@UtilitiesService.ToPeso(item.Amount.GetValueOrDefault())</td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </ChildContent>
-    <FooterTemplate>
-        <div class="jo-actions">
-            <button class="btn btn-outline-primary btn-sm"
-                    @onclick="AddSelected"
-                    disabled="@(!selectedModalItems.Any())">
-                Add Selected
-            </button>
-        </div>
-    </FooterTemplate>
-</JOModal>
-
 @inject IBenefitsService BenefitsService
-@inject IUtilitiesService UtilitiesService
-@inject IAlertService AlertService
-@inject IAccountService AccountService
-@inject NavigationManager Navigation
 
 @code {
     private CompBenPckgs compBenPckgs = new();
@@ -326,18 +241,12 @@
     private List<CompBenMRI> compBenMRI = new();
     private List<CompBenFreq> compBenFreq = new();
     private List<SalaryGrades> salaryGrades = new();
-    private List<VwSalaryBands> salaryBands = new();
 
     private List<CompBenItemsDto> compBenItemsDto = new();
     private List<CompBenItems> compBenItems = new();
     private List<CompBenItmCat> itemCat = new();
-    private List<CBPlnHasItem> cbPlnHasItem = new();
-    private int templateId = 0;
 
-    private JOModal modalExistItem = default!;
-    private List<CompBenItems> modalCompBenItems = new();
-    private int modalCatId = 0;
-    private List<int> selectedModalItems = new();
+    private int templateId = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -355,119 +264,26 @@
 
         itemCat = await BenefitsService.GetCompBenItmCat();
         compBenItems = await BenefitsService.GetCompBenItems();
-        cbPlnHasItem = await BenefitsService.GetCBPlnHasItem();
 
-        compBenPckgs.CompId = 0;
-        templateId = 0;
+        templateId = templates.FirstOrDefault().Id;
+        await OnTemplateChanged(new ChangeEventArgs
+        {
+            Value = templateId
+        });
 
         FillCompBenItemsDto();
     }
 
-    #region Validation
-    public async Task SavePackage()
-    {
-        var errors = await CollectErrors(new List<string>());
-
-        if (errors.Any())
-        {
-            await AlertService.Errors(errors);
-            return;
-        }
-
-        if (!await AlertService.Confirm()) return;
-
-        compBenPckgs.CreatedBy = await AccountService.GetJobOfferUserId();
-        int newId = await BenefitsService.SavePackage(compBenPckgs, compBenItemsDto);
-
-        Navigation.NavigateTo($"{JORoutes.TR.CompBen}/{newId}");
-    }
-
-    private async Task<List<string>> CollectErrors(List<string> errors)
-    {
-        if (string.IsNullOrEmpty(compBenPckgs.PckgName))
-            errors.Add("Package Name is required.");
-
-        if (compBenPckgs.CompId == 0)
-            errors.Add("Company is required.");
-
-        if (compBenPckgs.TypeId == 0)
-            errors.Add("Employment setup Status is required.");
-
-        if (compBenPckgs.AreaId == 0)
-            errors.Add("Employment setup Work Area is required.");
-
-        if (compBenPckgs.ShiftId == 0)
-            errors.Add("Employment setup Shift Code is required.");
-
-        if (compBenPckgs.SchedId == 0)
-            errors.Add("Employment setup Work Schedule is required.");
-
-        if (compBenPckgs.ClassId == 0)
-            errors.Add("Employment setup Job Class is required.");
-
-        if (compBenPckgs.MRIId == 0)
-            errors.Add("Employment setup MRI is required.");
-
-        if (compBenPckgs.FreqId == 0)
-            errors.Add("Employment setup Frequency is required.");
-
-        if (compBenPckgs.SGId == 0)
-            errors.Add("Employment setup Salaray Grade is required.");
-
-        if (!compBenItemsDto.Any())
-            errors.Add("Benefit Items is required.");
-
-        if (compBenPckgs.CompId > 0 && compBenPckgs.SGId > 0)
-        {
-            bool hasSalaryGrade = await BenefitsService
-                .HasSalaryGrade(compBenPckgs.CompId.GetValueOrDefault(), 
-                    compBenPckgs.SGId.GetValueOrDefault());
-
-            if (hasSalaryGrade == false)
-                errors.Add("The selected salary grade does not have an assigned salary matrix.");
-        }
-
-        else CollectItemsErrors(errors);
-        
-        return errors;
-    }
-
-    private void CollectItemsErrors(List<string> errors)
-    {
-        for (var index = 0; index < compBenItemsDto.Count; index++)
-        {
-            var compBenItem = compBenItemsDto[index];
-            var rowNumber = index + 1;
-
-            if (string.IsNullOrEmpty(compBenItem.ItmName))
-                errors.Add($"Benefit Item Row {rowNumber}: Name is required.");
-
-            if (string.IsNullOrEmpty(compBenItem.ItmDesc))
-                errors.Add($"Benefit Item Row {rowNumber}: Description is required.");
-
-            if (compBenItem.Amount < 0)
-                errors.Add($"Benefit Item Row {rowNumber}: Invalid Amount.");
-        }
-    }
-    #endregion
-
-    #region Submit Form
     private void FillCompBenItemsDto()
     {
-        // var itemIds = cbPlnHasItem
-        //     .Where(x => x.PlanId == templateId && x.ItemId.HasValue)
-        //     .Select(x => x.ItemId!.Value)
-        //     .ToHashSet();
-
-        // compBenItemsDto.Clear();
-
+        compBenItemsDto.Clear();
         foreach (var item in compBenItems)
         {
             compBenItemsDto.Add(new CompBenItemsDto
             {
                 Id = item.Id,
-                Amount = item.Amount ?? 0m,
-                CatId = item.CatId ?? 0,
+                Amount = item.Amount.GetValueOrDefault(),
+                CatId = item.CatId.GetValueOrDefault(),
                 ItmDesc = item.ItmDesc,
                 ItmName = item.ItmName
             });
@@ -522,7 +338,7 @@
         compBenPckgs.Annual = plan.Annual;
         compBenPckgs.AllowSpec = plan.AllowSpec;
 
-        //FillCompBenItemsDto();
+        FillCompBenItemsDto();
     }
 
     private void ZeroCompBenPckgs()
@@ -543,61 +359,4 @@
         compBenPckgs.Annual = false;
         compBenPckgs.AllowSpec = false;
     }
-    #endregion
-
-    #region Modal
-    private void AddSelected()
-    {
-        var selectedItems = modalCompBenItems
-            .Where(jo => selectedModalItems.Contains(jo.Id))
-            .ToList();
-
-        foreach (var item in selectedItems)
-        {
-            compBenItemsDto.Add(new CompBenItemsDto
-            {
-                Id = item.Id,
-                Amount = item.Amount.GetValueOrDefault(),
-                CatId = item.CatId.GetValueOrDefault(),
-                ItmDesc = item.ItmDesc,
-                ItmName = item.ItmName
-            });
-        }
-
-        modalExistItem.Close();
-    }
-
-    private async Task ShowItemsModal()
-    {
-        modalCatId = itemCat.FirstOrDefault().Id;
-        await OnModalCategoryChanged(new ChangeEventArgs { Value = modalCatId });
-        selectedModalItems.Clear();
-
-        modalExistItem.Show();
-    }
-
-    private async Task OnModalCategoryChanged(ChangeEventArgs e)
-    {
-        modalCatId = int.TryParse(e.Value?.ToString(), out var mdlCatId)
-            ? mdlCatId
-            : 0;
-
-        modalCompBenItems.Clear();
-
-        var excludeIds = compBenItemsDto.Select(jo => jo.Id).ToHashSet();
-        modalCompBenItems = compBenItems.Where(jo => jo.CatId == modalCatId 
-            && !excludeIds.Contains(jo.Id)).ToList();
-    }
-
-    private async Task UpdateItemSelection(int itemId, bool isChecked)
-    {
-        if (isChecked)
-        {
-            if (!selectedModalItems.Contains(itemId))
-            { selectedModalItems.Add(itemId); }
-        }
-        else
-        { selectedModalItems.Remove(itemId); }
-    }
-    #endregion
 }

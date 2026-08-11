@@ -1,0 +1,20 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TR)]
+@attribute [Route(JORoutes.TR.Template)]
+
+<div class="jo-content-page">
+    <main class="jo-main">
+        <header class="jo-header">
+            <div>
+                <span class="jo-eyebrow">TOTAL REWARDS</span>
+                <h1>Compensation &amp; Benefits Template</h1>
+            </div>
+            <div class="jo-actions">
+                <a class="btn btn-primary" href="@JORoutes.TR.TemplateNew">+&nbsp; Create Template</a>
+            </div>
+        </header>
+    </main>
+</div>
+
+@code {
+
+}

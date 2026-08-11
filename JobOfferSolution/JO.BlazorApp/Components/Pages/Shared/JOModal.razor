@@ -1,0 +1,49 @@
+﻿@if (IsVisible)
+{
+    <div class="modal fade show d-block jo-modal-backdrop" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="jo-modal-title">
+        <div class="modal-dialog modal-dialog-scrollable @ModalSize jo-modal-dialog" role="document">
+            <div class="modal-content jo-modal-content">
+                <div class="modal-header jo-modal-header">
+                    <h5 id="jo-modal-title" class="modal-title jo-modal-title">@Title</h5>
+                    <button type="button" class="jo-modal-close" aria-label="Close" @onclick="Close">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body jo-modal-body">
+                    @ChildContent
+                </div>
+                <div class="modal-footer jo-modal-footer jo-actions">
+                    @if (FooterTemplate is not null)
+                    {
+                        @FooterTemplate
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-secondary btn-sm" @onclick="Close">Close</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string Title { get; set; } = "Modal Title";
+    [Parameter] public string ModalSize { get; set; } = "modal-lg"; // "modal-lg" or "modal-sm"
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? FooterTemplate { get; set; }
+
+    public bool IsVisible { get; private set; }
+
+    public void Show()
+    {
+        IsVisible = true;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Close()
+    {
+        IsVisible = false;
+        _ = InvokeAsync(StateHasChanged);
+    }
+}

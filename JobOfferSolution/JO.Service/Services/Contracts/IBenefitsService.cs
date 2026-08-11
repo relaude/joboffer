@@ -31,5 +31,9 @@ namespace JO.Service.Services.Contracts
         Task<List<VwCompBenPlans>> GetVwCompBenPlans();
         Task<List<SalaryGrades>> GetSalaryGrades();
         Task<List<CompBenItems>> GetCompBenItems();
+        Task<List<CBPlnHasItem>> GetCBPlnHasItem();
+        Task<bool> HasSalaryGrade(int companyId, int gradeId);
+        Task<int> SavePackage(CompBenPckgs compBenPckgs, List<CompBenItemsDto> compBenItemsDto);
+        Task<List<VwSalaryBands>> GetVwSalaryBands(int companyId);
     }
 }

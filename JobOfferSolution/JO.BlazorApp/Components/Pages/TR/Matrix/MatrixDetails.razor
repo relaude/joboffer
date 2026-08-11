@@ -65,7 +65,6 @@
                 <table class="jo-table">
                     <thead>
                         <tr>
-                            <th>Type</th>
                             <th>Grade</th>
                             <th>Minimum</th>
                             <th>Midpoint</th>
@@ -78,7 +77,6 @@
                             @foreach (var salaryBand in salaryBands)
                             {
                                 <tr @key="salaryBand.Id">
-                                    <td>@(string.IsNullOrWhiteSpace(salaryBand.TypeName) ? "-" : salaryBand.TypeName)</td>
                                     <td><strong>@(string.IsNullOrWhiteSpace(salaryBand.GradeName) ? "-" : salaryBand.GradeName)</strong></td>
                                     <td><strong>@UtilitiesService.ToPeso(salaryBand.Minimum)</strong></td>
                                     <td><strong>@UtilitiesService.ToPeso(salaryBand.Midpoint)</strong></td>

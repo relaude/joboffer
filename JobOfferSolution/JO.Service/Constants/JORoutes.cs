@@ -101,6 +101,9 @@ namespace JO.Service.Constants
             public const string CompBen = PrefixTR + "/benefits";
             public const string CompBenNew = PrefixTR + "/benefit/new";
             public const string CompBenEdit = PrefixTR + "/benefit/edit";
+
+            public const string Template = PrefixTR + "/template";
+            public const string TemplateNew = PrefixTR + "/template/new";
         }
 
         public static class DH

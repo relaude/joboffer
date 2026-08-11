@@ -14,5 +14,7 @@ namespace JO.DataModel.View
         public decimal? Maximum { get; set; }
         public string? TypeName { get; set; }
         public string? GradeName { get; set; }
+        public int? CompanyId { get; set; }
+        public int? GradeId { get; set; }
     }
 }
