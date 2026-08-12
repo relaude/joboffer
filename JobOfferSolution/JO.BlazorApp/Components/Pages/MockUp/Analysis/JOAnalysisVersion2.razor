@@ -1,0 +1,275 @@
+@page "/mockup/analysis/jo-analysis-version-2"
+
+<div class="jo-content-page jo-analysis-page">
+    <main class="jo-main">
+        <header class="jo-analysis-card jo-analysis-header">
+            <div>
+                <span class="jo-eyebrow">TOTAL REWARDS</span>
+                <h1>JO Analysis Version 2</h1>
+                <p>Configure employment rules and compare job offer compensation options.</p>
+            </div>
+            <div class="jo-actions">
+                <button type="button" class="btn btn-outline-secondary">Save draft</button>
+                <button type="button" class="btn btn-primary">Generate proposal</button>
+            </div>
+        </header>
+
+        <section class="jo-section">
+            <div class="jo-section-heading">
+                <div>
+                    <span class="jo-label">CANDIDATE</span>
+                    <h2>Basic information</h2>
+                    <p>Candidate, assignment, and reporting information.</p>
+                </div>
+            </div>
+
+            <div class="jo-form-grid">
+                <label>CANDIDATE NAME<input class="form-control" value="Alex Rivera" /></label>
+                <label>DIVISION / DEPARTMENT
+                    <select class="custom-select"><option>Consumer Health</option><option>Corporate Services</option></select>
+                </label>
+                <label>POSITION TITLE
+                    <select class="custom-select"><option>Senior Product Manager</option><option>Product Manager</option></select>
+                </label>
+                <label>SALARY GRADE
+                    <select class="custom-select"><option>SG 14</option><option>SG 13</option></select>
+                </label>
+                <label>COMPANY
+                    <select class="custom-select"><option>Unilab, Inc.</option><option>UL Skin Sciences, Inc.</option></select>
+                </label>
+                <label>IMMEDIATE SUPERIOR<input class="form-control" value="Maria Santos" /></label>
+            </div>
+        </section>
+
+        @* <section class="jo-section">
+            <div class="jo-section-heading">
+                <div>
+                    <span class="jo-label">QUICK SETUP</span>
+                    <h2>Apply templates</h2>
+                    <p>Choose templates to pre-populate the sections below.</p>
+                </div>
+            </div>
+
+            <div class="jo-analysis-template-grid">
+                <label>SUCCESSFACTORS INFO FOR ENCODING TEMPLATE
+                    <select class="custom-select">
+                        <option>Office Based Position</option>
+                        <option>Territory Rep, GMA</option>
+                        <option>Project Employee - Office</option>
+                    </select>
+                </label>
+                <label>COMPONENTS OF CASH COMPENSATION TEMPLATE
+                    <select class="custom-select">
+                        <option>Office Based No Car</option>
+                        <option>Office With Car</option>
+                        <option>Field Commercial</option>
+                        <option>Office Commercial</option>
+                    </select>
+                </label>
+                <button type="button" class="btn btn-primary">Apply templates</button>
+            </div>
+        </section> *@
+
+        @* <section class="jo-section jo-analysis-success-factors" aria-label="SuccessFactors information">
+            <div class="jo-analysis-two-column">
+                <article class="jo-analysis-subpanel">
+                    <div class="jo-analysis-subheading">
+                        <h2>Employment setup</h2>
+                        <p>Hiring rules inherited by the offer</p>
+                    </div>
+                    <div class="jo-form-grid">
+                        <label>WORK AREA<select class="custom-select"><option>Office</option></select></label>
+                        <label>SHIFT CODE<select class="custom-select"><option>O11 – 7:30–17:30</option></select></label>
+                        <label>WORK SCHEDULE<select class="custom-select"><option>Compressed</option></select></label>
+                        <label>JOB CLASS<select class="custom-select"><option>Rank &amp; File</option></select></label>
+                    </div>
+                </article>
+
+                <article class="jo-analysis-subpanel">
+                    <div class="jo-analysis-subheading">
+                        <h2>Eligibility rules</h2>
+                        <p>Package flags from the source form</p>
+                    </div>
+                    <div class="jo-analysis-check-grid">
+                        <label><input type="checkbox" /> Company car / motorized</label>
+                        <label><input type="checkbox" /> Incentive program</label>
+                        <label><input type="checkbox" checked /> Transportation allowance</label>
+                        <label><input type="checkbox" /> Annual bonus</label>
+                        <label><input type="checkbox" /> Special allowance</label>
+                        <label><input type="checkbox" /> Non-swiping eligibility</label>
+                    </div>
+                </article>
+            </div>
+        </section> *@
+
+        <section class="jo-section jo-analysis-compensation">
+            <div class="jo-section-heading">
+                <div>
+                    <span class="jo-label">CASH COMPENSATION</span>
+                    <h2>Compensation comparison</h2>
+                    <p>Monthly and annual values across the current package and proposed options.</p>
+                </div>
+                <label>
+                    Compensation Template
+                    <select class="custom-select">
+                        <option>Office Based No Car</option>
+                        <option>Office With Car</option>
+                        <option>Field Commercial</option>
+                        <option>Office Commercial</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="table-responsive jo-table-frame">
+                <table class="jo-table jo-analysis-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Component</th>
+                            <th scope="col">Current</th>
+                            <th scope="col"><span>Option 1</span><label class="jo-analysis-recommend"><input type="checkbox" /> Recommended</label></th>
+                            <th scope="col" class="is-recommended"><span>Option 2</span><label class="jo-analysis-recommend"><input type="checkbox" checked /> Recommended</label></th>
+                            <th scope="col"><span>Option 3</span><label class="jo-analysis-recommend"><input type="checkbox" /> Recommended</label></th>
+                            <th scope="col"><span>Option 4</span><label class="jo-analysis-recommend"><input type="checkbox" /> Recommended</label></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in CompensationRows)
+                        {
+                            <tr>
+                                <td>@row.Component</td>
+                                <td>@row.Current</td>
+                                <td>@row.Option1</td>
+                                <td class="is-recommended">@row.Option2</td>
+                                <td>@row.Option3</td>
+                                <td>@row.Option4</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>Gross compensation</td>
+                            <td>₱705,000</td>
+                            <td>₱873,750</td>
+                            <td class="is-recommended">₱1,023,750</td>
+                            <td>₱1,203,750</td>
+                            <td>₱1,203,750</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+        
+        <section class="jo-section jo-analysis-compensation">
+            <div class="jo-section-heading">
+                <div>
+                    <span class="jo-label">CASH COMPENSATION</span>
+                    <h2>Compensation comparison</h2>
+                    <p>Monthly and annual values across the current package and proposed options.</p>
+                </div>
+                <label>
+                    Compensation Template
+                    <select class="custom-select">
+                        <option>Office Based No Car</option>
+                        <option>Office With Car</option>
+                        <option>Field Commercial</option>
+                        <option>Office Commercial</option>
+                    </select>
+                </label>
+            </div>
+
+            <!--EDIT-->
+            <div class="jo-analysis-option-tabs" role="tablist" aria-label="Compensation options">
+                @foreach (var option in CompensationOptions)
+                {
+                    <button type="button" role="tab" aria-selected="@(selectedOption == option.Number)"
+                            class="jo-analysis-option-tab @(selectedOption == option.Number ? "active" : null) @(option.IsRecommended ? "is-recommended" : null)"
+                            @onclick="() => selectedOption = option.Number">
+                        <span>Option @option.Number</span>
+                        <small>@option.Summary</small>
+                    </button>
+                }
+            </div>
+
+            <div class="jo-analysis-option-toolbar @(SelectedOption.IsRecommended ? "is-recommended" : null)">
+                <div><span class="jo-label">OPTION @SelectedOption.Number</span><strong>@SelectedOption.Title</strong></div>
+                <label class="jo-analysis-option-recommended"><input type="checkbox" checked="@SelectedOption.IsRecommended" /> Mark as recommended</label>
+            </div>
+
+            <div class="table-responsive jo-table-frame" role="tabpanel">
+                <table class="jo-table jo-analysis-option-table @(SelectedOption.IsRecommended ? "is-recommended" : null)">
+                    <thead>
+                        <tr><th scope="col" rowspan="2">Component</th><th scope="colgroup" colspan="3">Current</th><th scope="colgroup" colspan="3" class="is-option">Option @SelectedOption.Number</th></tr>
+                        <tr><th scope="col">Monthly</th><th scope="col">Annual</th><th scope="col">Remarks</th><th scope="col" class="is-option">Monthly</th><th scope="col" class="is-option">Annual</th><th scope="col" class="is-option">Remarks</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in SelectedOption.Rows)
+                        {
+                            <tr class="@(row.IsDifference ? "is-difference" : null)">
+                                <td>@row.Component</td><td class="jo-text-end">@row.CurrentMonthly</td><td class="jo-text-end">@row.CurrentAnnual</td><td class="jo-analysis-remarks">@row.CurrentRemarks</td>
+                                <td class="jo-text-end is-option"><a href="#">@row.OptionMonthly</a></td>
+                                <td class="jo-text-end is-option">@row.OptionAnnual</td>
+                                <td class="jo-analysis-remarks is-option">@row.OptionRemarks</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot><tr><td>Gross compensation</td><td class="jo-text-end">₱40,000</td><td class="jo-text-end">₱705,000</td><td></td><td class="jo-text-end is-option">@SelectedOption.GrossMonthly</td><td class="jo-text-end is-option">@SelectedOption.GrossAnnual</td><td class="is-option"></td></tr></tfoot>
+                </table>
+            </div>
+            <!--EDIT-->
+        </section>
+        
+
+        <footer class="jo-analysis-card jo-analysis-footer">
+            <small>Last saved today at 2:14 PM &nbsp;•&nbsp; Option 2 is recommended</small>
+            <div class="jo-actions">
+                <button type="button" class="btn btn-outline-secondary">Cancel</button>
+                <button type="button" class="btn btn-outline-secondary">Save draft</button>
+                <button type="button" class="btn btn-primary">Submit for approval</button>
+            </div>
+        </footer>
+    </main>
+</div>
+
+@code {
+    private int selectedOption = 1;
+    private CompensationOption SelectedOption => CompensationOptions.First(option => option.Number == selectedOption);
+
+    private readonly CompensationOption[] CompensationOptions =
+    [
+        CreateOption(1, "Base proposal", "₱873,750 annual", "₱55,000", "₱660,000", "₱55,000", "₱110,000", "₱4,062.50", "₱48,750", "48%", "24%", "₱59,062.50", "₱873,750", false),
+        CreateOption(2, "Market-aligned proposal", "₱1,023,750 annual", "₱65,000", "₱780,000", "₱65,000", "₱130,000", "₱4,062.50", "₱48,750", "63%", "45%", "₱69,062.50", "₱1,023,750", true),
+        CreateOption(3, "Premium proposal", "₱1,203,750 annual", "₱77,000", "₱924,000", "₱77,000", "₱154,000", "₱4,062.50", "₱48,750", "93%", "71%", "₱81,062.50", "₱1,203,750", false),
+        CreateOption(4, "Alternative premium", "₱1,203,750 annual", "₱77,000", "₱924,000", "₱77,000", "₱154,000", "₱4,062.50", "₱48,750", "93%", "71%", "₱81,062.50", "₱1,203,750", false)
+    ];
+
+    private static CompensationOption CreateOption(int number, string title, string summary, string monthlyBasic, string annualBasic, string guaranteedPay, string otherBonus, string allowanceMonthly, string allowanceAnnual, string monthlyDifference, string annualDifference, string grossMonthly, string grossAnnual, bool isRecommended) =>
+        new(number, title, summary, grossMonthly, grossAnnual, isRecommended,
+        [
+            new("Monthly Basic Salary (MBS)", "₱40,000", "₱480,000", "", monthlyBasic, annualBasic, ""),
+            new("13th Month Pay (1.00 x MBS)", "—", "₱40,000", "", "—", guaranteedPay, "14th and 15th month"),
+            new("Other Guaranteed Bonus/es", "—", "—", "", "—", otherBonus, ""),
+            new("Allowances", "—", "₱25,000", "Non Tax Allowance, Transpo Allowance and Other Allowance", allowanceMonthly, allowanceAnnual, ""),
+            new("Profit Share", "—", "₱60,000", "", "—", "—", ""),
+            new("Incentives/Commission", "—", "₱80,000", "", "—", "—", ""),
+            new("Performance-Based Bonuses", "—", "₱20,000", "", "—", "—", ""),
+            new("% Difference in Pay", "—", "—", "", monthlyDifference, annualDifference, "", true)
+        ]);
+
+    private readonly CompensationRow[] CompensationRows =
+    [
+        new("Monthly basic salary", "₱40,000", "₱55,000", "₱65,000", "₱77,000", "₱77,000"),
+        new("Annual basic salary", "₱480,000", "₱660,000", "₱780,000", "₱924,000", "₱924,000"),
+        new("13th month pay", "₱40,000", "₱55,000", "₱65,000", "₱77,000", "₱77,000"),
+        new("Other guaranteed bonuses", "—", "₱110,000", "₱130,000", "₱154,000", "₱154,000"),
+        new("Allowances", "₱25,000", "₱48,750", "₱48,750", "₱48,750", "₱48,750"),
+        new("Profit share", "₱60,000", "—", "₱55,000", "₱65,000", "₱77,000"),
+        new("Incentives / Commission", "₱80,000", "—", "—", "—", "—"),
+        new("Performance bonus", "₱20,000", "—", "—", "—", "—"),
+        new("Difference in pay", "—", "+23.9%", "+45.2%", "+70.7%", "+70.7%")
+    ];
+
+    private sealed record CompensationRow(string Component, string Current, string Option1, string Option2, string Option3, string Option4);
+    private sealed record CompensationOption(int Number, string Title, string Summary, string GrossMonthly, string GrossAnnual, bool IsRecommended, CompensationOptionRow[] Rows);
+    private sealed record CompensationOptionRow(string Component, string CurrentMonthly, string CurrentAnnual, string CurrentRemarks, string OptionMonthly, string OptionAnnual, string OptionRemarks, bool IsDifference = false);
+}

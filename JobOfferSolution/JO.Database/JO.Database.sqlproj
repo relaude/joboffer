@@ -151,6 +151,8 @@
     <Build Include="dbo\Views\vw_CompBenItems.sql" />
     <Build Include="dbo\Tables\CompBenPckgs.sql" />
     <Build Include="dbo\Tables\CBPlnHasItem.sql" />
+    <Build Include="dbo\Tables\CBPckHasItem.sql" />
+    <Build Include="dbo\Tables\CandidateResponses.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

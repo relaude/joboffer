@@ -13,5 +13,6 @@ namespace JO.DataModel.Entity
         public decimal? Minimum { get; set; }
         public decimal? Midpoint { get; set; }
         public decimal? Maximum { get; set; }
+        public decimal? CompaRatio { get; set; }
     }
 }

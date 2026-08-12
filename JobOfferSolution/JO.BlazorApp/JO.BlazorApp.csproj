@@ -55,6 +55,8 @@
 
   <ItemGroup>
     <Folder Include="Components\Pages\MockUp\CompBen\" />
+    <Folder Include="Components\Pages\MockUp\Analysis\" />
+    <Folder Include="Components\Pages\MockUp\Response\" />
     <Folder Include="wwwroot\template\" />
   </ItemGroup>
 

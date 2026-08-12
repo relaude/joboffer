@@ -17,6 +17,9 @@ namespace JO.Persistence.DataAccess
         public DbSet<UserDivisionAccess> UserDivisionAccess { get; set; }
         public DbSet<UserPermissions> UserPermissions { get; set; }
 
+        //MS Forms
+        public DbSet<CandidateResponses> CandidateResponses { get; set; }
+
         //Job Offers
         public DbSet<Candidates> Candidates { get; set; }
         public DbSet<JobPositions> JobPositions { get; set; }

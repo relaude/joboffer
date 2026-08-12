@@ -1,0 +1,127 @@
+@page "/mockup/candidate-responses"
+
+<div class="jo-content-page jo-response-page">
+    <main class="jo-main">
+        <header class="jo-section jo-response-header">
+            <div>
+                <span class="jo-eyebrow">CANDIDATE MANAGEMENT</span>
+                <h1>Candidate Responses</h1>
+                <p>Review submitted compensation, benefits, and employment details.</p>
+            </div>
+            <div class="jo-actions">
+                <button type="button" class="btn btn-outline-secondary">
+                    <i class="fas fa-file-excel mr-2"></i>Import from Excel
+                </button>
+                <button type="button" class="btn btn-primary">
+                    <i class="fas fa-sync-alt mr-2"></i>Sync responses
+                </button>
+            </div>
+        </header>
+
+        <section class="jo-kpi-grid" aria-label="Candidate response metrics">
+            <article class="jo-kpi">
+                <span class="jo-kpi-label">TOTAL RESPONSES</span>
+                <strong class="jo-kpi-value">128</strong>
+                <small>10 imported today</small>
+            </article>
+            <article class="jo-kpi jo-kpi-green">
+                <span class="jo-kpi-label">NEW THIS WEEK</span>
+                <strong class="jo-kpi-value">24</strong>
+                <small>18.8% of total</small>
+            </article>
+            <article class="jo-kpi jo-kpi-amber">
+                <span class="jo-kpi-label">CURRENTLY EMPLOYED</span>
+                <strong class="jo-kpi-value">76</strong>
+                <small>59.4% of responses</small>
+            </article>
+            <article class="jo-kpi jo-kpi-red">
+                <span class="jo-kpi-label">NEEDS REVIEW</span>
+                <strong class="jo-kpi-value">11</strong>
+                <small>Missing compensation data</small>
+            </article>
+        </section>
+
+        <section class="jo-section jo-response-toolbar">
+            <div class="jo-response-filters">
+                <div class="jo-response-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" class="form-control" placeholder="Search name, email, or position..." aria-label="Search candidate responses" />
+                </div>
+                <select class="custom-select form-control" aria-label="Filter by employment status">
+                    <option>Employment status</option>
+                    <option>Employed</option>
+                    <option>Unemployed</option>
+                    <option>Part-time</option>
+                </select>
+                <select class="custom-select form-control" aria-label="Filter by position">
+                    <option>Position</option>
+                    <option>R&amp;D</option>
+                    <option>External Affairs Specialist</option>
+                    <option>Controllership Analyst</option>
+                </select>
+            </div>
+            <small>Showing 1–5 of 128 responses</small>
+        </section>
+
+        <section class="jo-section jo-response-table-section">
+            <div class="table-responsive">
+                <table class="jo-table jo-response-table">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Email address</th>
+                            <th>Position applied for</th>
+                            <th>Employment status</th>
+                            <th>Expected salary</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var response in Responses)
+                        {
+                            <tr>
+                                <td class="jo-title">@response.Name</td>
+                                <td>@response.Email</td>
+                                <td>@response.Position</td>
+                                <td><span class="jo-response-status @response.StatusClass">@response.Status</span></td>
+                                <td>@response.ExpectedSalary</td>
+                                <td><a href="/mockup/candidate-responses/details">View details <span aria-hidden="true">→</span></a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <footer class="jo-response-table-footer">
+                <span>Rows per page: 5 <i class="fas fa-caret-down ml-1"></i></span>
+                <nav class="jo-response-pagination" aria-label="Candidate response pages">
+                    <button type="button" aria-label="Previous page">‹</button>
+                    <button type="button" class="active" aria-current="page">1</button>
+                    <button type="button">2</button>
+                    <button type="button">3</button>
+                    <button type="button">…</button>
+                    <button type="button">26</button>
+                    <button type="button" aria-label="Next page">›</button>
+                </nav>
+            </footer>
+        </section>
+    </main>
+</div>
+
+@code {
+    private static readonly CandidateResponseRow[] Responses =
+    [
+        new("Alyssa Mae Navarro", "alyssa.navarro@example.com", "R&D", "Unemployed", "jo-response-status-amber", "₱120,000"),
+        new("Gabriel Luis Mendoza", "gabriel.mendoza@example.com", "External Affairs Specialist", "Part-time", "jo-response-status-amber", "₱55,000"),
+        new("Bianca Sofia Reyes", "bianca.reyes@example.com", "Asst. Product Manager", "Employed", "jo-response-status-green", "₱180,000"),
+        new("Marco Antonio Villanueva", "marco.villanueva@example.com", "Customer Development Specialist", "Unemployed", "jo-response-status-amber", "₱45,000"),
+        new("Camille Andrea Santos", "camille.santos@example.com", "Controllership Analyst", "Employed", "jo-response-status-green", "₱35,000")
+    ];
+
+    private sealed record CandidateResponseRow(
+        string Name,
+        string Email,
+        string Position,
+        string Status,
+        string StatusClass,
+        string ExpectedSalary);
+}
