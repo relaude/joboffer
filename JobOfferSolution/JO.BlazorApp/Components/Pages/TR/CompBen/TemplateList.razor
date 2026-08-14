@@ -6,15 +6,185 @@
         <header class="jo-header">
             <div>
                 <span class="jo-eyebrow">TOTAL REWARDS</span>
-                <h1>Compensation &amp; Benefits Template</h1>
+                <h1>Compensation Template</h1>
             </div>
             <div class="jo-actions">
-                <a class="btn btn-primary" href="@JORoutes.TR.TemplateNew">+&nbsp; Create Template</a>
+                <button class="btn btn-primary" @onclick="ShowAddModal"><i class="fas fa-plus mr-2"></i>New template</button>
             </div>
         </header>
+
+        <section class="jo-section">
+            <div class="table-responsive">
+                <table class="jo-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (pckgTemps.Any())
+                        {
+                            @foreach (var pckg in pckgTemps)
+                            {
+                                <tr @key="pckg.Id">
+                                    <td>
+
+                                        <a href="javascript:void(0)" @onclick="() => ShowModal(pckg)">
+                                            <strong>@pckg.TempName</strong>
+                                        </a>
+                                    </td>
+                                    
+                                    <td>
+                                        <div>@(string.IsNullOrWhiteSpace(pckg.CreatedByName) ? "-" : pckg.CreatedByName)</div>
+                                        <small class="text-muted">@(pckg.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                                    </td>
+                                    <td>
+                                        <div>@(string.IsNullOrWhiteSpace(pckg.ModifiedByName) ? "-" : pckg.ModifiedByName)</div>
+                                        <small class="text-muted">@(pckg.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-3">No template found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 </div>
 
-@code {
+<JOModal @ref="joModal">
+    <ChildContent>
+        <section class="jo-section">
+            <div class="jo-toggle-grid">
+                @foreach (var item in tempItems)
+                {
+                    <label class="jo-toggle">
+                        <input type="checkbox" @bind="item.IsEnabled" />
+                        <span class="jo-toggle-control"></span>@item.ItemName
+                    </label>
+                }
+            </div>
+        </section>
+    </ChildContent>
+    <FooterTemplate>
+        <div class="jo-actions">
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="joModal.Close">Close</button>
+            <button type="button" class="btn btn-primary btn-sm" @onclick="UpdatePckgTempHasItms">Save</button>
+        </div>
+    </FooterTemplate>
+</JOModal>
 
+<JOModal @ref="addModal" Title="New Template">
+    <ChildContent>
+        <div class="jo-grid">
+            <label class="jo-col-12">
+                <input class="form-control" placeholder="Template Name" @bind="newPckgTemp.TempName">
+            </label>
+        </div>
+
+        <section class="jo-section">
+            <div class="jo-toggle-grid">
+                @foreach (var item in pckgItemsDto)
+                {
+                    <label class="jo-toggle">
+                        <input type="checkbox" @bind="item.IsEnabled" />
+                        <span class="jo-toggle-control"></span>@item.ItemName
+                    </label>
+                }
+            </div>
+        </section>
+    </ChildContent>
+    <FooterTemplate>
+        <div class="jo-actions">
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="addModal.Close">Close</button>
+            <button type="button" class="btn btn-primary btn-sm" @onclick="AddPckgTemp">Save</button>
+        </div>
+    </FooterTemplate>
+</JOModal>
+
+@inject IBenefitsService BenefitsService
+@inject IAccountService AccountService
+@inject IAlertService AlertService
+
+@code {
+    private List<VwPckgTemp> pckgTemps = new();
+    private List<PckgItemsDto> pckgItemsDto = new();
+    private int userId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userId = await AccountService.GetJobOfferUserId();
+        pckgItemsDto = await BenefitsService.GetPckgItemsDto();
+        await RefreshList();
+    }
+
+    private async Task RefreshList()
+    {
+        pckgTemps = await BenefitsService.GetVwPckgTemp();
+    }
+
+    #region Add Modal
+    private JOModal addModal = default!;
+    private PckgTemp newPckgTemp = new();
+
+    private async Task ShowAddModal()
+    {
+        newPckgTemp.TempName = "";
+        ResetPckgItemsDto();
+        addModal.Show();
+    }
+
+    private void ResetPckgItemsDto()
+    {
+        foreach (var item in pckgItemsDto)
+        {
+            item.IsEnabled = false;
+        }
+    }
+
+    private async Task AddPckgTemp()
+    {
+        if (string.IsNullOrEmpty(newPckgTemp.TempName))
+        {
+            await AlertService.Error("Template name is required.");
+            return;
+        }
+
+        if (!await AlertService.Confirm()) return;
+
+        await BenefitsService.AddPckgTemp(newPckgTemp, pckgItemsDto);
+        await RefreshList();
+        addModal.Close();
+    }
+    #endregion
+
+    #region Update Modal
+    private JOModal joModal = default!;
+    private List<VwPckgTempHasItms> tempItems = new();
+
+    private async Task ShowModal(VwPckgTemp pckgTemp)
+    {
+        tempItems = await BenefitsService.GetVwPckgTempHasItms(pckgTemp.Id);
+
+        joModal.Title = pckgTemp.TempName;
+        joModal.Show();
+    }
+
+    private async Task UpdatePckgTempHasItms()
+    {
+        if (!await AlertService.Confirm()) return;
+
+        await BenefitsService.UpdatePckgTempHasItms(tempItems, userId);
+        await RefreshList();
+        joModal.Close();
+    }
+    #endregion
 }

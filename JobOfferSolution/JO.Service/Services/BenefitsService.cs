@@ -16,6 +16,99 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<int> AddPckgTemp(PckgTemp newPckgTemp, List<PckgItemsDto> pckgItemsDto)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            newPckgTemp.CreatedAt = DateTime.Now;
+
+            await context.PckgTemp.AddAsync(newPckgTemp);
+            await context.SaveChangesAsync();
+
+            List<PckgTempHasItms> newItems = new();
+            foreach (var item in pckgItemsDto)
+            {
+                newItems.Add(new PckgTempHasItms
+                {
+                    IsEnabled = item.IsEnabled,
+                    ItemId = item.Id,
+                    TempId = newPckgTemp.Id
+                });
+            }
+
+            await context.PckgTempHasItms.AddRangeAsync(newItems);
+            await context.SaveChangesAsync();
+
+            return newPckgTemp.Id;
+        }
+
+        public async Task<int> UpdatePckgTempHasItms(List<VwPckgTempHasItms> tempItems, int modifiedBy)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var updateIds = tempItems.Select(jo => jo.Id).ToList();
+            var updateItems = await context.PckgTempHasItms
+                .Where(jo=> updateIds.Contains(jo.Id))
+                .ToListAsync();
+
+            foreach (var item in updateItems)
+            {
+                item.IsEnabled = tempItems.FirstOrDefault(jo => jo.Id == item.Id).IsEnabled;
+            }
+
+            int tempId = tempItems.FirstOrDefault().TempId.GetValueOrDefault();
+            var pckgTemp = await context.PckgTemp.FindAsync(tempId);
+            pckgTemp.ModifiedBy = modifiedBy;
+            pckgTemp.ModifiedAt = DateTime.Now;
+
+            context.PckgTempHasItms.UpdateRange(updateItems);
+            context.PckgTemp.Update(pckgTemp);
+
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<List<PckgItemsDto>> GetPckgItemsDto()
+        {
+            List<PckgItemsDto> pckgItemsDto = new();
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var pckgItems = await context.PckgItems.AsNoTracking().ToListAsync();
+            foreach (var item in pckgItems)
+            {
+                pckgItemsDto.Add(new PckgItemsDto
+                {
+                    Id = item.Id,
+                    ItemName = item.ItemName
+                });
+            }
+
+            return pckgItemsDto;
+        }
+
+        public async Task<List<VwPckgTempHasItms>> GetVwPckgTempHasItms(int tempId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwPckgTempHasItms
+                .AsNoTracking()
+                .Where(jo=> jo.TempId==tempId)
+                .ToListAsync();
+        }
+
+        public async Task<List<VwPckgTemp>> GetVwPckgTemp()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwPckgTemp
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<PckgTemp>> GetPckgTemp()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.PckgTemp
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<int> SavePackage(CompBenPckgs compBenPckgs, List<CompBenItemsDto> compBenItemsDto)
         {
             await using var context = await _dbContext.CreateDbContextAsync();

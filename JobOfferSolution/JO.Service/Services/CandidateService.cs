@@ -27,6 +27,18 @@ namespace JO.Service.Services
             _email = email;
         }
 
+        public async Task<CandidateResponses> GetCandidateResponse(int id)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CandidateResponses.FindAsync(id);
+        }
+
+        public async Task<List<CandidateResponses>> GetCandidateResponses()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CandidateResponses.AsNoTracking().ToListAsync();
+        }
+
         public async Task<List<Candidates>> GetCandidates()
         {
             await using var context = await _dbContext.CreateDbContextAsync();

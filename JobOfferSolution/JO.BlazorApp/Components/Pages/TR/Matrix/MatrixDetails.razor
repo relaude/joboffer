@@ -1,100 +1,99 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TR)]
 @attribute [Route(JORoutes.TR.SalaryMatrix + "/{matrixId:int}")]
 
-<div class="jo-content-page">
-    <main class="jo-main">
-        
-        <header class="jo-header">
-            <div>
-                <span class="jo-eyebrow">TOTAL REWARDS</span>
-                <h1>Salary Matrix Details</h1>
-            </div>
-            <div class="jo-actions">
-                <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary mr-2">← Back</a>
-                <a href="@($"{JORoutes.TR.SalaryMatrixEdit}/{matrixId}")" class="btn btn-primary">Edit matrix</a>
-            </div>
-        </header>
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="jo-title">Salary Matrix Details</h6>
 
-        <section class="jo-panel">
-            <div class="row">
-                <div class="col-lg-4 mb-3">
-                    @if(matrix.IsActive == true)
-                    { <span class="jo-pill jo-pill-green mr-2">ACTIVE</span> }
+        <div class="jo-actions">
+            <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary mr-2">← Back</a>
+            <a href="@($"{JORoutes.TR.SalaryMatrixEdit}/{matrixId}")" class="btn btn-primary">Edit matrix</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                @if (matrix.IsActive == true)
+                {
+                    <span class="jo-pill jo-pill-green mr-2">ACTIVE</span>
+                }
 
-                    @if(matrix.IsActive == false)
-                    { <span class="jo-pill jo-pill-gray mr-2">INACTIVE</span> }
-                    
-                    <h4 class="jo-title mt-3 mb-1">@matrix.CompanyName</h4>
-                    <div class="jo-code">@matrix.CompanyCode</div>
+                @if (matrix.IsActive == false)
+                {
+                    <span class="jo-pill jo-pill-gray mr-2">INACTIVE</span>
+                }
+
+                <h4 class="jo-title mt-3 mb-1">@matrix.CompanyName</h4>
+                <div class="jo-code">@matrix.CompanyCode</div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Created by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(matrix.CreatedByName) ? "-" : matrix.CreatedByName)</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Created at</div>
+                        <div class="jo-meta-value">@(matrix.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
                 </div>
 
-                <div class="col-lg-8">
-                    <div class="row">
-                        <div class="col-sm-4 mb-3">
-                            <div class="jo-meta-label">Created by</div>
-                            <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(matrix.CreatedByName) ? "-" : matrix.CreatedByName)</div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="jo-meta-label">Created at</div>
-                            <div class="jo-meta-value">@(matrix.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
-                        </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Modified by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(matrix.ModifiedByName) ? "-" : matrix.ModifiedByName)</div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <div class="jo-meta-label">Modified by</div>
-                            <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(matrix.ModifiedByName) ? "-" : matrix.ModifiedByName)</div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="jo-meta-label">Modified at</div>
-                            <div class="jo-meta-value">@(matrix.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
-                        </div>
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Modified at</div>
+                        <div class="jo-meta-value">@(matrix.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
+</div>
 
-        <section class="jo-section">
-            <div class="jo-section-heading">
-                <div>
-                    <h2>Salary bands</h2>
-                    <p>Ranges by salary grade</p>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="jo-table">
-                    <thead>
-                        <tr>
-                            <th>Grade</th>
-                            <th>Minimum</th>
-                            <th>Midpoint</th>
-                            <th>Maximum</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (salaryBands.Any())
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">Salary bands</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th>Grade</th>
+                        <th>Minimum</th>
+                        <th>Midpoint</th>
+                        <th>Maximum</th>
+                        <th>CompaRatio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (salaryBands.Any())
+                    {
+                        @foreach (var salaryBand in salaryBands)
                         {
-                            @foreach (var salaryBand in salaryBands)
-                            {
-                                <tr @key="salaryBand.Id">
-                                    <td><strong>@(string.IsNullOrWhiteSpace(salaryBand.GradeName) ? "-" : salaryBand.GradeName)</strong></td>
-                                    <td><strong>@UtilitiesService.ToPeso(salaryBand.Minimum)</strong></td>
-                                    <td><strong>@UtilitiesService.ToPeso(salaryBand.Midpoint)</strong></td>
-                                    <td><strong>@UtilitiesService.ToPeso(salaryBand.Maximum)</strong></td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="5" class="text-center text-muted py-3">No salary bands configured.</td>
+                            <tr @key="salaryBand.Id">
+                                <td><strong>@(string.IsNullOrWhiteSpace(salaryBand.GradeName) ? "-" : salaryBand.GradeName)</strong></td>
+                                <td><strong>@UtilitiesService.ToPeso(salaryBand.Minimum)</strong></td>
+                                <td><strong>@UtilitiesService.ToPeso(salaryBand.Midpoint)</strong></td>
+                                <td><strong>@UtilitiesService.ToPeso(salaryBand.Maximum)</strong></td>
+                                <td><strong>@UtilitiesService.ToPeso(salaryBand.CompaRatio)</strong></td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
-        </section>
-</main>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-3">No salary bands configured.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 @inject ISalaryMatrixService SalaryMatrixService

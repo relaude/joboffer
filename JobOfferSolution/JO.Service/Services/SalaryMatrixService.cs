@@ -112,7 +112,8 @@ namespace JO.Service.Services
                     CSGId = item.CSGId,
                     Minimum = item.Minimum,
                     Midpoint = item.Midpoint,
-                    Maximum = item.Maximum
+                    Maximum = item.Maximum,
+                    CompaRatio = item.CompaRatio
                 });
             }
 
@@ -139,7 +140,8 @@ namespace JO.Service.Services
                     CSGId = item.CSGId,
                     Minimum = item.Minimum,
                     Midpoint = item.Midpoint,
-                    Maximum = item.Maximum
+                    Maximum = item.Maximum,
+                    CompaRatio = item.CompaRatio
                 });
             }
 

@@ -1,0 +1,141 @@
+@page "/mockup/candidate-responses/import"
+
+<div class="jo-import-page">
+    <header class="jo-import-header">
+        <div>
+            <span class="jo-import-eyebrow">CANDIDATE RESPONSES</span>
+            <h1>Import from Excel</h1>
+            <p>Review and validate candidate responses before adding them to JobOffer.</p>
+        </div>
+        <span class="jo-import-format"><i class="fas fa-circle" aria-hidden="true"></i> XLSX IMPORT</span>
+    </header>
+
+    <main class="jo-import-main">
+        <ol class="jo-import-steps" aria-label="Import progress">
+            <li class="is-complete"><span><i class="fas fa-check" aria-hidden="true"></i></span>UPLOAD FILE</li>
+            <li class="is-active" aria-current="step"><span>2</span>PREVIEW &amp; VALIDATE</li>
+            <li><span>3</span>IMPORT</li>
+        </ol>
+
+        <section class="jo-import-file" aria-label="Selected Excel file">
+            <span class="jo-import-excel" aria-hidden="true">X</span>
+            <div>
+                <strong>Candidate_Responses_August_2026.xlsx</strong>
+                <small>Microsoft Excel Workbook &nbsp;•&nbsp; 248 rows &nbsp;•&nbsp; 47 columns &nbsp;•&nbsp; 1.8 MB</small>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm">CHANGE FILE</button>
+        </section>
+
+        <section class="jo-import-metrics" aria-label="Validation summary">
+            @foreach (var metric in Metrics)
+            {
+                <article class="jo-import-metric @metric.ClassName">
+                    <span>@metric.Label</span>
+                    <strong>@metric.Value</strong>
+                    <small>@metric.Description</small>
+                </article>
+            }
+        </section>
+
+        <section class="jo-import-preview">
+            <header class="jo-import-preview-header">
+                <div>
+                    <span class="jo-label">PREVIEW</span>
+                    <h2>Candidate response data</h2>
+                </div>
+                <div class="jo-import-controls">
+                    <div class="jo-import-search">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        <input @bind="SearchText" type="search" class="form-control" placeholder="Search candidates..." aria-label="Search candidates" />
+                    </div>
+                    <button type="button" class="jo-import-filter @(Filter == RowFilter.All ? "active" : null)" @onclick="() => Filter = RowFilter.All">ALL ROWS <strong>248</strong></button>
+                    <button type="button" class="jo-import-filter jo-import-filter-issues @(Filter == RowFilter.Issues ? "active" : null)" @onclick="() => Filter = RowFilter.Issues">ISSUES <strong>9</strong></button>
+                    <button type="button" class="jo-import-filter">COLUMNS <strong>47</strong></button>
+                </div>
+            </header>
+
+            <div class="jo-import-table-frame">
+                <div class="table-responsive">
+                    <table class="jo-table jo-import-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>STATUS</th>
+                                <th>FULL NAME</th>
+                                <th>EMAIL</th>
+                                <th>POSITION APPLIED FOR</th>
+                                <th>UNILAB DIVISION</th>
+                                <th>EXPECTED SALARY</th>
+                                <th>CURRENT EMPLOYER</th>
+                                <th>VALIDATION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in FilteredRows)
+                            {
+                                <tr>
+                                    <td>@row.Number</td>
+                                    <td><span class="jo-import-status @row.StatusClass">@row.Status</span></td>
+                                    <td class="jo-title">@row.Name</td>
+                                    <td>@row.Email</td>
+                                    <td>@row.Position</td>
+                                    <td>@row.Division</td>
+                                    <td>@row.ExpectedSalary</td>
+                                    <td>@row.CurrentEmployer</td>
+                                    <td><span class="@row.StatusClass">@row.Validation</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <p class="jo-import-table-hint">Showing 9 of 47 columns &nbsp;•&nbsp; Scroll horizontally to review compensation, benefits, leave, insurance, vehicle, and cellular phone fields.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="jo-import-footer">
+        <div>
+            <strong>239 candidates are ready to import</strong>
+            <small>Rows with validation issues or duplicate emails will be skipped. You can resolve them and import again later.</small>
+        </div>
+        <div class="jo-actions">
+            <a class="btn btn-outline-secondary" href="/mockup/candidate-responses">BACK</a>
+            <a class="btn btn-outline-secondary" href="/mockup/candidate-responses">CANCEL</a>
+            <button type="button" class="btn btn-primary">IMPORT 239 CANDIDATES</button>
+        </div>
+    </footer>
+</div>
+
+@code {
+    private string SearchText { get; set; } = string.Empty;
+    private RowFilter Filter { get; set; }
+
+    private IEnumerable<ImportPreviewRow> FilteredRows => Rows.Where(row =>
+        (Filter != RowFilter.Issues || row.Status != "READY") &&
+        (string.IsNullOrWhiteSpace(SearchText) ||
+         row.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+         row.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+         row.Position.Contains(SearchText, StringComparison.OrdinalIgnoreCase)));
+
+    private static readonly ImportMetric[] Metrics =
+    [
+        new("TOTAL ROWS", "248", "All responses", "is-blue"),
+        new("READY TO IMPORT", "239", "No validation issues", "is-green"),
+        new("NEEDS REVIEW", "7", "Missing or invalid values", "is-amber"),
+        new("DUPLICATES", "2", "Matched by email", "is-red")
+    ];
+
+    private static readonly ImportPreviewRow[] Rows =
+    [
+        new(1, "READY", "jo-import-green", "Ana Patricia Cruz", "ana.cruz@email.com", "Medical Representative", "UL Health", "₱45,000", "St. Luke's Medical", "Ready"),
+        new(2, "REVIEW", "jo-import-amber", "Miguel Santos", "miguel.santos@email.com", "Brand Manager", "UL Consumer", "—", "Monde Nissin", "Salary missing"),
+        new(3, "READY", "jo-import-green", "Nicole Reyes", "nicole.reyes@email.com", "Finance Analyst", "UL Corporate", "₱62,000", "BDO Unibank", "Ready"),
+        new(4, "DUPLICATE", "jo-import-red", "Carlo Mendoza", "carlo.m@email.com", "Area Sales Manager", "UL Health", "₱70,000", "Zuellig Pharma", "Email exists"),
+        new(5, "READY", "jo-import-green", "Beatrice Lim", "bea.lim@email.com", "HR Business Partner", "UL Corporate", "₱85,000", "Jollibee Foods", "Ready"),
+        new(6, "REVIEW", "jo-import-amber", "Paolo Garcia", "paolo.garcia", "Data Analyst", "UL Consumer", "₱55,000", "Accenture", "Invalid email")
+    ];
+
+    private enum RowFilter { All, Issues }
+    private sealed record ImportMetric(string Label, string Value, string Description, string ClassName);
+    private sealed record ImportPreviewRow(int Number, string Status, string StatusClass, string Name, string Email, string Position, string Division, string ExpectedSalary, string CurrentEmployer, string Validation);
+}

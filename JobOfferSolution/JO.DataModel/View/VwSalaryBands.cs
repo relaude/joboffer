@@ -12,6 +12,7 @@ namespace JO.DataModel.View
         public decimal? Minimum { get; set; }
         public decimal? Midpoint { get; set; }
         public decimal? Maximum { get; set; }
+        public decimal? CompaRatio { get; set; }
         public string? TypeName { get; set; }
         public string? GradeName { get; set; }
         public int? CompanyId { get; set; }

@@ -69,6 +69,9 @@ namespace JO.Persistence.DataAccess
         public DbSet<CompBenPckgs> CompBenPckgs { get; set; }
         public DbSet<CBPlnHasItem> CBPlnHasItem { get; set; }
         public DbSet<CBPckHasItem> CBPckHasItem { get; set; }
+        public DbSet<PckgTemp> PckgTemp { get; set; }
+        public DbSet<PckgTempHasItms> PckgTempHasItms { get; set; }
+        public DbSet<PckgItems> PckgItems { get; set; }
 
         //Approval
         public DbSet<Approvals> Approvals { get; set; }
@@ -101,6 +104,8 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwUserDivisionAccess> VwUserDivisionAccess { get; set; }
         public DbSet<VwCompBenItems> VwCompBenItems { get; set; }
         public DbSet<VwCompBenPlans> VwCompBenPlans { get; set; }
+        public DbSet<VwPckgTempHasItms> VwPckgTempHasItms { get; set; }
+        public DbSet<VwPckgTemp> VwPckgTemp { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -122,6 +127,8 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwUserDivisionAccess>().HasNoKey().ToView("vw_UserDivisionAccess");
             modelBuilder.Entity<VwCompBenItems>().HasNoKey().ToView("vw_CompBenItems");
             modelBuilder.Entity<VwCompBenPlans>().HasNoKey().ToView("vw_CompBenPlans");
+            modelBuilder.Entity<VwPckgTempHasItms>().HasNoKey().ToView("vw_PckgTempHasItms");
+            modelBuilder.Entity<VwPckgTemp>().HasNoKey().ToView("vw_PckgTemp");
         }
     }
 }

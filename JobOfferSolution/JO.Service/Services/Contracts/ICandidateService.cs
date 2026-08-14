@@ -9,6 +9,8 @@ namespace JO.Service.Services.Contracts
         Task<int> CreateJobOffer(int candidateId, int createdBy);
         Task<int> EmailRequest(Requests entity);
         Task<Candidates> GetCandidate(int id);
+        Task<CandidateResponses> GetCandidateResponse(int id);
+        Task<List<CandidateResponses>> GetCandidateResponses();
         Task<List<Candidates>> GetCandidates();
     }
 }

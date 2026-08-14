@@ -1,16 +1,18 @@
-@page "/mockup/analysis/jo-analysis-version-2"
+@* @page "/mockup/analysis/jo-analysis-version-2" *@
+
+@attribute [Route(JORoutes.TA.NewOffer + "/{responseId:int}/{numProposal:int}")]
 
 <div class="jo-content-page jo-analysis-page">
     <main class="jo-main">
         <header class="jo-analysis-card jo-analysis-header">
             <div>
-                <span class="jo-eyebrow">TOTAL REWARDS</span>
-                <h1>JO Analysis Version 2</h1>
+                <span class="jo-eyebrow">TALENT ACQUISITIONS</span>
+                <h1>Job Offer Analysis</h1>
                 <p>Configure employment rules and compare job offer compensation options.</p>
             </div>
             <div class="jo-actions">
-                <button type="button" class="btn btn-outline-secondary">Save draft</button>
-                <button type="button" class="btn btn-primary">Generate proposal</button>
+                @* <button type="button" class="btn btn-outline-secondary">Save draft</button>
+                <button type="button" class="btn btn-primary">Generate proposal</button> *@
             </div>
         </header>
 
@@ -24,12 +26,14 @@
             </div>
 
             <div class="jo-form-grid">
-                <label>CANDIDATE NAME<input class="form-control" value="Alex Rivera" /></label>
+                <label>CANDIDATE NAME<input class="form-control" value="@candidate.CandidateFullName" /></label>
                 <label>DIVISION / DEPARTMENT
-                    <select class="custom-select"><option>Consumer Health</option><option>Corporate Services</option></select>
+                    @* <select class="custom-select"><option>Consumer Health</option><option>Corporate Services</option></select> *@
+                    <input class="form-control" value="@candidate.UnilabDivision" />
                 </label>
                 <label>POSITION TITLE
-                    <select class="custom-select"><option>Senior Product Manager</option><option>Product Manager</option></select>
+                    @* <select class="custom-select"><option>Senior Product Manager</option><option>Product Manager</option></select> *@
+                    <input class="form-control" value="@candidate.PositionAppliedFor" />
                 </label>
                 <label>SALARY GRADE
                     <select class="custom-select"><option>SG 14</option><option>SG 13</option></select>
@@ -102,7 +106,7 @@
             </div>
         </section> *@
 
-        <section class="jo-section jo-analysis-compensation">
+        @* <section class="jo-section jo-analysis-compensation">
             <div class="jo-section-heading">
                 <div>
                     <span class="jo-label">CASH COMPENSATION</span>
@@ -157,7 +161,7 @@
                     </tfoot>
                 </table>
             </div>
-        </section>
+        </section> *@
 
         
         <section class="jo-section jo-analysis-compensation">
@@ -170,15 +174,14 @@
                 <label>
                     Compensation Template
                     <select class="custom-select">
-                        <option>Office Based No Car</option>
-                        <option>Office With Car</option>
-                        <option>Field Commercial</option>
-                        <option>Office Commercial</option>
+                        @foreach (var item in pckgTemp)
+                        {
+                            <option value="@item.Id">@item.TempName</option>
+                        }
                     </select>
                 </label>
             </div>
 
-            <!--EDIT-->
             <div class="jo-analysis-option-tabs" role="tablist" aria-label="Compensation options">
                 @foreach (var option in CompensationOptions)
                 {
@@ -199,39 +202,123 @@
             <div class="table-responsive jo-table-frame" role="tabpanel">
                 <table class="jo-table jo-analysis-option-table @(SelectedOption.IsRecommended ? "is-recommended" : null)">
                     <thead>
-                        <tr><th scope="col" rowspan="2">Component</th><th scope="colgroup" colspan="3">Current</th><th scope="colgroup" colspan="3" class="is-option">Option @SelectedOption.Number</th></tr>
-                        <tr><th scope="col">Monthly</th><th scope="col">Annual</th><th scope="col">Remarks</th><th scope="col" class="is-option">Monthly</th><th scope="col" class="is-option">Annual</th><th scope="col" class="is-option">Remarks</th></tr>
+                        <tr>
+                            <th scope="col" rowspan="2">Component</th>
+                            <th scope="colgroup" colspan="3">Current</th>
+                            <th scope="colgroup" colspan="3" class="is-option">Option @SelectedOption.Number</th>
+                        </tr>
+                        <tr>
+                            <th scope="col">Monthly</th><th scope="col">Annual</th>
+                            <th scope="col">Remarks</th><th scope="col" class="is-option">Monthly</th>
+                            <th scope="col" class="is-option">Annual</th>
+                            <th scope="col" class="is-option">Remarks</th>
+                        </tr>
                     </thead>
                     <tbody>
                         @foreach (var row in SelectedOption.Rows)
                         {
                             <tr class="@(row.IsDifference ? "is-difference" : null)">
-                                <td>@row.Component</td><td class="jo-text-end">@row.CurrentMonthly</td><td class="jo-text-end">@row.CurrentAnnual</td><td class="jo-analysis-remarks">@row.CurrentRemarks</td>
-                                <td class="jo-text-end is-option"><a href="#">@row.OptionMonthly</a></td>
+                                <td>@row.Component</td>
+                                <td class="jo-text-end">@row.CurrentMonthly</td>
+                                <td class="jo-text-end">@row.CurrentAnnual</td>
+                                <td class="jo-analysis-remarks">@row.CurrentRemarks</td>
+                                <td class="jo-text-end is-option">
+                                    @if (row.Component == "% Difference in Pay")
+                                    { @row.OptionMonthly }
+                                    else
+                                    {
+                                        <a href="javascript:void(0)" @onclick="() => ShowModal(row.Component, row.OptionMonthly, row.OptionRemarks)">@row.OptionMonthly</a>
+                                        @* <button type="button" class="btn btn-sm btn-link p-0" @onclick="() => ShowModal(row.Component,row.OptionMonthly,row.OptionRemarks)">
+                                            @row.OptionMonthly
+                                        </button> *@
+                                    }
+                                </td>
                                 <td class="jo-text-end is-option">@row.OptionAnnual</td>
                                 <td class="jo-analysis-remarks is-option">@row.OptionRemarks</td>
                             </tr>
                         }
                     </tbody>
-                    <tfoot><tr><td>Gross compensation</td><td class="jo-text-end">₱40,000</td><td class="jo-text-end">₱705,000</td><td></td><td class="jo-text-end is-option">@SelectedOption.GrossMonthly</td><td class="jo-text-end is-option">@SelectedOption.GrossAnnual</td><td class="is-option"></td></tr></tfoot>
+                    <tfoot>
+                        <tr>
+                            <td>Gross compensation</td>
+                            <td class="jo-text-end">₱40,000</td>
+                            <td class="jo-text-end">₱705,000</td>
+                            <td></td>
+                            <td class="jo-text-end is-option">@SelectedOption.GrossMonthly</td>
+                            <td class="jo-text-end is-option">@SelectedOption.GrossAnnual</td>
+                            <td class="is-option"></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
-            <!--EDIT-->
+
         </section>
         
 
-        <footer class="jo-analysis-card jo-analysis-footer">
+        @* <footer class="jo-analysis-card jo-analysis-footer">
             <small>Last saved today at 2:14 PM &nbsp;•&nbsp; Option 2 is recommended</small>
             <div class="jo-actions">
                 <button type="button" class="btn btn-outline-secondary">Cancel</button>
                 <button type="button" class="btn btn-outline-secondary">Save draft</button>
                 <button type="button" class="btn btn-primary">Submit for approval</button>
             </div>
-        </footer>
+        </footer> *@
     </main>
 </div>
 
+<JOModal @ref="joModal">
+    <ChildContent>
+        <div class="jo-grid">
+            <label class="jo-col-12">
+                Amount
+                <input class="form-control" value="@joModalAmount">
+            </label>
+
+            <label class="jo-col-12">
+                Remarks
+                <textarea class="form-control" rows="3">@joModalRemarks</textarea>
+            </label>
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <div class="jo-actions">
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="joModal.Close">Close</button>
+            <button type="button" class="btn btn-primary btn-sm">Save</button>
+        </div>
+    </FooterTemplate>
+</JOModal>
+
+@inject ICandidateService CandidateService
+@inject IBenefitsService BenefitsService
+
 @code {
+    [Parameter] public int responseId { get; set; }
+    [Parameter] public int numProposal { get; set; }
+
+    private CandidateResponses candidate = new();
+    private List<VwPckgTemp> pckgTemp = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        candidate = await CandidateService.GetCandidateResponse(responseId);
+        pckgTemp = await BenefitsService.GetVwPckgTemp();
+    }
+
+    #region Modal
+    private JOModal joModal = default!;
+    private string joModalAmount = "";
+    private string joModalRemarks = "";
+
+    private void ShowModal(string title, string amount, string remarks)
+    {
+        joModal.Title = title;
+        joModalAmount = amount;
+        joModalRemarks = remarks;
+
+        joModal.Show();
+    }
+    #endregion
+    
     private int selectedOption = 1;
     private CompensationOption SelectedOption => CompensationOptions.First(option => option.Number == selectedOption);
 
@@ -247,7 +334,7 @@
         new(number, title, summary, grossMonthly, grossAnnual, isRecommended,
         [
             new("Monthly Basic Salary (MBS)", "₱40,000", "₱480,000", "", monthlyBasic, annualBasic, ""),
-            new("13th Month Pay (1.00 x MBS)", "—", "₱40,000", "", "—", guaranteedPay, "14th and 15th month"),
+            new("13th Month Pay (1.00 x MBS)", "—", "₱40,000", "", "—", guaranteedPay, ""),
             new("Other Guaranteed Bonus/es", "—", "—", "", "—", otherBonus, ""),
             new("Allowances", "—", "₱25,000", "Non Tax Allowance, Transpo Allowance and Other Allowance", allowanceMonthly, allowanceAnnual, ""),
             new("Profit Share", "—", "₱60,000", "", "—", "—", ""),
@@ -258,14 +345,14 @@
 
     private readonly CompensationRow[] CompensationRows =
     [
-        new("Monthly basic salary", "₱40,000", "₱55,000", "₱65,000", "₱77,000", "₱77,000"),
+        new("Monthly Basic Salary (MBS)", "₱40,000", "₱55,000", "₱65,000", "₱77,000", "₱77,000"),
         new("Annual basic salary", "₱480,000", "₱660,000", "₱780,000", "₱924,000", "₱924,000"),
         new("13th month pay", "₱40,000", "₱55,000", "₱65,000", "₱77,000", "₱77,000"),
         new("Other guaranteed bonuses", "—", "₱110,000", "₱130,000", "₱154,000", "₱154,000"),
         new("Allowances", "₱25,000", "₱48,750", "₱48,750", "₱48,750", "₱48,750"),
         new("Profit share", "₱60,000", "—", "₱55,000", "₱65,000", "₱77,000"),
         new("Incentives / Commission", "₱80,000", "—", "—", "—", "—"),
-        new("Performance bonus", "₱20,000", "—", "—", "—", "—"),
+        new("Performance-Based Bonuses", "₱20,000", "—", "—", "—", "—"),
         new("Difference in pay", "—", "+23.9%", "+45.2%", "+70.7%", "+70.7%")
     ];
 

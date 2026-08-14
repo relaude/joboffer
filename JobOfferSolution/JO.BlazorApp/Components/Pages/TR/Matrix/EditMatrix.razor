@@ -1,96 +1,136 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TR)]
 @attribute [Route(JORoutes.TR.SalaryMatrixEdit + "/{matrixId:int}")]
 
-<div class="jo-content-page">
-    <main class="jo-main">
-        <header class="jo-header">
-            <div>
-                <span class="jo-eyebrow">TOTAL REWARDS</span>
-                <h1>@($"{vwSalaryMatrix.CompanyCode} - {vwSalaryMatrix.CompanyName}")</h1>
-                <p>Set ownership, effective dates and compensation ranges.</p>
-            </div>
-        </header>
+<div class="card shadow mb-4 small">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                @if (vwSalaryMatrix.IsActive == true)
+                {
+                    <span class="jo-pill jo-pill-green mr-2">ACTIVE</span>
+                }
 
-        <section class="jo-section">
-            <div class="jo-section-heading">
-                <div>
-                    <h2>Salary bands</h2>
-                    <p>Minimum ≤ Midpoint ≤ Maximum</p>
+                @if (vwSalaryMatrix.IsActive == false)
+                {
+                    <span class="jo-pill jo-pill-gray mr-2">INACTIVE</span>
+                }
+
+                <h4 class="jo-title mt-3 mb-1">@vwSalaryMatrix.CompanyName</h4>
+                <div class="jo-code">@vwSalaryMatrix.CompanyCode</div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Created by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(vwSalaryMatrix.CreatedByName) ? "-" : vwSalaryMatrix.CreatedByName)</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Created at</div>
+                        <div class="jo-meta-value">@(vwSalaryMatrix.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
                 </div>
-                <button class="btn btn-outline-primary" 
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Modified by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(vwSalaryMatrix.ModifiedByName) ? "-" : vwSalaryMatrix.ModifiedByName)</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Modified at</div>
+                        <div class="jo-meta-value">@(vwSalaryMatrix.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="jo-title">Salary bands</h6>
+        <div class="jo-actions">
+            <button class="btn btn-outline-primary"
                     @onclick="AddBand"
                     disabled="@(!salaryGrades.Any())">
-                    + Add band
-                </button>
-            </div>
-
-            <div class="table-responsive">
-                <table class="jo-table">
-                    <thead>
-                        <tr>
-                            <th>Grade</th>
-                            <th>Minimum</th>
-                            <th>Midpoint</th>
-                            <th>Maximum</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var band in salaryBands)
-                        {
-                            <tr @key="band">
-                                <td>
-                                    <select class="custom-select custom-select-sm"
-                                        @bind="band.CSGId" 
+                + Add band
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th>Grade</th>
+                        <th>Minimum</th>
+                        <th>Midpoint</th>
+                        <th>Maximum</th>
+                        <th>CompaRatio</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var band in salaryBands)
+                    {
+                        <tr @key="band">
+                            <td>
+                                <select class="custom-select custom-select-sm"
+                                        @bind="band.CSGId"
                                         disabled="@band.LockCSGId">
-                                        @foreach (var option in salaryGrades)
-                                        {
-                                            <option value="@option.Id">@($"{option.TypeName} - {option.GradeName}")</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number"
-                                           class="form-control form-control-sm text-right"
-                                           min="10000"
-                                           step="10000"
-                                           @bind="band.Minimum" />
-                                </td>
-                                <td>
-                                    <input type="number"
-                                           class="form-control form-control-sm text-right"
-                                           min="10000"
-                                           step="10000"
-                                           @bind="band.Midpoint" />
-                                </td>
-                                <td>
-                                    <input type="number"
-                                           class="form-control form-control-sm text-right"
-                                           min="10000"
-                                           step="10000"
-                                           @bind="band.Maximum" />
-                                </td>
-                                <td>
-                                    <button class="btn btn-outline-danger btn-circle btn-sm" 
-                                        title="Remove band" 
+                                    @foreach (var option in salaryGrades)
+                                    {
+                                        <option value="@option.Id">@option.GradeName</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number"
+                                       class="form-control form-control-sm text-right"
+                                       min="10000"
+                                       step="10000"
+                                       @bind="band.Minimum" />
+                            </td>
+                            <td>
+                                <input type="number"
+                                       class="form-control form-control-sm text-right"
+                                       min="10000"
+                                       step="10000"
+                                       @bind="band.Midpoint" />
+                            </td>
+                            <td>
+                                <input type="number"
+                                       class="form-control form-control-sm text-right"
+                                       min="10000"
+                                       step="10000"
+                                       @bind="band.Maximum" />
+                            </td>
+                            <td>
+                                <input type="number"
+                                       class="form-control form-control-sm text-right"
+                                       min="10000"
+                                       step="10000"
+                                       @bind="band.CompaRatio" />
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-danger btn-circle btn-sm"
+                                        title="Remove band"
                                         aria-label="Remove band"
                                         disabled="@band.LockCSGId"
                                         @onclick="() => RemoveBand(band)">
-                                        <i class="fas fa-trash-alt fa-fw"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <div class="jo-actions">
-            <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary mr-2">Cancel</a>
-            <button class="btn btn-primary px-4" @onclick="SaveMatrix">Update matrix</button>
+                                    <i class="fas fa-trash-alt fa-fw"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-    </main>
+    </div>
+    <div class="card-footer jo-actions">
+        <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary">Cancel</a>
+        <button class="btn btn-primary px-4" @onclick="SaveMatrix">Update matrix</button>
+    </div>
 </div>
 
 @inject IDropDownListService DropDownListService
@@ -136,6 +176,7 @@
                 Maximum = item.Maximum,
                 Midpoint = item.Midpoint,
                 Minimum = item.Minimum,
+                CompaRatio = item.CompaRatio,
                 TypeName = item.TypeName
             });
         }
@@ -194,15 +235,21 @@
             if (!band.Maximum.HasValue || band.Maximum <= 0)
                 errors.Add($"Salary Band Row {rowNumber}: Maximum amount is required.");
 
+            if (!band.CompaRatio.HasValue || band.CompaRatio <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: CompaRatio amount is required.");
+
             if (band.Minimum.HasValue
                 && band.Midpoint.HasValue
                 && band.Maximum.HasValue
                 && band.Maximum > 0
                 && band.Midpoint > 0
                 && band.Maximum > 0
-                && !(band.Minimum < band.Midpoint && band.Midpoint < band.Maximum))
+                && band.CompaRatio > 0
+                && !(band.Minimum < band.Midpoint
+                    && band.Midpoint < band.Maximum
+                    && band.Maximum < band.CompaRatio))
             {
-                errors.Add($"Salary Band Row {rowNumber}: Minimum, Midpoint, and Maximum must be in ascending order.");
+                errors.Add($"Salary Band Row {rowNumber}: Minimum, Midpoint, Maximum and CompaRatio must be in ascending order.");
             }
         }
     }
@@ -225,7 +272,8 @@
             CSGId = nextSalaryGrade.Id,
             Minimum = 30000,
             Midpoint = 50000,
-            Maximum = 70000
+            Maximum = 70000,
+            CompaRatio = 90000
         });
     }
 

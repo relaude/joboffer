@@ -1,0 +1,64 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.MSFormResponse)]
+
+<div class="jo-content-page">
+    <main class="jo-main">
+        <header class="jo-header">
+            <div>
+                <span class="jo-eyebrow">TALENT ACQUISITION</span>
+                <h1>Candidates</h1>
+                <p class="mb-0"></p>
+            </div>
+            <div class="jo-actions">
+                
+            </div>
+        </header>
+
+        <section class="jo-section">
+            <div class="jo-section-heading">
+                <div>
+                    <span class="jo-label">@responses.Count() Candidates</span>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="jo-table">
+                    <thead>
+                        <tr>
+                            <th>FULL NAME</th>
+                            <th>EMAIL</th>
+                            <th>POSITION APPLIED FOR</th>
+                            <th>CURRENT EMPLOYER</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in responses)
+                        {
+                            <tr>
+                                <td class="jo-title">
+                                    <a href="@($"{JORoutes.TA.MSFormResponse}/{row.Id}")">
+                                        @row.CandidateFullName
+                                    </a>
+                                </td>
+                                <td>@row.EmailAddress</td>
+                                <td>@row.PositionAppliedFor</td>
+                                <td>@row.CurrentEmployerName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+@inject ICandidateService CandidateService
+
+@code {
+    private List<CandidateResponses> responses = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        responses = await CandidateService.GetCandidateResponses();
+    }
+}

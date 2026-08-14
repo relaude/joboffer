@@ -1,0 +1,116 @@
+﻿@* @attribute [Authorize(Roles = JOUserRole.TR)]
+@attribute [Route(JORoutes.TR.SalaryMatrix)] *@
+
+<div class="jo-content-page">
+
+    <main class="jo-main">
+        <header class="jo-header">
+            <div>
+                <span class="jo-eyebrow">TOTAL REWARDS</span>
+                <h1>Salary Matrix</h1>
+                <p class="mb-0">Design and govern compensation ranges across the organization.</p>
+            </div>
+            <div class="jo-actions">
+                <a class="btn btn-primary" href="@JORoutes.TR.SalaryMatrixNew"><i class="fas fa-plus mr-2"></i>New matrix</a>
+            </div>
+        </header>
+
+        <section class="jo-section">
+            <div class="jo-section-heading">
+                <div>
+                    <span class="jo-label">@matrixList.Count() matrices</span>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="jo-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Bands</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (matrixList.Any())
+                        {
+                            @foreach (var matrix in matrixList)
+                            {
+                                <tr @key="matrix.Id">
+                                    <td>
+                                        <strong>@(string.IsNullOrWhiteSpace(matrix.CompanyName) ? "-" : matrix.CompanyName)</strong>
+                                        <div class="jo-label">@(string.IsNullOrWhiteSpace(matrix.CompanyCode) ? "-" : matrix.CompanyCode)</div>
+                                    </td>
+                                    <td><strong>@(matrix.BandCount?.ToString() ?? "-")</strong></td>
+                                    <td>
+                                        @if (matrix.IsActive == true)
+                                        {
+                                            <span class="jo-label text-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="jo-label text-muted">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div>@(string.IsNullOrWhiteSpace(matrix.CreatedByName) ? "-" : matrix.CreatedByName)</div>
+                                        <small class="text-muted">@(matrix.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                                    </td>
+                                    <td>
+                                        <div>@(string.IsNullOrWhiteSpace(matrix.ModifiedByName) ? "-" : matrix.ModifiedByName)</div>
+                                        <small class="text-muted">@(matrix.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="dropdown">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link text-dark font-weight-bold"
+                                                    data-toggle="dropdown"
+                                                    aria-haspopup="true"
+                                                    aria-expanded="false"
+                                                    aria-label="Actions for @matrix.CompanyName">
+                                                •••
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right shadow-sm">
+                                                <a class="dropdown-item"
+                                                   href="@($"{JORoutes.TR.SalaryMatrix}/{matrix.Id}")">
+                                                    View
+                                                </a>
+                                                <a class="dropdown-item"
+                                                   href="@($"{JORoutes.TR.SalaryMatrixEdit}/{matrix.Id}")">
+                                                    Edit
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-3">No salary matrices found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+        </section>
+
+    </main>
+
+</div>
+
+@inject ISalaryMatrixService SalaryMatrixService
+
+@code {
+    private List<VwSalaryMatrix> matrixList = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        matrixList = await SalaryMatrixService.GetVwSalaryMatrix();
+    }
+}

@@ -1,0 +1,135 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.MSFormResponse + "/{responseId:int}")]
+
+<div class="jo-content-page">
+    <main class="jo-main">
+        <header class="jo-header">
+            <div>
+                <span class="jo-eyebrow">TALENT ACQUISITION</span>
+                <h1>Candidate Details</h1>
+            </div>
+            <div class="jo-actions">
+                <a href="@JORoutes.TA.MSFormResponse" class="btn btn-outline-secondary mr-2">← Back</a>
+                <button class="btn btn-primary" @onclick="CreateJobOffer">Create Job Offer</button>
+            </div>
+        </header>
+
+        <section class="jo-section jo-response-summary">
+            <div class="jo-response-identity">
+                <div class="jo-response-avatar" aria-hidden="true">
+                    @(candidate.EmailAddress?.Substring(0, Math.Min(2, candidate.CandidateFullName.Length)).ToUpper() ?? "")
+                </div>
+                <div>
+                    <h2>@candidate.CandidateFullName</h2>
+                    <p>@candidate.EmailAddress</p>
+                    <span class="jo-pill jo-pill-green">DATA PRIVACY CONSENTED</span>
+                </div>
+            </div>
+            <div class="jo-response-summary-details">
+                <dl class="jo-response-meta-grid">
+                    <div><dt>POSITION APPLIED FOR</dt><dd>@candidate.PositionAppliedFor</dd></div>
+                    <div><dt>EMPLOYMENT STATUS</dt><dd>@candidate.EmploymentStatus</dd></div>
+                    <div><dt>RELEVANT EXPERIENCE</dt><dd>@candidate.RelevantExperience</dd></div>
+                    <div><dt>FORM COMPLETED</dt><dd>@candidate.ResponseCompletedAt</dd></div>
+                </dl>
+                <dl class="jo-response-employment-grid">
+                    <div><dt>CURRENT EMPLOYER</dt><dd>@candidate.CurrentEmployerName</dd></div>
+                    <div><dt>LAST EMPLOYER INDUSTRY</dt><dd>@candidate.LastEmployerIndustry</dd></div>
+                    <div><dt>LAST POSITION HELD</dt><dd>@candidate.LastPositionHeld</dd></div>
+                </dl>
+            </div>
+        </section>
+
+        <section class="jo-section">
+            <div class="jo-section-heading">
+                <div>
+                    <span class="jo-label">COMPENSATION</span>
+                    <h2>Salary and variable pay</h2>
+                    <p>Current and expected compensation reported by the candidate.</p>
+                </div>
+            </div>
+
+            <div class="jo-response-compensation">
+                <div><span>CURRENT MONTHLY BASIC</span><strong>@UtilitiesService.ToPeso(candidate.CurrentMonthlyBasicSalary)</strong></div>
+                <div><span>EXPECTED MONTHLY BASIC</span><strong>@UtilitiesService.ToPeso(candidate.ExpectedMonthlyBasicSalary)</strong></div>
+                <div><span>GUARANTEED PAY</span><strong>@candidate.GuaranteedMonthsPay</strong></div>
+                <div><span>ANNUAL INCENTIVES</span><strong>@UtilitiesService.ToPeso(candidate.AnnualIncentiveAmount)</strong></div>
+                <div><span>OTHER VARIABLE PAY</span><strong>@UtilitiesService.ToPeso(candidate.AnnualVariablePayAmount)</strong></div>
+            </div>
+
+            <dl class="jo-response-compensation-meta jo-response-compensation-meta-balanced">
+                <div><dt>MONTHLY ALLOWANCES</dt><dd>@candidate.MonthlyAllowanceDescription</dd></div>
+                <div><dt>ANNUAL GUARANTEED BONUS</dt><dd>@UtilitiesService.ToPeso(candidate.AnnualGuaranteedBonusAmount)</dd></div>
+            </dl>
+        </section>
+
+        <section class="jo-section">
+            <div class="jo-section-heading">
+                <div>
+                    <span class="jo-label">BENEFITS &amp; LEAVE</span>
+                    <h2>Health, leave, and company benefits</h2>
+                    <p>Reported employee coverage and non-cash benefits.</p>
+                </div>
+            </div>
+
+            <div class="jo-response-benefit-grid">
+                <article class="jo-response-benefit-card">
+                    <h3>HEALTH COVERAGE</h3>
+                    <dl>
+                        <div><dt>Employee HMO</dt><dd>@candidate.EmployeeHmoBenefitLimit</dd></div>
+                        <div><dt>Dependents</dt><dd>@candidate.DependentHmoBenefitLimit</dd></div>
+                        <div><dt>Dental</dt><dd>@candidate.DentalBenefit</dd></div>
+                        <div><dt>Medicine</dt><dd>@candidate.MedicineReimbursementBenefit</dd></div>
+                        <div><dt>Optical</dt><dd>@candidate.OpticalBenefit</dd></div>
+                    </dl>
+                </article>
+                <article class="jo-response-benefit-card">
+                    <h3>LEAVE BENEFITS</h3>
+                    <dl>
+                        <div><dt>Vacation leave</dt><dd>@candidate.VacationLeaveBenefit</dd></div>
+                        <div><dt>Sick leave</dt><dd>@candidate.SickLeaveBenefit</dd></div>
+                        <div><dt>Other leave</dt><dd>@candidate.OtherLeaveBenefits</dd></div>
+                        <div><dt>Life insurance</dt><dd>@candidate.LifeInsuranceBenefit</dd></div>
+                    </dl>
+                </article>
+                <article class="jo-response-benefit-card">
+                    <h3>OTHER BENEFITS</h3>
+                    <dl>
+                        <div><dt>Profit sharing</dt><dd>@UtilitiesService.ToPeso(candidate.AnnualProfitSharingAmount)</dd></div>
+                        <div><dt>Vehicle benefit</dt><dd>@candidate.VehicleBenefit</dd></div>
+                        <div><dt>Mobile phone</dt><dd>@candidate.MobilePhoneBenefit</dd></div>
+                        <div><dt>Additional benefits</dt><dd>@candidate.OtherBenefits</dd></div>
+                    </dl>
+                </article>
+            </div>
+        </section>
+    </main>
+</div>
+
+@inject ICandidateService CandidateService
+@inject IUtilitiesService UtilitiesService
+@inject IAlertService AlertService
+@inject NavigationManager Navigation
+
+@code {
+    [Parameter] public int responseId { get; set; }
+    private CandidateResponses candidate = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        candidate = await CandidateService.GetCandidateResponse(responseId);
+    }
+
+    private async Task CreateJobOffer()
+    {
+        int numProposal = await AlertService.ConfirmProposalNumber();
+
+        if (numProposal == 0) return;
+
+        // int createdBy = await AccountService.GetJobOfferUserId();
+        // int jobOfferId = await CandidateService.CreateJobOffer(candidateId, createdBy);
+
+        Navigation.NavigateTo($"{JORoutes.TA.NewOffer}/{responseId}/{numProposal}");
+    }
+
+}

@@ -233,6 +233,7 @@
     padding: .75rem 1rem;
     border-bottom: 1px solid var(--jo-border);
     vertical-align: middle;
+    white-space: nowrap;
 }
 
 .jo-table tbody tr:nth-child(even) { background: #fbfcfe; }
@@ -598,6 +599,60 @@
 .jo-response-benefit-card dt { color: var(--jo-text-muted); font-weight: 600; }
 .jo-response-benefit-card dd { margin: 0; color: var(--jo-text); font-weight: 800; text-align: right; }
 
+/* Candidate response Excel import preview. */
+.jo-import-page { min-height: 100vh; background: var(--jo-surface-muted); color: var(--jo-text); }
+.jo-import-header { display: flex; min-height: 104px; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1.25rem 3.5rem; background: var(--jo-navy); color: #fff; }
+.jo-import-eyebrow { color: #b0c2ff; font-size: .68rem; font-weight: 800; letter-spacing: .12em; }
+.jo-import-header h1 { margin: .15rem 0; color: #fff; font-size: 1.75rem; font-weight: 800; }
+.jo-import-header p { margin: 0; color: #d1d9f0; font-size: .8rem; }
+.jo-import-format { padding: .55rem .9rem; border-radius: 2rem; background: #26336e; color: #d9e5ff; font-size: .7rem; font-weight: 800; }
+.jo-import-format i { margin-right: .25rem; font-size: .45rem; }
+.jo-import-main { display: grid; gap: 1.75rem; padding: 0 3.5rem 2.5rem; }
+.jo-import-steps { display: flex; min-height: 84px; align-items: center; justify-content: center; gap: 0; margin: 0; padding: 1.25rem 0; list-style: none; }
+.jo-import-steps li { display: flex; align-items: center; color: var(--jo-navy); font-size: .68rem; font-weight: 800; }
+.jo-import-steps li:not(:last-child)::after { width: 7.5rem; height: 2px; margin: 0 1rem; background: var(--jo-border); content: ""; }
+.jo-import-steps li.is-complete::after { background: var(--jo-blue); }
+.jo-import-steps span { display: inline-flex; width: 2rem; height: 2rem; align-items: center; justify-content: center; margin-right: .65rem; border: 1px solid var(--jo-border); border-radius: 50%; background: #fff; }
+.jo-import-steps .is-complete span, .jo-import-steps .is-active span { border-color: var(--jo-blue); background: var(--jo-blue); color: #fff; }
+.jo-import-steps .is-active { color: var(--jo-blue); }
+.jo-import-file { display: flex; min-height: 72px; align-items: center; gap: 1rem; padding: .85rem 1.1rem; border: 1px solid var(--jo-border); border-radius: .65rem; background: #fff; }
+.jo-import-file > div { display: grid; flex: 1; gap: .15rem; }
+.jo-import-file strong { font-size: .78rem; }
+.jo-import-file small { color: var(--jo-text-muted); font-size: .65rem; }
+.jo-import-excel { display: inline-flex; width: 2.6rem; height: 2.6rem; align-items: center; justify-content: center; border-radius: .5rem; background: #e8f7f0; color: var(--jo-green); font-size: 1.1rem; font-weight: 800; }
+.jo-import-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+.jo-import-metric { display: grid; min-height: 88px; gap: .15rem; padding: .75rem 1rem; border: 1px solid var(--jo-border); border-radius: .6rem; background: #fff; }
+.jo-import-metric span { font-size: .62rem; font-weight: 800; letter-spacing: .08em; }
+.jo-import-metric strong { color: var(--jo-navy); font-size: 1.45rem; line-height: 1; }
+.jo-import-metric small { color: var(--jo-text-muted); font-size: .62rem; }
+.jo-import-metric.is-blue span { color: var(--jo-blue); }
+.jo-import-metric.is-green span { color: var(--jo-green); }
+.jo-import-metric.is-amber span { color: var(--jo-amber); }
+.jo-import-metric.is-red span { color: var(--jo-red); }
+.jo-import-preview { display: grid; gap: 1rem; }
+.jo-import-preview-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+.jo-import-preview-header h2 { margin: .1rem 0 0; color: var(--jo-navy); font-size: 1.2rem; font-weight: 800; }
+.jo-import-controls { display: flex; align-items: center; gap: .5rem; }
+.jo-import-search { position: relative; width: 15rem; }
+.jo-import-search i { position: absolute; top: 50%; left: .75rem; color: var(--jo-text-muted); font-size: .65rem; transform: translateY(-50%); }
+.jo-import-search .form-control { height: 2.25rem; padding-left: 2rem; font-size: .68rem; }
+.jo-import-filter { height: 2.25rem; padding: 0 .75rem; border: 1px solid var(--jo-border); border-radius: .4rem; background: #fff; color: var(--jo-navy); font-size: .62rem; font-weight: 800; }
+.jo-import-filter.active { border-color: #cbd7ff; background: #f7f9ff; }
+.jo-import-filter-issues { background: #fff7e5; color: var(--jo-amber); }
+.jo-import-table-frame { overflow: hidden; min-height: 355px; border: 1px solid var(--jo-border); border-radius: .6rem; background: #fff; }
+.jo-import-table { min-width: 82rem; margin: 0; }
+.jo-import-table thead th { height: 3rem; background: var(--jo-navy); color: #fff; font-size: .58rem; white-space: nowrap; }
+.jo-import-table td { height: 3.5rem; font-size: .66rem; white-space: nowrap; }
+.jo-import-status { font-size: .58rem; font-weight: 800; }
+.jo-import-green { color: var(--jo-green); }
+.jo-import-amber { color: var(--jo-amber); }
+.jo-import-red { color: var(--jo-red); }
+.jo-import-table-hint { margin: 0; padding: 1rem; background: var(--jo-surface-muted); color: var(--jo-text-muted); font-size: .62rem; }
+.jo-import-footer { display: flex; min-height: 92px; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 3.5rem; border-top: 1px solid var(--jo-border); background: #fff; }
+.jo-import-footer > div:first-child { display: grid; gap: .2rem; }
+.jo-import-footer strong { color: var(--jo-navy); font-size: .78rem; }
+.jo-import-footer small { color: var(--jo-text-muted); font-size: .62rem; }
+
 .jo-modal-footer {
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--jo-border);
@@ -619,6 +674,11 @@
     .jo-response-compensation { grid-template-columns: repeat(2, 1fr); }
     .jo-response-compensation-meta { grid-template-columns: repeat(2, 1fr); }
     .jo-response-benefit-grid { grid-template-columns: 1fr; }
+    .jo-import-header, .jo-import-main, .jo-import-footer { padding-right: 2rem; padding-left: 2rem; }
+    .jo-import-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .jo-import-preview-header { align-items: flex-start; flex-direction: column; }
+    .jo-import-controls { width: 100%; flex-wrap: wrap; }
+    .jo-import-search { width: 100%; }
 }
 
 @media (max-width: 767.98px) {
@@ -647,6 +707,14 @@
     .jo-response-compensation-meta { grid-template-columns: 1fr; }
     .jo-response-table-footer { align-items: flex-start; flex-direction: column; gap: 1rem; }
     .jo-response-pagination { flex-wrap: wrap; }
+    .jo-import-header { min-height: auto; flex-direction: column; }
+    .jo-import-header, .jo-import-main, .jo-import-footer { padding-right: 1.25rem; padding-left: 1.25rem; }
+    .jo-import-steps { align-items: flex-start; flex-direction: column; gap: .75rem; }
+    .jo-import-steps li:not(:last-child)::after { display: none; }
+    .jo-import-file { align-items: flex-start; flex-wrap: wrap; }
+    .jo-import-file > div { min-width: calc(100% - 4rem); }
+    .jo-import-metrics { grid-template-columns: 1fr; }
+    .jo-import-footer { align-items: flex-start; flex-direction: column; }
 }
 
 /* JO Analysis Version 2 mockup. */

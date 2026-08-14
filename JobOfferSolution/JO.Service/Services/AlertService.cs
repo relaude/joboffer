@@ -60,7 +60,7 @@ namespace JO.Service.Services
                 Icon = SweetAlertIcon.Question,
                 Title = "How many proposal?",
                 Input = SweetAlertInputType.Number,
-                InputValue = "3",
+                InputValue = "4",
                 InputAttributes = new Dictionary<string, string>
                 {
                     ["min"] = "1",
