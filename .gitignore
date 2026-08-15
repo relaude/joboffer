@@ -404,3 +404,4 @@ FodyWeavers.xsd
 JobOfferSolution/JO.BlazorApp/wwwroot/documents
 JobOfferSolution/.dotnet
 .codex-tmp
+.codex-temp
