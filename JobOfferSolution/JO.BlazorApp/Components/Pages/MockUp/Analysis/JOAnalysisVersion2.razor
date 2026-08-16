@@ -1,6 +1,6 @@
-@* @page "/mockup/analysis/jo-analysis-version-2" *@
+@page "/mockup/analysis/jo-analysis-version-2"
 
-@attribute [Route(JORoutes.TA.NewOffer + "/{responseId:int}/{numProposal:int}")]
+@* @attribute [Route(JORoutes.TA.NewOffer + "/{responseId:int}/{numProposal:int}")] *@
 
 <div class="jo-content-page jo-analysis-page">
     <main class="jo-main">
@@ -300,8 +300,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        candidate = await CandidateService.GetCandidateResponse(responseId);
-        pckgTemp = await BenefitsService.GetVwPckgTemp();
+        // candidate = await CandidateService.GetCandidateResponse(responseId);
+        // pckgTemp = await BenefitsService.GetVwPckgTemp();
     }
 
     #region Modal

@@ -9,5 +9,8 @@ namespace JO.DataModel.Entity
     {
         [Key] public int Id { get; set; }
         public string? ItemName { get; set; }
+        public bool? Analysis { get; set; }
+        public decimal? Monthly { get; set; }
+        public decimal? Annualy { get; set; }
     }
 }

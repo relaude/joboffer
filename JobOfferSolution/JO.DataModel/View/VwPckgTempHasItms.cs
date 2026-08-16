@@ -12,5 +12,8 @@ namespace JO.DataModel.View
         public string? TempName { get; set; }
         public string? ItemName { get; set; }
         public bool? IsEnabled { get; set; }
+        public bool? Analysis { get; set; }
+        public decimal? Monthly { get; set; }
+        public decimal? Annualy { get; set; }
     }
 }

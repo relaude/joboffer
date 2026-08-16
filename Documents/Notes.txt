@@ -1,3 +1,7 @@
 https://forms.office.com/Pages/ResponsePage.aspx?id=UzTI9rjtt0SGOW0JDgEaYwAJ7O5W5oNHqeVpcGYO6jhUMkhNRE5USjE2MVJNN1JTVFQwOFhGNVFBTi4u
 
 Using this login credentials User ID=joboffer_user Password=jobofferuser@01 , connect to localhost, database JobOffer.
+
+
+git config --global user.email "c_relaude@unilab.com.ph"
+

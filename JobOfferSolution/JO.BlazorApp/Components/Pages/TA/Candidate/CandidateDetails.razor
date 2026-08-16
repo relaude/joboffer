@@ -1,0 +1,50 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.Candidate + "/{candidateId:int}")]
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h2 class="h6 m-0 font-weight-bold text-primary">Candidate Summary</h2>
+
+        <div class="ml-auto">
+            <a href="@JORoutes.TA.Candidates" class="btn btn-outline-secondary mr-2">Back</a>
+            <button type="button" class="btn btn-primary" @onclick="CreateJobOffer">
+                Create Job Offer
+            </button>
+        </div>
+    </div>
+
+    <CandidateSummary Candidate="candidate" />
+</div>
+
+<CandidateCompensation Candidate="candidate" />
+
+<CandidateBenefits Candidate="candidate" />
+
+@inject ICandidateService CandidateService
+@inject IUtilitiesService UtilitiesService
+@inject IAlertService AlertService
+@inject IAccountService AccountService
+@inject NavigationManager Navigation
+
+@code {
+    [Parameter] public int candidateId { get; set; }
+    private VwDboxCandidates candidate = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        candidate = await CandidateService.GetVwDboxCandidate(candidateId);
+    }
+
+    private async Task CreateJobOffer()
+    {
+        int numProposal = await AlertService.ConfirmProposalNumber();
+
+        if (numProposal == 0) return;
+
+        int createdBy = await AccountService.GetJobOfferUserId();
+        int jobOfferId = await CandidateService.CreateJobOffer(candidateId, createdBy);
+
+        Navigation.NavigateTo($"{JORoutes.TA.Analysis}/{jobOfferId}/{numProposal}");
+    }
+
+}

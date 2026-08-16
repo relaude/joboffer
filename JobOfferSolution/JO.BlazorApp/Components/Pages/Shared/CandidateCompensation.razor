@@ -1,0 +1,38 @@
+﻿<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h2 class="h6 m-0 font-weight-bold text-primary">Compensation</h2>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Compensation Item</th>
+                        <th scope="col">Amount or Value</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Current Monthly Basic Salary</td><td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(Candidate.CurrentMonthlyBasicSalary)</td><td class="text-muted">—</td></tr>
+                    <tr><td>Expected Monthly Basic Salary</td><td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(Candidate.ExpectedMonthlyBasicSalary)</td><td class="text-muted">—</td></tr>
+                    <tr><td>Guaranteed Months Pay</td><td class="font-weight-bold text-gray-800">@Candidate.GuaranteedMonthsPay</td><td class="text-muted">—</td></tr>
+                    <tr><td>Annual Guaranteed Bonus</td><td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(Candidate.AnnualGuaranteedBonusAmount)</td><td class="text-muted">@Candidate.AnnualGuaranteedBonusDescription</td></tr>
+                    <tr><td>Monthly Allowance</td><td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(Candidate.MonthlyAllowanceAmount)</td><td class="text-muted">@Candidate.MonthlyAllowanceDescription</td></tr>
+                    <tr><td>Non-Monthly Allowance</td><td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(Candidate.NonMonthlyAllowanceAmount)</td><td class="text-muted">@Candidate.NonMonthlyAllowanceDescription</td></tr>
+                    <tr><td>Monthly Non-Taxable Allowance</td><td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(Candidate.MonthlyNonTaxableAllowanceAmount)</td><td class="text-muted">@Candidate.MonthlyNonTaxableAllowanceDescription</td></tr>
+                    <tr><td>Annual Non-Taxable Allowance</td><td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(Candidate.AnnualNonTaxableAllowanceAmount)</td><td class="text-muted">@Candidate.AnnualNonTaxableAllowanceDescription</td></tr>
+                    <tr><td>Annual Profit Sharing</td><td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(Candidate.AnnualProfitSharingAmount)</td><td class="text-muted">—</td></tr>
+                    <tr><td>Annual Incentive</td><td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(Candidate.AnnualIncentiveAmount)</td><td class="text-muted">@Candidate.AnnualIncentiveDescription</td></tr>
+                    <tr><td>Annual Variable Pay</td><td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(Candidate.AnnualVariablePayAmount)</td><td class="text-muted">@Candidate.AnnualVariablePayDescription</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@inject IUtilitiesService UtilitiesService
+
+@code {
+    [Parameter] public VwDboxCandidates Candidate { get; set; }
+}

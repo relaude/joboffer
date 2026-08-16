@@ -808,18 +808,24 @@
 .jo-analysis-table tfoot td { background: var(--jo-navy); color: #fff; text-transform: uppercase; }
 .jo-analysis-table tfoot td.is-recommended { background: var(--jo-green); color: #fff; }
 
-.jo-analysis-option-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; margin-bottom: 1rem; padding: .4rem; border-radius: .65rem; background: var(--jo-surface-muted); }
-.jo-analysis-option-tab { display: grid; gap: .2rem; padding: .75rem 1rem; border: 1px solid transparent; border-radius: .5rem; background: transparent; color: var(--jo-text); text-align: left; cursor: pointer; }
-.jo-analysis-option-tab span { font-size: .76rem; font-weight: 800; }
+.jo-analysis-option-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: .75rem; margin-bottom: 1rem; padding: .4rem; border-radius: .65rem; background: var(--jo-surface-muted); }
+.jo-analysis-option-tab { position: relative; display: grid; align-content: start; gap: .2rem; min-width: 0; min-height: 8.25rem; padding: .75rem 2.35rem .75rem 1rem; border: 1px solid transparent; border-radius: .5rem; background: transparent; color: var(--jo-text); text-align: left; cursor: pointer; }
+.jo-analysis-option-tab .jo-analysis-option-title { font-size: .76rem; font-weight: 800; }
 .jo-analysis-option-tab small { color: var(--jo-text-muted); font-size: .62rem; font-weight: 700; }
 .jo-analysis-option-tab:hover { border-color: var(--jo-border); background: var(--jo-surface); }
 .jo-analysis-option-tab.active { border-color: #cbd7ff; background: var(--jo-surface); box-shadow: 0 .2rem .7rem rgba(49, 87, 213, .1); }
-.jo-analysis-option-tab.active span { color: var(--jo-blue); }
+.jo-analysis-option-tab.active .jo-analysis-option-title { color: var(--jo-blue); }
 .jo-analysis-option-tab.is-recommended { border-color: #b7e2d1; background: #f1faf6; }
-.jo-analysis-option-tab.is-recommended span { color: var(--jo-green); }
+.jo-analysis-option-tab.is-recommended .jo-analysis-option-title { color: var(--jo-green); }
 .jo-analysis-option-tab.is-recommended small::after { margin-left: .35rem; color: var(--jo-green); font-weight: 800; content: "• Recommended"; }
 .jo-analysis-option-tab.is-recommended.active { border-color: var(--jo-green); background: #e7f6ef; box-shadow: 0 .2rem .7rem rgba(22, 128, 91, .16); }
 .jo-analysis-option-tab:focus-visible { outline: 2px solid var(--jo-blue); outline-offset: 2px; }
+.jo-analysis-option-remove { position: absolute; top: .45rem; right: .45rem; display: inline-flex; align-items: center; justify-content: center; width: 1.65rem; height: 1.65rem; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--jo-text-muted); font-size: 1.15rem; line-height: 1; }
+.jo-analysis-option-remove:hover { background: #fce8e8; color: #c53030; }
+.jo-analysis-option-remove:focus-visible { outline: 2px solid #c53030; outline-offset: 1px; }
+.jo-analysis-option-add { display: flex; align-items: center; justify-content: center; gap: .5rem; min-width: 0; min-height: 8.25rem; padding: .75rem 1rem; border: 1px dashed var(--jo-border); border-radius: .5rem; background: transparent; color: var(--jo-blue); font-size: .76rem; font-weight: 800; }
+.jo-analysis-option-add:hover { border-color: var(--jo-blue); background: var(--jo-surface); }
+.jo-analysis-option-add:focus-visible { outline: 2px solid var(--jo-blue); outline-offset: 2px; }
 
 .jo-analysis-option-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding: .85rem 1rem; border: 1px solid var(--jo-border); border-radius: .55rem; background: #f7f9ff; }
 .jo-analysis-option-toolbar > div { display: grid; gap: .2rem; }
@@ -865,4 +871,10 @@
     .jo-analysis-template-grid .btn { width: 100%; }
     .jo-analysis-option-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .jo-analysis-option-toolbar { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 575.98px) {
+    .jo-analysis-option-tabs { grid-template-columns: 1fr; }
+    .jo-analysis-option-tab,
+    .jo-analysis-option-add { min-height: 0; }
 }

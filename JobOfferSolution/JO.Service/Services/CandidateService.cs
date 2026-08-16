@@ -27,6 +27,18 @@ namespace JO.Service.Services
             _email = email;
         }
 
+        public async Task<VwDboxCandidates> GetVwDboxCandidate(int candidateId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwDboxCandidates.FirstOrDefaultAsync(jo=>jo.Id==candidateId);
+        }
+
+        public async Task<List<VwDboxCandidates>> GetVwDboxCandidates()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwDboxCandidates.AsNoTracking().ToListAsync();
+        }
+
         public async Task<CandidateResponses> GetCandidateResponse(int id)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -69,6 +81,7 @@ namespace JO.Service.Services
             await context.SaveChangesAsync();
 
             //workflow
+            /*
             var flowStatus = await context.WorkFlowStatus
                 .AsNoTracking()
                 .OrderBy(jo => jo.DisplayOrder)
@@ -92,7 +105,7 @@ namespace JO.Service.Services
             workFlows[4].ActionId = JOStatus.Action.Next; //Approval
 
             await context.WorkFlow.AddRangeAsync(workFlows);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync();*/
 
             return newJO.Id;
         }

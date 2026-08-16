@@ -23,5 +23,5 @@ namespace JO.DataModel.DTOs
         public bool? Escalate { get; set; }
         public string? Comments { get; set; }
         public int? ApproveBy { get; set; }
-    }
+    }    
 }
