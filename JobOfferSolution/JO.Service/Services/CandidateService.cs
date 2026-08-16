@@ -63,6 +63,25 @@ namespace JO.Service.Services
             return await context.Candidates.FindAsync(id);
         }
 
+        public async Task<int> CreateJobOffer(int candidateId, int options, int createdBy)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            int countJO = await context.JobOffers.CountAsync() + 1;
+            var newJO = new JobOffers
+            {
+                RefNum = $"JO-{DateTime.Now.Year}-{countJO:D5}",
+                CandidateId = candidateId,
+                Options = options,
+                StatusId = JOStatus.Application.New,
+                CreatedAt = DateTime.Now,
+                CreatedBy = createdBy
+            };
+            await context.JobOffers.AddAsync(newJO);
+            await context.SaveChangesAsync();
+
+            return newJO.Id;
+        }
+
         public async Task<int> CreateJobOffer(int candidateId, int createdBy)
         {
             await using var context = await _dbContext.CreateDbContextAsync();

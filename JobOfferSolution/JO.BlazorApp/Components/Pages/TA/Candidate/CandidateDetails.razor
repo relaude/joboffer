@@ -42,9 +42,9 @@
         if (numProposal == 0) return;
 
         int createdBy = await AccountService.GetJobOfferUserId();
-        int jobOfferId = await CandidateService.CreateJobOffer(candidateId, createdBy);
+        int jobOfferId = await CandidateService.CreateJobOffer(candidateId, numProposal, createdBy);
 
-        Navigation.NavigateTo($"{JORoutes.TA.Analysis}/{jobOfferId}/{numProposal}");
+        Navigation.NavigateTo($"{JORoutes.TA.Analysis}/{jobOfferId}");
     }
 
 }

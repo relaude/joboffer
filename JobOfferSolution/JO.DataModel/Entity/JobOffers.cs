@@ -15,6 +15,7 @@ namespace JO.DataModel.Entity
         public int? DocumentId { get; set; }
         public int? LegalId { get; set; }
         public int? StatusId { get; set; }
+        public int? Options { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
     }

@@ -6,6 +6,7 @@
     [DocumentId]  INT           NULL,
     [LegalId]     INT           NULL,
     [StatusId]    INT           NULL,
+    [Options]     INT           NULL,
     [CreatedAt]   DATETIME      NULL,
     [CreatedBy]   INT           NULL,
     CONSTRAINT [PK_JobOffers] PRIMARY KEY CLUSTERED ([Id] ASC)

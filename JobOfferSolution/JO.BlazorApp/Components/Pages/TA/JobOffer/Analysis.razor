@@ -1,5 +1,5 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.Analysis + "/{jobOfferId:int}/{numProposal:int}")]
+@attribute [Route(JORoutes.TA.Analysis + "/{jobOfferId:int}")]
 
 <ul class="nav nav-tabs flex-column flex-md-row mb-4" role="tablist">
     @foreach (var tab in tabs)
@@ -105,8 +105,8 @@
                                    @bind:after="() => DebounceIncreasePercentage(option)"
                                    @onclick:stopPropagation="true"
                                    onkeydown="if (!/^[0-9]$/.test(event.key) &&
-                                        !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(event.key) &&
-                                        !(event.ctrlKey || event.metaKey)) event.preventDefault();"
+                                    !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(event.key) &&
+                                    !(event.ctrlKey || event.metaKey)) event.preventDefault();"
                                    onpaste="if (!/^[0-9]+$/.test(event.clipboardData.getData('text'))) event.preventDefault();"
                                    ondrop="event.preventDefault();" />
                         </div>
@@ -150,12 +150,12 @@
                                                    pattern="[0-9]*"
                                                    class="form-control form-control-sm w-100"
                                                    @bind="item.OptAnnual"
-                                                   @bind:event="oninput" 
+                                                   @bind:event="oninput"
                                                    @bind:after="() => DebounceInputIncentive(item)"
                                                    @onclick:stopPropagation="true"
                                                    onkeydown="if (!/^[0-9]$/.test(event.key) &&
-                                                        !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(event.key) &&
-                                                        !(event.ctrlKey || event.metaKey)) event.preventDefault();"
+                                                    !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(event.key) &&
+                                                    !(event.ctrlKey || event.metaKey)) event.preventDefault();"
                                                    onpaste="if (!/^[0-9]+$/.test(event.clipboardData.getData('text'))) event.preventDefault();"
                                                    ondrop="event.preventDefault();" />
                                         }
@@ -170,24 +170,24 @@
                         <tfoot>
                             <tr>
                                 <td>Gross compensation</td>
-                                <td>@UtilitiesService.ToPeso(comparisonDto.Sum(jo=>jo.CurMonthy))</td>
-                                <td>@UtilitiesService.ToPeso(comparisonDto.Sum(jo=>jo.CurAnnual))</td>
+                                <td>@UtilitiesService.ToPeso(comparisonDto.Sum(jo => jo.CurMonthy))</td>
+                                <td>@UtilitiesService.ToPeso(comparisonDto.Sum(jo => jo.CurAnnual))</td>
                                 <td>
                                     @UtilitiesService.ToPeso(optionDto
-                                        .Where(jo=> jo.OptionNum==selectedOption)
+                                        .Where(jo => jo.OptionNum == selectedOption)
                                         .Sum(jo => jo.MbsMonthly
-                                            +jo.AllowanceMonthly))
+                                            + jo.AllowanceMonthly))
                                 </td>
                                 <td>
                                     @UtilitiesService.ToPeso(optionDto
-                                        .Where(jo=> jo.OptionNum==selectedOption)
-                                        .Sum(jo=> jo.MbsAnnualy
-                                            +jo.Month13Annualy
-                                            +jo.Month14Annualy
-                                            +jo.AllowanceAnnualy
-                                            +jo.PSAnnualy
-                                            +jo.IncentiveAnnualy
-                                            +jo.PerformanceAnnualy))
+                                        .Where(jo => jo.OptionNum == selectedOption)
+                                        .Sum(jo => jo.MbsAnnualy
+                                            + jo.Month13Annualy
+                                            + jo.Month14Annualy
+                                            + jo.AllowanceAnnualy
+                                            + jo.PSAnnualy
+                                            + jo.IncentiveAnnualy
+                                            + jo.PerformanceAnnualy))
                                 </td>
                             </tr>
                         </tfoot>
@@ -233,9 +233,28 @@
                             </tr>
                         </tbody>
                     </table>
-                    
+
                 </div>
             </div>
+        </div>
+
+        <div class="card shadow mb-4 small">
+            <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                <h2 class="h6 m-0 font-weight-bold text-primary">Analysis Notes</h2>
+            </div>
+
+            <div class="card-body">
+                <textarea class="form-control form-control-sm"
+                          rows="3"
+                          @bind="analysisNotes"
+                          @bind:event="oninput"></textarea>
+            </div>
+        </div>
+
+        <div class="jo-actions mb-4">
+            <button type="button" class="btn btn-outline-secondary">Cancel</button>
+            <button type="button" class="btn btn-primary" @onclick="SaveOptions">Save</button>
+            <button type="button" class="btn btn-primary">Submit for approval</button>
         </div>
     }
 </div>
@@ -250,7 +269,6 @@
 
 @code {
     [Parameter] public int jobOfferId { get; set; }
-    [Parameter] public int numProposal { get; set; }
 
     List<JOTabs> tabs = new();
     private string activeTab = "analysis";
@@ -268,6 +286,7 @@
     private List<OptionDto> optionDto = new();
     private int templateId = 0;
     private int selectedOption = 1;
+    private string analysisNotes = "";
     private CancellationTokenSource? increaseDebounceCts;
 
     protected override async Task OnInitializedAsync()
@@ -284,8 +303,83 @@
             new JOTabs { Key = "analysis", Label = "Analysis", Icon = "fa-solid fa-chart-line", Show = true }
         );
 
-        DraftAnalysisService.InitProposalDto(optionDto, numProposal, candidate);
+        DraftAnalysisService.InitProposalDto(optionDto, jobOffer.Options.GetValueOrDefault(), candidate);
         DraftAnalysisService.FillComparisonDto(comparisonDto, candidate, optionDto);
+    }
+
+    private async Task SaveOptions()
+    {
+        List<string> errors = new();
+        errors = CollectErrors(errors);
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors); return;
+        }
+
+        if (!await AlertService.Confirm()) return;
+    }
+
+    private List<string> CollectErrors(List<string> errors)
+    {
+        if (!optionDto.Any())
+        {
+            errors.Add("At least one option is required.");
+            return errors;
+        }
+
+        if (templateId == 0)
+        {
+            errors.Add("Compensation Template is required.");
+        }
+
+        foreach (var option in optionDto)
+        {
+            var missingFields = new List<string>();
+
+            if (option.Id <= 0)
+                missingFields.Add("Id");
+
+            if (option.OptionNum <= 0)
+                missingFields.Add("Option Number");
+
+            if (option.Increase <= 0)
+                missingFields.Add("Increase");
+
+            if (option.MbsMonthly <= 0)
+                missingFields.Add("MBS Monthly");
+
+            if (option.MbsAnnualy <= 0)
+                missingFields.Add("MBS Annual");
+
+            if (option.Month13Annualy <= 0)
+                missingFields.Add("13th Month Annual");
+
+            if (option.Month14Annualy <= 0)
+                missingFields.Add("14th Month Annual");
+
+            if (option.AllowanceMonthly <= 0)
+                missingFields.Add("Allowance Monthly");
+
+            if (option.AllowanceAnnualy <= 0)
+                missingFields.Add("Allowance Annual");
+
+            if (option.PSAnnualy <= 0)
+                missingFields.Add("Profit Share Annual");
+
+            if (option.IncentiveAnnualy <= 0)
+                missingFields.Add("Incentive Annual");
+
+            if (option.PerformanceAnnualy <= 0)
+                missingFields.Add("Performance Annual");
+
+            if (missingFields.Any())
+            {
+                errors.Add($"Option {option.OptionNum}: {string.Join(", ", missingFields)} is required.");
+            }
+        }
+
+        return errors;
     }
 
     private string ComputeAnnualDiffPay(OptionDto dto)
