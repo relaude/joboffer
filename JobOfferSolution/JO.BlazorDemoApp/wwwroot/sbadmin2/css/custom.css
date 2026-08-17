@@ -1,0 +1,276 @@
+﻿/* Remove unwanted focus outline for all elements */
+*:focus {
+    outline: none;
+}
+
+/* Optional: make focus visible but styled */
+.nav-link:focus,
+.btn:focus,
+input:focus,
+textarea:focus {
+    box-shadow: none;
+    outline: 2px solid transparent;
+}
+
+/* timeline */
+.timeline {
+    position: relative;
+    padding: 1rem 0;
+    list-style: none;
+}
+
+.timeline:before {
+    position: absolute;
+    left: 40px;
+    top: 0;
+    content: ' ';
+    width: 2px;
+    height: 100%;
+    background-color: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1rem;
+    padding-left: 70px;
+}
+
+.timeline-item:before {
+    content: '\f111';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 32px;
+    background: #fff;
+    border-radius: 50%;
+    border: 2px solid #4e73df;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: #4e73df;
+}
+
+.timeline-date {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #858796;
+}
+
+.timeline-card {
+    background: #fff;
+    border-radius: 0.35rem;
+    padding: 1rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,.15);
+}
+
+.timeline-header {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #4e73df;
+}
+
+.timeline-badge {
+    font-size: 0.75rem;
+}
+
+.role-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+}
+
+/* tooltip */
+.tooltip-inner {
+    background-color: #333;
+    color: #fff;
+    font-size: 14px;
+}
+
+.tooltip-arrow::before {
+    border-top-color: #333 !important;
+}
+
+/* tabs */
+.nav-tabs .nav-link.active {
+    color: #4e73df;
+    background-color: #ffffff;
+    border-color: #dee2e6 #dee2e6 #ffffff;
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: #dee2e6 #dee2e6 #ffffff;
+    color: #2e59d9;
+}
+
+.nav-tabs .nav-link.active {
+    border-bottom: 3px solid #4e73df;
+}
+
+.sb-avatar {
+    font-size: 0.85rem;
+    user-select: none;
+    line-height: 1;
+}
+
+/* return logs */
+.return-logs-table th,
+.return-logs-table td {
+    vertical-align: middle;
+}
+
+.return-logs-table th:nth-child(1),
+.return-logs-table td:nth-child(1) {
+    width: 18%;
+}
+
+.return-logs-table th:nth-child(2),
+.return-logs-table td:nth-child(2) {
+    width: 20%;
+}
+
+.return-logs-table th:nth-child(3),
+.return-logs-table td:nth-child(3) {
+    width: 18%;
+}
+
+.return-logs-table th:nth-child(4),
+.return-logs-table td:nth-child(4) {
+    width: 44%;
+}
+
+.return-logs-table textarea[readonly] {
+    min-width: 260px;
+    resize: none;
+    background-color: #fff;
+}
+
+/* form request */
+.jo-form-page .icon-circle {
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0.35rem 0.85rem rgba(78, 115, 223, 0.18);
+}
+
+.jo-form-page .icon-circle-sm {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
+.jo-form-page .ms-message-box {
+    min-height: 14rem;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+.jo-form-page .tracking-tile {
+    background: #f8f9fc;
+    border: 1px solid #eaecf4;
+    border-radius: 0.35rem;
+    padding: 0.85rem;
+    height: 100%;
+}
+
+.jo-form-page .table td,
+.jo-form-page .table th {
+    vertical-align: middle;
+}
+
+.jo-form-page .text-xs {
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+}
+
+/* job offer analysis */
+.jo-analysis-ta-page .form-ctrl-sml {
+    font-size: .8rem;
+    min-height: calc(1.5em + .5rem + 2px);
+}
+
+.jo-analysis-ta-page textarea.form-ctrl-sml {
+    min-height: auto;
+}
+
+/* Salary band position track */
+.jo-analysis-ta-page .jo-band-track {
+    position: relative;
+    height: 10px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #e74a3b 0%, #f6c23e 50%, #1cc88a 100%);
+    opacity: .85;
+    margin-top: .5rem;
+}
+
+.jo-analysis-ta-page .jo-band-track-sm {
+    height: 6px;
+    margin-top: .25rem;
+}
+
+.jo-analysis-ta-page .jo-band-mid {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    left: 50%;
+    width: 2px;
+    background: #5a5c69;
+    transform: translateX(-50%);
+}
+
+.jo-analysis-ta-page .jo-band-marker {
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border: 3px solid #4e73df;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+}
+
+.jo-analysis-ta-page .jo-band-track-sm .jo-band-marker {
+    width: 10px;
+    height: 10px;
+    border-width: 2px;
+}
+
+.jo-analysis-ta-page .jo-band-bubble {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: .65rem;
+    font-weight: 700;
+    color: #4e73df;
+    background: #eaf0ff;
+    border: 1px solid #cddafe;
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+
+.jo-analysis-ta-page .jo-band-selected {
+    background: #eaf7f1;
+    border-radius: 6px;
+}
+
+.jo-analysis-ta-page .jo-proposal-recommended {
+    border-color: #1cc88a !important;
+    box-shadow: 0 0 0 1px #1cc88a, 0 .15rem .5rem rgba(28, 200, 138, .15) !important;
+}
+
+.jo-analysis-ta-page .jo-benefits-table td {
+    padding: .4rem .5rem;
+}

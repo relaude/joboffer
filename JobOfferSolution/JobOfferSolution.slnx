@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="JO.BlazorApp/JO.BlazorApp.csproj" />
+  <Project Path="JO.BlazorDemoApp/JO.BlazorDemoApp.csproj" Id="f4fbc06f-3a75-48fa-972b-7218a70f6a75" />
   <Project Path="JO.Database/JO.Database.sqlproj" Id="984da9bd-f140-4590-8539-02d38d3001fe">
     <Build />
     <Deploy />
