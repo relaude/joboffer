@@ -95,20 +95,24 @@
                                 % Increase
                             </label>
 
+                            <!--CHECK-->
                             <input id="increase-@option.OptionNum"
-                                   type="text"
-                                   inputmode="numeric"
-                                   pattern="[0-9]*"
-                                   class="form-control form-control-sm w-100"
-                                   @bind="option.Increase"
-                                   @bind:event="oninput"
-                                   @bind:after="() => DebounceIncreasePercentage(option)"
-                                   @onclick:stopPropagation="true"
-                                   onkeydown="if (!/^[0-9]$/.test(event.key) &&
-                                    !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(event.key) &&
-                                    !(event.ctrlKey || event.metaKey)) event.preventDefault();"
-                                   onpaste="if (!/^[0-9]+$/.test(event.clipboardData.getData('text'))) event.preventDefault();"
-                                   ondrop="event.preventDefault();" />
+                               type="text"
+                               inputmode="decimal"
+                               pattern="[0-9]*([.][0-9]*)?"
+                               class="form-control form-control-sm w-100"
+                               @bind="option.IncreaseStr"
+                               @bind:event="oninput"
+                               @bind:after="() => DebounceIncreasePercentage(option)"
+                               @onclick:stopPropagation="true"
+                               onkeydown="if (!/^[0-9.]$/.test(event.key) ||
+                                  (event.key === '.' && event.target.value.includes('.'))) {
+                                   if (!['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(event.key) &&
+                                       !(event.ctrlKey || event.metaKey)) event.preventDefault();
+                               }"
+                               onpaste="const text = event.clipboardData.getData('text'); if (!/^\d*\.?\d*$/.test(text) || (event.target.value.includes('.') && text.includes('.'))) event.preventDefault();"
+                               ondrop="event.preventDefault();" />
+                            <!--CHECK-->
                         </div>
                     }
 

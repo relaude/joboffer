@@ -160,6 +160,9 @@
     <Build Include="dbo\Views\vw_PckgTemp.sql" />
     <Build Include="dbo\Tables\DboxCandidates.sql" />
     <Build Include="dbo\Views\vw_DboxCandidates.sql" />
+    <Build Include="dbo\Tables\CompensationPackage.sql" />
+    <Build Include="dbo\Tables\CompensationOptions.sql" />
+    <Build Include="dbo\Tables\CompensationItem.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

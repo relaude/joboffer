@@ -51,13 +51,25 @@ namespace JO.Service.Services
                 return false;
 
             var passwordSignInResult = await _signInManager
-                .PasswordSignInAsync(
+                .CheckPasswordSignInAsync(
                     user,
                     CommonConstant.DefaultPassword,
-                    isPersistent: true,
                     lockoutOnFailure: false);
 
-            return passwordSignInResult.Succeeded;
+            if (!passwordSignInResult.Succeeded)
+                return false;
+
+            var claims = new[]
+            {
+                new Claim("JobOfferUserId", joUser.Id.ToString())
+            };
+
+            await _signInManager.SignInWithClaimsAsync(
+                user,
+                isPersistent: true,
+                claims);
+
+            return true;
         }
 
         public async Task LocalLogOut()

@@ -9,6 +9,7 @@ namespace JO.DataModel.DTOs
         public int Id { get; set; }
         public int OptionNum { get; set; }
         public decimal Increase { get; set; }
+        public string IncreaseStr { get; set; }
         public decimal MbsMonthly { get; set; }
         public decimal MbsAnnualy { get; set; }
         public decimal Month13Annualy { get; set; }

@@ -1,0 +1,7 @@
+﻿CREATE TABLE [dbo].[CompensationItem] (
+    [Id]           INT            IDENTITY (1, 1) NOT NULL,
+    [ItemName]     NVARCHAR (150) NULL,
+    [DisplayOrder] INT            NULL,
+    CONSTRAINT [PK_CompensationItem] PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+

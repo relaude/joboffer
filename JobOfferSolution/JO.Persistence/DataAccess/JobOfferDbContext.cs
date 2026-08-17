@@ -72,6 +72,8 @@ namespace JO.Persistence.DataAccess
         public DbSet<PckgTemp> PckgTemp { get; set; }
         public DbSet<PckgTempHasItms> PckgTempHasItms { get; set; }
         public DbSet<PckgItems> PckgItems { get; set; }
+        public DbSet<CompensationPackage> CompensationPackage { get; set; }
+        public DbSet<CompensationOptions> CompensationOptions { get; set; }
 
         //Approval
         public DbSet<Approvals> Approvals { get; set; }

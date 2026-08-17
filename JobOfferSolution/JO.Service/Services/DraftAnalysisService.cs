@@ -2,6 +2,7 @@
 using JO.DataModel.Entity;
 using JO.DataModel.View;
 using JO.Persistence.DataAccess;
+using JO.Service.Constants;
 using JO.Service.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,6 +18,68 @@ namespace JO.Service.Services
         {
             _dbContext = dbContext;
         }
+
+        /*
+        public async Task<int> SaveAllOptions(List<OptionDto> optionDto,
+            List<ComparisonDto> comparisonDto,
+            int jobOfferId,
+            int templateId,
+            int userId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            //Candidate Current Package
+            CompensationPackage currentPackage = new CompensationPackage
+            {
+                CreatedAt = DateTime.Now,
+                CreatedBy = userId,
+                JobOfferId = jobOfferId,
+                OptionType = JOCompensation.OptionTypeCurrent,
+                OptionNumber = 0,
+                IncreasePercent = 0,
+                PckgTempId =templateId
+            }
+
+            await context.CompensationPackage.AddAsync(currentPackage);
+            await context.SaveChangesAsync();
+
+            List<CompensationOptions> currentOptions = new();
+            foreach (var item in comparisonDto)
+            {
+                currentOptions.Add(new CompensationOptions
+                {
+                    AnnualAmount = item.CurAnnual,
+                    MonthlyAmount = item.CurMonthy,
+                    ItemId = item.Id,
+                    PackageId = currentPackage.Id
+                });
+            }
+
+            await context.CompensationOptions.AddRangeAsync(currentOptions);
+            await context.SaveChangesAsync();
+
+            //Package Options
+            List<CompensationPackage> newPackages = new();
+            foreach (var item in optionDto)
+            {
+                newPackages.Add(new CompensationPackage
+                {
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = userId,
+                    IncreasePercent = item.Increase,
+                    JobOfferId = jobOfferId,
+                    OptionNumber = item.OptionNum,
+                    OptionType = JOCompensation.OptionType,
+                    PckgTempId = templateId
+                });
+            }
+
+            await context.CompensationPackage.AddRangeAsync(newPackages);
+            await context.SaveChangesAsync();
+
+
+            return currentPackage.Id;
+        }*/
 
         public string ComputeAnnualDiffPay(List<OptionDto> optionDto, 
             List<ComparisonDto> comparisonDto,
@@ -61,7 +124,8 @@ namespace JO.Service.Services
             // Proposed Salary = Current Salary × (1 + (Increase / 100))
             decimal currentSalary =
                 candidate.CurrentMonthlyBasicSalary.GetValueOrDefault();
-
+            
+            option.Increase = decimal.Parse(option.IncreaseStr);
             decimal increasePercentage = option.Increase;
             decimal proposedSalary = currentSalary * (1m + (increasePercentage / 100m));
 
