@@ -1,0 +1,67 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.Candidates)]
+
+@inject ICandidateService CandidateService
+@inject IUtilitiesService UtilitiesService
+@inject IAlertService AlertService
+@inject IAccountService AccountService
+@inject NavigationManager Navigation
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Candidates</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <div class="table-responsive">
+                <table class="jo-table">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Position Applied For</th>
+                            <th>Current Employer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in candidates)
+                        {
+                            <tr>
+                                <td class="jo-title">
+                                    <a href="@($"{JORoutes.TA.Candidate}/{row.Id}")">
+                                        @row.CandidateFullName
+                                    </a>
+                                </td>
+                                <td>@row.EmailAddress</td>
+                                <td>@row.PositionAppliedFor</td>
+                                <td>@row.CurrentEmployerName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<VwDboxCandidates> candidates = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        candidates = await CandidateService.GetVwDboxCandidates();
+    }
+
+    private async Task CreateJobOffer(int candidateId)
+    {
+        int numProposal = await AlertService.ConfirmProposalNumber();
+
+        if (numProposal == 0) return;
+
+        int createdBy = await AccountService.GetJobOfferUserId();
+        int jobOfferId = await CandidateService.CreateJobOffer(candidateId, createdBy);
+
+        Navigation.NavigateTo($"{JORoutes.TA.NewOffer}/{jobOfferId}/{numProposal}");
+    }
+}

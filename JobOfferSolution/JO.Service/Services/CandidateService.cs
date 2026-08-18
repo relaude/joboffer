@@ -63,20 +63,118 @@ namespace JO.Service.Services
             return await context.Candidates.FindAsync(id);
         }
 
-        public async Task<int> CreateJobOffer(int candidateId, int options, int createdBy)
+        public async Task<int> CreateJobOffer(VwDboxCandidates candidate, int options, int createdBy)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             int countJO = await context.JobOffers.CountAsync() + 1;
             var newJO = new JobOffers
             {
                 RefNum = $"JO-{DateTime.Now.Year}-{countJO:D5}",
-                CandidateId = candidateId,
+                CandidateId = candidate.Id,
                 Options = options,
                 StatusId = JOStatus.Application.New,
                 CreatedAt = DateTime.Now,
                 CreatedBy = createdBy
             };
             await context.JobOffers.AddAsync(newJO);
+            await context.SaveChangesAsync();
+
+            //Candidate Current Package
+            CompensationPackage currentPackage = new CompensationPackage
+            {
+                CreatedAt = DateTime.Now,
+                CreatedBy = createdBy,
+                JobOfferId = newJO.Id,
+                OptionType = JOCompensation.OptionTypeCurrent,
+                OptionNumber = 0,
+                IncreasePercent = 0
+            };
+
+            await context.CompensationPackage.AddAsync(currentPackage);
+            await context.SaveChangesAsync();
+
+            //Candidate Current Package Items
+            var currentOptions = new List<CompensationOptions>();
+            var compItems = await context.CompensationItem.ToListAsync();
+
+            var basicSalary = candidate.CurrentMonthlyBasicSalary.GetValueOrDefault();
+            var monthlyAllowance =
+                candidate.MonthlyAllowanceAmount.GetValueOrDefault() +
+                candidate.NonMonthlyAllowanceAmount.GetValueOrDefault() +
+                candidate.MonthlyNonTaxableAllowanceAmount.GetValueOrDefault();
+
+            foreach (var item in compItems)
+            {
+                var option = item.Id switch
+                {
+                    1 => new CompensationOptions { MonthlyAmount = basicSalary, AnnualAmount = basicSalary * 12m },
+                    2 => new CompensationOptions { AnnualAmount = basicSalary },
+                    3 => new CompensationOptions { AnnualAmount = candidate.AnnualGuaranteedBonusAmount.GetValueOrDefault() },
+                    4 => new CompensationOptions
+                    {
+                        MonthlyAmount = monthlyAllowance,
+                        AnnualAmount = monthlyAllowance * 12m + candidate.AnnualNonTaxableAllowanceAmount.GetValueOrDefault()
+                    },
+                    5 => new CompensationOptions { AnnualAmount = candidate.AnnualProfitSharingAmount.GetValueOrDefault() },
+                    6 => new CompensationOptions { AnnualAmount = candidate.AnnualIncentiveAmount.GetValueOrDefault() },
+                    7 => new CompensationOptions { AnnualAmount = candidate.AnnualVariablePayAmount.GetValueOrDefault() },
+                    _ => null
+                };
+
+                if (option is not null)
+                {
+                    option.ItemId = item.Id;
+                    option.PackageId = currentPackage.Id;
+                    currentOptions.Add(option);
+                }
+            }
+
+            await context.CompensationOptions.AddRangeAsync(currentOptions);
+            await context.SaveChangesAsync();
+
+            //Options Package
+            List<CompensationPackage> optionsPackage = new();
+            for (int i = 1; i <= options; i++)
+            {
+                optionsPackage.Add(new CompensationPackage
+                {
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = createdBy,
+                    JobOfferId = newJO.Id,
+                    OptionType = JOCompensation.OptionType,
+                    OptionNumber = i,
+                    IncreasePercent = 0
+                });
+            }
+
+            await context.CompensationPackage.AddRangeAsync(optionsPackage);
+            await context.SaveChangesAsync();
+
+            List<CompensationOptions> newOptions = new();
+            foreach (var package in optionsPackage)
+            {
+                foreach (var item in compItems)
+                {
+                    var option = item.Id switch
+                    {
+                        1 => new CompensationOptions { MonthlyAmount = basicSalary, AnnualAmount = basicSalary * 12m },
+                        2 => new CompensationOptions { AnnualAmount = basicSalary },
+                        3 => new CompensationOptions { AnnualAmount = basicSalary * 2m },
+                        5 => new CompensationOptions { AnnualAmount = basicSalary },
+                        7 => new CompensationOptions { AnnualAmount = basicSalary * 2m },
+                        _ => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = 0 }
+                    };
+
+                    if (option is not null)
+                    {
+                        option.ItemId = item.Id;
+                        option.PackageId = package.Id;
+                        newOptions.Add(option);
+                    }
+                }
+            }
+
+            await context.CompensationOptions.AddRangeAsync(newOptions);
             await context.SaveChangesAsync();
 
             return newJO.Id;

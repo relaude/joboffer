@@ -1,4 +1,5 @@
 ﻿using JO.DataModel.DTOs;
+using JO.DataModel.Entity;
 using JO.DataModel.View;
 
 namespace JO.Service.Services.Contracts
@@ -9,6 +10,10 @@ namespace JO.Service.Services.Contracts
         string ComputeAnnualDiffPay(List<OptionDto> optionDto, List<ComparisonDto> comparisonDto, int optionNum);
         string ComputeMonthDiffPay(List<OptionDto> optionDto, List<ComparisonDto> comparisonDto, int optionNum);
         void FillComparisonDto(List<ComparisonDto> comparisonDto, VwDboxCandidates candidate, List<OptionDto> optionDto);
+        Task<List<CompensationDto>> GetCompensationDto();
+        Task<List<CompensationOptions>> GetCompensationOptions(List<int> packageIds);
+        Task<List<CompensationPackage>> GetCompensationPackage();
+        Task<List<CompensationPackage>> GetCompensationPackage(int jobOfferId);
         Task<List<VwPckgTempHasItms>> GetVwPckgTempHasItms(int templateId);
         void IncreasePercentage(OptionDto option, VwDboxCandidates candidate, List<ComparisonDto> comparisonDto);
         void InitProposalDto(List<OptionDto> optionDto, int numProposal, VwDboxCandidates candidate);

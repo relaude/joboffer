@@ -1,0 +1,53 @@
+﻿<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h2 class="h6 m-0 font-weight-bold text-primary">Benefits and Leave</h2>
+    </div>
+    <div class="card-body">
+        <div class="mb-4 border-bottom pb-4">
+            <h3 class="h6 font-weight-bold text-gray-800 mb-2">Health Coverage</h3>
+            <div class="table-responsive">
+                <table class="jo-table">
+                    <tbody>
+                        <tr><td>Employee HMO</td><td class="font-weight-bold text-gray-800">@Candidate.EmployeeHmoBenefitLimit</td></tr>
+                        <tr><td>Dependent HMO</td><td class="font-weight-bold text-gray-800">@Candidate.DependentHmoBenefitLimit</td></tr>
+                        <tr><td>Dental</td><td class="font-weight-bold text-gray-800">@Candidate.DentalBenefit</td></tr>
+                        <tr><td>Medicine</td><td class="font-weight-bold text-gray-800">@Candidate.MedicineReimbursementBenefit</td></tr>
+                        <tr><td>Optical</td><td class="font-weight-bold text-gray-800">@Candidate.OpticalBenefit</td></tr>
+                        <tr><td>Other Health</td><td class="font-weight-bold text-gray-800">@Candidate.OtherHealthBenefits</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mb-4 border-bottom pb-4">
+            <h3 class="h6 font-weight-bold text-gray-800 mb-2">Leave and Insurance</h3>
+            <div class="table-responsive">
+                <table class="jo-table">
+                    <tbody>
+                        <tr><td>Vacation Leave</td><td class="font-weight-bold text-gray-800">@Candidate.VacationLeaveBenefit</td></tr>
+                        <tr><td>Sick Leave</td><td class="font-weight-bold text-gray-800">@Candidate.SickLeaveBenefit</td></tr>
+                        <tr><td>Other Leave</td><td class="font-weight-bold text-gray-800">@Candidate.OtherLeaveBenefits</td></tr>
+                        <tr><td>Life Insurance</td><td class="font-weight-bold text-gray-800">@Candidate.LifeInsuranceBenefit</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="h6 font-weight-bold text-gray-800 mb-2">Other Benefits</h3>
+            <div class="table-responsive">
+                <table class="jo-table">
+                    <tbody>
+                        <tr><td>Vehicle</td><td class="font-weight-bold text-gray-800">@Candidate.VehicleBenefit</td></tr>
+                        <tr><td>Mobile Phone</td><td class="font-weight-bold text-gray-800">@Candidate.MobilePhoneBenefit</td></tr>
+                        <tr><td>Additional Benefits</td><td class="font-weight-bold text-gray-800">@Candidate.OtherBenefits</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public VwDboxCandidates Candidate { get; set; }
+}

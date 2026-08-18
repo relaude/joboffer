@@ -1,6 +1,7 @@
 using JO.BlazorDemoApp.Components.Account.Pages;
 using JO.BlazorDemoApp.Components.Account.Pages.Manage;
 using JO.BlazorDemoApp.Data;
+using JO.DataModel.Identity;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;

@@ -1,46 +1,103 @@
+using CurrieTechnologies.Razor.SweetAlert2;
 using JO.BlazorDemoApp.Components;
 using JO.BlazorDemoApp.Components.Account;
 using JO.BlazorDemoApp.Data;
+using JO.DataModel.Identity;
+using JO.Persistence;
+using JO.Service;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+#region ====================== BLAZOR / RAZOR SERVICES ======================
+
+// Add Razor Components with Interactive Server mode
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddControllers();
+
+// Enable cascading authentication state for Blazor
 builder.Services.AddCascadingAuthenticationState();
+
+// Custom identity helpers for Blazor
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
+#endregion
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = true;
-        options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
-    })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
+#region ====================== DATABASE CONFIGURATION ======================
 
+// Register application settings
+builder.Services.AddSingleton<IAppSettings, AppSettings>();
+
+// Configure EF Core with dynamic connection string
+builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
+{
+    var appSettings = sp.GetRequiredService<IAppSettings>();
+    var configuration = sp.GetRequiredService<IConfiguration>();
+
+    var connectionStringName = appSettings.GetConnectionStringName();
+    var connectionString = configuration.GetConnectionString(connectionStringName)
+        ?? throw new InvalidOperationException(
+            $"Connection string '{connectionStringName}' not found.");
+
+    options.UseSqlServer(connectionString);
+});
+
+#endregion
+
+
+#region ====================== IDENTITY CONFIGURATION ======================
+
+// Configure ASP.NET Identity
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Configure role claim type
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
+});
+
+// Disable email confirmation sender (No-Op)
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+#endregion
+
+
+#region ====================== CUSTOM APPLICATION SERVICES ======================
+
+// Register persistence layer services
+builder.Services.AddPersistenceServices(builder.Configuration);
+
+// Register business logic / job offer services
+builder.Services.AddJobOfferServices(builder.Configuration);
+
+#endregion
+
+
+#region ====================== THIRD-PARTY SERVICES ======================
+
+// SweetAlert2 for Blazor
+builder.Services.AddSweetAlert2();
+
+#endregion
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+#region ====================== HTTP REQUEST PIPELINE ======================
+
+// Development vs Production configuration
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -48,15 +105,31 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseHsts();
 }
+
+// Custom status code handler (404 etc.)
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+
+// Enforce HTTPS
+//app.UseHttpsRedirection();
+
+// Enable antiforgery protection
 app.UseAntiforgery();
 
+// Serve static files
 app.MapStaticAssets();
+
+// Map API controllers
+app.MapControllers();
+
+// Map Blazor components with interactive server mode
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// Add additional endpoints required by the Identity /Account Razor components.
+// Map Identity endpoints (login, logout, register, etc.)
 app.MapAdditionalIdentityEndpoints();
+
+#endregion
 
 app.Run();

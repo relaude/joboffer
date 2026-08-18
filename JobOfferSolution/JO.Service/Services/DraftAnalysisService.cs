@@ -19,67 +19,50 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
-        /*
-        public async Task<int> SaveAllOptions(List<OptionDto> optionDto,
-            List<ComparisonDto> comparisonDto,
-            int jobOfferId,
-            int templateId,
-            int userId)
+        public async Task<List<CompensationDto>> GetCompensationDto()
+        {
+            List<CompensationDto> compenDto = new();
+
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var compenItem = await context.CompensationItem.AsNoTracking().ToListAsync();
+
+            foreach (var item in compenItem)
+            {
+                compenDto.Add(new CompensationDto
+                {
+                    Id = item.Id,
+                    ItemName = item.ItemName,
+                    CurrentMonthly = 0,
+                    CurrentAnnual = 0,
+                    OptionMonthly = 0,
+                    OptionAnnual = 0
+                });
+            }
+            
+            return compenDto;
+        }
+
+        public async Task<List<CompensationOptions>> GetCompensationOptions(List<int> packageIds)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompensationOptions.AsNoTracking()
+                .Where(jo=> packageIds.Contains(jo.PackageId.GetValueOrDefault()))
+                .ToListAsync();
+        }
 
-            //Candidate Current Package
-            CompensationPackage currentPackage = new CompensationPackage
-            {
-                CreatedAt = DateTime.Now,
-                CreatedBy = userId,
-                JobOfferId = jobOfferId,
-                OptionType = JOCompensation.OptionTypeCurrent,
-                OptionNumber = 0,
-                IncreasePercent = 0,
-                PckgTempId =templateId
-            }
+        public async Task<List<CompensationPackage>> GetCompensationPackage(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompensationPackage.AsNoTracking()
+                .Where(jo=>jo.JobOfferId == jobOfferId)
+                .ToListAsync();
+        }
 
-            await context.CompensationPackage.AddAsync(currentPackage);
-            await context.SaveChangesAsync();
-
-            List<CompensationOptions> currentOptions = new();
-            foreach (var item in comparisonDto)
-            {
-                currentOptions.Add(new CompensationOptions
-                {
-                    AnnualAmount = item.CurAnnual,
-                    MonthlyAmount = item.CurMonthy,
-                    ItemId = item.Id,
-                    PackageId = currentPackage.Id
-                });
-            }
-
-            await context.CompensationOptions.AddRangeAsync(currentOptions);
-            await context.SaveChangesAsync();
-
-            //Package Options
-            List<CompensationPackage> newPackages = new();
-            foreach (var item in optionDto)
-            {
-                newPackages.Add(new CompensationPackage
-                {
-                    CreatedAt = DateTime.Now,
-                    CreatedBy = userId,
-                    IncreasePercent = item.Increase,
-                    JobOfferId = jobOfferId,
-                    OptionNumber = item.OptionNum,
-                    OptionType = JOCompensation.OptionType,
-                    PckgTempId = templateId
-                });
-            }
-
-            await context.CompensationPackage.AddRangeAsync(newPackages);
-            await context.SaveChangesAsync();
-
-
-            return currentPackage.Id;
-        }*/
+        public async Task<List<CompensationPackage>> GetCompensationPackage()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompensationPackage.AsNoTracking().ToListAsync();
+        }
 
         public string ComputeAnnualDiffPay(List<OptionDto> optionDto, 
             List<ComparisonDto> comparisonDto,

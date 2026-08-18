@@ -1,0 +1,53 @@
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="@JORoutes.Private.Home">
+        <div class="sidebar-brand-text mx-3">Job Offer</div>
+    </a>
+    <hr class="sidebar-divider my-0">
+
+    @if (user.Identity?.IsAuthenticated == true)
+    {
+        @if (user.IsInRole(JOUserRole.TA) == true)
+        {
+            <TAMenu />
+        }
+
+        @if (user.IsInRole(JOUserRole.TR) == true)
+        {
+            <TRMenu />
+        }
+
+        @if (user.IsInRole(JOUserRole.HROD) == true)
+        {
+            <HRODMenu />
+        }
+
+        @if (user.IsInRole(JOUserRole.DH) == true)
+        {
+            <DHMenu />
+        }
+
+        @if (user.IsInRole(JOUserRole.President) == true)
+        {
+            <PresMenu />
+        }
+
+        @if (user.IsInRole(JOUserRole.Admin) == true)
+        {
+            <AdminMenu />
+        }
+    }
+
+</ul>
+
+@code{
+
+    private ClaimsPrincipal user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+    }
+}

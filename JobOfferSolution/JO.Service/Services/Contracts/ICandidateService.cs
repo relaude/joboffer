@@ -7,7 +7,7 @@ namespace JO.Service.Services.Contracts
     public interface ICandidateService
     {
         Task<int> CreateJobOffer(int candidateId, int createdBy);
-        Task<int> CreateJobOffer(int candidateId, int options, int createdBy);
+        Task<int> CreateJobOffer(VwDboxCandidates candidate, int options, int createdBy);
         Task<int> EmailRequest(Requests entity);
         Task<Candidates> GetCandidate(int id);
         Task<CandidateResponses> GetCandidateResponse(int id);
