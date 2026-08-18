@@ -39,8 +39,10 @@
 
         compenPackageAll = await DraftAnalysisService.GetCompensationPackage(jobOfferId);
         compenPackageOptions = compenPackageAll.Where(jo => jo.OptionType == JOCompensation.OptionType).ToList();
-
+        templateId = compenPackageOptions.FirstOrDefault().PckgTempId.GetValueOrDefault();
+        tempItems = await DraftAnalysisService.GetVwPckgTempHasItms(templateId);
         compenOptions = await DraftAnalysisService.GetCompensationOptions(compenPackageAll.Select(jo => jo.Id).ToList());
+        
         await SetupCompensationDto();
     }
 
@@ -76,11 +78,11 @@
             int?[] allowanceIds = [6, 8, 11, 12];
 
             sumMonthlyAllowance = tempItems
-                .Where(jo => allowanceIds.Contains(jo.Id))
+                .Where(jo => allowanceIds.Contains(jo.ItemId))
                 .Sum(jo => jo.Monthly.GetValueOrDefault());
 
             sumAnnualAllowance = tempItems
-                .Where(jo => allowanceIds.Contains(jo.Id))
+                .Where(jo => allowanceIds.Contains(jo.ItemId))
                 .Sum(jo => jo.Annualy.GetValueOrDefault());
         }
 
@@ -173,6 +175,43 @@
         if (!await AlertService.Confirm()) return;
         compenPackageOptions.Remove(package);
     }
+
+    private string ComputeMonthDiffPay(CompensationPackage package)
+    {
+        decimal current = compenDto.Sum(jo => jo.CurrentMonthly);
+        decimal proposal = compenOptions
+            .Where(jo => jo.PackageId == package.Id)
+            .Sum(jo => jo.MonthlyAmount.GetValueOrDefault());
+
+        decimal diffPay = (proposal - current) / current;
+        decimal truncatedDiffPay = Math.Truncate(diffPay * 100m) / 100m;
+
+        return $"{truncatedDiffPay:F2}%";
+    }
+
+    private string ComputeAnnualDiffPay(CompensationPackage package)
+    {
+        decimal current = compenDto.Sum(jo => jo.CurrentAnnual);
+        decimal proposal = compenOptions
+            .Where(jo => jo.PackageId == package.Id)
+            .Sum(jo => jo.AnnualAmount.GetValueOrDefault());
+
+        decimal diffPay = (proposal - current) / current;
+        decimal truncatedDiffPay = Math.Truncate(diffPay * 100m) / 100m;
+
+        return $"{truncatedDiffPay:F2}%";
+    }
+
+    private async Task SaveAnalysis()
+    {
+        if (!await AlertService.Confirm()) return;
+
+        await DraftAnalysisService
+            .SaveAnalysis(compenPackageOptions, 
+                    compenOptions, 
+                    templateId, 
+                    userId);
+    }
 }
 
 <div class="row">
@@ -180,8 +219,8 @@
         <CandidateBasicDetails Candidate="candidate" />
     </div>
 
-    <div class="col-sm-4 small">
-        <div class="card shadow mb-4">
+    <div class="col-sm-4">
+        <div class="card shadow small mb-4">
             <div class="card-header">
                 <h2 class="h6 m-0 font-weight-bold text-primary mb-2">Compensation Template</h2>
                 <select class="custom-select custom-select-sm"
@@ -222,14 +261,14 @@
                      class="jo-analysis-option-tab @(selectedOptionNumber == pacakge.OptionNumber ? "active" : null)"
                      @onclick="() => ClickOptionTab(pacakge)">
                 
-                    <button type="button"
+                    @* <button type="button"
                             class="jo-analysis-option-remove"
                             aria-label="Remove option @pacakge.OptionNumber"
                             title="Remove option"
                             @onclick="() => RemovePackage(pacakge)"
                             @onclick:stopPropagation="true">
                         <span aria-hidden="true">&times;</span>
-                    </button>
+                    </button> *@
 
                     <span class="jo-analysis-option-title">Option @pacakge.OptionNumber</span>
                     <label class="mb-1" for="increase-@pacakge.OptionNumber">% Increase</label>
@@ -299,7 +338,62 @@
                         </tr>
                     }
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Gross compensation</td>
+                        <td>@UtilitiesService.ToPeso(compenDto.Sum(jo => jo.CurrentMonthly))</td>
+                        <td>@UtilitiesService.ToPeso(compenDto.Sum(jo => jo.CurrentAnnual))</td>
+                        <td>@UtilitiesService.ToPeso(compenDto.Sum(jo => jo.OptionMonthly))</td>
+                        <td>@UtilitiesService.ToPeso(compenDto.Sum(jo => jo.OptionAnnual))</td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
+</div>
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h2 class="h6 m-0 font-weight-bold text-primary">% Difference in Pay</h2>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        @foreach (var package in compenPackageOptions)
+                        {
+                            <th scope="colgroup"
+                                colspan="2"
+                                class="text-center">
+                                Option @package.OptionNumber
+                            </th>
+                        }
+                    </tr>
+
+                    <tr>
+                        @foreach (var package in compenPackageOptions)
+                        {
+                            <th scope="col" class="text-center">Monthly</th>
+                            <th scope="col" class="text-center">Annual</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        @foreach (var package in compenPackageOptions)
+                        {
+                            <td class="text-center">@ComputeMonthDiffPay(package)</td>
+                            <td class="text-center">@ComputeAnnualDiffPay(package)</td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="jo-actions mb-4">
+    <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">Cancel</a>
+    <button type="button" class="btn btn-primary" @onclick="SaveAnalysis">Save</button>
 </div>

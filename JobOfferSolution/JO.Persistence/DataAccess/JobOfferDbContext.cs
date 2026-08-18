@@ -110,6 +110,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwPckgTempHasItms> VwPckgTempHasItms { get; set; }
         public DbSet<VwPckgTemp> VwPckgTemp { get; set; }
         public DbSet<VwDboxCandidates> VwDboxCandidates { get; set; }
+        public DbSet<VwJODboxCandidates> VwJODboxCandidates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -134,6 +135,7 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwPckgTempHasItms>().HasNoKey().ToView("vw_PckgTempHasItms");
             modelBuilder.Entity<VwPckgTemp>().HasNoKey().ToView("vw_PckgTemp");
             modelBuilder.Entity<VwDboxCandidates>().HasNoKey().ToView("vw_DboxCandidates");
+            modelBuilder.Entity<VwJODboxCandidates>().HasNoKey().ToView("vw_JODboxCandidates");
         }
     }
 }

@@ -1,0 +1,385 @@
+@attribute [Route(JORoutes.MockUp.Legal)]
+
+<div class="card shadow mb-4 border-left-primary small legal-entity-page">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-building fa-fw mr-2"></i>
+                    Company and Legal Entity Setup
+                </h6>
+                <small class="text-muted">Mockup data only. Fields marked <span class="text-danger">*</span> are required.</small>
+            </div>
+
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1">
+                    <i class="fas fa-user-tie fa-fw text-primary mr-1"></i>
+                    TA Partner View
+                </span>
+                <span class="badge badge-success">
+                    <i class="fas fa-check-circle fa-fw mr-1"></i>
+                    Matrix Matched
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-light border-left-info py-2 mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle fa-fw text-info mr-2"></i>
+                <span>Select the hiring company and legal entity for this offer so compensation rules, payroll setup, and compliance checks use the correct entity.</span>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-3 mb-xl-0">
+                <div class="border-left-primary bg-light px-3 py-2 h-100">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Candidate</div>
+                    <div class="font-weight-bold text-gray-900">@mockApplication.CandidateName</div>
+                    <div class="text-muted">@mockApplication.CandidateEmail</div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3 mb-xl-0">
+                <div class="border-left-info bg-light px-3 py-2 h-100">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Requisition</div>
+                    <div class="font-weight-bold text-gray-900">@mockApplication.RequisitionCode</div>
+                    <div class="text-muted">@mockApplication.PositionAppliedFor</div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3 mb-md-0">
+                <div class="border-left-success bg-light px-3 py-2 h-100">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Workflow Status</div>
+                    <div class="font-weight-bold text-gray-900">@mockApplication.WorkflowStatus</div>
+                    <div class="text-muted">Application Date: @mockApplication.ApplicationDate</div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="border-left-warning bg-light px-3 py-2 h-100">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">TA Owner</div>
+                    <div class="font-weight-bold text-gray-900">@mockApplication.TAOwner</div>
+                    <div class="text-muted">Mock Application ID: @mockApplication.ApplicationId</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-file-signature fa-fw text-primary mr-2"></i>
+                            Entity Selection
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="company" class="font-weight-bold text-gray-700 mb-1">
+                                    Company <span class="text-danger">*</span>
+                                </label>
+                                <select id="company"
+                                        class="form-control form-control-sm form-ctrl-sml"
+                                        aria-required="true"
+                                        aria-describedby="companyHelp">
+                                    @foreach (var company in mockCompanies)
+                                    {
+                                        <option selected="@company.IsSelected">@company.Name</option>
+                                    }
+                                </select>
+                                <small id="companyHelp" class="form-text text-muted">Hiring company used by CandidateApplications.HiringCompanyId.</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="legalEntity" class="font-weight-bold text-gray-700 mb-1">
+                                    Legal Entity <span class="text-danger">*</span>
+                                </label>
+                                <select id="legalEntity"
+                                        class="form-control form-control-sm form-ctrl-sml"
+                                        aria-required="true"
+                                        aria-describedby="entityHelp">
+                                    @foreach (var entity in mockLegalEntities)
+                                    {
+                                        <option selected="@entity.IsSelected">@entity.Name</option>
+                                    }
+                                </select>
+                                <small id="entityHelp" class="form-text text-muted">Filtered by company and stored as CandidateApplications.LegalEntityId.</small>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Country/Region</label>
+                                <input class="form-control form-control-sm form-ctrl-sml bg-light" value="@selectedEntity.Country" readonly />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Payroll Currency</label>
+                                <input class="form-control form-control-sm form-ctrl-sml bg-light" value="@selectedEntity.Currency" readonly />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="font-weight-bold text-gray-700 mb-1">Entity Status</label>
+                                <div class="form-control form-control-sm form-ctrl-sml bg-light">
+                                    <span class="badge badge-success">@selectedEntity.Status</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-left-success bg-light px-3 py-2 mb-3">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-check-circle fa-fw text-success mr-2 mt-1"></i>
+                                <div>
+                                    <div class="font-weight-bold text-gray-900">Selected entity is valid for this requisition.</div>
+                                    <div class="text-muted">The mock salary matrix below is shown after the company/entity combination is selected.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                                <button type="button" class="btn btn-outline-secondary btn-sm btn-sml btn-block" disabled>
+                                    <i class="fas fa-arrow-left fa-fw mr-1"></i>
+                                    Back
+                                </button>
+                            </div>
+                            <div class="col-sm-6">
+                                <button type="button" class="btn btn-primary btn-sm btn-sml btn-block" disabled>
+                                    Next: Compensation
+                                    <i class="fas fa-arrow-right fa-fw ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="border rounded bg-white h-100">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-shield-alt fa-fw text-primary mr-2"></i>
+                            Compliance Notes
+                        </h6>
+                    </div>
+
+                    <div class="p-3">
+                        <div class="mb-3">
+                            <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Business Rule</div>
+                            <div class="text-gray-900">Company and legal entity must be selected before compensation review.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Validation</div>
+                            <div class="text-gray-900">Salary matrix is loaded by CompanyId and active matrix date range.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="text-xs font-weight-bold text-uppercase text-gray-500 mb-1">Privacy</div>
+                            <div class="text-gray-900">Only offer-processing context is visible on this step.</div>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="icon-circle bg-primary text-white mr-2 legal-icon-sm">
+                                <i class="fas fa-building fa-sm"></i>
+                            </span>
+                            <div>
+                                <div class="font-weight-bold text-gray-900">@selectedEntity.Name</div>
+                                <div class="text-muted">@selectedEntity.RegistrationNo</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <span class="icon-circle bg-info text-white mr-2 legal-icon-sm">
+                                <i class="fas fa-clipboard-check fa-sm"></i>
+                            </span>
+                            <div>
+                                <div class="font-weight-bold text-gray-900">Audit Ready</div>
+                                <div class="text-muted">Selection timestamp and user would be logged.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border rounded bg-white mb-4">
+            <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
+                <div>
+                    <h6 class="m-0 font-weight-bold text-gray-800">
+                        <i class="fas fa-table fa-fw text-primary mr-2"></i>
+                        Salary Matrix Preview
+                    </h6>
+                    <small class="text-muted">Mock salary ranges based on SalaryMatrix and SalaryMatrixBand references.</small>
+                </div>
+                <span class="badge badge-light border mt-2 mt-md-0 align-self-start align-self-md-center">@mockMatrix.MatrixCode</span>
+            </div>
+
+            <div class="p-3">
+                <div class="row mb-3">
+                    <div class="col-md-3 mb-2 mb-md-0">
+                        <div class="text-xs font-weight-bold text-uppercase text-gray-500">Matrix Name</div>
+                        <div class="font-weight-bold text-gray-900">@mockMatrix.MatrixName</div>
+                    </div>
+                    <div class="col-md-3 mb-2 mb-md-0">
+                        <div class="text-xs font-weight-bold text-uppercase text-gray-500">Effective From</div>
+                        <div class="text-gray-900">@mockMatrix.EffectiveFrom</div>
+                    </div>
+                    <div class="col-md-3 mb-2 mb-md-0">
+                        <div class="text-xs font-weight-bold text-uppercase text-gray-500">Effective To</div>
+                        <div class="text-gray-900">@mockMatrix.EffectiveTo</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-xs font-weight-bold text-uppercase text-gray-500">Approval Status</div>
+                        <span class="badge badge-success">@mockMatrix.ApprovalStatus</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm text-nowrap mb-0">
+                        <thead class="thead-light text-center">
+                            <tr>
+                                <th>Job Level</th>
+                                <th>Job Family</th>
+                                <th>Position Grade</th>
+                                <th>Minimum</th>
+                                <th>Midpoint</th>
+                                <th>Maximum</th>
+                                <th>Flags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var band in mockBands)
+                            {
+                                <tr>
+                                    <td>@band.JobLevel</td>
+                                    <td>@band.JobFamily</td>
+                                    <td>@band.PositionGrade</td>
+                                    <td class="text-right">@band.Minimum</td>
+                                    <td class="text-right font-weight-bold text-gray-900">@band.Midpoint</td>
+                                    <td class="text-right">@band.Maximum</td>
+                                    <td class="text-center">
+                                        <span class="badge badge-light border">@band.Flags</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .legal-entity-page .form-ctrl-sml {
+        font-size: .8rem;
+        min-height: calc(1.5em + .5rem + 2px);
+    }
+
+    .legal-entity-page .btn-sml {
+        font-size: .78rem;
+    }
+
+    .legal-entity-page .legal-icon-sm {
+        height: 2rem;
+        width: 2rem;
+        min-width: 2rem;
+    }
+</style>
+
+@code {
+    private readonly MockApplication mockApplication = new(
+        1048,
+        "REQ-2026-071",
+        "Mika Reyes",
+        "mika.reyes@example.com",
+        "Senior Payroll Analyst",
+        "Entity Setup",
+        "Ana Santos",
+        "Jun 12, 2026"
+    );
+
+    private readonly List<MockCompany> mockCompanies =
+    [
+        new("Contoso Shared Services Philippines", true),
+        new("Contoso Retail Group", false),
+        new("Northwind Corporate Holdings", false)
+    ];
+
+    private readonly List<MockLegalEntity> mockLegalEntities =
+    [
+        new("Contoso Services PH, Inc.", "Philippines", "PHP", "Active", "SEC-2020-014822", true),
+        new("Contoso Services SG Pte. Ltd.", "Singapore", "SGD", "Active", "UEN-201912344K", false),
+        new("Contoso Global Support LLC", "United States", "USD", "Active", "EIN-88-1002041", false)
+    ];
+
+    private MockLegalEntity selectedEntity => mockLegalEntities.First(entity => entity.IsSelected);
+
+    private readonly MockMatrix mockMatrix = new(
+        "PH Shared Services 2026 Salary Matrix",
+        "PH-SS-2026",
+        "Jan 01, 2026",
+        "Dec 31, 2026",
+        "Approved"
+    );
+
+    private readonly List<MockSalaryBand> mockBands =
+    [
+        new("L3", "Finance Operations", "P3", "PHP 55,000.00", "PHP 68,000.00", "PHP 82,000.00", "Below/Above"),
+        new("L4", "Finance Operations", "P4", "PHP 75,000.00", "PHP 92,000.00", "PHP 115,000.00", "Below/Above"),
+        new("L5", "Payroll Leadership", "M1", "PHP 105,000.00", "PHP 132,000.00", "PHP 165,000.00", "Above")
+    ];
+
+    private readonly List<MockMapping> mockMappings =
+    [
+        new("Candidate context", "Candidates", "FirstName, LastName, Email, PositionAppliedFor, ExpectedSalary"),
+        new("Application setup", "CandidateApplications", "CandidateId, RequisitionId, HiringCompanyId, LegalEntityId, TAOwnerId"),
+        new("Compensation profile", "CandidateCompensationProfile", "ExpectedSalary, IsValidated, ValidationDate, Remarks"),
+        new("Documents", "CandidateDocuments", "CandidateApplicationId, DocumentTypeId, FileName, UploadedDate"),
+        new("Matrix header", "SalaryMatrix", "CompanyId, MatrixName, MatrixCode, CurrencyId, EffectiveFrom, EffectiveTo"),
+        new("Matrix bands", "SalaryMatrixBand", "SalaryMatrixId, JobLevelId, PositionGradeId, BandMinimum, BandMidpoint, BandMaximum")
+    ];
+
+    private sealed record MockApplication(
+        int ApplicationId,
+        string RequisitionCode,
+        string CandidateName,
+        string CandidateEmail,
+        string PositionAppliedFor,
+        string WorkflowStatus,
+        string TAOwner,
+        string ApplicationDate);
+
+    private sealed record MockCompany(string Name, bool IsSelected);
+
+    private sealed record MockLegalEntity(
+        string Name,
+        string Country,
+        string Currency,
+        string Status,
+        string RegistrationNo,
+        bool IsSelected);
+
+    private sealed record MockMatrix(
+        string MatrixName,
+        string MatrixCode,
+        string EffectiveFrom,
+        string EffectiveTo,
+        string ApprovalStatus);
+
+    private sealed record MockSalaryBand(
+        string JobLevel,
+        string JobFamily,
+        string PositionGrade,
+        string Minimum,
+        string Midpoint,
+        string Maximum,
+        string Flags);
+
+    private sealed record MockMapping(string Area, string TableName, string Fields);
+}

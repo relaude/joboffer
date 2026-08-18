@@ -1,0 +1,263 @@
+@attribute [Route(JORoutes.MockUp.TADashboard)]
+
+<div class="ta-dashboard-mockup">
+    <nav class="dashboard-tabs d-flex flex-wrap" aria-label="Dashboard sections">
+        @foreach (var tab in Tabs)
+        {
+            <span class="dashboard-tab @(tab == "Dashboard" ? "active" : null)">@tab</span>
+        }
+    </nav>
+
+    <div class="row kpi-row">
+        @foreach (var kpi in Kpis)
+        {
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="dashboard-card kpi-card" style="--accent: @kpi.Color">
+                    <div class="kpi-label">@kpi.Label</div>
+                    <div class="kpi-value">@kpi.Value</div>
+                    <div class="kpi-hint">@kpi.Hint</div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-xl-7 mb-3 mb-xl-0">
+            <section class="dashboard-card panel-card h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h2>My Pending Actions</h2>
+                        <p class="panel-subtitle">Priority work items from the job offer lifecycle</p>
+                    </div>
+                    <span class="soft-badge soft-danger">2 HIGH PRIORITY</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table pending-table mb-0">
+                        <thead><tr><th>PRIORITY</th><th>CANDIDATE</th><th>POSITION</th><th>ACTION</th></tr></thead>
+                        <tbody>
+                            @foreach (var item in PendingActions)
+                            {
+                                <tr>
+                                    <td><span class="soft-badge @item.BadgeClass">@item.Priority</span></td>
+                                    <td class="font-weight-bold text-gray-900">@item.Candidate</td>
+                                    <td class="text-gray-600">@item.Position</td>
+                                    <td><span class="action-link">@item.Action</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-xl-5">
+            <section class="dashboard-card panel-card h-100">
+                <h2 class="mb-3">Candidate Pipeline</h2>
+                @foreach (var stage in Pipeline)
+                {
+                    <div class="pipeline-item">
+                        <div class="d-flex justify-content-between">
+                            <span class="font-weight-bold text-gray-800">@stage.Label</span>
+                            <span class="font-weight-bold" style="color: @stage.Color">@stage.Count</span>
+                        </div>
+                        <div class="pipeline-track"><div class="pipeline-bar" style="width: @stage.Width%; background: @stage.Color"></div></div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+
+    <section class="dashboard-card panel-card mb-3">
+        <h2 class="mb-3">Candidate Workflow Kanban</h2>
+        <div class="kanban-grid">
+            @foreach (var column in Kanban)
+            {
+                <div class="kanban-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <strong>@column.Title</strong>
+                        <span class="count-badge" style="background: @column.Color">@column.Candidates.Count</span>
+                    </div>
+                    @foreach (var candidate in column.Candidates)
+                    {
+                        <div class="candidate-card">
+                            <strong>@candidate.Name</strong>
+                            <small>@candidate.Description</small>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    <div class="row mb-3">
+        <div class="col-lg-6 mb-3 mb-lg-0">
+            <section class="dashboard-card panel-card monitor-card h-100">
+                <h2>Approval Monitoring</h2>
+                @foreach (var item in Approvals)
+                {
+                    <div class="monitor-row">
+                        <strong>@item.Name</strong>
+                        <span class="text-gray-500">@item.Detail</span>
+                        <span class="status-badge @item.BadgeClass">@item.Status</span>
+                    </div>
+                }
+            </section>
+        </div>
+        <div class="col-lg-6">
+            <section class="dashboard-card panel-card monitor-card h-100">
+                <h2>SLA Monitoring</h2>
+                @foreach (var item in Slas)
+                {
+                    <div class="monitor-row">
+                        <strong>@item.Name</strong>
+                        <span class="text-gray-500">@item.Detail</span>
+                        <span class="status-badge @item.BadgeClass">@item.Status</span>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+
+    <section class="dashboard-card quick-actions d-flex flex-wrap align-items-center">
+        <span class="quick-label">QUICK ACTIONS</span>
+        <button type="button" class="btn btn-primary">New Job Offer</button>
+        <button type="button" class="btn btn-success">Send MS Form</button>
+        <button type="button" class="btn btn-info">Candidate Search</button>
+        <button type="button" class="btn btn-warning text-white">Approval Monitor</button>
+        <button type="button" class="btn btn-secondary">Reports</button>
+    </section>
+</div>
+
+<style>
+    .ta-dashboard-mockup {
+        --surface-border: #e3e6f0;
+        --page-text: #30344a;
+        background: #f4f6fb;
+        color: var(--page-text);
+        font-family: Nunito, sans-serif;
+        margin: -1.5rem;
+        padding: 1.5rem 2rem;
+    }
+
+    .dashboard-tabs { gap: .375rem; margin-bottom: 1.25rem; }
+    .dashboard-tab {
+        background: #fff;
+        border: 1px solid #d9dde8;
+        border-radius: .45rem;
+        color: #6e7185;
+        font-size: .72rem;
+        line-height: 1;
+        padding: .65rem .8rem;
+    }
+    .dashboard-tab.active { background: #4e73df; border-color: #4e73df; color: #fff; font-weight: 700; }
+
+    .dashboard-card { background: #fff; border: 1px solid var(--surface-border); border-radius: .65rem; }
+    .kpi-card { border-left: 5px solid var(--accent); min-height: 112px; padding: 1.15rem .85rem; }
+    .kpi-label { color: var(--accent); font-size: .66rem; font-weight: 700; margin-bottom: .35rem; }
+    .kpi-value { color: var(--page-text); font-size: 1.75rem; font-weight: 700; line-height: 1.25; }
+    .kpi-hint { color: #9ba0b4; font-size: .65rem; margin-top: .15rem; }
+
+    .panel-card { padding: 1rem 1.2rem; }
+    .panel-card h2 { color: var(--page-text); font-size: .95rem; font-weight: 700; margin: 0; }
+    .panel-subtitle { color: #858796; font-size: .66rem; margin: .15rem 0 0; }
+    .soft-badge, .status-badge, .count-badge { border-radius: 50rem; display: inline-block; font-size: .62rem; font-weight: 700; padding: .3rem .5rem; white-space: nowrap; }
+    .soft-danger { background: #fdecea; color: #c53d32; }
+    .soft-warning { background: #fff4d6; color: #9b6a00; }
+    .soft-success { background: #e7f8f1; color: #178a62; }
+
+    .pending-table { font-size: .7rem; }
+    .pending-table thead th { border-top: 0; color: #858796; font-size: .58rem; padding: .45rem .25rem; }
+    .pending-table td { border-color: #eaecf4; padding: .55rem .25rem; vertical-align: middle; }
+    .action-link { color: #4e73df; font-weight: 700; }
+
+    .pipeline-item { font-size: .65rem; margin-bottom: .65rem; }
+    .pipeline-track { background: #eaecf4; border-radius: 1rem; height: 6px; margin-top: .38rem; overflow: hidden; }
+    .pipeline-bar { border-radius: 1rem; height: 100%; }
+
+    .kanban-grid { display: grid; gap: .8rem; grid-template-columns: repeat(5, minmax(170px, 1fr)); overflow-x: auto; }
+    .kanban-column { background: #f8f9fc; border: 1px solid var(--surface-border); border-radius: .5rem; min-height: 200px; padding: .75rem; }
+    .kanban-column strong { font-size: .7rem; }
+    .count-badge { color: #fff; min-width: 1.4rem; text-align: center; }
+    .candidate-card { background: #fff; border: 1px solid var(--surface-border); border-radius: .45rem; margin-bottom: .55rem; min-height: 60px; padding: .6rem; }
+    .candidate-card strong, .candidate-card small { display: block; }
+    .candidate-card small { color: #858796; font-size: .59rem; margin-top: .45rem; }
+
+    .monitor-card { min-height: 218px; }
+    .monitor-row { align-items: center; display: grid; font-size: .68rem; gap: 1rem; grid-template-columns: 1.3fr 1.4fr auto; min-height: 47px; }
+    .status-success { background: #1cc88a; color: #fff; }
+    .status-warning { background: #f6c23e; color: #fff; }
+    .status-danger { background: #e74a3b; color: #fff; }
+
+    .quick-actions { gap: .65rem; min-height: 58px; padding: .85rem 1rem; }
+    .quick-label { color: #858796; font-size: .64rem; font-weight: 700; }
+    .quick-actions .btn { border-radius: .45rem; font-size: .64rem; font-weight: 700; padding: .48rem .75rem; pointer-events: none; }
+
+    @@media (max-width: 767.98px) {
+        .ta-dashboard-mockup { margin: -1rem; padding: 1rem; }
+        .monitor-row { gap: .5rem; grid-template-columns: 1fr; padding: .65rem 0; }
+        .monitor-row .status-badge { justify-self: start; }
+    }
+</style>
+
+@code {
+    private static readonly string[] Tabs = ["Dashboard", "Candidates", "Job Offers", "Approvals", "Negotiations", "Reports"];
+
+    private static readonly Kpi[] Kpis =
+    [
+        new("ACTIVE CASES", "125", "open workflow items", "#4e73df"),
+        new("AWAITING FORMS", "18", "open workflow items", "#f6c23e"),
+        new("FOR ANALYSIS", "12", "open workflow items", "#36b9cc"),
+        new("FOR APPROVAL", "25", "open workflow items", "#858796"),
+        new("NEGOTIATIONS", "7", "open workflow items", "#e74a3b"),
+        new("ACCEPTED", "34", "this month", "#1cc88a")
+    ];
+
+    private static readonly PendingAction[] PendingActions =
+    [
+        new("HIGH", "Juan Dela Cruz", "TSR", "Analyze Offer", "soft-danger"),
+        new("HIGH", "Maria Reyes", "Product Manager", "Re-Proposal", "soft-danger"),
+        new("MEDIUM", "John Santos", "QA Lead", "Discussion", "soft-warning"),
+        new("LOW", "Ana Cruz", "Supervisor", "Send MS Form", "soft-success")
+    ];
+
+    private static readonly PipelineStage[] Pipeline =
+    [
+        new("Awaiting MS Form", 18, 45, "#f6c23e"),
+        new("For Validation", 10, 25, "#36b9cc"),
+        new("For Analysis", 12, 30, "#4e73df"),
+        new("For Approval", 25, 62, "#858796"),
+        new("Negotiation", 7, 18, "#e74a3b"),
+        new("Completed", 34, 85, "#1cc88a")
+    ];
+
+    private static readonly KanbanColumn[] Kanban =
+    [
+        new("Awaiting Submission", "#f6c23e", [new("Juan Dela Cruz", "Priority case · 1d aging"), new("Maria Reyes", "Standard case · 2d aging")]),
+        new("For Analysis", "#36b9cc", [new("John Santos", "Priority case · 2d aging"), new("Mark Flores", "Standard case · 2d aging")]),
+        new("For Approval", "#858796", [new("Ana Cruz", "Priority case · 3d aging"), new("Leo Ramos", "Standard case · 2d aging")]),
+        new("Discussion", "#4e73df", [new("Carlos Lim", "Priority case · 4d aging")]),
+        new("Negotiation", "#e74a3b", [new("Sarah Tan", "Priority case · 5d aging"), new("Maria Reyes", "Standard case · 2d aging")])
+    ];
+
+    private static readonly MonitorItem[] Approvals =
+    [
+        new("Juan Dela Cruz", "HROD Head", "ON TRACK", "status-success"),
+        new("Maria Reyes", "Division Head", "WATCH", "status-warning"),
+        new("Leo Ramos", "President", "OVERDUE", "status-danger")
+    ];
+
+    private static readonly MonitorItem[] Slas =
+    [
+        new("Candidate Form", "3d target · 5d actual", "OVERDUE", "status-danger"),
+        new("Approval Routing", "2d target · 1d actual", "ON TRACK", "status-success"),
+        new("Negotiation", "5d target · 7d actual", "OVERDUE", "status-danger")
+    ];
+
+    private sealed record Kpi(string Label, string Value, string Hint, string Color);
+    private sealed record PendingAction(string Priority, string Candidate, string Position, string Action, string BadgeClass);
+    private sealed record PipelineStage(string Label, int Count, int Width, string Color);
+    private sealed record Candidate(string Name, string Description);
+    private sealed record KanbanColumn(string Title, string Color, List<Candidate> Candidates);
+    private sealed record MonitorItem(string Name, string Detail, string Status, string BadgeClass);
+}

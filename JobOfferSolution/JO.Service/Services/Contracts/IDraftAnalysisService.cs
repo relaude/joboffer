@@ -19,5 +19,6 @@ namespace JO.Service.Services.Contracts
         void InitProposalDto(List<OptionDto> optionDto, int numProposal, VwDboxCandidates candidate);
         void OnSelectTemplate(List<VwPckgTempHasItms> tempItems, List<ComparisonDto> comparisonDto, List<OptionDto> optionDto);
         void RemoveProposalDto(List<OptionDto> optionDto, OptionDto remove);
+        Task<int> SaveAnalysis(List<CompensationPackage> compenPackageOptions, List<CompensationOptions> compenOptions, int templateId, int userId);
     }
 }

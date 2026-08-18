@@ -5,3 +5,31 @@ Using this login credentials User ID=joboffer_user Password=jobofferuser@01 , co
 
 git config --global user.email "c_relaude@unilab.com.ph"
 
+Candidate ID
+Email
+Contact Number
+Job Level or Salary Grade
+
+Company
+Division
+Department
+Cost Center
+
+JO-2026-00005 = JO-<YYYY>-<Candidate Id(from DBox)>
+
+Option1
+[V] Amount or [.]% Increase
+[_____]
+
+Allowances
+ - Rice
+  - Transpo
+  
+- Please Select -  --> Latag lahat ng Compensation
+ZEro all Inputs
+Disabled Options
+Zero Comparisons
+
+When selected
+Enable all Options field required for inputs
+

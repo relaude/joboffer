@@ -1,0 +1,632 @@
+@attribute [Route(JORoutes.MockUp.ApplicationLetter)]
+
+<PageTitle>Generate Application Letter</PageTitle>
+
+<div class="card shadow mb-4 border-left-success small">
+    <div class="card-header py-3 bg-white">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-success">
+                    <i class="fas fa-file-signature fa-fw mr-2"></i>
+                    Generate Application Letter
+                </h6>
+                <small class="text-muted">
+                    @application.JobOfferNumber · @application.CandidateName · @application.PositionTitle · Mock-up data only
+                </small>
+            </div>
+
+            <div class="mt-2 mt-lg-0">
+                <span class="badge badge-light border mr-1">
+                    <i class="fas fa-user-tie fa-fw text-primary mr-1"></i>
+                    TA Partner View
+                </span>
+                <span class="badge badge-success">
+                    <i class="fas fa-check-circle fa-fw mr-1"></i>
+                    Proposal Accepted
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-success border-left-success py-2 mb-4" role="alert">
+            <div class="d-flex align-items-start">
+                <i class="fas fa-check-circle fa-fw mr-2 mt-1"></i>
+                <div>
+                    <span class="font-weight-bold">Ready for letter generation.</span>
+                    The candidate accepted @acceptedProposal.OptionName on @acceptedProposal.AcceptedOn.
+                    Only this accepted proposal will be merged into the application letter.
+                </div>
+            </div>
+        </div>
+
+        <div class="row text-center mb-4">
+            @foreach (var step in workflowSteps)
+            {
+                <div class="col-xl col-md-4 col-6 mb-2">
+                    <div class="border rounded @step.BackgroundClass px-2 py-2 h-100">
+                        <div class="@step.TextClass mb-1">
+                            <i class="@step.Icon"></i>
+                        </div>
+                        <div class="text-xs font-weight-bold text-gray-800">@step.Name</div>
+                        <span class="badge @step.BadgeClass mt-1">@step.Status</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-xl-8 mb-4">
+                <div class="card shadow-sm border-left-success h-100">
+                    <div class="card-header py-2 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                        <div>
+                            <h6 class="m-0 font-weight-bold text-success">
+                                <i class="fas fa-handshake fa-fw mr-2"></i>
+                                Accepted Proposal
+                            </h6>
+                            <small class="text-muted">Candidate-confirmed compensation package</small>
+                        </div>
+                        <span class="badge badge-success mt-2 mt-md-0 align-self-start align-self-md-center">
+                            <i class="fas fa-lock fa-fw mr-1"></i>Locked for Generation
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="text-xs font-weight-bold text-uppercase text-gray-500">Accepted Option</div>
+                                <div class="h6 font-weight-bold text-gray-900 mb-0">@acceptedProposal.OptionName</div>
+                                <small class="text-muted">@acceptedProposal.ProposalVersion</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="text-xs font-weight-bold text-uppercase text-gray-500">Monthly Base Salary</div>
+                                <div class="h6 font-weight-bold text-success mb-0">@acceptedProposal.BaseSalary</div>
+                                <small class="text-muted">Gross monthly</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="text-xs font-weight-bold text-uppercase text-gray-500">Total Monthly Package</div>
+                                <div class="h6 font-weight-bold text-primary mb-0">@acceptedProposal.TotalMonthlyPackage</div>
+                                <small class="text-muted">Salary plus fixed allowances</small>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Compensation Item</th>
+                                        <th class="text-right">Amount</th>
+                                        <th>Frequency</th>
+                                        <th>Letter Treatment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in acceptedProposal.CompensationItems)
+                                    {
+                                        <tr>
+                                            <td class="font-weight-bold text-gray-800">@item.Name</td>
+                                            <td class="text-right">@item.Amount</td>
+                                            <td>@item.Frequency</td>
+                                            <td>
+                                                <span class="badge @item.BadgeClass">@item.LetterTreatment</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="alert alert-light border-left-info py-2 mt-3 mb-0">
+                            <i class="fas fa-info-circle fa-fw text-info mr-1"></i>
+                            Approval reference @acceptedProposal.ApprovalReference was completed before candidate acceptance.
+                            Amounts cannot be edited on this page.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header py-2 bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-user-check fa-fw text-success mr-2"></i>
+                            Acceptance Confirmation
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var item in acceptanceDetails)
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">@item.Label</span>
+                                <span class="@(item.IsStrong ? "font-weight-bold text-gray-900" : string.Empty)">@item.Value</span>
+                            </div>
+                        }
+
+                        <hr class="my-3" />
+
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="btn btn-success btn-circle mr-3">
+                                <i class="fas fa-check"></i>
+                            </span>
+                            <div>
+                                <div class="font-weight-bold text-gray-900">Acceptance Recorded</div>
+                                <div class="text-muted">Audit entry is complete</div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-light border mb-0 py-2">
+                            <span class="font-weight-bold">Candidate note:</span>
+                            @acceptedProposal.CandidateNote
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header py-2 bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-sliders-h fa-fw text-primary mr-2"></i>
+                            Letter Generation Settings
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Application Letter Template</label>
+                            <select class="form-control form-control-sm">
+                                <option selected>PH Regular Employment - Standard</option>
+                                <option>PH Probationary Employment - Standard</option>
+                                <option>PH Project-Based Employment</option>
+                            </select>
+                            <small class="form-text text-muted">Template is selected from the hiring legal entity.</small>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold text-gray-700 mb-1">Letter Date</label>
+                                <input type="date" class="form-control form-control-sm" value="2026-07-27" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold text-gray-700 mb-1">Response Due Date</label>
+                                <input type="date" class="form-control form-control-sm" value="2026-07-31" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Authorized Signatory</label>
+                            <select class="form-control form-control-sm">
+                                <option selected>Patricia S. Mendoza - HROD Director</option>
+                                <option>Roberto C. Garcia - VP, Human Resources</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Copy Recipients</label>
+                            <input class="form-control form-control-sm" value="TA Partner, Hiring Manager, HR Operations" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Output File Name</label>
+                            <div class="input-group input-group-sm">
+                                <input class="form-control" value="@application.OutputFileName" readonly />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">.pdf</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input type="checkbox" class="custom-control-input" id="includeCompensation" checked />
+                            <label class="custom-control-label" for="includeCompensation">Include compensation summary</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input type="checkbox" class="custom-control-input" id="includeBenefits" checked />
+                            <label class="custom-control-label" for="includeBenefits">Include standard benefits schedule</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="requireSignature" checked />
+                            <label class="custom-control-label" for="requireSignature">Require electronic candidate signature</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header py-2 bg-light d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-clipboard-check fa-fw text-primary mr-2"></i>
+                            Pre-Generation Checklist
+                        </h6>
+                        <span class="badge badge-success">@readinessItems.Count(item => item.IsComplete)/@readinessItems.Count Ready</span>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var item in readinessItems)
+                        {
+                            <div class="d-flex align-items-start border rounded bg-light px-3 py-2 mb-2">
+                                <i class="@(item.IsComplete ? "fas fa-check-circle text-success" : "fas fa-exclamation-triangle text-warning") fa-fw mr-2 mt-1"></i>
+                                <div class="flex-fill">
+                                    <div class="d-flex flex-column flex-md-row justify-content-between">
+                                        <span class="font-weight-bold text-gray-900">@item.Title</span>
+                                        <span class="badge @(item.IsComplete ? "badge-success" : "badge-warning") align-self-start">
+                                            @(item.IsComplete ? "Complete" : "Review")
+                                        </span>
+                                    </div>
+                                    <div class="text-muted">@item.Description</div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="alert alert-success py-2 mt-3 mb-0">
+                            <i class="fas fa-shield-alt fa-fw mr-1"></i>
+                            All required controls passed. The letter can be generated from the accepted proposal.
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white text-right">
+                        <button type="button" class="btn btn-outline-secondary btn-sm mr-1" disabled>
+                            <i class="fas fa-save fa-fw mr-1"></i>Save Draft
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" disabled>
+                            <i class="fas fa-cogs fa-fw mr-1"></i>Generate Application Letter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-left-primary mb-4">
+            <div class="card-header py-3 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div>
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-file-alt fa-fw mr-2"></i>
+                        Application Letter Preview
+                    </h6>
+                    <small class="text-muted">Merged preview using the accepted proposal and selected template.</small>
+                </div>
+                <div class="mt-2 mt-md-0">
+                    <span class="badge badge-light border mr-1">Page 1 of 2</span>
+                    <span class="badge badge-warning">Draft</span>
+                </div>
+            </div>
+
+            <div class="card-body bg-light">
+                <div class="row justify-content-center">
+                    <div class="col-xl-9">
+                        <div class="card border shadow-sm">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="row align-items-start mb-4">
+                                    <div class="col-sm-7">
+                                        <h5 class="font-weight-bold text-primary mb-1">@application.CompanyName</h5>
+                                        <div class="text-muted">@application.CompanyAddress</div>
+                                        <div class="text-muted">@application.CompanyContact</div>
+                                    </div>
+                                    <div class="col-sm-5 text-sm-right mt-3 mt-sm-0">
+                                        <div class="font-weight-bold text-gray-900">APPLICATION LETTER</div>
+                                        <div class="text-muted">@application.LetterNumber</div>
+                                        <div class="text-muted">@application.LetterDate</div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="mb-4">
+                                    <div class="font-weight-bold text-gray-900">@application.CandidateName</div>
+                                    <div>@application.CandidateAddress</div>
+                                    <div>@application.CandidateEmail</div>
+                                </div>
+
+                                <p>Dear @application.CandidateFirstName,</p>
+
+                                <p>
+                                    Following your acceptance of our approved proposal, we are pleased to formalize your application
+                                    for the position of <span class="font-weight-bold">@application.PositionTitle</span> with
+                                    <span class="font-weight-bold">@application.CompanyName</span>.
+                                </p>
+
+                                <p>
+                                    Your employment will be under @application.LegalEntity, assigned to the @application.Department,
+                                    and reporting to @application.ReportingManager. Your proposed start date is
+                                    <span class="font-weight-bold">@application.StartDate</span>.
+                                </p>
+
+                                <div class="border rounded bg-light p-3 my-4">
+                                    <h6 class="font-weight-bold text-gray-900 mb-3">Accepted Compensation Summary</h6>
+                                    <div class="row mb-2">
+                                        <div class="col-sm-7 text-muted">Monthly Base Salary</div>
+                                        <div class="col-sm-5 text-sm-right font-weight-bold">@acceptedProposal.BaseSalary</div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-sm-7 text-muted">Fixed Monthly Allowances</div>
+                                        <div class="col-sm-5 text-sm-right">@acceptedProposal.FixedAllowances</div>
+                                    </div>
+                                    <div class="row border-top pt-2">
+                                        <div class="col-sm-7 font-weight-bold">Total Monthly Package</div>
+                                        <div class="col-sm-5 text-sm-right font-weight-bold text-primary">@acceptedProposal.TotalMonthlyPackage</div>
+                                    </div>
+                                </div>
+
+                                <p>
+                                    You will also be eligible for the standard benefits applicable to your position and employment
+                                    classification, subject to company policies and plan rules in effect.
+                                </p>
+
+                                <p>
+                                    Please confirm your agreement by signing this application letter on or before
+                                    <span class="font-weight-bold">@application.ResponseDueDate</span>.
+                                </p>
+
+                                <p class="mb-4">We look forward to welcoming you to the organization.</p>
+
+                                <div class="row mt-5">
+                                    <div class="col-md-6 mb-4">
+                                        <div>For @application.CompanyName:</div>
+                                        <div class="border-bottom mt-5 mb-1"></div>
+                                        <div class="font-weight-bold">@application.SignatoryName</div>
+                                        <div class="text-muted">@application.SignatoryTitle</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div>Accepted and confirmed by:</div>
+                                        <div class="border-bottom mt-5 mb-1"></div>
+                                        <div class="font-weight-bold">@application.CandidateName</div>
+                                        <div class="text-muted">Candidate signature and date</div>
+                                    </div>
+                                </div>
+
+                                <hr class="mt-4" />
+                                <div class="text-center text-muted">
+                                    Draft preview · Generated from @acceptedProposal.ProposalVersion · @acceptedProposal.ApprovalReference
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <small class="text-muted">
+                    Values highlighted in this preview are populated from candidate, requisition, legal entity, and accepted proposal records.
+                </small>
+                <div class="mt-2 mt-md-0">
+                    <button type="button" class="btn btn-outline-primary btn-sm mr-1" disabled>
+                        <i class="fas fa-expand fa-fw mr-1"></i>Full Preview
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
+                        <i class="fas fa-download fa-fw mr-1"></i>Download Draft
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header py-2 bg-light">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-history fa-fw text-primary mr-2"></i>
+                            Generation Activity
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var activity in activities)
+                        {
+                            <div class="d-flex pb-3 mb-3 border-bottom">
+                                <span class="btn @activity.IconClass btn-circle btn-sm mr-3">
+                                    <i class="@activity.Icon"></i>
+                                </span>
+                                <div class="flex-fill">
+                                    <div class="d-flex flex-column flex-md-row justify-content-between">
+                                        <div class="font-weight-bold text-gray-900">@activity.Title</div>
+                                        <small class="text-muted">@activity.Timestamp</small>
+                                    </div>
+                                    <div class="text-muted">@activity.Description</div>
+                                    <small class="text-muted">By @activity.PerformedBy</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5 mb-4">
+                <div class="card shadow-sm border-left-info h-100">
+                    <div class="card-header py-2 bg-white">
+                        <h6 class="m-0 font-weight-bold text-info">
+                            <i class="fas fa-file-pdf fa-fw mr-2"></i>
+                            Expected Output
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center border rounded bg-light p-3 mb-3">
+                            <i class="fas fa-file-pdf fa-3x text-danger mr-3"></i>
+                            <div>
+                                <div class="font-weight-bold text-gray-900 text-break">@($"{application.OutputFileName}.pdf")</div>
+                                <div class="text-muted">PDF document · Estimated 2 pages</div>
+                                <span class="badge badge-light border mt-1">Not yet generated</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted">Document Type</div>
+                            <div class="col-7 font-weight-bold">Application Letter</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted">Template</div>
+                            <div class="col-7">PH Regular Employment</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted">Signature</div>
+                            <div class="col-7">Electronic signature required</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-5 text-muted">Retention</div>
+                            <div class="col-7">Candidate document record</div>
+                        </div>
+
+                        <button type="button" class="btn btn-success btn-sm btn-block" disabled>
+                            <i class="fas fa-file-signature fa-fw mr-1"></i>
+                            Generate and Send for Signature
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly MockApplication application = new(
+        "JO-2026-00482",
+        "AL-2026-00482",
+        "Angela Mae Villanueva",
+        "Angela",
+        "angela.villanueva@example.com",
+        "Unit 8B, San Lorenzo Village, Makati City",
+        "Senior Software Developer",
+        "Technology Solutions",
+        "Miguel A. Santos, Engineering Director",
+        "Unilab Digital Solutions, Inc.",
+        "United Laboratories, Inc.",
+        "66 United Street, Mandaluyong City, Metro Manila",
+        "+63 2 8858 1000 · careers@example.com",
+        "August 17, 2026",
+        "July 31, 2026",
+        "DOC-2026-00482",
+        "July 27, 2026",
+        "Patricia S. Mendoza",
+        "HROD Director",
+        "Application_Letter_Angela_Mae_Villanueva");
+
+    private readonly MockAcceptedProposal acceptedProposal = new(
+        "Option B",
+        "Proposal Version 2",
+        "PHP 95,000.00",
+        "PHP 8,500.00",
+        "PHP 103,500.00",
+        "APR-2026-00891",
+        "July 25, 2026 at 3:42 PM",
+        "Candidate confirmed the package and preferred start date during the recorded MS Teams discussion.",
+        [
+            new("Monthly Base Salary", "PHP 95,000.00", "Monthly", "Included", "badge-success"),
+            new("Rice Allowance", "PHP 2,500.00", "Monthly", "Included", "badge-success"),
+            new("Transportation Allowance", "PHP 6,000.00", "Monthly", "Included", "badge-success"),
+            new("Performance Incentive", "Up to 15%", "Annual", "Benefits Schedule", "badge-info"),
+            new("HMO Coverage", "Employee + 2 dependents", "Upon eligibility", "Benefits Schedule", "badge-info")
+        ]);
+
+    private readonly List<MockWorkflowStep> workflowSteps =
+    [
+        new("JO Analysis", "fas fa-chart-line", "Completed", "badge-success", "text-success", "bg-light"),
+        new("Approval", "fas fa-user-check", "Approved", "badge-success", "text-success", "bg-light"),
+        new("Discussion", "fas fa-comments", "Completed", "badge-success", "text-success", "bg-light"),
+        new("Acceptance", "fas fa-handshake", "Accepted", "badge-success", "text-success", "bg-light"),
+        new("Application Letter", "fas fa-file-signature", "Current", "badge-primary", "text-primary", "bg-white"),
+        new("Candidate Signature", "fas fa-pen-nib", "Next", "badge-light border", "text-gray-400", "bg-light")
+    ];
+
+    private readonly List<MockDetail> acceptanceDetails =
+    [
+        new("Accepted By", "Angela Mae Villanueva", true),
+        new("Accepted Option", "Option B", true),
+        new("Acceptance Method", "MS Teams + Email", false),
+        new("Accepted On", "July 25, 2026, 3:42 PM", false),
+        new("Recorded By", "Andrea Reyes", false),
+        new("Audit Reference", "ACC-2026-00482", true)
+    ];
+
+    private readonly List<MockReadinessItem> readinessItems =
+    [
+        new("Candidate acceptance recorded", "Accepted option and confirmation timestamp are available.", true),
+        new("Proposal approval completed", "All required approval levels approved Proposal Version 2.", true),
+        new("Candidate details validated", "Legal name, email, address, and contact details are complete.", true),
+        new("Position and legal entity confirmed", "Requisition, department, company, and legal entity are active.", true),
+        new("Compensation values locked", "Letter amounts match the candidate-accepted proposal.", true),
+        new("Authorized signatory assigned", "The selected signatory is active for this legal entity.", true)
+    ];
+
+    private readonly List<MockActivity> activities =
+    [
+        new(
+            "Candidate acceptance recorded",
+            "Option B was marked as the accepted proposal.",
+            "July 25, 2026 · 3:42 PM",
+            "Andrea Reyes",
+            "fas fa-handshake",
+            "btn-success"),
+        new(
+            "Letter generation became available",
+            "Workflow validation confirmed that all prerequisites are complete.",
+            "July 25, 2026 · 3:43 PM",
+            "Job Offer System",
+            "fas fa-check",
+            "btn-info"),
+        new(
+            "Draft settings prepared",
+            "The standard legal entity template and authorized signatory were selected.",
+            "July 27, 2026 · 10:15 AM",
+            "Andrea Reyes",
+            "fas fa-file-alt",
+            "btn-primary")
+    ];
+
+    private sealed record MockApplication(
+        string JobOfferNumber,
+        string LetterNumber,
+        string CandidateName,
+        string CandidateFirstName,
+        string CandidateEmail,
+        string CandidateAddress,
+        string PositionTitle,
+        string Department,
+        string ReportingManager,
+        string LegalEntity,
+        string CompanyName,
+        string CompanyAddress,
+        string CompanyContact,
+        string StartDate,
+        string ResponseDueDate,
+        string OutputReference,
+        string LetterDate,
+        string SignatoryName,
+        string SignatoryTitle,
+        string OutputFileName);
+
+    private sealed record MockAcceptedProposal(
+        string OptionName,
+        string ProposalVersion,
+        string BaseSalary,
+        string FixedAllowances,
+        string TotalMonthlyPackage,
+        string ApprovalReference,
+        string AcceptedOn,
+        string CandidateNote,
+        List<MockCompensationItem> CompensationItems);
+
+    private sealed record MockCompensationItem(
+        string Name,
+        string Amount,
+        string Frequency,
+        string LetterTreatment,
+        string BadgeClass);
+
+    private sealed record MockWorkflowStep(
+        string Name,
+        string Icon,
+        string Status,
+        string BadgeClass,
+        string TextClass,
+        string BackgroundClass);
+
+    private sealed record MockDetail(string Label, string Value, bool IsStrong);
+
+    private sealed record MockReadinessItem(string Title, string Description, bool IsComplete);
+
+    private sealed record MockActivity(
+        string Title,
+        string Description,
+        string Timestamp,
+        string PerformedBy,
+        string Icon,
+        string IconClass);
+}

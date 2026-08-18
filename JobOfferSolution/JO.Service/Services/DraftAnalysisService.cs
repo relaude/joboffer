@@ -19,6 +19,27 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<int> SaveAnalysis(
+            List<CompensationPackage> compenPackageOptions,
+            List<CompensationOptions> compenOptions,
+            int templateId,
+            int userId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            foreach (var item in compenPackageOptions)
+            {
+                item.PckgTempId = templateId;
+                item.ModifiedBy = userId;
+                item.ModifiedAt = DateTime.Now;
+            }
+
+            context.CompensationPackage.UpdateRange(compenPackageOptions);
+            context.CompensationOptions.UpdateRange(compenOptions);
+
+            return await context.SaveChangesAsync();
+        }
+
         public async Task<List<CompensationDto>> GetCompensationDto()
         {
             List<CompensationDto> compenDto = new();

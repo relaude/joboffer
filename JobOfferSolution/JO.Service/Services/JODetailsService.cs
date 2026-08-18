@@ -19,6 +19,31 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<VwPckgTempHasItms>> GetVwPckgTempHasItms(int templateId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwPckgTempHasItms
+                .AsNoTracking()
+                .Where(jo => jo.TempId == templateId)
+                .ToListAsync();
+        }
+
+        public async Task<List<CompensationPackage>> GetCompensationPackage(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompensationPackage.AsNoTracking()
+                .Where(jo => jo.JobOfferId == jobOfferId)
+                .ToListAsync();
+        }
+
+        public async Task<List<VwJODboxCandidates>> GetVwJODboxCandidates()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJODboxCandidates
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<JobOffers> GetJobOffer(int id)
         {
             await using var context = await _dbContext.CreateDbContextAsync();

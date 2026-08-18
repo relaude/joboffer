@@ -1,0 +1,77 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.JobOfferTracker)]
+
+@inject IJODetailsService JODetailsService
+@inject NavigationManager Navigation
+
+@code {
+    private List<VwJODboxCandidates> joDboxCandidates = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        joDboxCandidates = await JODetailsService.GetVwJODboxCandidates();
+    }
+}
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Job Offers</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th>Reference Number</th>
+                        <th>Candidate</th>
+                        <th>Created</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var joDboxCandidate in joDboxCandidates)
+                    {
+                        <tr @key="joDboxCandidate.Id">
+                            <td><strong>@(joDboxCandidate.RefNum)</strong></td>
+                            <td>@joDboxCandidate.CandidateFullName</td>
+                            <td>
+                                <div>@joDboxCandidate.CreatedByName</div>
+                                <small class="text-muted">@(joDboxCandidate.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                            </td>
+                            <td class="text-right">
+                                <div class="dropdown">
+                                    <button type="button"
+                                            class="btn btn-sm btn-link text-dark font-weight-bold"
+                                            data-toggle="dropdown"
+                                            aria-haspopup="true"
+                                            aria-expanded="false"
+                                            aria-label="Actions for @joDboxCandidate.RefNum">
+                                        •••
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right shadow-sm">
+                                        @if (joDboxCandidate.StatusId == 1)
+                                        {
+                                            <a class="dropdown-item"
+                                               href="@($"{JORoutes.TA.Analysis}/{joDboxCandidate.Id}")">
+                                                Analysis
+                                            </a>
+                                        }
+
+                                        <a class="dropdown-item"
+                                           href="@($"{JORoutes.Transaction.JobOffer}/{joDboxCandidate.Id}")">
+                                            Details
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
