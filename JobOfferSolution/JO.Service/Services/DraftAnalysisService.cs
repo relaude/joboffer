@@ -19,6 +19,15 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<CompensationOptions>> GetCompensationOptions(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompensationOptions
+                .AsNoTracking()
+                .Where(jo=>jo.JobOfferId==jobOfferId)
+                .ToListAsync();
+        }
+
         public async Task<List<CompenItemCategoryDto>> SetUpCompenItemCategoryDto()
         {
             await using var context = await _dbContext.CreateDbContextAsync();

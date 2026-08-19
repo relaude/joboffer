@@ -75,7 +75,7 @@ namespace JO.Service.Services
             int countJO = await context.JobOffers.CountAsync() + 1;
             var newJO = new JobOffers
             {
-                RefNum = $"JO-{DateTime.Now.Year}-{countJO:D5}",
+                RefNum = $"JO-{DateTime.Now.Year}-{candidate.DboxRefNum}-{countJO:D5}",
                 CandidateId = candidate.Id,
                 Options = options,
                 StatusId = JOStatus.Application.New,
@@ -93,7 +93,8 @@ namespace JO.Service.Services
                 JobOfferId = newJO.Id,
                 OptionType = JOCompensation.OptionTypeCurrent,
                 OptionNumber = 0,
-                IncreasePercent = 0
+                IncreasePercent = 0,
+                MonthlyBasic = candidate.CurrentMonthlyBasicSalary.GetValueOrDefault()
             };
 
             await context.CompensationPackage.AddAsync(currentPackage);
@@ -109,27 +110,46 @@ namespace JO.Service.Services
                 candidate.NonMonthlyAllowanceAmount.GetValueOrDefault() +
                 candidate.MonthlyNonTaxableAllowanceAmount.GetValueOrDefault();
 
+            /*
+            Id	ItemName
+            1	Basic Pay
+            2	13th Month Pay
+            3	Other Guaranteed Bonus/es
+            4	Bayanihan Bonus
+            5	MRI
+            6	Hazard Pay
+            7	Allowances
+            8	Rice Allowance
+            9	Transportation Allowance
+            10	Pharmacist Allowance
+            11	Profit Share
+            12	Sales Incentives
+            13	Performance Bonus
+            14	TOT Vehicle
+             */
+
             foreach (var item in compItems)
             {
                 var option = item.Id switch
                 {
                     1 => new CompensationOptions { MonthlyAmount = basicSalary, AnnualAmount = basicSalary * 12m },
-                    2 => new CompensationOptions { AnnualAmount = basicSalary },
-                    3 => new CompensationOptions { AnnualAmount = candidate.AnnualGuaranteedBonusAmount.GetValueOrDefault() },
-                    4 => new CompensationOptions
+                    2 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = basicSalary },
+                    3 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = candidate.AnnualGuaranteedBonusAmount.GetValueOrDefault() },
+                    7 => new CompensationOptions
                     {
                         MonthlyAmount = monthlyAllowance,
                         AnnualAmount = monthlyAllowance * 12m + candidate.AnnualNonTaxableAllowanceAmount.GetValueOrDefault()
                     },
-                    5 => new CompensationOptions { AnnualAmount = candidate.AnnualProfitSharingAmount.GetValueOrDefault() },
-                    6 => new CompensationOptions { AnnualAmount = candidate.AnnualIncentiveAmount.GetValueOrDefault() },
-                    7 => new CompensationOptions { AnnualAmount = candidate.AnnualVariablePayAmount.GetValueOrDefault() },
-                    _ => null
+                    11 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = candidate.AnnualProfitSharingAmount.GetValueOrDefault() },
+                    12 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = candidate.AnnualIncentiveAmount.GetValueOrDefault() },
+                    13 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = candidate.AnnualVariablePayAmount.GetValueOrDefault() },
+                    _ => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = 0 }
                 };
 
                 if (option is not null)
                 {
                     option.ItemId = item.Id;
+                    option.JobOfferId = newJO.Id;
                     option.PackageId = currentPackage.Id;
                     currentOptions.Add(option);
                 }
@@ -149,7 +169,8 @@ namespace JO.Service.Services
                     JobOfferId = newJO.Id,
                     OptionType = JOCompensation.OptionType,
                     OptionNumber = i,
-                    IncreasePercent = 0
+                    IncreasePercent = 0,
+                    MonthlyBasic = candidate.CurrentMonthlyBasicSalary.GetValueOrDefault()
                 });
             }
 
@@ -164,16 +185,14 @@ namespace JO.Service.Services
                     var option = item.Id switch
                     {
                         1 => new CompensationOptions { MonthlyAmount = basicSalary, AnnualAmount = basicSalary * 12m },
-                        2 => new CompensationOptions { AnnualAmount = basicSalary },
-                        3 => new CompensationOptions { AnnualAmount = basicSalary * 2m },
-                        5 => new CompensationOptions { AnnualAmount = basicSalary },
-                        7 => new CompensationOptions { AnnualAmount = basicSalary * 2m },
+                        2 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = basicSalary },
                         _ => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = 0 }
                     };
 
                     if (option is not null)
                     {
                         option.ItemId = item.Id;
+                        option.JobOfferId = newJO.Id;
                         option.PackageId = package.Id;
                         newOptions.Add(option);
                     }

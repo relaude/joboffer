@@ -8,7 +8,7 @@ namespace JO.DataModel.View
     {
         public int Id { get; set; }
         public string? RefNum { get; set; }
-        public string? CandidateFullName { get; set; }
+        public string? CandidateName { get; set; }
         public int? StatusId { get; set; }
         public string? StatusName { get; set; }
         public string? BootstrapClass { get; set; }

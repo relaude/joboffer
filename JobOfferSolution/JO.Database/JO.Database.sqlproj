@@ -63,6 +63,7 @@
     <Folder Include="dbo\Views\" />
     <Folder Include="Scripts\" />
     <Folder Include="temp" />
+    <Folder Include="dbo\Stored Procedures\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetRoles.sql" />
@@ -165,6 +166,7 @@
     <Build Include="dbo\Tables\CompensationItem.sql" />
     <Build Include="dbo\Views\vw_JODboxCandidates.sql" />
     <Build Include="dbo\Tables\CompenItemCategory.sql" />
+    <Build Include="dbo\Stored Procedures\TruncateJobofferCompensation.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

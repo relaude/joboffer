@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[CompensationOptions] (
     [Id]            INT             IDENTITY (1, 1) NOT NULL,
+    [JobOfferId]    INT             NULL,
     [PackageId]     INT             NULL,
     [ItemId]        INT             NULL,
     [MonthlyAmount] DECIMAL (18, 2) NULL,

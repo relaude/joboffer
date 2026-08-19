@@ -1,7 +1,8 @@
-﻿CREATE View vw_JODboxCandidates
+﻿
+CREATE View [dbo].[vw_JODboxCandidates]
 As
 Select jof.Id, jof.RefNum
-,vwcan.CandidateFullName
+,vwcan.CandidateName
 ,jof.StatusId, jos.StatusName, jos.BootstrapClass
 ,jouc.Name CreatedByName,jof.CreatedAt
 From JobOffers jof

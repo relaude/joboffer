@@ -10,6 +10,8 @@ namespace JO.DataModel.Entity
         [Key] public int Id { get; set; }
         public string? ItemName { get; set; }
         public int? CategoryId { get; set; }
+        public decimal? Monthly { get; set; }
+        public decimal? Annualy { get; set; }
         public int? DisplayOrder { get; set; }
     }
 }

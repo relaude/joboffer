@@ -12,6 +12,7 @@ namespace JO.Service.Services.Contracts
         void FillComparisonDto(List<ComparisonDto> comparisonDto, VwDboxCandidates candidate, List<OptionDto> optionDto);
         Task<List<CompensationDto>> GetCompensationDto();
         Task<List<CompensationOptions>> GetCompensationOptions(List<int> packageIds);
+        Task<List<CompensationOptions>> GetCompensationOptions(int jobOfferId);
         Task<List<CompensationPackage>> GetCompensationPackage();
         Task<List<CompensationPackage>> GetCompensationPackage(int jobOfferId);
         Task<List<VwPckgTempHasItms>> GetVwPckgTempHasItms(int templateId);

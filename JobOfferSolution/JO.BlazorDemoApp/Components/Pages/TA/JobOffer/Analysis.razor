@@ -14,12 +14,16 @@
 
     private int userId = 1;
     private int templateId = 0;
+    private int firstPacakageId = 0;
+    private int selectedPacakageId = 0;
     private int selectedOptionNumber = 1;
 
     private VwDboxCandidates candidate = new();
     private JobOffers jobOffer = new();
 
+    private List<CompensationPackage> compensationPackage = new();
     private List<CompenItemCategoryDto> compenItemCategoryDto = new();
+    private List<CompensationOptions> compensationOptions = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,33 +32,102 @@
         candidate = await CandidateService.GetVwDboxCandidate(jobOffer.CandidateId.GetValueOrDefault());
 
         compenItemCategoryDto = await DraftAnalysisService.SetUpCompenItemCategoryDto();
+        compensationPackage = await DraftAnalysisService.GetCompensationPackage(jobOfferId);
+        compensationOptions = await DraftAnalysisService.GetCompensationOptions(jobOfferId);
+
+        firstPacakageId = compensationPackage.FirstOrDefault().Id;
+        selectedPacakageId = compensationPackage.Where(jo => jo.OptionNumber == selectedOptionNumber).FirstOrDefault().Id;
     }
 }
 
+<div class="row">
+    <div class="col-sm-8">
+        <CandidateBasicDetails Candidate="candidate" />
+    </div>
+
+    <div class="col-sm-4">
+        <div class="card shadow small mb-4">
+            <div class="card-header">
+                <h2 class="h6 m-0 font-weight-bold text-primary mb-2">Compensation Template</h2>
+                
+            </div>
+
+            <div class="card-body">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card shadow mb-4 small">
     <div class="card-header">
-        <h2 class="h6 m-0 font-weight-bold text-primary">Summary</h2>
+        <h2 class="h6 m-0 font-weight-bold text-primary">@jobOffer.RefNum</h2>
     </div>
     <div class="card-body">
-        <div class="table-responsive">
+        <div class="jo-analysis-option-tabs" role="tablist">
+            @foreach (var pacakge in compensationPackage.Where(jo=>jo.OptionType=="Option"))
+            {
+                <div role="tab"
+                     tabindex="0"
+                     aria-selected="@(selectedOptionNumber == pacakge.OptionNumber)"
+                     class="jo-analysis-option-tab @(selectedOptionNumber == pacakge.OptionNumber ? "active" : null)"
+                     >
 
+                    <span class="jo-analysis-option-title">Option @pacakge.OptionNumber</span>
+
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <label class="mb-1" for="amount-@pacakge.OptionNumber">Amount</label>
+                            <input id="amount-@pacakge.OptionNumber"
+                                   type="text"
+                                   inputmode="decimal"
+                                   class="form-control form-control-sm w-100"
+                                   @bind="pacakge.MonthlyBasic"
+                                   @bind:event="oninput"
+                                   @onclick:stopPropagation="true" />
+                        </div>
+                        <div class="col-12 mt-2">
+                            <label class="mb-1" for="increase-@pacakge.OptionNumber">% Increase</label>
+                            <input id="increase-@pacakge.OptionNumber"
+                                   type="text"
+                                   inputmode="numeric"
+                                   pattern="[0-9]*"
+                                   class="form-control form-control-sm w-100"
+                                   @bind="pacakge.IncreasePercent"
+                                   @bind:event="oninput"
+                                   @onclick:stopPropagation="true"
+                                   onkeydown="if (!/^[0-9]$/.test(event.key) &&
+                            !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(event.key) &&
+                            !(event.ctrlKey || event.metaKey)) event.preventDefault();"
+                                   onpaste="if (!/^[0-9]+$/.test(event.clipboardData.getData('text'))) event.preventDefault();"
+                                   ondrop="event.preventDefault();" />
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+
+        <div class="table-responsive">
             <table class="jo-table jo-analysis-option-table">
                 <thead>
                     <tr>
                         <th scope="col" rowspan="2">Compensation</th>
                         <th scope="colgroup" colspan="2" class="text-center">Current</th>
+                        <th scope="colgroup" colspan="2" class="is-option text-center">Option @selectedOptionNumber</th>
                     </tr>
-
                     <tr>
-                        <th scope="col" class="text-center">Monthly</th>
-                        <th scope="col" class="text-center">Annual</th>
+                        <th scope="col">Monthly</th>
+                        <th scope="col">Annual</th>
+                        <th scope="col" class="is-option">Monthly</th>
+                        <th scope="col" class="is-option">Annual</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var category in compenItemCategoryDto)
                     {
                         <tr>
-                            <td colspan="3" class="font-weight-bold text-primary">
+                            <td colspan="5" class="font-weight-bold text-primary">
                                 @category.CategoryName
                             </td>
                         </tr>
@@ -63,15 +136,23 @@
                         {
                             <tr @key="item.Id">
                                 <td>@item.ItemName</td>
-                                <td class="text-right">-</td>
-                                <td class="text-right">-</td>
+                                @foreach (var compensationOption in compensationOptions.Where(jo => jo.PackageId == firstPacakageId && jo.ItemId == item.Id))
+                                {
+                                    <td>@compensationOption.MonthlyAmount</td>
+                                    <td>@compensationOption.AnnualAmount</td>
+                                }
+
+                                @foreach (var compensationOption in compensationOptions.Where(jo => jo.PackageId == selectedPacakageId && jo.ItemId == item.Id))
+                                {
+                                    <td class="is-option">@compensationOption.MonthlyAmount</td>
+                                    <td class="is-option">@compensationOption.AnnualAmount</td>
+                                }
                             </tr>
                         }
                     }
                 </tbody>
 
             </table>
-
         </div>
     </div>
 </div>
