@@ -8,6 +8,7 @@ namespace JO.DataModel.Entity
     public class PckgItems
     {
         [Key] public int Id { get; set; }
+        public int? CompenItemId { get; set; }
         public string? ItemName { get; set; }
         public bool? Analysis { get; set; }
         public decimal? Monthly { get; set; }

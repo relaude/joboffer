@@ -163,6 +163,8 @@
     <Build Include="dbo\Tables\CompensationPackage.sql" />
     <Build Include="dbo\Tables\CompensationOptions.sql" />
     <Build Include="dbo\Tables\CompensationItem.sql" />
+    <Build Include="dbo\Views\vw_JODboxCandidates.sql" />
+    <Build Include="dbo\Tables\CompenItemCategory.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

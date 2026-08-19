@@ -17,8 +17,9 @@ namespace JO.Persistence.DataAccess
         public DbSet<UserDivisionAccess> UserDivisionAccess { get; set; }
         public DbSet<UserPermissions> UserPermissions { get; set; }
 
-        //MS Forms
+        //Candidates
         public DbSet<CandidateResponses> CandidateResponses { get; set; }
+        public DbSet<DboxCandidates> DboxCandidates { get; set; }
 
         //Job Offers
         public DbSet<Candidates> Candidates { get; set; }
@@ -75,6 +76,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<CompensationPackage> CompensationPackage { get; set; }
         public DbSet<CompensationOptions> CompensationOptions { get; set; }
         public DbSet<CompensationItem> CompensationItem { get; set; }
+        public DbSet<CompenItemCategory> CompenItemCategory { get; set; }
 
         //Approval
         public DbSet<Approvals> Approvals { get; set; }

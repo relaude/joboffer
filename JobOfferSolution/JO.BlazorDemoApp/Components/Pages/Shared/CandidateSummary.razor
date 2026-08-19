@@ -1,26 +1,17 @@
 ﻿<div class="card-body small">
     <div class="mb-4 border-bottom pb-4">
-        <h3 class="h6 font-weight-bold text-gray-800 mb-2">Basic Details</h3>
-        <div class="table-responsive">
-            <table class="jo-table">
-                <tbody>
-                    <tr><td>Candidate Name</td><td class="font-weight-bold text-gray-800">@Candidate.CandidateFullName</td></tr>
-                    <tr><td>Email Address</td><td class="font-weight-bold text-gray-800">@Candidate.EmailAddress</td></tr>
-                    <tr><td>Position Applied For</td><td class="font-weight-bold text-gray-800">@Candidate.PositionAppliedFor</td></tr>
-                    <tr><td>Employment Status</td><td class="font-weight-bold text-gray-800">@Candidate.EmploymentStatus</td></tr>
-                    <tr><td>Relevant Experience</td><td class="font-weight-bold text-gray-800">@Candidate.RelevantExperience</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="mb-4 border-bottom pb-4">
         <h3 class="h6 font-weight-bold text-gray-800 mb-2">DBox Records</h3>
         <div class="table-responsive">
             <table class="jo-table">
                 <tbody>
-                    <tr><td>DBox Reference Number</td><td class="font-weight-bold text-gray-800">@Candidate.DboxRefNum</td></tr>
+                    <tr><td>Candidate ID</td><td class="font-weight-bold text-gray-800">@Candidate.DboxRefNum</td></tr>
+                    <tr><td>Candidate Name</td><td class="font-weight-bold text-gray-800">@Candidate.CandidateName</td></tr>
+                    <tr><td>Email Address</td><td class="font-weight-bold text-gray-800">@Candidate.EmailAddress</td></tr>
+                    <tr><td>Position Applied For</td><td class="font-weight-bold text-gray-800">@Candidate.JobPosition</td></tr>
                     <tr><td>Company</td><td class="font-weight-bold text-gray-800">@Candidate.CompanyName</td></tr>
+                    <tr><td>Division</td><td class="font-weight-bold text-gray-800">@Candidate.Division</td></tr>
+                    <tr><td>Department</td><td class="font-weight-bold text-gray-800">@Candidate.Department</td></tr>
+                    <tr><td>Cost Center</td><td class="font-weight-bold text-gray-800">@Candidate.CostCenter</td></tr>
                     <tr><td>Grade</td><td class="font-weight-bold text-gray-800">@Candidate.GradeName</td></tr>
                 </tbody>
             </table>
@@ -28,10 +19,13 @@
     </div>
 
     <div class="mb-4 border-bottom pb-4">
-        <h3 class="h6 font-weight-bold text-gray-800 mb-2">History</h3>
+        <h3 class="h6 font-weight-bold text-gray-800 mb-2">MS-Forms</h3>
         <div class="table-responsive">
             <table class="jo-table">
                 <tbody>
+                    <tr><td>Position Applied For</td><td class="font-weight-bold text-gray-800">@Candidate.JobPosition</td></tr>
+                    <tr><td>Employment Status</td><td class="font-weight-bold text-gray-800">@Candidate.EmploymentStatus</td></tr>
+                    <tr><td>Relevant Experience</td><td class="font-weight-bold text-gray-800">@Candidate.RelevantExperience</td></tr>
                     <tr><td>Current Employer</td><td class="font-weight-bold text-gray-800">@Candidate.CurrentEmployerName</td></tr>
                     <tr><td>Last Employer Industry</td><td class="font-weight-bold text-gray-800">@Candidate.LastEmployerIndustry</td></tr>
                     <tr><td>Last Position Held</td><td class="font-weight-bold text-gray-800">@Candidate.LastPositionHeld</td></tr>

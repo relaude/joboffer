@@ -19,6 +19,32 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<CompenItemCategoryDto>> SetUpCompenItemCategoryDto()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var categories = await context.CompenItemCategory.AsNoTracking().ToListAsync();
+            var compensationItems = await context.CompensationItem.AsNoTracking().ToListAsync();
+
+            return categories
+                .GroupJoin(
+                    compensationItems,
+                    category => category.Id,
+                    item => item.CategoryId,
+                    (category, items) => new CompenItemCategoryDto
+                    {
+                        Id = category.Id,
+                        CategoryName = category.CategoryName,
+                        CompensationItemDtos = items.Select(item => new CompensationItemDto
+                        {
+                            Id = item.Id,
+                            CategoryId = item.CategoryId,
+                            ItemName = item.ItemName,
+                            DisplayOrder = item.DisplayOrder
+                        }).ToList()
+                    })
+                .ToList();
+        }
+
         public async Task<int> SaveAnalysis(
             List<CompensationPackage> compenPackageOptions,
             List<CompensationOptions> compenOptions,

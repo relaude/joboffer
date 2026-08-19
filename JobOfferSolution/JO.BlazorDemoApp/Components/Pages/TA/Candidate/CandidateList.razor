@@ -20,8 +20,10 @@
                         <tr>
                             <th>Full Name</th>
                             <th>Email</th>
-                            <th>Position Applied For</th>
-                            <th>Current Employer</th>
+                            <th>Job Position</th>
+                            <th>Company</th>
+                            <th>Division</th>
+                            <th>Department</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,12 +32,14 @@
                             <tr>
                                 <td class="jo-title">
                                     <a href="@($"{JORoutes.TA.Candidate}/{row.Id}")">
-                                        @row.CandidateFullName
+                                        @row.CandidateName
                                     </a>
                                 </td>
                                 <td>@row.EmailAddress</td>
-                                <td>@row.PositionAppliedFor</td>
-                                <td>@row.CurrentEmployerName</td>
+                                <td>@row.JobPosition</td>
+                                <td>@row.Company</td>
+                                <td>@row.Division</td>
+                                <td>@row.Department</td>
                             </tr>
                         }
                     </tbody>

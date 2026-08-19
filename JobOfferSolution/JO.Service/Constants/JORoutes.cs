@@ -49,6 +49,7 @@ namespace JO.Service.Constants
         {
             public const string Dashboard = PrefixTA + "/dashboard";
             public const string Candidates = PrefixTA + "/candidates";
+            public const string DboxCandidates = PrefixTA + "/dbox/candidates";
             public const string Candidate = PrefixTA + "/candidate";
 
             //public const string MSFormCandidate = PrefixTA + "/msform-candidate";

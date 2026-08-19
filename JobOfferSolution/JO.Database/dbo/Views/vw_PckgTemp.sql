@@ -1,4 +1,5 @@
-﻿Create View vw_PckgTemp
+﻿
+CREATE View [dbo].[vw_PckgTemp]
 As
 Select pct.*
 ,cby.Name CreatedByName

@@ -27,6 +27,12 @@ namespace JO.Service.Services
             _email = email;
         }
 
+        public async Task<List<DboxCandidates>> GetDboxCandidates()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.DboxCandidates.AsNoTracking().ToListAsync();
+        }
+
         public async Task<VwDboxCandidates> GetVwDboxCandidate(int candidateId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();

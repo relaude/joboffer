@@ -18,382 +18,60 @@
 
     private VwDboxCandidates candidate = new();
     private JobOffers jobOffer = new();
-    private List<VwPckgTemp> pckgTemp = new();
-    private List<VwPckgTempHasItms> tempItems = new();
 
-    private List<CompensationPackage> compenPackageAll = new();
-    private List<CompensationPackage> compenPackageOptions = new();
-
-    private List<CompensationOptions> compenOptions = new();
-    private List<CompensationOptions> compenOptionsCurrent = new();
-    private List<CompensationDto> compenDto = new();
-
-    private CancellationTokenSource? increaseDebounceCts;
+    private List<CompenItemCategoryDto> compenItemCategoryDto = new();
 
     protected override async Task OnInitializedAsync()
     {
         userId = await AccountService.GetJobOfferUserId();
         jobOffer = await JODetailsService.GetJobOffer(jobOfferId);
         candidate = await CandidateService.GetVwDboxCandidate(jobOffer.CandidateId.GetValueOrDefault());
-        pckgTemp = await BenefitsService.GetVwPckgTemp();
 
-        compenPackageAll = await DraftAnalysisService.GetCompensationPackage(jobOfferId);
-        compenPackageOptions = compenPackageAll.Where(jo => jo.OptionType == JOCompensation.OptionType).ToList();
-        templateId = compenPackageOptions.FirstOrDefault().PckgTempId.GetValueOrDefault();
-        tempItems = await DraftAnalysisService.GetVwPckgTempHasItms(templateId);
-        compenOptions = await DraftAnalysisService.GetCompensationOptions(compenPackageAll.Select(jo => jo.Id).ToList());
-        
-        await SetupCompensationDto();
-    }
-
-    private async Task SetupCompensationDto()
-    {
-        int pckgA = compenPackageAll[0].Id;
-        int pckgB = compenPackageAll[1].Id;
-
-        compenOptionsCurrent = compenOptions.Where(jo => jo.PackageId == pckgA).ToList();
-        var compenOptionsB = compenOptions.Where(jo => jo.PackageId == pckgB).ToList();
-
-        compenDto = await DraftAnalysisService.GetCompensationDto();
-
-        for (int i = 0; i < compenDto.Count; i++)
-        {
-            compenDto[i].CurrentMonthly = compenOptionsCurrent[i].MonthlyAmount.GetValueOrDefault();
-            compenDto[i].CurrentAnnual = compenOptionsCurrent[i].AnnualAmount.GetValueOrDefault();
-
-            compenDto[i].OptionMonthly = compenOptionsB[i].MonthlyAmount.GetValueOrDefault();
-            compenDto[i].OptionAnnual = compenOptionsB[i].AnnualAmount.GetValueOrDefault();
-        }
-    }
-
-    private async Task OnSelectTemplate()
-    {
-        tempItems = await DraftAnalysisService.GetVwPckgTempHasItms(templateId);
-        decimal sumMonthlyAllowance = 0;
-        decimal sumAnnualAllowance = 0;
-
-        if (tempItems.Any())
-        {
-            //Rice Allowance, Transportation Allowance, Hazard Pay, Pharmacist Allowance
-            int?[] allowanceIds = [6, 8, 11, 12];
-
-            sumMonthlyAllowance = tempItems
-                .Where(jo => allowanceIds.Contains(jo.ItemId))
-                .Sum(jo => jo.Monthly.GetValueOrDefault());
-
-            sumAnnualAllowance = tempItems
-                .Where(jo => allowanceIds.Contains(jo.ItemId))
-                .Sum(jo => jo.Annualy.GetValueOrDefault());
-        }
-
-        //Allowance/s
-        foreach (var item in compenOptions.Where(jo=>jo.ItemId==4))
-        {
-            item.MonthlyAmount = sumMonthlyAllowance;
-            item.AnnualAmount = sumAnnualAllowance;
-        }
-
-        var pckgF = compenPackageOptions.FirstOrDefault(jo => jo.OptionNumber == selectedOptionNumber);
-        ClickOptionTab(pckgF);
-    }
-
-    private void ClickOptionTab(CompensationPackage pckgC)
-    {
-        selectedOptionNumber = pckgC.OptionNumber.GetValueOrDefault();
-        var compenOptionsC = compenOptions.Where(jo => jo.PackageId == pckgC.Id).ToList();
-
-        for (int i = 0; i < compenDto.Count; i++)
-        {
-            compenDto[i].OptionMonthly = compenOptionsC[i].MonthlyAmount.GetValueOrDefault();
-            compenDto[i].OptionAnnual = compenOptionsC[i].AnnualAmount.GetValueOrDefault();
-        }
-    }
-
-    private async Task DebounceIncreasePercentage(CompensationPackage pckgD)
-    {
-        increaseDebounceCts?.Cancel();
-        increaseDebounceCts?.Dispose();
-        increaseDebounceCts = new CancellationTokenSource();
-
-        await Task.Delay(500, increaseDebounceCts.Token);
-
-        // Proposed Salary = Current Salary × (1 + (Increase / 100))
-        if (pckgD.IncreasePercent > 0)
-        {
-            decimal increasePercentage = pckgD.IncreasePercent.GetValueOrDefault();
-            decimal currentSalary = candidate.CurrentMonthlyBasicSalary.GetValueOrDefault();
-
-            decimal proposedSalary = currentSalary * (1m + (increasePercentage / 100m));
-
-            foreach (var item in compenOptions.Where(x => x.PackageId == pckgD.Id))
-            {
-                switch (item.ItemId)
-                {
-                    case 1:
-                        item.MonthlyAmount = proposedSalary;
-                        item.AnnualAmount = proposedSalary * 12m;
-                        break;
-
-                    case 2:
-                    case 5:
-                        item.AnnualAmount = proposedSalary;
-                        break;
-
-                    case 3:
-                    case 7:
-                        item.AnnualAmount = proposedSalary * 2m;
-                        break;
-                }
-            }
-
-            ClickOptionTab(pckgD);
-        }
-    }
-
-    private async Task DebounceInputIncentive(CompensationDto compensationDto)
-    {
-        increaseDebounceCts?.Cancel();
-        increaseDebounceCts?.Dispose();
-        increaseDebounceCts = new CancellationTokenSource();
-
-        await Task.Delay(500, increaseDebounceCts.Token);
-
-        var pckgE = compenPackageOptions.FirstOrDefault(jo => jo.OptionNumber == selectedOptionNumber);
-
-        foreach (var item in compenOptions.Where(x => x.PackageId == pckgE.Id))
-        {
-            if (item.ItemId == 6)
-            {
-                item.AnnualAmount = compensationDto.OptionAnnual;
-                break;
-            }
-        }
-    }
-
-    private async Task RemovePackage(CompensationPackage package)
-    {
-        if (!await AlertService.Confirm()) return;
-        compenPackageOptions.Remove(package);
-    }
-
-    private string ComputeMonthDiffPay(CompensationPackage package)
-    {
-        decimal current = compenDto.Sum(jo => jo.CurrentMonthly);
-        decimal proposal = compenOptions
-            .Where(jo => jo.PackageId == package.Id)
-            .Sum(jo => jo.MonthlyAmount.GetValueOrDefault());
-
-        decimal diffPay = (proposal - current) / current;
-        decimal truncatedDiffPay = Math.Truncate(diffPay * 100m) / 100m;
-
-        return $"{truncatedDiffPay:F2}%";
-    }
-
-    private string ComputeAnnualDiffPay(CompensationPackage package)
-    {
-        decimal current = compenDto.Sum(jo => jo.CurrentAnnual);
-        decimal proposal = compenOptions
-            .Where(jo => jo.PackageId == package.Id)
-            .Sum(jo => jo.AnnualAmount.GetValueOrDefault());
-
-        decimal diffPay = (proposal - current) / current;
-        decimal truncatedDiffPay = Math.Truncate(diffPay * 100m) / 100m;
-
-        return $"{truncatedDiffPay:F2}%";
-    }
-
-    private async Task SaveAnalysis()
-    {
-        if (!await AlertService.Confirm()) return;
-
-        await DraftAnalysisService
-            .SaveAnalysis(compenPackageOptions, 
-                    compenOptions, 
-                    templateId, 
-                    userId);
+        compenItemCategoryDto = await DraftAnalysisService.SetUpCompenItemCategoryDto();
     }
 }
 
-<div class="row">
-    <div class="col-sm-8">
-        <CandidateBasicDetails Candidate="candidate" />
-    </div>
-
-    <div class="col-sm-4">
-        <div class="card shadow small mb-4">
-            <div class="card-header">
-                <h2 class="h6 m-0 font-weight-bold text-primary mb-2">Compensation Template</h2>
-                <select class="custom-select custom-select-sm"
-                        @bind="templateId"
-                        @bind:after="OnSelectTemplate">
-                    <option value="0">- Please select -</option>
-                    @foreach (var item in pckgTemp)
-                    {
-                        <option value="@item.Id">@item.TempName</option>
-                    }
-                </select>
-            </div>
-
-            <div class="card-body">
-                @foreach (var item in tempItems.Where(jo => jo.IsEnabled == true))
-                {
-                    <div class="custom-control">
-                        <label class="font-weight-bold text-gray-800">@item.ItemName</label>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="card shadow mb-4 small">
-    <div class="card-header py-3 d-flex align-items-center justify-content-between">
-        <h2 class="h6 m-0 font-weight-bold text-primary">@jobOffer.RefNum</h2>
+    <div class="card-header">
+        <h2 class="h6 m-0 font-weight-bold text-primary">Summary</h2>
     </div>
-
     <div class="card-body">
-        <div class="jo-analysis-option-tabs" role="tablist">
-            @foreach (var pacakge in compenPackageOptions)
-            {
-                <div role="tab"
-                     tabindex="0"
-                     aria-selected="@(selectedOptionNumber == pacakge.OptionNumber)"
-                     class="jo-analysis-option-tab @(selectedOptionNumber == pacakge.OptionNumber ? "active" : null)"
-                     @onclick="() => ClickOptionTab(pacakge)">
-                
-                    @* <button type="button"
-                            class="jo-analysis-option-remove"
-                            aria-label="Remove option @pacakge.OptionNumber"
-                            title="Remove option"
-                            @onclick="() => RemovePackage(pacakge)"
-                            @onclick:stopPropagation="true">
-                        <span aria-hidden="true">&times;</span>
-                    </button> *@
-
-                    <span class="jo-analysis-option-title">Option @pacakge.OptionNumber</span>
-                    <label class="mb-1" for="increase-@pacakge.OptionNumber">% Increase</label>
-                    <input type="text"
-                           inputmode="numeric"
-                           pattern="[0-9]*"
-                           class="form-control form-control-sm w-100"
-                           @bind="pacakge.IncreasePercent"
-                           @bind:event="oninput"
-                           @bind:after="() => DebounceIncreasePercentage(pacakge)"
-                           @onclick:stopPropagation="true"
-                           onkeydown="if (!/^[0-9]$/.test(event.key) &&
-                                !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(event.key) &&
-                                !(event.ctrlKey || event.metaKey)) event.preventDefault();"
-                           onpaste="if (!/^[0-9]+$/.test(event.clipboardData.getData('text'))) event.preventDefault();"
-                           ondrop="event.preventDefault();" />
-                 </div>
-            }
-        </div>
-    
         <div class="table-responsive">
+
             <table class="jo-table jo-analysis-option-table">
                 <thead>
                     <tr>
                         <th scope="col" rowspan="2">Compensation</th>
                         <th scope="colgroup" colspan="2" class="text-center">Current</th>
-                        <th scope="colgroup" colspan="2" class="is-option text-center">Option @selectedOptionNumber</th>
                     </tr>
+
                     <tr>
-                        <th scope="col">Monthly</th>
-                        <th scope="col">Annual</th>
-                        <th scope="col" class="is-option">Monthly</th>
-                        <th scope="col" class="is-option">Annual</th>
+                        <th scope="col" class="text-center">Monthly</th>
+                        <th scope="col" class="text-center">Annual</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in compenDto)
+                    @foreach (var category in compenItemCategoryDto)
                     {
                         <tr>
-                            <td>@item.ItemName</td>
-                            <td>@UtilitiesService.ToPeso(item.CurrentMonthly)</td>
-                            <td>@UtilitiesService.ToPeso(item.CurrentAnnual)</td>
-                            <td class="is-option">@UtilitiesService.ToPeso(item.OptionMonthly)</td>
-                            <td class="is-option">
-                                @if(item.Id == 6)
-                                {
-                                    <input type="text"
-                                           inputmode="numeric"
-                                           pattern="[0-9]*"
-                                           class="form-control form-control-sm w-100"
-                                           @bind="item.OptionAnnual"
-                                           @bind:event="oninput"
-                                           @onclick:stopPropagation="true"
-                                           @bind:after="() => DebounceInputIncentive(item)"
-                                           onkeydown="if (!/^[0-9]$/.test(event.key) &&
-                                                !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(event.key) &&
-                                                !(event.ctrlKey || event.metaKey)) event.preventDefault();"
-                                           onpaste="if (!/^[0-9]+$/.test(event.clipboardData.getData('text'))) event.preventDefault();"
-                                           ondrop="event.preventDefault();" />
-                                }
-                                else
-                                {
-                                    @UtilitiesService.ToPeso(item.OptionAnnual)
-                                }
-                                
+                            <td colspan="3" class="font-weight-bold text-primary">
+                                @category.CategoryName
                             </td>
                         </tr>
+
+                        @foreach (var item in category.CompensationItemDtos.OrderBy(item => item.DisplayOrder))
+                        {
+                            <tr @key="item.Id">
+                                <td>@item.ItemName</td>
+                                <td class="text-right">-</td>
+                                <td class="text-right">-</td>
+                            </tr>
+                        }
                     }
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td>Gross compensation</td>
-                        <td>@UtilitiesService.ToPeso(compenDto.Sum(jo => jo.CurrentMonthly))</td>
-                        <td>@UtilitiesService.ToPeso(compenDto.Sum(jo => jo.CurrentAnnual))</td>
-                        <td>@UtilitiesService.ToPeso(compenDto.Sum(jo => jo.OptionMonthly))</td>
-                        <td>@UtilitiesService.ToPeso(compenDto.Sum(jo => jo.OptionAnnual))</td>
-                    </tr>
-                </tfoot>
+
             </table>
+
         </div>
     </div>
-</div>
-
-<div class="card shadow mb-4 small">
-    <div class="card-header py-3 d-flex align-items-center justify-content-between">
-        <h2 class="h6 m-0 font-weight-bold text-primary">% Difference in Pay</h2>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="jo-table">
-                <thead>
-                    <tr>
-                        @foreach (var package in compenPackageOptions)
-                        {
-                            <th scope="colgroup"
-                                colspan="2"
-                                class="text-center">
-                                Option @package.OptionNumber
-                            </th>
-                        }
-                    </tr>
-
-                    <tr>
-                        @foreach (var package in compenPackageOptions)
-                        {
-                            <th scope="col" class="text-center">Monthly</th>
-                            <th scope="col" class="text-center">Annual</th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        @foreach (var package in compenPackageOptions)
-                        {
-                            <td class="text-center">@ComputeMonthDiffPay(package)</td>
-                            <td class="text-center">@ComputeAnnualDiffPay(package)</td>
-                        }
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<div class="jo-actions mb-4">
-    <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">Cancel</a>
-    <button type="button" class="btn btn-primary" @onclick="SaveAnalysis">Save</button>
 </div>

@@ -1,0 +1,13 @@
+INSERT INTO [dbo].[DboxCandidates]
+    ([ResponseId], [DboxId], [DboxRefNum], [CSGId], [CandidateName], [Company], [Division], [Department], [CostCenter], [JobLevel], [JobPosition], [EmailAddress], [ContactNumber])
+VALUES
+    (1001, 201, N'DBOX-6-001', 6, N'Olivia Bennett', N'Northstar Solutions', N'Operations', N'Customer Success', N'CC-6101', N'Senior', N'Customer Success Manager', N'olivia.bennett@example.com', N'+1-555-0101'),
+    (1002, 202, N'DBOX-6-002', 6, N'Ethan Cole', N'Veridian Systems', N'Engineering', N'Platform', N'CC-6102', N'Mid', N'Software Engineer', N'ethan.cole@example.com', N'+1-555-0102'),
+    (1003, 203, N'DBOX-6-003', 6, N'Maya Patel', N'Brightline Group', N'Finance', N'Accounting', N'CC-6103', N'Senior', N'Financial Analyst', N'maya.patel@example.com', N'+1-555-0103'),
+    (1004, 204, N'DBOX-6-004', 6, N'Noah Kim', N'Atlas Works', N'Sales', N'Enterprise Sales', N'CC-6104', N'Mid', N'Account Executive', N'noah.kim@example.com', N'+1-555-0104'),
+    (1005, 205, N'DBOX-6-005', 6, N'Sophia Martinez', N'Harbor & Finch', N'Marketing', N'Demand Generation', N'CC-6105', N'Lead', N'Marketing Manager', N'sophia.martinez@example.com', N'+1-555-0105'),
+    (1006, 206, N'DBOX-6-006', 6, N'Liam O''Connor', N'Pinecrest Labs', N'Product', N'Product Management', N'CC-6106', N'Senior', N'Product Manager', N'liam.oconnor@example.com', N'+1-555-0106'),
+    (1007, 207, N'DBOX-6-007', 6, N'Ava Robinson', N'Keystone Health', N'Human Resources', N'Talent Acquisition', N'CC-6107', N'Mid', N'Recruiter', N'ava.robinson@example.com', N'+1-555-0107'),
+    (1008, 208, N'DBOX-6-008', 6, N'Jackson Lee', N'Summit Logistics', N'Supply Chain', N'Procurement', N'CC-6108', N'Senior', N'Procurement Specialist', N'jackson.lee@example.com', N'+1-555-0108'),
+    (1009, 209, N'DBOX-6-009', 6, N'Isabella Nguyen', N'Cascade Retail', N'Retail', N'Store Operations', N'CC-6109', N'Lead', N'Regional Operations Lead', N'isabella.nguyen@example.com', N'+1-555-0109'),
+    (1010, 210, N'DBOX-6-010', 6, N'Lucas Turner', N'Evergreen Services', N'Information Technology', N'Infrastructure', N'CC-6110', N'Mid', N'Systems Administrator', N'lucas.turner@example.com', N'+1-555-0110');

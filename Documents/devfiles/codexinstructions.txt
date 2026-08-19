@@ -1,0 +1,24 @@
+***CODEX INSTRUCTIONS***
+
+**DATABASE**
+Using this login credentials User ID=joboffer_user Password=jobofferuser@01 , connect to "172.31.0.145", database JobOffer.
+Do the following
+1. Insert 10 sample records to "DboxCandidates" use CSGId=6 the rest is random
+
+**RAZOR COMPONENT**
+1. Create a Razor Component file base on this reference
+	a. Save file location: ""
+	b. Filename: ""
+	c. CSS reference: 
+	d: Roles:
+	e. Route:
+2. Use this starter template for reference @StarterTemplate.razor
+	
+Note: Don't build and run.
+
+**ENTITY**
+Create new Class
+1. Name: DboxCandidates
+2. Location: "C:\GitLab\joboffer\JobOfferSolution\JO.DataModel\Entity"
+3. Data Model Reference: DboxCandidates.sql
+NOte: Don't build and run.

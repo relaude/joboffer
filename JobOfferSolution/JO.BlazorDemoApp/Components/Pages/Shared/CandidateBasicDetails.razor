@@ -11,36 +11,48 @@
                         <div class="text-primary mb-2">
                             <i class="fas fa-user-circle fa-4x" aria-hidden="true"></i>
                         </div>
-                        <h3 class="h6 font-weight-bold text-gray-900 mb-1">@Candidate.CandidateFullName</h3>
-                        <div class="text-muted">@Candidate.PositionAppliedFor</div>
+                        <h3 class="h6 font-weight-bold text-gray-900 mb-1">@Candidate.CandidateName</h3>
+                        <div class="text-muted">@Candidate.JobPosition</div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-8 mb-3">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <small class="text-muted d-block">Email Address</small>
-                        <span class="font-weight-bold text-gray-800">@Candidate.EmailAddress</span>
+                    <div class="col-6 mb-3">
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Candidate Id</small>
+                            <span class="font-weight-bold text-gray-800">@Candidate.DboxRefNum</span>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Email</small>
+                            <span class="font-weight-bold text-gray-800">@Candidate.EmailAddress</span>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Contact Number</small>
+                            <span class="font-weight-bold text-gray-800">@Candidate.ContactNumber</span>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Job Level / Grade</small>
+                            <span class="font-weight-bold text-gray-800">@Candidate.JobLevel / @Candidate.GradeName</span>
+                        </div>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <small class="text-muted d-block">Employment Status</small>
-                        <span class="font-weight-bold text-gray-800">@Candidate.EmploymentStatus</span>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <small class="text-muted d-block">DBox Reference Number</small>
-                        <span class="font-weight-bold text-gray-800">@Candidate.DboxRefNum</span>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <small class="text-muted d-block">Company</small>
-                        <span class="font-weight-bold text-gray-800">@Candidate.CompanyName</span>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <small class="text-muted d-block">Grade</small>
-                        <span class="font-weight-bold text-gray-800">@Candidate.GradeName</span>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <small class="text-muted d-block">Relevant Experience</small>
-                        <span class="font-weight-bold text-gray-800">@Candidate.RelevantExperience</span>
+                    <div class="col-6 mb-3">
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Company</small>
+                            <span class="font-weight-bold text-gray-800">@Candidate.Company</span>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Division</small>
+                            <span class="font-weight-bold text-gray-800">@Candidate.Division</span>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Department</small>
+                            <span class="font-weight-bold text-gray-800">@Candidate.Department</span>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Cost Center</small>
+                            <span class="font-weight-bold text-gray-800">@Candidate.CostCenter</span>
+                        </div>
                     </div>
                 </div>
             </div>

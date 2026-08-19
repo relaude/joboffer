@@ -4,6 +4,7 @@
     [PckgTempId]      INT             NULL,
     [OptionType]      NVARCHAR (50)   NULL,
     [OptionNumber]    INT             NULL,
+    [MonthlyBasic]    DECIMAL (18, 2) NULL,
     [IncreasePercent] DECIMAL (18, 2) NULL,
     [CreatedAt]       DATETIME        NULL,
     [CreatedBy]       INT             NULL,

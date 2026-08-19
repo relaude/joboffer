@@ -1,8 +1,9 @@
-﻿Create View vw_DboxCandidates
+﻿
+
+CREATE View [dbo].[vw_DboxCandidates]
 As
-Select dbxc.Id,dbxc.DboxRefNum
+Select dbxc.*
 ,vwcsg.CompanyName,vwcsg.GradeName
-,[EmailAddress]
 ,[HasDataPrivacyConsent]
 ,[CandidateFullName]
 ,[FormCompletedDate]
