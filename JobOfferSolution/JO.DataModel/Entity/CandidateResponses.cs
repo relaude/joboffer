@@ -53,6 +53,7 @@ namespace JO.DataModel.Entity
         public string? OtherBenefits { get; set; }
         public string? VehicleBenefit { get; set; }
         public string? MobilePhoneBenefit { get; set; }
+        public string? DboxCandidateId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
     }

@@ -17,6 +17,7 @@
     private int firstPacakageId = 0;
     private int selectedPacakageId = 0;
     private int selectedOptionNumber = 1;
+    private int selectedTemplateId = 0;
 
     private VwDboxCandidates candidate = new();
     private JobOffers jobOffer = new();
@@ -25,18 +26,154 @@
     private List<CompenItemCategoryDto> compenItemCategoryDto = new();
     private List<CompensationOptions> compensationOptions = new();
 
+    private List<CompensationTemplate> compensationTemplate = new();
+    private List<VwCompensationTemplateItems> compensationTemplateItems = new();
+    private List<VwCompensationTemplateItems> selectedTemplateItems = new();
+
+    private CancellationTokenSource? increaseDebounceCts;
+
     protected override async Task OnInitializedAsync()
     {
         userId = await AccountService.GetJobOfferUserId();
         jobOffer = await JODetailsService.GetJobOffer(jobOfferId);
         candidate = await CandidateService.GetVwDboxCandidate(jobOffer.CandidateId.GetValueOrDefault());
 
+        compensationTemplate = await DraftAnalysisService.GetCompensationTemplate();
+        compensationTemplateItems = await DraftAnalysisService.GetVwCompensationTemplateItems();
+
         compenItemCategoryDto = await DraftAnalysisService.SetUpCompenItemCategoryDto();
         compensationPackage = await DraftAnalysisService.GetCompensationPackage(jobOfferId);
         compensationOptions = await DraftAnalysisService.GetCompensationOptions(jobOfferId);
 
+        selectedTemplateId = compensationTemplate.FirstOrDefault().Id;
         firstPacakageId = compensationPackage.FirstOrDefault().Id;
         selectedPacakageId = compensationPackage.Where(jo => jo.OptionNumber == selectedOptionNumber).FirstOrDefault().Id;
+
+        OnSelectTemplate();
+    }
+
+    private void ClickOptionTab(CompensationPackage package)
+    {
+        selectedOptionNumber = package.OptionNumber.GetValueOrDefault();
+        selectedPacakageId = package.Id;
+    }
+
+    private async Task DebouncePackageMonthlyBasic(CompensationPackage package)
+    {
+        increaseDebounceCts?.Cancel();
+        increaseDebounceCts?.Dispose();
+        increaseDebounceCts = new CancellationTokenSource();
+
+        await Task.Delay(500, increaseDebounceCts.Token);
+
+        decimal currentSalary = candidate.CurrentMonthlyBasicSalary.GetValueOrDefault();
+        decimal proposedSalary = package.MonthlyBasic.GetValueOrDefault() == 0 ? currentSalary : package.MonthlyBasic.GetValueOrDefault();
+
+        package.MonthlyBasic = proposedSalary;
+        package.IncreasePercent = Math.Round(((proposedSalary - currentSalary) / currentSalary) * 100m, 2);
+
+        foreach (var item in compensationOptions.Where(x => x.PackageId == package.Id))
+        {
+            switch (item.ItemId)
+            {
+                case 1:
+                    item.MonthlyAmount = proposedSalary;
+                    item.AnnualAmount = proposedSalary * 12m;
+                    break;
+
+                case 2:
+                    item.AnnualAmount = proposedSalary;
+                    break;
+            }
+        }
+    }
+
+    private async Task OnMonthlyBasicKeyDown(KeyboardEventArgs args, CompensationPackage package)
+    {
+        if (args.Key != "Enter") return;
+
+        await DebouncePackageMonthlyBasic(package);
+    }
+
+    private void OnSelectTemplate()
+    {
+        selectedTemplateItems = compensationTemplateItems
+            .Where(item => item.TemplateId == selectedTemplateId 
+                && item.IsAnalysis == true
+                && item.IsEnabled == true 
+                && item.ItemId.HasValue
+                && item.Monthly.HasValue
+                && item.Annualy.HasValue)
+            .GroupBy(item => item.ItemId.GetValueOrDefault())
+            .ToDictionary(group => group.Key, group => group.First());
+
+        var optionPackageIds = compensationPackage
+            .Where(package => package.OptionType == "Option")
+            .Select(package => package.Id)
+            .ToHashSet();
+
+        //zero all allowances
+        int?[] allowanceIds = { 6, 8, 9, 10 };
+        foreach (var compensationOption in compensationOptions
+           .Where(option => optionPackageIds.Contains(option.PackageId.GetValueOrDefault())
+                && allowanceIds.Contains(option.ItemId)))
+        {
+            compensationOption.MonthlyAmount = 0;
+            compensationOption.AnnualAmount = 0;
+        }
+
+         //set allowances value base on template
+        foreach (var compensationOption in compensationOptions
+            .Where(option => optionPackageIds.Contains(option.PackageId.GetValueOrDefault())))
+        {
+            if (!selectedTemplateItems.TryGetValue(compensationOption.ItemId.GetValueOrDefault(), out var templateItem)) continue;
+
+            compensationOption.MonthlyAmount = templateItem.Monthly.GetValueOrDefault();
+            compensationOption.AnnualAmount = templateItem.Annualy.GetValueOrDefault();
+        }
+    }
+
+    private string FormatAmount(decimal? amount, bool showZeroAsDash = false)
+    {
+        return showZeroAsDash && amount.GetValueOrDefault() == 0
+            ? "-"
+            : UtilitiesService.ToPeso(amount);
+    }
+
+    private string ComputeMonthDiffPay(CompensationPackage package)
+    {
+        var currentPackage = compensationPackage.FirstOrDefault(item => item.OptionType == "Current");
+        decimal current = compensationOptions
+            .Where(item => item.PackageId == currentPackage?.Id)
+            .Sum(item => item.MonthlyAmount.GetValueOrDefault());
+        decimal proposal = compensationOptions
+            .Where(item => item.PackageId == package.Id)
+            .Sum(item => item.MonthlyAmount.GetValueOrDefault());
+
+        return ComputePayDifference(current, proposal);
+    }
+
+    private string ComputeAnnualDiffPay(CompensationPackage package)
+    {
+        var currentPackage = compensationPackage.FirstOrDefault(item => item.OptionType == "Current");
+        decimal current = compensationOptions
+            .Where(item => item.PackageId == currentPackage?.Id)
+            .Sum(item => item.AnnualAmount.GetValueOrDefault());
+        decimal proposal = compensationOptions
+            .Where(item => item.PackageId == package.Id)
+            .Sum(item => item.AnnualAmount.GetValueOrDefault());
+
+        return ComputePayDifference(current, proposal);
+    }
+
+    private static string ComputePayDifference(decimal current, decimal proposal)
+    {
+        if (current == 0) return "-";
+
+        decimal differencePercent = ((proposal - current) / current) * 100m;
+        decimal truncatedDifferencePercent = Math.Truncate(differencePercent * 100m) / 100m;
+
+        return $"{truncatedDifferencePercent:F2}%";
     }
 }
 
@@ -49,11 +186,23 @@
         <div class="card shadow small mb-4">
             <div class="card-header">
                 <h2 class="h6 m-0 font-weight-bold text-primary mb-2">Compensation Template</h2>
-                
+                <select class="custom-select custom-select-sm"
+                        @bind="selectedTemplateId"
+                        @bind:after="OnSelectTemplate">
+                    @foreach (var item in compensationTemplate)
+                    {
+                        <option value="@item.Id">@item.TemplateName</option>
+                    }
+                </select>
             </div>
 
             <div class="card-body">
-                
+                @foreach (var item in compensationTemplateItems.Where(jo => jo.TemplateId == selectedTemplateId && jo.IsEnabled == true))
+                {
+                    <div class="custom-control">
+                        <label class="font-weight-bold text-gray-800">@item.ItemName</label>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -71,7 +220,7 @@
                      tabindex="0"
                      aria-selected="@(selectedOptionNumber == pacakge.OptionNumber)"
                      class="jo-analysis-option-tab @(selectedOptionNumber == pacakge.OptionNumber ? "active" : null)"
-                     >
+                     @onclick="() => ClickOptionTab(pacakge)" >
 
                     <span class="jo-analysis-option-title">Option @pacakge.OptionNumber</span>
 
@@ -81,14 +230,17 @@
                             <input id="amount-@pacakge.OptionNumber"
                                    type="text"
                                    inputmode="decimal"
+                                   placeholder="Enter monthly basic salary"
                                    class="form-control form-control-sm w-100"
                                    @bind="pacakge.MonthlyBasic"
                                    @bind:event="oninput"
+                                   @onkeydown="(args) => OnMonthlyBasicKeyDown(args, pacakge)"
                                    @onclick:stopPropagation="true" />
+                            <small class="form-text text-muted">Press Enter to apply the amount.</small>
                         </div>
                         <div class="col-12 mt-2">
-                            <label class="mb-1" for="increase-@pacakge.OptionNumber">% Increase</label>
-                            <input id="increase-@pacakge.OptionNumber"
+                            <label class="mb-1" for="increase-@pacakge.OptionNumber">@(pacakge.IncreasePercent)% Increase</label>
+                            @* <input id="increase-@pacakge.OptionNumber"
                                    type="text"
                                    inputmode="numeric"
                                    pattern="[0-9]*"
@@ -100,7 +252,7 @@
                             !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(event.key) &&
                             !(event.ctrlKey || event.metaKey)) event.preventDefault();"
                                    onpaste="if (!/^[0-9]+$/.test(event.clipboardData.getData('text'))) event.preventDefault();"
-                                   ondrop="event.preventDefault();" />
+                                   ondrop="event.preventDefault();" readonly /> *@
                         </div>
                     </div>
 
@@ -109,12 +261,12 @@
         </div>
 
         <div class="table-responsive">
-            <table class="jo-table jo-analysis-option-table">
+            <table class="jo-table">
                 <thead>
                     <tr>
                         <th scope="col" rowspan="2">Compensation</th>
-                        <th scope="colgroup" colspan="2" class="text-center">Current</th>
-                        <th scope="colgroup" colspan="2" class="is-option text-center">Option @selectedOptionNumber</th>
+                        <th scope="colgroup" colspan="2">Current</th>
+                        <th scope="colgroup" colspan="2" class="is-option">Option @selectedOptionNumber</th>
                     </tr>
                     <tr>
                         <th scope="col">Monthly</th>
@@ -138,14 +290,14 @@
                                 <td>@item.ItemName</td>
                                 @foreach (var compensationOption in compensationOptions.Where(jo => jo.PackageId == firstPacakageId && jo.ItemId == item.Id))
                                 {
-                                    <td>@compensationOption.MonthlyAmount</td>
-                                    <td>@compensationOption.AnnualAmount</td>
+                                    <td>@FormatAmount(compensationOption.MonthlyAmount, true)</td>
+                                    <td>@FormatAmount(compensationOption.AnnualAmount, true)</td>
                                 }
 
                                 @foreach (var compensationOption in compensationOptions.Where(jo => jo.PackageId == selectedPacakageId && jo.ItemId == item.Id))
                                 {
-                                    <td class="is-option">@compensationOption.MonthlyAmount</td>
-                                    <td class="is-option">@compensationOption.AnnualAmount</td>
+                                    <td class="is-option">@FormatAmount(compensationOption.MonthlyAmount)</td>
+                                    <td class="is-option">@FormatAmount(compensationOption.AnnualAmount)</td>
                                 }
                             </tr>
                         }
@@ -155,4 +307,92 @@
             </table>
         </div>
     </div>
+</div>
+
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h2 class="h6 m-0 font-weight-bold text-primary">Summary</h2>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mb-4">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th scope="col" rowspan="2">Compensation</th>
+                        @foreach (var package in compensationPackage.OrderBy(package => package.OptionNumber))
+                        {
+                            <th scope="colgroup" colspan="2">
+                                @(package.OptionType == "Current" ? "Current" : $"Option {package.OptionNumber}")
+                            </th>
+                        }
+                    </tr>
+                    <tr>
+                        @foreach (var package in compensationPackage.OrderBy(package => package.OptionNumber))
+                        {
+                            <th scope="col">Monthly</th>
+                            <th scope="col">Annual</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in compenItemCategoryDto)
+                    {
+                        <tr>
+                            <td class="font-weight-bold text-primary">
+                                @category.CategoryName
+                            </td>
+                        </tr>
+
+                        @foreach (var item in category.CompensationItemDtos.OrderBy(item => item.DisplayOrder))
+                        {
+                            <tr @key="item.Id">
+                                <td>@item.ItemName</td>
+                                @foreach (var package in compensationPackage.OrderBy(package => package.OptionNumber))
+                                {
+                                    var compensationOption = compensationOptions.FirstOrDefault(option =>
+                                        option.PackageId == package.Id && option.ItemId == item.Id);
+
+                                    <td>@FormatAmount(compensationOption?.MonthlyAmount, package.OptionType == "Current")</td>
+                                    <td>@FormatAmount(compensationOption?.AnnualAmount, package.OptionType == "Current")</td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="font-weight-bold text-gray-800">
+                        <th scope="row">Gross Compensation</th>
+                        @foreach (var package in compensationPackage.OrderBy(package => package.OptionNumber))
+                        {
+                            var packageOptions = compensationOptions.Where(option => option.PackageId == package.Id);
+                            var monthlyTotal = packageOptions.Sum(option => option.MonthlyAmount.GetValueOrDefault());
+                            var annualTotal = packageOptions.Sum(option => option.AnnualAmount.GetValueOrDefault());
+
+                            <th>@FormatAmount(monthlyTotal, package.OptionType == "Current")</th>
+                            <th>@FormatAmount(annualTotal, package.OptionType == "Current")</th>
+                        }
+                    </tr>
+                    <tr class="font-weight-bold text-gray-800">
+                        <th scope="row">% Difference in Pay</th>
+                        <th></th>
+                        <th></th>
+                        @foreach (var package in compensationPackage
+                            .Where(package => package.OptionType != "Current")
+                            .OrderBy(package => package.OptionNumber))
+                        {
+                            <th>@ComputeMonthDiffPay(package)</th>
+                            <th>@ComputeAnnualDiffPay(package)</th>
+                        }
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<div class="jo-actions mb-4">
+    <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">Cancel</a>
+    <button type="button" class="btn btn-primary">Save As</button>
+    <button type="button" class="btn btn-primary">Submit for Approval</button>
 </div>

@@ -3,10 +3,74 @@
 
 @inject ICandidateService CandidateService
 
+@code {
+    private List<DataModel.Entity.CandidateResponses> candidateResponses = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        candidateResponses = await CandidateService.GetCandidateResponses();
+    }
+}
+
+<div class="row">
+    <div class="col-xl-4 col-md-4 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@candidateResponses.Count</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-4 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">New</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-plus fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-4 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Update</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-edit fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card shadow mb-4 small">
-    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Candidate Responses</h6>
+    <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
         <div>
+            <h6 class="m-0 font-weight-bold text-primary">Candidate Responses</h6>
+            <small class="text-muted">
+                <i class="fas fa-clock fa-fw mr-1"></i>Last syncing: 20 Aug 2026
+            </small>
+        </div>
+        <div class="mt-2 mt-md-0">
             <button type="button" class="btn btn-outline-success btn-sm mr-2">
                 <i class="fas fa-file-excel fa-fw mr-1"></i>Import from Excel
             </button>
@@ -18,20 +82,65 @@
 
     <div class="card-body">
         <div class="table-responsive">
-            <table class="jo-table">
+            <table class="jo-table text-nowrap">
                 <thead>
                     <tr>
-                        <th>Candidate Response ID</th>
-                        <th>Candidate</th>
+                        <th>Candidate ID</th>
+                        <th>Response Started At</th>
+                        <th>Response Completed At</th>
+                        <th>Email Address</th>
+                        <th>Respondent Name</th>
+                        <th>Data Privacy Consent</th>
+                        <th>Candidate Full Name</th>
+                        <th>Form Completed Date</th>
                         <th>Position Applied For</th>
-                        <th>Current Employer</th>
+                        <th>Unilab Division</th>
+                        <th>Expected Monthly Basic Salary</th>
+                        <th>Age</th>
+                        <th>Employment Status</th>
+                        <th>Relevant Experience</th>
+                        <th>Current Employer Name</th>
+                        <th>Last Employer Industry</th>
+                        <th>Last Position Held</th>
+                        <th>Current Monthly Basic Salary</th>
+                        <th>Guaranteed Months Pay</th>
+                        <th>Annual Guaranteed Bonus Description</th>
+                        <th>Annual Guaranteed Bonus Amount</th>
+                        <th>Monthly Allowance Description</th>
+                        <th>Monthly Allowance Amount</th>
+                        <th>Non-Monthly Allowance Description</th>
+                        <th>Non-Monthly Allowance Amount</th>
+                        <th>Monthly Non-Taxable Allowance Description</th>
+                        <th>Monthly Non-Taxable Allowance Amount</th>
+                        <th>Annual Non-Taxable Allowance Description</th>
+                        <th>Annual Non-Taxable Allowance Amount</th>
+                        <th>Annual Profit Sharing Amount</th>
+                        <th>Annual Incentive Description</th>
+                        <th>Annual Incentive Amount</th>
+                        <th>Annual Variable Pay Description</th>
+                        <th>Annual Variable Pay Amount</th>
+                        <th>Employee HMO Benefit Limit</th>
+                        <th>Dependent HMO Benefit Limit</th>
+                        <th>Dental Benefit</th>
+                        <th>Medicine Reimbursement Benefit</th>
+                        <th>Optical Benefit</th>
+                        <th>Other Health Benefits</th>
+                        <th>Vacation Leave Benefit</th>
+                        <th>Sick Leave Benefit</th>
+                        <th>Other Leave Benefits</th>
+                        <th>Life Insurance Benefit</th>
+                        <th>Other Benefits</th>
+                        <th>Vehicle Benefit</th>
+                        <th>Mobile Phone Benefit</th>
+                        <th>Created At</th>
+                        <th>Created By</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (candidateResponses.Count == 0)
                     {
                         <tr>
-                            <td colspan="4" class="text-center text-muted py-4">No candidate responses found.</td>
+                            <td colspan="50" class="text-center text-muted py-4">No candidate responses found.</td>
                         </tr>
                     }
                     else
@@ -39,10 +148,55 @@
                         @foreach (var candidateResponse in candidateResponses)
                         {
                             <tr @key="candidateResponse.Id">
-                                <td>@(candidateResponse.CandidateResponseId?.ToString() ?? "-")</td>
+                                <td>@candidateResponse.DboxCandidateId</td>
+                                <td>@(candidateResponse.ResponseStartedAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+                                <td>@(candidateResponse.ResponseCompletedAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+                                <td>@(candidateResponse.EmailAddress ?? "-")</td>
+                                <td>@(candidateResponse.RespondentName ?? "-")</td>
+                                <td>@(candidateResponse.HasDataPrivacyConsent ?? "-")</td>
                                 <td>@(candidateResponse.CandidateFullName ?? "-")</td>
+                                <td>@(candidateResponse.FormCompletedDate?.ToString("yyyy-MM-dd") ?? "-")</td>
                                 <td>@(candidateResponse.PositionAppliedFor ?? "-")</td>
+                                <td>@(candidateResponse.UnilabDivision ?? "-")</td>
+                                <td>@(candidateResponse.ExpectedMonthlyBasicSalary?.ToString("N2") ?? "-")</td>
+                                <td>@(candidateResponse.Age ?? "-")</td>
+                                <td>@(candidateResponse.EmploymentStatus ?? "-")</td>
+                                <td>@(candidateResponse.RelevantExperience ?? "-")</td>
                                 <td>@(candidateResponse.CurrentEmployerName ?? "-")</td>
+                                <td>@(candidateResponse.LastEmployerIndustry ?? "-")</td>
+                                <td>@(candidateResponse.LastPositionHeld ?? "-")</td>
+                                <td>@(candidateResponse.CurrentMonthlyBasicSalary?.ToString("N2") ?? "-")</td>
+                                <td>@(candidateResponse.GuaranteedMonthsPay ?? "-")</td>
+                                <td>@(candidateResponse.AnnualGuaranteedBonusDescription ?? "-")</td>
+                                <td>@(candidateResponse.AnnualGuaranteedBonusAmount?.ToString("N2") ?? "-")</td>
+                                <td>@(candidateResponse.MonthlyAllowanceDescription ?? "-")</td>
+                                <td>@(candidateResponse.MonthlyAllowanceAmount?.ToString("N2") ?? "-")</td>
+                                <td>@(candidateResponse.NonMonthlyAllowanceDescription ?? "-")</td>
+                                <td>@(candidateResponse.NonMonthlyAllowanceAmount?.ToString("N2") ?? "-")</td>
+                                <td>@(candidateResponse.MonthlyNonTaxableAllowanceDescription ?? "-")</td>
+                                <td>@(candidateResponse.MonthlyNonTaxableAllowanceAmount?.ToString("N2") ?? "-")</td>
+                                <td>@(candidateResponse.AnnualNonTaxableAllowanceDescription ?? "-")</td>
+                                <td>@(candidateResponse.AnnualNonTaxableAllowanceAmount?.ToString("N2") ?? "-")</td>
+                                <td>@(candidateResponse.AnnualProfitSharingAmount?.ToString("N2") ?? "-")</td>
+                                <td>@(candidateResponse.AnnualIncentiveDescription ?? "-")</td>
+                                <td>@(candidateResponse.AnnualIncentiveAmount?.ToString("N2") ?? "-")</td>
+                                <td>@(candidateResponse.AnnualVariablePayDescription ?? "-")</td>
+                                <td>@(candidateResponse.AnnualVariablePayAmount?.ToString("N2") ?? "-")</td>
+                                <td>@(candidateResponse.EmployeeHmoBenefitLimit ?? "-")</td>
+                                <td>@(candidateResponse.DependentHmoBenefitLimit ?? "-")</td>
+                                <td>@(candidateResponse.DentalBenefit ?? "-")</td>
+                                <td>@(candidateResponse.MedicineReimbursementBenefit ?? "-")</td>
+                                <td>@(candidateResponse.OpticalBenefit ?? "-")</td>
+                                <td>@(candidateResponse.OtherHealthBenefits ?? "-")</td>
+                                <td>@(candidateResponse.VacationLeaveBenefit ?? "-")</td>
+                                <td>@(candidateResponse.SickLeaveBenefit ?? "-")</td>
+                                <td>@(candidateResponse.OtherLeaveBenefits ?? "-")</td>
+                                <td>@(candidateResponse.LifeInsuranceBenefit ?? "-")</td>
+                                <td>@(candidateResponse.OtherBenefits ?? "-")</td>
+                                <td>@(candidateResponse.VehicleBenefit ?? "-")</td>
+                                <td>@(candidateResponse.MobilePhoneBenefit ?? "-")</td>
+                                <td>@(candidateResponse.CreatedAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+                                <td>@(candidateResponse.CreatedBy?.ToString() ?? "-")</td>
                             </tr>
                         }
                     }
@@ -51,12 +205,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    private List<DataModel.Entity.CandidateResponses> candidateResponses = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        candidateResponses = await CandidateService.GetCandidateResponses();
-    }
-}

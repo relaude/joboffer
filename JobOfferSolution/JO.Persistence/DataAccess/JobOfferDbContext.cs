@@ -77,6 +77,8 @@ namespace JO.Persistence.DataAccess
         public DbSet<CompensationOptions> CompensationOptions { get; set; }
         public DbSet<CompensationItem> CompensationItem { get; set; }
         public DbSet<CompenItemCategory> CompenItemCategory { get; set; }
+        public DbSet<CompensationTemplate> CompensationTemplate { get; set; }
+        public DbSet<CompensationTemplateItems> CompensationTemplateItems { get; set; }
 
         //Approval
         public DbSet<Approvals> Approvals { get; set; }
@@ -113,6 +115,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwPckgTemp> VwPckgTemp { get; set; }
         public DbSet<VwDboxCandidates> VwDboxCandidates { get; set; }
         public DbSet<VwJODboxCandidates> VwJODboxCandidates { get; set; }
+        public DbSet<VwCompensationTemplateItems> VwCompensationTemplateItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -138,6 +141,7 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwPckgTemp>().HasNoKey().ToView("vw_PckgTemp");
             modelBuilder.Entity<VwDboxCandidates>().HasNoKey().ToView("vw_DboxCandidates");
             modelBuilder.Entity<VwJODboxCandidates>().HasNoKey().ToView("vw_JODboxCandidates");
+            modelBuilder.Entity<VwCompensationTemplateItems>().HasNoKey().ToView("vw_CompensationTemplateItems");
         }
     }
 }

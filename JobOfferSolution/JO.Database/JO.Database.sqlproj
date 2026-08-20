@@ -167,6 +167,9 @@
     <Build Include="dbo\Views\vw_JODboxCandidates.sql" />
     <Build Include="dbo\Tables\CompenItemCategory.sql" />
     <Build Include="dbo\Stored Procedures\TruncateJobofferCompensation.sql" />
+    <Build Include="dbo\Tables\CompensationTemplateItems.sql" />
+    <Build Include="dbo\Tables\CompensationTemplate.sql" />
+    <Build Include="dbo\Views\vw_CompensationTemplateItems.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

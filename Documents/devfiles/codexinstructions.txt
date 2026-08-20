@@ -9,7 +9,7 @@ Do the following
 1. Create a Razor Component file base on this reference
 	a. Save file location: ""
 	b. Filename: ""
-	c. CSS reference: 
+	c. CSS reference:  @sb-admin-2.css
 	d: Roles:
 	e. Route:
 2. Use this starter template for reference @StarterTemplate.razor

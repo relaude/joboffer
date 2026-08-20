@@ -19,6 +19,30 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<VwCompensationTemplateItems>> GetVwCompensationTemplateItems()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwCompensationTemplateItems
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<CompensationTemplateItems>> GetCompensationTemplateItems()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompensationTemplateItems
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<CompensationTemplate>> GetCompensationTemplate()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CompensationTemplate
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<List<CompensationOptions>> GetCompensationOptions(int jobOfferId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();

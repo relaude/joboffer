@@ -12,6 +12,7 @@ namespace JO.DataModel.Entity
         public int? CategoryId { get; set; }
         public decimal? Monthly { get; set; }
         public decimal? Annualy { get; set; }
+        public bool? IsAnalysis { get; set; }
         public int? DisplayOrder { get; set; }
     }
 }

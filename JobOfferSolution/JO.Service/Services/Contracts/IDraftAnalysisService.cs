@@ -15,6 +15,9 @@ namespace JO.Service.Services.Contracts
         Task<List<CompensationOptions>> GetCompensationOptions(int jobOfferId);
         Task<List<CompensationPackage>> GetCompensationPackage();
         Task<List<CompensationPackage>> GetCompensationPackage(int jobOfferId);
+        Task<List<CompensationTemplate>> GetCompensationTemplate();
+        Task<List<CompensationTemplateItems>> GetCompensationTemplateItems();
+        Task<List<VwCompensationTemplateItems>> GetVwCompensationTemplateItems();
         Task<List<VwPckgTempHasItms>> GetVwPckgTempHasItms(int templateId);
         void IncreasePercentage(OptionDto option, VwDboxCandidates candidate, List<ComparisonDto> comparisonDto);
         void InitProposalDto(List<OptionDto> optionDto, int numProposal, VwDboxCandidates candidate);

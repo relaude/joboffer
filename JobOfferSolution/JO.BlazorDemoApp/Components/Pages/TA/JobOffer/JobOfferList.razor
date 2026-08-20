@@ -13,6 +13,72 @@
     }
 }
 
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Analysis</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@joDboxCandidates.Count</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Approved</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Accepted</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-handshake fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Declined</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card shadow mb-4 small">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
         <h6 class="m-0 font-weight-bold text-primary">Job Offers</h6>
@@ -25,6 +91,7 @@
                     <tr>
                         <th>Reference Number</th>
                         <th>Candidate</th>
+                        <th>Status</th>
                         <th>Created</th>
                         <th class="text-center">Action</th>
                     </tr>
@@ -35,6 +102,11 @@
                         <tr @key="joDboxCandidate.Id">
                             <td><strong>@(joDboxCandidate.RefNum)</strong></td>
                             <td>@joDboxCandidate.CandidateName</td>
+                            <td>
+                                <span class="badge badge-info">
+                                    <i class="fas fa-chart-line fa-fw mr-1"></i>For Analysis
+                                </span>
+                            </td>
                             <td>
                                 <div>@joDboxCandidate.CreatedByName</div>
                                 <small class="text-muted">@(joDboxCandidate.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
@@ -58,10 +130,10 @@
                                             </a>
                                         }
 
-                                        <a class="dropdown-item"
+                                        @* <a class="dropdown-item"
                                            href="@($"{JORoutes.Transaction.JobOffer}/{joDboxCandidate.Id}")">
                                             Details
-                                        </a>
+                                        </a> *@
 
                                     </div>
                                 </div>

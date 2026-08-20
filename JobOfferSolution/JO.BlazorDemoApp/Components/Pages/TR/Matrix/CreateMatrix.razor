@@ -1,0 +1,255 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TR)]
+@attribute [Route(JORoutes.TR.SalaryMatrixNew)]
+
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">Salary bands</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-sm-12 col-md-6">
+                <select id="company"
+                        class="custom-select"
+                        value="@salaryMatrix.CompanyId"
+                        @onchange="OnCompanyChanged">
+                    <option value="">Select company</option>
+                    @foreach (var option in companies)
+                    {
+                        <option value="@option.Id">@option.Value</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-sm-12 col-md-6 jo-actions">
+                <div></div>
+                <button class="btn btn-outline-primary"
+                        @onclick="AddBand"
+                        disabled="@(!salaryGrades.Any())">
+                    + Add band
+                </button>
+            </div>
+        </div>
+    
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th>Grade</th>
+                        <th>Minimum</th>
+                        <th>Midpoint</th>
+                        <th>Maximum</th>
+                        <th>CompaRatio</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var band in salaryBands)
+                    {
+                        <tr @key="band">
+                            <td>
+                                <select class="custom-select custom-select-sm" @bind="band.CSGId">
+                                    @foreach (var option in salaryGrades)
+                                    {
+                                        <option value="@option.Id">@option.GradeName</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number"
+                                       class="form-control form-control-sm text-right"
+                                       min="10000"
+                                       step="10000"
+                                       @bind="band.Minimum" />
+                            </td>
+                            <td>
+                                <input type="number"
+                                       class="form-control form-control-sm text-right"
+                                       min="10000"
+                                       step="10000"
+                                       @bind="band.Midpoint" />
+                            </td>
+                            <td>
+                                <input type="number"
+                                       class="form-control form-control-sm text-right"
+                                       min="10000"
+                                       step="10000"
+                                       @bind="band.Maximum" />
+                            </td>
+                            <td>
+                                <input type="number"
+                                       class="form-control form-control-sm text-right"
+                                       min="10000"
+                                       step="10000"
+                                       @bind="band.CompaRatio" />
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-danger btn-circle btn-sm"
+                                        title="Remove band"
+                                        aria-label="Remove band"
+                                        @onclick="() => RemoveBand(band)">
+                                    <i class="fas fa-trash-alt fa-fw"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-footer jo-actions">
+        <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary">Cancel</a>
+        <button class="btn btn-primary px-4" @onclick="SaveMatrix">Create matrix</button>
+    </div>
+</div>
+
+@inject IDropDownListService DropDownListService
+@inject IAccountService AccountService
+@inject IAlertService AlertService
+@inject ISalaryMatrixService SalaryMatrixService
+
+@inject NavigationManager Navigation
+
+@code {
+    private readonly SalaryMatrix salaryMatrix = new()
+    {
+        IsActive = true
+    };
+
+    private List<DropdownDto> companies = new();
+    private List<VwCompanySalaryGrades> salaryGrades = new();
+    private List<SalaryBandsDto> salaryBands = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        companies = await SalaryMatrixService.GetNewMatrixCompanies();
+
+        salaryMatrix.CompanyId = companies.FirstOrDefault().Id;
+        salaryMatrix.CreatedBy = await AccountService.GetJobOfferUserId();
+
+        await OnCompanyChanged(new ChangeEventArgs
+        {
+            Value = salaryMatrix.CompanyId
+        });
+    }
+
+    private async Task SaveMatrix()
+    {
+        var errors = CollectErrors(new List<string>());
+
+        if (errors.Any())
+        {
+            await AlertService.Errors(errors);
+            return;
+        }
+
+        if (!await AlertService.Confirm()) return;
+
+        salaryMatrix.CreatedBy = await AccountService.GetJobOfferUserId();
+        int matrixId = await SalaryMatrixService.CreateMatrix(salaryMatrix, salaryBands);
+
+        Navigation.NavigateTo($"{JORoutes.TR.SalaryMatrix}/{matrixId}");
+    }
+
+    private List<string> CollectErrors(List<string> errors)
+    {
+        if (!salaryMatrix.CompanyId.HasValue || salaryMatrix.CompanyId <= 0)
+            errors.Add("Company is required.");
+
+        if (!salaryBands.Any())
+            errors.Add("Please add at least one salary band.");
+
+        else
+            CollectSalaryBandErrors(errors);
+
+        return errors;
+    }
+
+    private void CollectSalaryBandErrors(List<string> errors)
+    {
+        var csgIds = new HashSet<int>();
+
+        for (var index = 0; index < salaryBands.Count; index++)
+        {
+            var band = salaryBands[index];
+            var rowNumber = index + 1;
+
+            if (!band.CSGId.HasValue || band.CSGId <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Salary Grade is required.");
+            else if (!csgIds.Add(band.CSGId.Value))
+                errors.Add($"Salary Band Row {rowNumber}: Salary Grade is duplicated.");
+
+            if (!band.Minimum.HasValue || band.Minimum <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Minimum amount is required.");
+
+            if (!band.Midpoint.HasValue || band.Midpoint <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Midpoint amount is required.");
+
+            if (!band.Maximum.HasValue || band.Maximum <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: Maximum amount is required.");
+
+            if (!band.CompaRatio.HasValue || band.CompaRatio <= 0)
+                errors.Add($"Salary Band Row {rowNumber}: CompaRatio amount is required.");
+
+            if (band.Minimum.HasValue
+                && band.Midpoint.HasValue
+                && band.Maximum.HasValue
+                && band.Maximum > 0
+                && band.Midpoint > 0
+                && band.Maximum > 0
+                && band.CompaRatio > 0
+                && !(band.Minimum < band.Midpoint 
+                    && band.Midpoint < band.Maximum
+                    && band.Maximum < band.CompaRatio))
+            {
+                errors.Add($"Salary Band Row {rowNumber}: Minimum, Midpoint, Maximum and CompaRatio must be in ascending order.");
+            }
+        }
+    }
+
+    private void AddBand()
+    {
+        var assignedGradeIds = salaryBands
+            .Where(band => band.CSGId.HasValue)
+            .Select(band => band.CSGId.Value)
+            .ToHashSet();
+
+        var nextSalaryGrade = salaryGrades
+            .FirstOrDefault(grade => !assignedGradeIds.Contains(grade.Id));
+
+        if (nextSalaryGrade is null)
+            return;
+
+        salaryBands.Add(new SalaryBandsDto
+        {
+            CSGId = nextSalaryGrade.Id,
+            Minimum = 30000,
+            Midpoint = 50000,
+            Maximum = 70000,
+            CompaRatio = 90000
+        });
+    }
+
+    private void RemoveBand(SalaryBandsDto band)
+    {
+        salaryBands.Remove(band);
+    }
+
+    private async Task OnCompanyChanged(ChangeEventArgs e)
+    {
+        salaryMatrix.CompanyId = int.TryParse(e.Value?.ToString(), out var companyId)
+            ? companyId
+            : null;
+
+        salaryGrades.Clear();
+        salaryBands.Clear();
+
+        if (salaryMatrix.CompanyId.HasValue)
+        {
+            salaryGrades = await SalaryMatrixService
+                .GetCompanySalaryGrades(salaryMatrix.CompanyId.GetValueOrDefault());
+        }
+        
+    }
+}
