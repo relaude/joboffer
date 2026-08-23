@@ -1,0 +1,117 @@
+@attribute [Authorize(Roles = JOUserRole.BusinessAdmin)]
+@attribute [Route(JORoutes.BA.EditCompensation + "/{compensationId:int}")]
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="jo-title">Edit Compensation Items</h6>
+        <div class="jo-actions">
+            <a href="@DetailsRoute" class="btn btn-outline-secondary mr-2">Cancel</a>
+            <button type="button" class="btn btn-primary" disabled="@isSaving" @onclick="SaveCompensationItems">
+                @(isSaving ? "Saving..." : "Save")
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                @if (compensation.IsActive == true)
+                {
+                    <span class="jo-pill jo-pill-green mr-2">ACTIVE</span>
+                }
+                else
+                {
+                    <span class="jo-pill jo-pill-gray mr-2">INACTIVE</span>
+                }
+
+                <h4 class="jo-title mt-3 mb-1">@(string.IsNullOrWhiteSpace(compensation.CmpnyCmpnstnName) ? "-" : compensation.CmpnyCmpnstnName)</h4>
+                <div>@(string.IsNullOrWhiteSpace(compensation.CompanyName) ? "-" : compensation.CompanyName)</div>
+                <div class="jo-code">@(string.IsNullOrWhiteSpace(compensation.CompanyCode) ? "-" : compensation.CompanyCode)</div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Created by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(compensation.CreatedByName) ? "-" : compensation.CreatedByName)</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Created at</div>
+                        <div class="jo-meta-value">@(compensation.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Modified by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(compensation.ModifiedByName) ? "-" : compensation.ModifiedByName)</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Modified at</div>
+                        <div class="jo-meta-value">@(compensation.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">Compensation Items</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Monthly Amount</th>
+                        <th>Annual Amount</th>
+                        <th>Analysis</th>
+                        <th>Editable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (compensationItems.Any())
+                    {
+                        @foreach (var item in compensationItems.OrderBy(jo => jo.DisplayOrder))
+                        {
+                            <tr @key="item.Id">
+                                <td><strong>@(string.IsNullOrWhiteSpace(item.ItemName) ? "-" : item.ItemName)</strong></td>
+                                <td>
+                                    <PesoInput TValue="decimal?"
+                                               class="form-control"
+                                               @bind-Value="item.MonthlyAmount"
+                                               aria-label="@($"Monthly amount for {item.ItemName}")" />
+                                </td>
+                                <td>
+                                    <PesoInput TValue="decimal?"
+                                               @bind-Value="item.AnnualAmount"
+                                               class="form-control"
+                                               aria-label="@($"Annual amount for {item.ItemName}")" />
+                                </td>
+                                <td>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="analysis-@item.Id" @bind="item.IsAnalysis" />
+                                        <label class="custom-control-label" for="analysis-@item.Id">Include</label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="editable-@item.Id" @bind="item.IsEditable" />
+                                        <label class="custom-control-label" for="editable-@item.Id">Editable</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-3">No compensation items configured.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

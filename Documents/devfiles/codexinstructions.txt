@@ -21,4 +21,10 @@ Create new Class
 1. Name: DboxCandidates
 2. Location: "C:\GitLab\joboffer\JobOfferSolution\JO.DataModel\Entity"
 3. Data Model Reference: DboxCandidates.sql
+Create new Class "VwJobOfferUsers" 
+
+1. location: D:\Gitlab\joboffer\JobOfferSolution\JO.DataModel\View
+2. data model: [vw_JobOfferUsers.sql](D:/Gitlab/joboffer/JobOfferSolution/JO.Database/dbo/Views/vw_JobOfferUsers.sql)
+3. register new  VwJobOfferUsers to [JobOfferDbContext.cs](D:/Gitlab/joboffer/JobOfferSolution/JO.Persistence/DataAccess/JobOfferDbContext.cs) under "//Views"
+3. dont build and run
 NOte: Don't build and run.

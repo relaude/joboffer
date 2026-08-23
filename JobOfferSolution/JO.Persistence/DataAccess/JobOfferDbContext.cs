@@ -52,7 +52,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<SalaryBandStatus> SalaryBandStatus { get; set; }
         public DbSet<Proposal> Proposal { get; set; }
 
-        //Compensation & enefits
+        //Compensation
         public DbSet<CompBenPackages> CompBenPackages { get; set; }
         public DbSet<CompBenItems> CompBenItems { get; set; }
         public DbSet<CompBenTypes> CompBenTypes { get; set; }
@@ -76,9 +76,14 @@ namespace JO.Persistence.DataAccess
         public DbSet<CompensationPackage> CompensationPackage { get; set; }
         public DbSet<CompensationOptions> CompensationOptions { get; set; }
         public DbSet<CompensationItem> CompensationItem { get; set; }
+        public DbSet<CompensationItems> CompensationItems { get; set; }
         public DbSet<CompenItemCategory> CompenItemCategory { get; set; }
         public DbSet<CompensationTemplate> CompensationTemplate { get; set; }
         public DbSet<CompensationTemplateItems> CompensationTemplateItems { get; set; }
+        public DbSet<CompanyCompensation> CompanyCompensation { get; set; }
+        public DbSet<CompanyCompensationItems> CompanyCompensationItems { get; set; }
+        public DbSet<JOCompanyCompensation> JOCompanyCompensation { get; set; }
+        public DbSet<JOCompanyCompensationItems> JOCompanyCompensationItems { get; set; }
 
         //Approval
         public DbSet<Approvals> Approvals { get; set; }
@@ -116,6 +121,11 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwDboxCandidates> VwDboxCandidates { get; set; }
         public DbSet<VwJODboxCandidates> VwJODboxCandidates { get; set; }
         public DbSet<VwCompensationTemplateItems> VwCompensationTemplateItems { get; set; }
+        public DbSet<VwJOUserAspNetRoles> VwJOUserAspNetRoles { get; set; }
+        public DbSet<VwJobOfferUsers> VwJobOfferUsers { get; set; }
+        public DbSet<VwJobOfferUsersAndRoles> VwJobOfferUsersAndRoles { get; set; }
+        public DbSet<VwCompanyCompensation> VwCompanyCompensation { get; set; }
+        public DbSet<VwCompanyCompensationItems> VwCompanyCompensationItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -142,6 +152,11 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwDboxCandidates>().HasNoKey().ToView("vw_DboxCandidates");
             modelBuilder.Entity<VwJODboxCandidates>().HasNoKey().ToView("vw_JODboxCandidates");
             modelBuilder.Entity<VwCompensationTemplateItems>().HasNoKey().ToView("vw_CompensationTemplateItems");
+            modelBuilder.Entity<VwJOUserAspNetRoles>().HasNoKey().ToView("vw_JOUserAspNetRoles");
+            modelBuilder.Entity<VwJobOfferUsers>().HasNoKey().ToView("vw_JobOfferUsers");
+            modelBuilder.Entity<VwJobOfferUsersAndRoles>().HasNoKey().ToView("vw_JobOfferUsersAndRoles");
+            modelBuilder.Entity<VwCompanyCompensation>().HasNoKey().ToView("vw_CompanyCompensation");
+            modelBuilder.Entity<VwCompanyCompensationItems>().HasNoKey().ToView("vw_CompanyCompensationItems");
         }
     }
 }

@@ -102,7 +102,7 @@ namespace JO.Service.Services
 
             //Candidate Current Package Items
             var currentOptions = new List<CompensationOptions>();
-            var compItems = await context.CompensationItem.ToListAsync();
+            var compItems = await context.CompensationItems.ToListAsync();
 
             var basicSalary = candidate.CurrentMonthlyBasicSalary.GetValueOrDefault();
             var monthlyAllowance =
@@ -133,17 +133,16 @@ namespace JO.Service.Services
                 var option = item.Id switch
                 {
                     1 => new CompensationOptions { MonthlyAmount = basicSalary, AnnualAmount = basicSalary * 12m },
-                    2 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = basicSalary },
-                    3 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = candidate.AnnualGuaranteedBonusAmount.GetValueOrDefault() },
+                    2 => new CompensationOptions { AnnualAmount = basicSalary },
+                    3 => new CompensationOptions { AnnualAmount = candidate.AnnualGuaranteedBonusAmount.GetValueOrDefault() },
                     7 => new CompensationOptions
                     {
                         MonthlyAmount = monthlyAllowance,
                         AnnualAmount = monthlyAllowance * 12m + candidate.AnnualNonTaxableAllowanceAmount.GetValueOrDefault()
                     },
-                    11 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = candidate.AnnualProfitSharingAmount.GetValueOrDefault() },
-                    12 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = candidate.AnnualIncentiveAmount.GetValueOrDefault() },
-                    13 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = candidate.AnnualVariablePayAmount.GetValueOrDefault() },
-                    _ => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = 0 }
+                    11 => new CompensationOptions { AnnualAmount = candidate.AnnualProfitSharingAmount.GetValueOrDefault() },
+                    12 => new CompensationOptions { AnnualAmount = candidate.AnnualIncentiveAmount.GetValueOrDefault() },
+                    13 => new CompensationOptions { AnnualAmount = candidate.AnnualVariablePayAmount.GetValueOrDefault() }
                 };
 
                 if (option is not null)

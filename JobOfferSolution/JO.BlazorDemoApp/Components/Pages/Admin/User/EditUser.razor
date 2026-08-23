@@ -1,448 +1,97 @@
-@* @attribute [Authorize(Roles = JOUserRole.Admin)] *@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
 @attribute [Route(JORoutes.Admin.EditUser + "/{joUserId:int}")]
 
-@inject IManageUsersService ManageUsersService
-@inject IDropDownListService DropDownListService
-@inject IUtilitiesService UtilitiesService
-@inject IAlertService AlertService
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-user-edit fa-fw mr-2"></i>User Information
+        </h6>
 
-@inject NavigationManager Navigation
-
-<div class="card shadow mb-4 border-left-primary small">
-    <div class="card-header py-3 bg-white">
-        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
-            <div class="d-flex align-items-center mb-2 mb-lg-0">
-                <div class="icon-circle bg-primary text-white mr-2">
-                    <i class="fas fa-user-shield"></i>
-                </div>
-                <div>
-                    <h6 class="m-0 font-weight-bold text-primary">Job Offer User</h6>
-                    <div class="text-xs text-gray-500">@joUser.Name</div>
-                </div>
-            </div>
-
-            <div class="d-flex flex-wrap align-items-center">
-                <span class="badge badge-info badge-pill">
-                    <i class="fas fa-project-diagram fa-fw mr-1"></i>RBAC + ABAC Details
-                </span>
-            </div>
+        <div>
+            <a class="btn btn-outline-secondary mr-2"
+               href="@($"{JORoutes.Admin.UserDetails}/{joUserId}")">
+                <i class="fas fa-times fa-fw mr-1"></i>Cancel
+            </a>
+            <button type="button" class="btn btn-primary" @onclick="SaveUser">
+                <i class="fas fa-save fa-fw mr-1"></i>Save
+            </button>
         </div>
     </div>
 
     <div class="card-body">
-        <div class="row">
-            <div class="col-xl-8">
-                <!-- General Info -->
-                <div class="card mb-3">
-                    <div class="card-header py-2 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-                        <div>
-                            <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
-                                General Information
-                            </h6>
-                        </div>
-                        @if (joUser.IsActive == true)
-                        {
-                            <span class="badge badge-success badge-pill mt-2 mt-md-0">
-                                <i class="fas fa-user-check fa-fw mr-1"></i>
-                                @("Active")
-                            </span>
+        <div class="form-group">
+            <label for="user-name" class="font-weight-bold text-gray-700">User Name</label>
+            <input id="user-name" type="text" class="form-control" @bind="jobOfferUser.Name" />
+        </div>
 
-                        }
-                        else
-                        {
-                            <span class="badge badge-danger badge-pill mt-2 mt-md-0">
-                                <i class="fas fa-user-slash fa-fw mr-1"></i>
-                                @("Inactive")
-                            </span>
-                        }
-                    </div>
+        <div class="form-group">
+            <label for="user-email" class="font-weight-bold text-gray-700">Email</label>
+            <input id="user-email" type="email" class="form-control" @bind="jobOfferUser.Email" />
+        </div>
 
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="font-weight-bold text-gray-700 mb-1">Full Name</label>
-                            <input type="text" class="form-control form-control-sm" @bind-value="joUser.Name" readonly />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="font-weight-bold text-gray-700 mb-1">Email</label>
-                            <input type="email" class="form-control form-control-sm" @bind-value="joUser.Email" readonly />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Roles -->
-                <div class="card mb-3">
-                    <div class="card-header py-2 bg-white">
-                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
-                            RBAC
-                        </h6>
-                    </div>
-
-                    <div class="card-body">
-                        @if (roleList.Any())
-                        {
-                            foreach (var item in roleList.Select((value, index) => new { value, index }))
-                            {
-                                <div class="custom-control custom-checkbox mb-2">
-                                    <input class="custom-control-input"
-                                            type="checkbox"
-                                            id="@("role_" + item.index)"
-                                            checked="@selectedRoles.Contains(item.value)"
-                                            @onchange="(e) => OnCheckboxChanged(item.value, (bool)e.Value!)" />
-                                    <label class="custom-control-label" for="@("role_" + item.index)">
-                                        <span class="font-weight-bold text-gray-800">@item.value</span>
-                                    </label>
-                                </div>
-                            }
-                        }
-
-                    </div>
-                </div>
-
-                <!-- Division Access -->
-                <div class="card mb-3">
-                    <div class="card-header py-2 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
-                            Division Access
-                        </h6>
-                        <button type="button" class="btn btn-outline-primary btn-sm mt-2 mt-md-0"
-                                @onclick="() => ShowAddDivisionModal()">
-                            <i class="fas fa-plus fa-fw mr-1"></i>Add Division
-                        </button>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm mb-0">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Division Code</th>
-                                        <th>Division Name</th>
-                                        <th class="text-center" style="width: 90px;">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var division in divisionAccess)
-                                    {
-                                        <tr>
-                                            <td class="font-weight-bold text-gray-800">@division.DivisionCode</td>
-                                            <td>@division.DivisionName</td>
-                                            <td class="text-center">
-                                                <button type="button"
-                                                        class="btn btn-outline-danger btn-sm"
-                                                        title="Remove division"
-                                                        @onclick="() => RemoveSelectedDivision(division.Id)">
-                                                    <i class="fas fa-trash fa-fw"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Permissions -->
-            <div class="col-xl-4">
-                <div class="card border-left-info mb-4">
-                    <div class="card-header py-2 bg-white">
-                        <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
-                            Effective Permissions
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        @if (userPermissions.Any())
-                        {
-                            foreach (var permission in userPermissions)
-                            {
-                                <div class="d-flex align-items-center justify-content-between border-bottom py-2">
-                                    <div>
-                                        <div class="font-weight-bold text-gray-800">@permission.PermissionCode</div>
-                                        <div class="text-xs text-gray-500">@permission.PermissionName</div>
-                                    </div>
-                                    <span class="badge @(permission.Allowed ? "badge-success" : "badge-light border")">
-                                        <i class="fas @(permission.Allowed ? "fa-check" : "fa-times") fa-fw mr-1"></i>@(permission.Allowed ? "Allowed" : "Denied")
-                                    </span>
-                                </div>
-                            }
-                        }
-                    </div>
-                </div>
+        <div class="form-group mb-0">
+            <div class="custom-control custom-switch">
+                <input id="user-active"
+                       type="checkbox"
+                       class="custom-control-input"
+                       checked="@(jobOfferUser.IsActive == true)"
+                       @onchange="ToggleIsActive" />
+                <label class="custom-control-label font-weight-bold text-gray-700" for="user-active">
+                    @(jobOfferUser.IsActive == true ? "Active" : "Inactive")
+                </label>
             </div>
         </div>
-    </div>
-
-    <div class="card-footer d-flex flex-column flex-lg-row justify-content-end">
-        <a href="@JORoutes.Admin.Users" class="btn btn-outline-secondary btn-sm mr-2 mb-2 mb-lg-0">
-            <i class="fas fa-arrow-left fa-fw mr-1"></i>Back to Users
-        </a>
-        <button type="button" class="btn btn-primary btn-sm mb-2 mb-lg-0" @onclick="SaveUser">
-            <i class="fas fa-save fa-fw mr-1"></i>Update User
-        </button>
     </div>
 </div>
 
-<Modal @ref="modalAddDivision" Title="Divisions">
-    <ChildContent>
-        <div class="card mb-3 small">
-            <div class="card-header py-2 bg-white d-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary text-uppercase text-xs">
-                    <i class="fas fa-filter fa-fw mr-1"></i>Filter Divisions
-                </h6>
-            </div>
-            <div class="card-body py-3">
-                <div class="form-row">
-                    <div class="form-group col-md-6 mb-2 mb-md-0">
-                        <label class="font-weight-bold text-gray-700 mb-1">Company</label>
-                        
-                        <select class="form-control form-control-sm"
-                            @bind="modalCompanyId"
-                            @bind:after="FillModalDivision">
-                            @foreach (var company in ddCompanies)
-                            { <option value="@company.Id">@company.Value</option> }
-                        </select>
-                    </div>
-                    <div class="form-group col-md-6 mb-0">
-                        <label class="font-weight-bold text-gray-700 mb-1">Division</label>
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-light">
-                                    <i class="fas fa-search text-gray-500"></i>
-                                </span>
-                            </div>
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-user-tag fa-fw mr-2"></i>Roles
+        </h6>
+    </div>
 
-                            <input class="form-control"
-                                   placeholder="Search code or division name"
-                                   @bind="modalKeyword"
-                                   @bind:event="oninput"
-                                   @onkeydown="HandleKeywordKeyDown" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card mb-0 small">
-            <div class="card-header py-2 bg-white d-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-gray-800 text-uppercase text-xs">
-                    <i class="fas fa-sitemap fa-fw mr-1 text-primary"></i>Available Divisions
-                </h6>
-                <span class="badge badge-light border badge-pill">@modalDivision.Count divisions</span>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-sm mb-0">
-                        <thead class="thead-light">
-                            <tr>
-                                <th class="text-center align-middle" style="width: 52px;">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col" class="text-center">
+                            <input type="checkbox"
+                                   checked="@AreAllRolesSelected"
+                                   @onchange="ToggleAllRoles"
+                                   aria-label="Check or uncheck all roles" />
+                        </th>
+                        <th scope="col">Role Name</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (roles.Count > 0)
+                    {
+                        @foreach (var role in roles.Where(item => item.IsActive == true).OrderBy(item => item.OrderBy))
+                        {
+                            <tr @key="role.Id">
+                                <td class="text-center">
                                     <input type="checkbox"
-                                           checked="@AreAllDivisionsSelected"
-                                           disabled="@(!modalDivision.Any())"
-                                           @onchange="e => UpdateAllDivisionSelections((bool)e.Value!)" />
-                                </th>
-                                <th class="align-middle">Company</th>
-                                <th class="align-middle">Division Code</th>
-                                <th class="align-middle">Division Name</th>
+                                           checked="@IsRoleSelected(role.RoleName)"
+                                           disabled="@string.IsNullOrWhiteSpace(role.RoleName)"
+                                           @onchange="@(eventArgs => ToggleRole(role.RoleName, eventArgs))"
+                                           aria-label="Select @role.RoleName" />
+                                </td>
+                                <td><strong>@(string.IsNullOrWhiteSpace(role.RoleName) ? "-" : role.RoleName)</strong></td>
+                                <td>@(string.IsNullOrWhiteSpace(role.Description) ? "-" : role.Description)</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @if (modalDivision.Any())
-                            {
-                                @foreach (var division in modalDivision)
-                                {
-                                    <tr>
-                                        <td class="text-center align-middle">
-                                            <input type="checkbox"
-                                                checked="@selectedDivisionIds.Contains(division.Id)"
-                                                @onchange="e => UpdateDivisionSelection(division.Id, (bool)e.Value!)" />
-                                        </td>
-                                        <td>@division.CompanyName</td>
-                                        <td>@division.DivisionCode</td>
-                                        <td>@division.DivisionName</td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted">
-                                        <i class="fas fa-info-circle mr-1"></i> No records found.
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-3">No roles found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-    </ChildContent>
-    <FooterTemplate>
-        <button type="button" class="btn btn-primary btn-sm"
-            @onclick="AddSelectedDivision">
-            <i class="fas fa-plus fa-fw mr-1"></i>Add Selected Divsion/s
-        </button>
-    </FooterTemplate>
-</Modal>
-
-@code {
-    [Parameter] public int joUserId { get; set; }
-
-    private List<string?> selectedRoles = new();
-    private List<string?> roleList = new();
-
-    Modal modalAddDivision = default!;
-    private List<DropdownDto> ddCompanies = new();
-    private List<VwDivisions> modalDivision = new();
-    private int modalCompanyId = 0;
-    private string modalKeyword = "";
-    private List<int> selectedDivisionIds = new();
-    private List<VwDivisions> divisionAccess = new();
-
-    private JobOfferUsers? joUser = new();
-    private List<UserPermissionsDto> userPermissions = new();
-    private List<VwRolePermissions> rolePermissions = new();
-
-    private bool AreAllDivisionsSelected =>
-        modalDivision.Any() &&
-        modalDivision.All(d => selectedDivisionIds.Contains(d.Id));
-
-    protected override async Task OnInitializedAsync()
-    {
-        roleList = await ManageUsersService.GetRoles();
-        ddCompanies = await DropDownListService.GetCompanies();
-        userPermissions = await ManageUsersService.GetUserPermissions();
-        rolePermissions = await ManageUsersService.GetVwRolePermissions();
-
-        joUser = await ManageUsersService.GetUserById(joUserId);
-        selectedRoles = await ManageUsersService.GetJOUserSelectedRolesById(joUserId);
-        divisionAccess = await ManageUsersService.GetVwDivisionsByUserId(joUserId);
-
-        SetUserPermissionAllowed();
-        FillSelectedDivisionIds();
-    }
-
-    private void FillSelectedDivisionIds()
-    {
-        if (divisionAccess.Any())
-            selectedDivisionIds = divisionAccess.Select(jo => jo.Id).ToList();
-    }
-
-    private async Task SaveUser()
-    {
-        var errors = await CollectErrors(new List<string>());
-
-        if (errors.Any())
-        {
-            await AlertService.Errors(errors); return;
-        }
-
-        if (!await AlertService.Confirm()) return;
-
-        var permissionIds = userPermissions
-            .Where(jo => jo.Allowed == true)
-            .Select(jo => jo.Id)
-            .ToList();
-
-        await ManageUsersService.UpdateUserARBAC(joUserId,
-            selectedRoles,
-            selectedDivisionIds,
-            permissionIds);
-
-        Navigation.NavigateTo($"{JORoutes.Admin.UserDetails}/{joUserId}");
-    }
-
-    private async Task<List<string>> CollectErrors(List<string> errors)
-    {
-        if (!selectedRoles.Any())
-            errors.Add("Please select a role.");
-
-        if (!divisionAccess.Any())
-            errors.Add("Please assign a division/s.");
-
-        return errors;
-    }
-
-
-    private void SetUserPermissionAllowed()
-    {
-        var allowedPermissionCodes = rolePermissions
-            .Where(rolePermission => selectedRoles.Contains(rolePermission.RoleName))
-            .Select(rolePermission => rolePermission.PermissionCode)
-            .ToHashSet();
-
-        foreach (var permission in userPermissions)
-        {
-            permission.Allowed = allowedPermissionCodes.Contains(permission.PermissionCode);
-        }
-    }
-
-    private void RemoveSelectedDivision(int divisionId)
-    {
-        selectedDivisionIds.Remove(divisionId);
-        divisionAccess.RemoveAll(division => division.Id == divisionId);
-    }
-
-    private async Task AddSelectedDivision()
-    {
-        if (!selectedDivisionIds.Any())
-            divisionAccess.Clear();
-
-        divisionAccess = await ManageUsersService.GetVwDivisionsByIds(selectedDivisionIds);
-        modalAddDivision.Close();
-    }
-
-    private async Task ShowAddDivisionModal()
-    {
-        //reset
-        modalCompanyId = ddCompanies.FirstOrDefault().Id;
-        modalKeyword = "";
-
-        await FillModalDivision();
-        modalAddDivision.Show();
-    }
-
-    private void UpdateAllDivisionSelections(bool isChecked)
-    {
-        foreach (var division in modalDivision)
-        {
-            UpdateDivisionSelection(division.Id, isChecked);
-        }
-    }
-
-    private async Task UpdateDivisionSelection(int divisionId, bool isChecked)
-    {
-        if (isChecked)
-        {
-            if (!selectedDivisionIds.Contains(divisionId))
-                selectedDivisionIds.Add(divisionId);
-        }
-        else
-            selectedDivisionIds.Remove(divisionId);
-    }
-
-    private async Task FillModalDivision()
-    {
-        modalDivision = await ManageUsersService
-            .SearchVwDivisions(modalCompanyId, modalKeyword);
-    }
-
-    private async Task HandleKeywordKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-            await FillModalDivision();
-    }
-
-    private async Task OnCheckboxChanged(string value, bool isChecked)
-    {
-        if (isChecked)
-        {
-            if (!selectedRoles.Contains(value))
-                selectedRoles.Add(value);
-        }
-        else selectedRoles.Remove(value);
-
-        SetUserPermissionAllowed();
-    }
-}
+    </div>
+</div>

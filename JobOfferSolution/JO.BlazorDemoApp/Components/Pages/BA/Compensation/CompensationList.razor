@@ -1,0 +1,77 @@
+@attribute [Authorize(Roles = JOUserRole.BusinessAdmin)]
+@attribute [Route(JORoutes.BA.Compensations)]
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Company Compensation</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Compensation</th>
+                        <th>Items</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Updated</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (compensationList.Any())
+                    {
+                        @foreach (var compensation in compensationList)
+                        {
+                            <tr @key="compensation.Id">
+                                <td>
+                                    <strong>@(string.IsNullOrWhiteSpace(compensation.CompanyName) ? "-" : compensation.CompanyName)</strong>
+                                    <div class="jo-label">@(string.IsNullOrWhiteSpace(compensation.CompanyCode) ? "-" : compensation.CompanyCode)</div>
+                                </td>
+                                <td><strong>@(string.IsNullOrWhiteSpace(compensation.CmpnyCmpnstnName) ? "-" : compensation.CmpnyCmpnstnName)</strong></td>
+                                <td><strong>@compensation.ItemCount</strong></td>
+                                <td>
+                                    @if (compensation.IsActive == true)
+                                    {
+                                        <span class="text-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div>@(string.IsNullOrWhiteSpace(compensation.CreatedByName) ? "-" : compensation.CreatedByName)</div>
+                                    <small class="text-muted">@(compensation.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                                </td>
+                                <td>
+                                    <div>@(string.IsNullOrWhiteSpace(compensation.ModifiedByName) ? "-" : compensation.ModifiedByName)</div>
+                                    <small class="text-muted">@(compensation.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                                </td>
+                                <td class="text-right">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-sm btn-link text-dark font-weight-bold"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                aria-label="Actions for @compensation.CmpnyCmpnstnName">•••</button>
+                                        <div class="dropdown-menu dropdown-menu-right shadow-sm">
+                                            <a class="dropdown-item" href="@($"{JORoutes.BA.Compensations}/{compensation.Id}")">View</a>
+                                            <a class="dropdown-item" href="@($"{JORoutes.BA.EditCompensation}/{compensation.Id}")">Update</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">No company compensations found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

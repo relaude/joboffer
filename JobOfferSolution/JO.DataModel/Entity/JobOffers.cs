@@ -10,13 +10,20 @@ namespace JO.DataModel.Entity
     {
         [Key] public int Id { get; set; }
         public string? RefNum { get; set; }
+        public int? CompanyId { get; set; }
+        public int? DivisionId { get; set; }
+        public int? DepartmentId { get; set; }
         public int? CandidateId { get; set; }
         public int? RequestId { get; set; }
         public int? DocumentId { get; set; }
         public int? LegalId { get; set; }
         public int? StatusId { get; set; }
         public int? Options { get; set; }
+        public int? OfferRangeId { get; set; }
+        public bool? Escalate { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+        public int? ModifiedBy { get; set; }
     }
 }

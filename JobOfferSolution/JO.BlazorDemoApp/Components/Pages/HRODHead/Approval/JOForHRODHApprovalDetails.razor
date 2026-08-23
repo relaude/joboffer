@@ -1,0 +1,40 @@
+﻿@attribute [Authorize(Roles = JOUserRole.HRODHeadApprover)]
+@attribute [Route(JORoutes.HRODHead.JOForApproval + "/{jobOfferId:int}")]
+
+@inject IApprovalService ApprovalService
+@inject IAlertService AlertService
+@inject NavigationManager Navigation
+
+<JOAnalysis jobOfferId="jobOfferId" />
+
+<div class="jo-actions mb-4">
+    <a href="@JORoutes.HRODHead.JOForApproval" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+        Go Back
+    </a>
+    <button type="button" class="btn btn-success" @onclick="ApproveJobOffer">
+        <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
+        Approve
+    </button>
+</div>
+
+@code {
+    [Parameter] public int jobOfferId { get; set; }
+
+    private async Task ApproveJobOffer()
+    {
+        if (!await AlertService.Confirm(
+            title: "Approve this job offer?",
+            confirmText: "Approve Job Offer"))
+        {
+            return;
+        }
+
+        await ApprovalService.JobOfferChangeStatus(jobOfferId, 7);//HROD Head Approved
+        await AlertService.Success(
+            message: "The job offer review has been approved successfully.",
+            title: "Approve Complete");
+
+        Navigation.NavigateTo(JORoutes.HRODHead.JOForApproval);
+    }
+}

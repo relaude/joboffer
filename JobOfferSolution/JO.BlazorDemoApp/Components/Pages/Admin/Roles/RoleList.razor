@@ -1,0 +1,52 @@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.Roles)]
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-user-tag fa-fw mr-2"></i>Roles
+        </h6>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Role Name</th>
+                        <th scope="col">Description</th>
+                        <th scope="col" class="text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (roles.Count > 0)
+                    {
+                        @foreach (var role in roles.Where(jo=>jo.IsActive==true).OrderBy(jo=>jo.OrderBy))
+                        {
+                            <tr @key="role.Id">
+                                <td><strong>@(string.IsNullOrWhiteSpace(role.RoleName) ? "-" : role.RoleName)</strong></td>
+                                <td>@(string.IsNullOrWhiteSpace(role.Description) ? "-" : role.Description)</td>
+                                <td class="text-center">
+                                    @if (role.IsActive == true)
+                                    {
+                                        <span class="badge badge-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary">Inactive</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-3">No roles found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -8,10 +8,15 @@ namespace JO.Service.Constants
     {
         private const string PrefixAdmin = "/admin";
         private const string PrefixTA = "/ta";
+        private const string PrefixTALead = "/ta-lead";
         private const string PrefixTR = "/tr";
+        private const string PrefixBA = "/ba";
         private const string PrefixJobOffer = "/joboffer";
         private const string PrefixHROD = "/hrod";
         private const string PrefixDH = "/dh";
+        private const string PrefixPEH = "/peh";
+        private const string PrefixDHL1 = "/dh-l1";
+        private const string PrefixHRODHead = "/hrod-head";
         private const string PrefixPres = "/president";
         private const string PrefixMock = "/mock";
 
@@ -35,9 +40,10 @@ namespace JO.Service.Constants
         public static class Admin
         {
             public const string Users = PrefixAdmin + "/users";
+            public const string Roles = PrefixAdmin + "/roles";
             public const string UserDetails = PrefixAdmin + "/user";
-            public const string NewUser = PrefixAdmin + "/new-user";
             public const string EditUser = PrefixAdmin + "/edit-user";
+
             public const string ToggleActive = PrefixAdmin + "/toggle-user";
             public const string SalaryMatrix = PrefixAdmin + "/salary-matrix";
             public const string SalaryMatrixNew = PrefixAdmin + "/salary-matrix/new";
@@ -87,6 +93,11 @@ namespace JO.Service.Constants
             public const string MassUpload = PrefixTA + "/mass-upload";
         }
 
+        public static class TALead
+        {
+            public const string JOForReview = PrefixTALead + "/for-review";
+        }
+
         public static class HROD
         {
             public const string Dashboard = PrefixHROD + "/dashboard";
@@ -108,16 +119,45 @@ namespace JO.Service.Constants
             public const string TemplateNew = PrefixTR + "/template/new";
         }
 
+        public static class BA
+        {
+            public const string Compensations = PrefixBA + "/compensations";
+            public const string CompensationDetails = PrefixBA + "/compensation";
+            public const string EditCompensation = PrefixBA + "/edit-compensation";
+
+            public const string SalaryMatrices = PrefixBA + "/salarymatrices";
+            public const string SalaryMatrixDetails = PrefixBA + "/salarymatrix";
+            public const string EditSalaryMatrix = PrefixBA + "/edit-salarymatrix";
+        }
+
         public static class DH
         {
             public const string Dashboard = PrefixDH + "/dashboard";
             public const string Approvals = PrefixDH + "/approvals";
+            public const string JOForApproval = PrefixDH + "/for-approval";
             public const string Approve = PrefixDH + "/approve";
             public const string ApproveDetails = PrefixDH + "/approve-details";
         }
 
+        public static class PEH
+        {
+            public const string JOForApproval = PrefixPEH + "/for-approval";
+        }
+
+        public static class DHL1
+        {
+            public const string JOForApprovalStandard = PrefixDHL1 + "/approval-standard";
+            public const string JOForApprovalAboveStandard = PrefixDHL1 + "/approval-abovestandard";
+        }
+
+        public static class HRODHead
+        {
+            public const string JOForApproval = PrefixHRODHead + "/for-approval";
+        }
+
         public static class President
         {
+            public const string JOForApproval = PrefixPres + "/for-approval";
             public const string Approvals = PrefixPres + "/approvals";
             public const string Approve = PrefixPres + "/approve";
         }

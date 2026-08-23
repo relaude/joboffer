@@ -20,7 +20,7 @@ namespace JO.Service.Services
 
         public string ToPeso(decimal? amount)
         {
-            return amount?.ToString("C", new CultureInfo("en-PH")) ?? "";
+            return amount?.ToString("C", new CultureInfo("en-PH")) ?? "-";
         }
 
         public string ToCurrency(decimal? amount, string? currency)

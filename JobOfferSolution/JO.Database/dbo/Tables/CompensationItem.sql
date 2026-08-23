@@ -4,6 +4,7 @@
     [CategoryId]   INT             NULL,
     [Monthly]      DECIMAL (18, 2) NULL,
     [Annualy]      DECIMAL (18, 2) NULL,
+    [IsAnalysis]   BIT             NULL,
     [DisplayOrder] INT             NULL,
     CONSTRAINT [PK_CompensationItem] PRIMARY KEY CLUSTERED ([Id] ASC)
 );

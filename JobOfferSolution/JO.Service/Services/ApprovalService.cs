@@ -18,6 +18,16 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task JobOfferChangeStatus(int jobOfferId, int statusId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
+
+            jobOffer.StatusId = statusId;
+            context.JobOffers.Update(jobOffer);
+            await context.SaveChangesAsync();
+        }
+
         public async Task<int> DHApprovals(List<ProposalDto> joProposal)
         {
             var dhApprovals = joProposal.Select(jo=> new JO.DataModel.Entity.Approvals { 

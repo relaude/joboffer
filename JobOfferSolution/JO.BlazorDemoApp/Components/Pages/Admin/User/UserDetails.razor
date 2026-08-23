@@ -1,8 +1,77 @@
-﻿@* @attribute [Authorize(Roles = JOUserRole.Admin)] *@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
 @attribute [Route(JORoutes.Admin.UserDetails + "/{joUserId:int}")]
 
-<UserDetailsShared JoUserId="joUserId" />
+@if (userDetails.Count == 0)
+{
+    <div class="alert alert-warning shadow-sm" role="alert">
+        <i class="fas fa-exclamation-triangle fa-fw mr-2"></i>User details were not found.
+    </div>
+}
+else
+{
+    var user = userDetails[0];
 
-@code {
-    [Parameter] public int joUserId { get; set; }
+    <div class="card shadow mb-4 small">
+        <div class="card-header py-3 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">
+                    @(string.IsNullOrWhiteSpace(user.Name) ? "Unnamed User" : user.Name)
+                </h6>
+                <small class="text-muted d-block mt-1">
+                    @(string.IsNullOrWhiteSpace(user.Email) ? "No email address" : user.Email)
+                    <span class="mx-1">•</span>
+                    @if (user.IsActive == true)
+                    {
+                        <span class="text-success font-weight-bold">Active</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted font-weight-bold">Inactive</span>
+                    }
+                </small>
+            </div>
+
+            <div class="mt-2 mt-md-0">
+                <button type="button" class="btn btn-outline-secondary mr-2" @onclick="GoBack">
+                    <i class="fas fa-arrow-left fa-fw mr-1"></i>Go Back
+                </button>
+                <a class="btn btn-primary" href="@($"{JORoutes.Admin.EditUser}/{joUserId}")">
+                    <i class="fas fa-user-edit fa-fw mr-1"></i>Edit User
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <h6 class="font-weight-bold text-gray-800 mb-3">User Roles</h6>
+
+            @if (RoleNames.Count > 0)
+            {
+                <ul class="mb-0 pl-4">
+                    @foreach (var roleName in RoleNames)
+                    {
+                        <li @key="roleName" class="mb-1">@roleName</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted mb-0">No roles assigned.</p>
+            }
+        </div>
+
+        <div class="card-footer bg-white py-3">
+            <div class="row">
+                <div class="col-md-6 mb-2 mb-md-0">
+                    <small class="text-muted d-block">Created</small>
+                    <span>@(string.IsNullOrWhiteSpace(user.CreatedByName) ? "-" : user.CreatedByName)</span>
+                    <small class="text-muted ml-1">@(user.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <small class="text-muted d-block">Modified</small>
+                    <span>@(string.IsNullOrWhiteSpace(user.ModifiedByName) ? "-" : user.ModifiedByName)</span>
+                    <small class="text-muted ml-1">@(user.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                </div>
+            </div>
+        </div>
+    </div>
 }

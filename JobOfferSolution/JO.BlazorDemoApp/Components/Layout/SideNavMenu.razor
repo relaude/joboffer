@@ -1,4 +1,5 @@
-﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+﻿@using JO.BlazorDemoApp.Components.Layout.SideMenu
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="@JORoutes.Private.Home">
@@ -8,29 +9,54 @@
 
     @if (user.Identity?.IsAuthenticated == true)
     {
-        @if (user.IsInRole(JOUserRole.TA) == true)
+        @if (user.IsInRole(JOUserRole.TAPartner) == true)
         {
-            <TAMenu />
+            <TAPartner />
         }
 
-        @if (user.IsInRole(JOUserRole.TR) == true)
+        @if (user.IsInRole(JOUserRole.TALead) == true)
         {
-            <TRMenu />
+            <TALead />
         }
 
-        @if (user.IsInRole(JOUserRole.HROD) == true)
+        @if (user.IsInRole(JOUserRole.PEHead) == true)
         {
-            <HRODMenu />
+            <PEHead />
         }
 
-        @if (user.IsInRole(JOUserRole.DH) == true)
+        @if (user.IsInRole(JOUserRole.HRODHeadApprover) == true)
         {
-            <DHMenu />
+            <HRODHead />
+        }
+
+        @if (user.IsInRole(JOUserRole.DivisionHeadApproverL1) == true)
+        {
+            <DHL1 />
+        }
+
+        @if (user.IsInRole(JOUserRole.DivisionHeadApproverL2) == true)
+        {
+            <DHL2 />
+        }
+
+        @if (user.IsInRole(JOUserRole.DivisionHeadApproverL3) == true)
+        {
+            <DHL3 />
         }
 
         @if (user.IsInRole(JOUserRole.President) == true)
         {
             <PresMenu />
+        }
+
+        @if (user.IsInRole(JOUserRole.BusinessAdmin) == true)
+        {
+            <BAdmin />
+        }
+
+        @if (user.IsInRole(JOUserRole.OnboardingPartner) == true)
+        {
+            <Onboard />
         }
 
         @if (user.IsInRole(JOUserRole.Admin) == true)

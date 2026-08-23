@@ -1,32 +1,7 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Authorize(Roles = JOUserRole.TA)]
 @attribute [Route(JORoutes.TA.Candidates)]
 
-@inject ICandidateService CandidateService
-@inject IUtilitiesService UtilitiesService
-@inject IAlertService AlertService
-@inject IAccountService AccountService
-@inject NavigationManager Navigation
 
-@code {
-    private List<VwDboxCandidates> candidates = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        candidates = await CandidateService.GetVwDboxCandidates();
-    }
-
-    private async Task CreateJobOffer(int candidateId)
-    {
-        int numProposal = await AlertService.ConfirmProposalNumber();
-
-        if (numProposal == 0) return;
-
-        int createdBy = await AccountService.GetJobOfferUserId();
-        int jobOfferId = await CandidateService.CreateJobOffer(candidateId, createdBy);
-
-        Navigation.NavigateTo($"{JORoutes.TA.NewOffer}/{jobOfferId}/{numProposal}");
-    }
-}
 
 <div class="row">
     <div class="col-xl-4 col-md-4 mb-4">
@@ -89,7 +64,8 @@
                 <table class="jo-table">
                     <thead>
                         <tr>
-                            <th>Full Name</th>
+                            <th>Name</th>
+                            <th>Candidate ID</th>
                             <th>Email</th>
                             <th>Job Position</th>
                             <th>Company</th>
@@ -106,6 +82,7 @@
                                         @row.CandidateName
                                     </a>
                                 </td>
+                                <td>@row.DboxRefNum</td>
                                 <td>@row.EmailAddress</td>
                                 <td>@row.JobPosition</td>
                                 <td>@row.Company</td>

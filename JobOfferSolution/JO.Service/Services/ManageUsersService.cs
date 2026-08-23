@@ -28,6 +28,166 @@ namespace JO.Service.Services
             _contextFactory = contextFactory;
         }
 
+        public async Task<List<VwJobOfferUsersAndRoles>> GetVwJobOfferUsersAndRoles(int joUserId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwJobOfferUsersAndRoles
+                .AsNoTracking()
+                .Where(jo => jo.Id == joUserId)
+                .ToListAsync();
+        }
+
+        public async Task<JobOfferUsers> GetJobOfferUser(int joUserId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.JobOfferUsers.FindAsync(joUserId);
+        }
+
+        public async Task<List<string>> GetJobOfferUserRoles(JobOfferUsers joUser)
+        {
+            var aspUser = await _userManager.FindByIdAsync(joUser!.AspNetUserId!);
+            var currentRoleNames = await _userManager.GetRolesAsync(aspUser);
+
+            return currentRoleNames.ToList();
+        }
+
+        public async Task<int> UpdateJobOfferUser(JobOfferUsers newUser, List<string> roleNames)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var jobOfferUser = await context.JobOfferUsers.FindAsync(newUser.Id);
+            var aspUser = await _userManager.FindByIdAsync(jobOfferUser!.AspNetUserId!);
+
+            aspUser!.Email = newUser.Email;
+            aspUser.UserName = newUser.Email;
+
+            var updateAspUserResult = await _userManager.UpdateAsync(aspUser);
+            if (!updateAspUserResult.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    string.Join(", ", updateAspUserResult.Errors.Select(error => error.Description)));
+            }
+
+            var currentRoleNames = await _userManager.GetRolesAsync(aspUser);
+            if (currentRoleNames.Count > 0)
+            {
+                var removeRolesResult = await _userManager.RemoveFromRolesAsync(aspUser, currentRoleNames);
+                if (!removeRolesResult.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        string.Join(", ", removeRolesResult.Errors.Select(error => error.Description)));
+                }
+            }
+
+            var savedRoleNames = await _roleManager.Roles
+                .AsNoTracking()
+                .Where(role => role.Name != null && roleNames.Contains(role.Name))
+                .Select(role => role.Name!)
+                .ToListAsync();
+
+            var addRolesResult = await _userManager.AddToRolesAsync(aspUser, savedRoleNames);
+            if (!addRolesResult.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    string.Join(", ", addRolesResult.Errors.Select(error => error.Description)));
+            }
+
+            var currentClaims = await _userManager.GetClaimsAsync(aspUser);
+            if (!currentClaims.Any(claim => claim.Type == "JobOfferUserId"))
+            {
+                var addClaimResult = await _userManager.AddClaimAsync(
+                    aspUser,
+                    new Claim("JobOfferUserId", jobOfferUser.Id.ToString()));
+
+                if (!addClaimResult.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        string.Join(", ", addClaimResult.Errors.Select(error => error.Description)));
+                }
+            }
+
+            jobOfferUser.Name = newUser.Name;
+            jobOfferUser.Email = newUser.Email;
+            jobOfferUser.IsActive = newUser.IsActive;
+            jobOfferUser.ModifiedAt = DateTime.Now;
+            jobOfferUser.ModifiedBy = newUser.ModifiedBy;
+
+            await context.SaveChangesAsync();
+
+            return jobOfferUser.Id;
+        }
+
+        public async Task<int> CreateJobOfferUser(JobOfferUsers newUser, List<string> roleNames)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            var aspUser = new ApplicationUser
+            {
+                UserName = newUser.Email,
+                Email = newUser.Email
+            };
+
+            var createUserResult = await _userManager.CreateAsync(
+                aspUser,
+                CommonConstant.DefaultPassword);
+
+            if (!createUserResult.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    string.Join(", ", createUserResult.Errors.Select(error => error.Description)));
+            }
+
+            try
+            {
+                var addRolesResult = await _userManager.AddToRolesAsync(aspUser, roleNames);
+                if (!addRolesResult.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        string.Join(", ", addRolesResult.Errors.Select(error => error.Description)));
+                }
+
+                newUser.AspNetUserId = aspUser.Id;
+                newUser.IsActive ??= true;
+                newUser.CreatedAt ??= DateTime.Now;
+
+                await context.JobOfferUsers.AddAsync(newUser);
+                await context.SaveChangesAsync();
+
+                var addClaimResult = await _userManager.AddClaimAsync(
+                    aspUser,
+                    new Claim("JobOfferUserId", newUser.Id.ToString()));
+
+                if (!addClaimResult.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        string.Join(", ", addClaimResult.Errors.Select(error => error.Description)));
+                }
+
+                return newUser.Id;
+            }
+            catch
+            {
+                await _userManager.DeleteAsync(aspUser);
+                throw;
+            }
+        }
+
+        public async Task<List<VwJobOfferUsers>> GetVwJobOfferUsers()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwJobOfferUsers
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<VwJOUserAspNetRoles>> GetVwJOUserAspNetRoles()
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwJOUserAspNetRoles
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<int> ToggleIsActive(int userId)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();

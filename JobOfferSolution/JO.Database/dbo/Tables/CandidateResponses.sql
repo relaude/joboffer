@@ -47,6 +47,7 @@
     [OtherBenefits]                         NVARCHAR (MAX)  NULL,
     [VehicleBenefit]                        NVARCHAR (MAX)  NULL,
     [MobilePhoneBenefit]                    NVARCHAR (MAX)  NULL,
+    [DboxCandidateId]                       NVARCHAR (50)   NULL,
     [CreatedAt]                             DATETIME        NULL,
     [CreatedBy]                             INT             NULL,
     CONSTRAINT [PK_CandidateResponses_1] PRIMARY KEY CLUSTERED ([Id] ASC)

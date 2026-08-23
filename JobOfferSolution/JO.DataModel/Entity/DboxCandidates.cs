@@ -7,8 +7,11 @@ namespace JO.DataModel.Entity
         [Key] public int Id { get; set; }
         public int? ResponseId { get; set; }
         public int? DboxId { get; set; }
-        public string? DboxRefNum { get; set; }
+        public int? CompanyId { get; set; }
+        public int? DivisionId { get; set; }
+        public int? DepartmentId { get; set; }
         public int? CSGId { get; set; }
+        public string? DboxRefNum { get; set; }
         public string? CandidateName { get; set; }
         public string? Company { get; set; }
         public string? Division { get; set; }

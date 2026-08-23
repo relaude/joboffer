@@ -1,8 +1,0 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TR)]
-@attribute [Route(JORoutes.TR.CompBen + "/{packageId:int}")]
-
-<h1>@packageId</h1>
-
-@code {
-    [Parameter] public int packageId { get; set; }
-}

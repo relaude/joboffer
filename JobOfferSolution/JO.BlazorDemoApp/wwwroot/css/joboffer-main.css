@@ -239,6 +239,35 @@
 .jo-table tbody tr:nth-child(even) { background: #fbfcfe; }
 .jo-table tbody tr:last-child td { border-bottom: 0; }
 .jo-table tfoot { background: #eaf0ff; font-weight: 800; }
+.jo-table thead .is-highlighted,
+.jo-table tr .is-highlighted {
+    background: #bff0de;
+    border-color: #89e2c2;
+}
+
+.jo-table tfoot.has-highlighted-total .is-highlighted {
+    background: #a9e8d0;
+}
+
+.jo-table thead .is-option-highlight,
+.jo-table tr .is-option-highlight {
+    background: #eef3ff;
+    border-color: #d8e2ff;
+}
+
+.jo-table thead .is-option-highlight-alt,
+.jo-table tr .is-option-highlight-alt {
+    background: #e2e9ff;
+    border-color: #c9d6ff;
+}
+
+.jo-table tfoot .is-option-highlight {
+    background: #dce6ff;
+}
+
+.jo-table tfoot .is-option-highlight-alt {
+    background: #cfdbff;
+}
 
 /* Form controls */
 .jo-content-page label {

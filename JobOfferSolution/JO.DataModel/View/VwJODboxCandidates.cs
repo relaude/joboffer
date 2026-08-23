@@ -8,11 +8,16 @@ namespace JO.DataModel.View
     {
         public int Id { get; set; }
         public string? RefNum { get; set; }
+        public string? DboxRefNum { get; set; }
         public string? CandidateName { get; set; }
         public int? StatusId { get; set; }
         public string? StatusName { get; set; }
         public string? BootstrapClass { get; set; }
+        public int? OfferRangeId { get; set; }
+        public string? RangeName { get; set; }
         public string? CreatedByName { get; set; }
+        public string? ModifiedByName { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
     }
 }

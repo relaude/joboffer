@@ -1,0 +1,92 @@
+@typeparam TValue
+@inherits InputBase<TValue>
+@using System.Globalization
+
+<div class="input-group">
+    <input @attributes="AdditionalAttributes"
+           class="@CssClass"
+           type="text"
+           inputmode="decimal"
+           value="@CurrentValueAsString"
+           @onchange="OnValueChanged" />
+</div>
+
+@code {
+    private static readonly CultureInfo AccountingCulture = CultureInfo.InvariantCulture;
+
+    protected override string? FormatValueAsString(TValue? value)
+    {
+        if (value is null)
+            return null;
+
+        var text = Convert.ToString(value, AccountingCulture);
+        return decimal.TryParse(text, NumberStyles.Number, AccountingCulture, out var amount)
+            ? amount.ToString("N2", AccountingCulture)
+            : text;
+    }
+
+    protected override bool TryParseValueFromString(
+        string? value,
+        out TValue result,
+        out string validationErrorMessage)
+    {
+        var targetType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
+        var normalizedValue = value?.Replace("₱", string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(normalizedValue))
+        {
+            if (targetType == typeof(string) || Nullable.GetUnderlyingType(typeof(TValue)) is not null)
+            {
+                result = default!;
+                validationErrorMessage = string.Empty;
+                return true;
+            }
+
+            result = default!;
+            validationErrorMessage = $"The {FieldIdentifier.FieldName} field is required.";
+            return false;
+        }
+
+        if (!decimal.TryParse(normalizedValue, NumberStyles.Number, AccountingCulture, out var amount))
+        {
+            result = default!;
+            validationErrorMessage = $"The {FieldIdentifier.FieldName} field must be a valid amount.";
+            return false;
+        }
+
+        object convertedValue;
+
+        if (targetType == typeof(string))
+        {
+            convertedValue = amount.ToString("0.00", AccountingCulture);
+        }
+        else if (targetType == typeof(decimal))
+        {
+            convertedValue = amount;
+        }
+        else if (targetType == typeof(int) &&
+                 decimal.Truncate(amount) == amount &&
+                 amount >= int.MinValue &&
+                 amount <= int.MaxValue)
+        {
+            convertedValue = decimal.ToInt32(amount);
+        }
+        else
+        {
+            result = default!;
+            validationErrorMessage = targetType == typeof(int)
+                ? $"The {FieldIdentifier.FieldName} field must be a whole number."
+                : $"PesoInput supports only string, int, and decimal values.";
+            return false;
+        }
+
+        result = (TValue)convertedValue;
+        validationErrorMessage = string.Empty;
+        return true;
+    }
+
+    private void OnValueChanged(ChangeEventArgs args)
+    {
+        CurrentValueAsString = args.Value?.ToString();
+    }
+}

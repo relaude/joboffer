@@ -1,198 +1,95 @@
-﻿@* @attribute [Authorize(Roles = JOUserRole.Admin)] *@
+﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
 @attribute [Route(JORoutes.Admin.Users)]
 
-@inject IManageUsersService ManageUsersService
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-users fa-fw mr-2"></i>Job Offer Users
+        </h6>
 
-<div class="card shadow mb-4 border-left-primary small">
-    <div class="card-header py-3 bg-white">
-        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between">
-            <div>
-                <h6 class="m-0 font-weight-bold text-primary">
-                    <i class="fas fa-users-cog fa-fw mr-2"></i>
-                    Job Offer Users
-                </h6>
-                <small class="text-muted">Job Offer Users | Hybrid RBAC + ABAC</small>
-            </div>
-            <div class="mt-2 mt-lg-0">
-                <span class="badge badge-light border mr-1"><i class="fas fa-user-shield fa-fw text-primary mr-1"></i>Admin View</span>
-                <span class="badge badge-info"><i class="fas fa-project-diagram fa-fw mr-1"></i>RBAC + ABAC</span>
-            </div>
-        </div>
+        <a class="btn btn-primary" href="@JORoutes.Admin.UserDetails">
+            <i class="fas fa-user-plus fa-fw mr-1"></i>New User
+        </a>
     </div>
 
     <div class="card-body">
-        <!-- Summary Status -->
-        <div class="row mb-4">
-            @foreach (var stat in summaryStats)
-            {
-                <div class="col-xl-3 col-md-6 mb-3 mb-xl-0">
-                    <div class="border-left-@stat.Color bg-light px-3 py-2 h-100">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <div class="text-xs font-weight-bold text-@stat.Color text-uppercase mb-1">@stat.Label</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-900">@stat.Value</div>
-                            </div>
-                            <i class="@stat.Icon fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-        <!-- Summary Status -->
-
-        <!-- Filters -->
-        <div class="border rounded bg-white mb-4">
-            <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
-                <div>
-                    <h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-filter fa-fw text-primary mr-2"></i>Search & Filters</h6>
-                    <small class="text-muted">Find users, Identity roles, access scope, and approval eligibility.</small>
-                </div>
-            </div>
-
-            <div class="p-3">
-                <div class="row align-items-end">
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <label class="font-weight-bold text-gray-700 mb-1">Name</label>
-                        <input class="form-control form-ctrl-sml" />
-                    </div>
-
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <label class="font-weight-bold text-gray-700 mb-1">Email</label>
-                        <input class="form-control form-ctrl-sml" />
-                    </div>
-
-                    <div class="col-lg-2 col-md-6 mb-3">
-                        <label class="font-weight-bold text-gray-700 mb-1">Role</label>
-                        <select class="form-control form-ctrl-sml">
-                            <option>All Roles</option>
-                            <option>HROD Head</option>
-                            <option>TA Partner</option>
-                            <option>Division Head</option>
-                            <option>President</option>
-                        </select>
-                    </div>
-
-                    <div class="col-lg-2 col-md-6 mb-3">
-                        <label class="font-weight-bold text-gray-700 mb-1">Status</label>
-                        <select class="form-control form-ctrl-sml">
-                            <option>All Statuses</option>
-                            <option>Active</option>
-                            <option>Inactive</option>
-                        </select>
-                    </div>
-
-                    <div class="col-lg-2 col-md-12 mb-3">
-                        <div class="d-flex flex-column flex-sm-row justify-content-lg-end">
-                            <button type="button" class="btn btn-primary btn-sm mb-2 mb-sm-0 mr-sm-2" disabled>
-                                <i class="fas fa-search fa-fw mr-1"></i>Search
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
-                                <i class="fas fa-eraser fa-fw mr-1"></i>Clear
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Filters -->
-
-        <!-- User Grid -->
-        <div class="border rounded bg-white mb-4">
-            <div class="px-3 py-2 border-bottom bg-light d-flex flex-column flex-md-row justify-content-between">
-                <div>
-                    <h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-table fa-fw text-primary mr-2"></i>Users Grid</h6>
-                    <small class="text-muted">User grid focused on role, company scope, status, and approval routing readiness.</small>
-                </div>
-                <a href="@JORoutes.Admin.NewUser" class="btn btn-success btn-sm mt-2 mt-md-0 align-self-start align-self-md-center" disabled>
-                    <i class="fas fa-user-plus fa-fw mr-1"></i>Add User
-                </a>
-            </div>
-
-            <div class="p-3">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-sm text-nowrap mb-0">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Actions</th>
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th class="text-center">Roles</th>
+                        <th class="text-center">Status</th>
+                        <th>Created</th>
+                        <th>Modified</th>
+                        <th class="text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (jobOfferUsers.Count > 0)
+                    {
+                        @foreach (var user in jobOfferUsers)
+                        {
+                            <tr @key="user.Id">
+                                <td><strong>@(string.IsNullOrWhiteSpace(user.Name) ? "-" : user.Name)</strong></td>
+                                <td>@(string.IsNullOrWhiteSpace(user.Email) ? "-" : user.Email)</td>
+                                <td class="text-center">@user.CountRoles</td>
+                                <td class="text-center">
+                                    @if (user.IsActive == true)
+                                    {
+                                        <span class="text-success">
+                                            <i class="fas fa-check-circle fa-fw mr-1"></i>Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            <i class="fas fa-times-circle fa-fw mr-1"></i>Inactive
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div>@(string.IsNullOrWhiteSpace(user.CreatedByName) ? "-" : user.CreatedByName)</div>
+                                    <small class="text-muted">@(user.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                                </td>
+                                <td>
+                                    <div>@(string.IsNullOrWhiteSpace(user.ModifiedByName) ? "-" : user.ModifiedByName)</div>
+                                    <small class="text-muted">@(user.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
+                                </td>
+                                <td class="text-right">
+                                    <div class="dropdown">
+                                        <button type="button"
+                                                class="btn btn-link text-dark font-weight-bold"
+                                                data-toggle="dropdown"
+                                                aria-haspopup="true"
+                                                aria-expanded="false"
+                                                aria-label="Actions for @user.Name">
+                                            •••
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right shadow-sm">
+                                            <a class="dropdown-item"
+                                               href="@($"{JORoutes.Admin.UserDetails}/{user.Id}")">
+                                                View
+                                            </a>
+                                            <a class="dropdown-item"
+                                               href="@($"{JORoutes.Admin.EditUser}/{user.Id}")">
+                                                Edit
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var user in joUsers)
-                            {
-                                <tr>
-                                    <td>@user.Name</td>
-                                    <td>@user.Email</td>
-                                    <td class="text-center">
-                                        @if (user.IsActive == true)
-                                        {
-                                            <span class="badge badge-success">
-                                                <i class="fas fa-user-check fa-fw mr-1"></i>Active
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-secondary">
-                                                <i class="fas fa-user-slash fa-fw mr-1"></i>Inactive
-                                            </span>
-                                        }
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="@($"{JORoutes.Admin.UserDetails}/{user.Id}")" 
-                                            class="btn btn-outline-primary btn-sm mr-1" 
-                                            title="View">
-                                                <i class="fas fa-eye fa-fw"></i>
-                                        </a>
-
-                                        <a href="@($"{JORoutes.Admin.EditUser}/{user.Id}")"
-                                            class="btn btn-outline-info btn-sm mr-1" title="Edit">
-                                            <i class="fas fa-edit fa-fw"></i>
-                                        </a>
-
-                                        @if (user.IsActive == true)
-                                        {
-                                            <a href="@($"{JORoutes.Admin.ToggleActive}/{user.Id}")"
-                                                class="btn btn-outline-danger btn-sm" title="Disable">
-                                                <i class="fas fa-user-slash fa-fw"></i>
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <a href="@($"{JORoutes.Admin.ToggleActive}/{user.Id}")"
-                                                class="btn btn-outline-success btn-sm" title="Activate">
-                                                <i class="fas fa-user-check fa-fw"></i>
-                                            </a>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">No users found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-        <!-- User Grid -->
-
     </div>
 </div>
-
-@code {
-    private List<JobOfferUsers> joUsers = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        joUsers = await ManageUsersService.GetAllUsersAsync();
-    }
-
-    private readonly List<MockStat> summaryStats =
-    [
-        new("Total Users", "0", "primary", "fas fa-users"),
-        new("Active Users", "0", "success", "fas fa-user-check"),
-        new("Inactive Users", "0", "danger", "fas fa-user-slash"),
-        new("ABAC Policies", "0", "info", "fas fa-shield-alt")
-    ];
-
-    private sealed record MockStat(string Label, string Value, string Color, string Icon);
-}

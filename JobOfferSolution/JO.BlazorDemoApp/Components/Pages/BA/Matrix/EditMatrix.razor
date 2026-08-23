@@ -1,0 +1,135 @@
+﻿@attribute [Authorize(Roles = JOUserRole.BusinessAdmin)]
+@attribute [Route(JORoutes.BA.EditSalaryMatrix + "/{matrixId:int}")]
+
+<div class="card shadow mb-4 small">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                @if (vwSalaryMatrix.IsActive == true)
+                {
+                    <span class="jo-pill jo-pill-green mr-2">ACTIVE</span>
+                }
+
+                @if (vwSalaryMatrix.IsActive == false)
+                {
+                    <span class="jo-pill jo-pill-gray mr-2">INACTIVE</span>
+                }
+
+                <h4 class="jo-title mt-3 mb-1">@vwSalaryMatrix.CompanyName</h4>
+                <div class="jo-code">@vwSalaryMatrix.CompanyCode</div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Created by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(vwSalaryMatrix.CreatedByName) ? "-" : vwSalaryMatrix.CreatedByName)</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Created at</div>
+                        <div class="jo-meta-value">@(vwSalaryMatrix.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Modified by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(vwSalaryMatrix.ModifiedByName) ? "-" : vwSalaryMatrix.ModifiedByName)</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Modified at</div>
+                        <div class="jo-meta-value">@(vwSalaryMatrix.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="jo-title">Salary bands</h6>
+        <div class="jo-actions">
+            <button class="btn btn-outline-primary"
+                    @onclick="AddBand"
+                    disabled="@(!salaryGrades.Any())">
+                + Add band
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th>Grade</th>
+                        <th>Minimum</th>
+                        <th>Midpoint</th>
+                        <th>Maximum</th>
+                        <th>CompaRatio</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var band in salaryBands)
+                    {
+                        <tr @key="band">
+                            <td>
+                                <select class="custom-select custom-select-sm"
+                                        @bind="band.CSGId"
+                                        disabled="@band.LockCSGId">
+                                    @foreach (var option in salaryGrades)
+                                    {
+                                        <option value="@option.Id">@option.GradeName</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <PesoInput TValue="decimal?"
+                                           class="form-control text-right"
+                                           min="10000"
+                                           step="10000"
+                                           @bind-Value="band.Minimum" />
+                            </td>
+                            <td>
+                                <PesoInput TValue="decimal?"
+                                           class="form-control text-right"
+                                           min="10000"
+                                           step="10000"
+                                           @bind-Value="band.Midpoint" />
+                            </td>
+                            <td>
+                                <PesoInput TValue="decimal?"
+                                           class="form-control text-right"
+                                           min="10000"
+                                           step="10000"
+                                           @bind-Value="band.Maximum" />
+                            </td>
+                            <td>
+                                <PesoInput TValue="decimal?"
+                                           class="form-control text-right"
+                                           min="10000"
+                                           step="10000"
+                                           @bind-Value="band.CompaRatio" />
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-danger btn-circle btn-sm"
+                                        title="Remove band"
+                                        aria-label="Remove band"
+                                        disabled="@band.LockCSGId"
+                                        @onclick="() => RemoveBand(band)">
+                                    <i class="fas fa-trash-alt fa-fw"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer jo-actions">
+        <a href="@JORoutes.TR.SalaryMatrix" class="btn btn-outline-secondary">Cancel</a>
+        <button class="btn btn-primary px-4" @onclick="SaveMatrix">Update matrix</button>
+    </div>
+</div>
+

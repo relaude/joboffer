@@ -1,4 +1,4 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Authorize(Roles = JOUserRole.TA)]
 @attribute [Route(JORoutes.TA.Candidate + "/{candidateId:int}")]
 
 <div class="card shadow mb-4">
@@ -6,8 +6,8 @@
         <h2 class="h6 m-0 font-weight-bold text-primary">Candidate Summary</h2>
 
         <div class="ml-auto">
-            <a href="@JORoutes.TA.Candidates" class="btn btn-outline-secondary btn-sm mr-2">Back</a>
-            <button type="button" class="btn btn-primary btn-sm" @onclick="CreateJobOffer">
+            <a href="@JORoutes.TA.Candidates" class="btn btn-outline-secondary mr-2">Back</a>
+            <button type="button" class="btn btn-primary" @onclick="CreateJobOffer">
                 Create Job Offer
             </button>
         </div>
@@ -23,7 +23,7 @@
 <div class="card shadow mb-4 small">
     <div class="card-header py-3 d-flex align-items-center justify-content-between">
         <h2 class="h6 m-0 font-weight-bold text-primary">Documents</h2>
-        <button type="button" class="btn btn-primary btn-sm">
+        <button type="button" class="btn btn-primary">
             <i class="fas fa-upload fa-fw mr-1"></i>Upload
         </button>
     </div>
@@ -76,32 +76,3 @@
         </div>
     </div>
 </div>
-
-@inject ICandidateService CandidateService
-@inject IUtilitiesService UtilitiesService
-@inject IAlertService AlertService
-@inject IAccountService AccountService
-@inject NavigationManager Navigation
-
-@code {
-    [Parameter] public int candidateId { get; set; }
-    private VwDboxCandidates candidate = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        candidate = await CandidateService.GetVwDboxCandidate(candidateId);
-    }
-
-    private async Task CreateJobOffer()
-    {
-        int numProposal = await AlertService.ConfirmProposalNumber();
-
-        if (numProposal == 0) return;
-
-        int createdBy = await AccountService.GetJobOfferUserId();
-        int jobOfferId = await CandidateService.CreateJobOffer(candidate, numProposal, createdBy);
-
-        Navigation.NavigateTo($"{JORoutes.TA.Analysis}/{jobOfferId}");
-    }
-
-}

@@ -30,6 +30,7 @@ namespace JO.Service
             services.AddScoped<IDiscussionService, DiscussionService>();
             services.AddScoped<IBenefitsService, BenefitsService>();
             services.AddScoped<IDraftAnalysisService, DraftAnalysisService>();
+            services.AddScoped<ICompensationService, CompensationService>();
 
             return services;
         }
