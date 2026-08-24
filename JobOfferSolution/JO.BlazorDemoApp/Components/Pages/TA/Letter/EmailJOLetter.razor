@@ -7,20 +7,7 @@
     </div>
 
     <div class="col-sm-4">
-        <div class="card shadow small mb-4">
-            <div class="card-header">
-                <h2 class="h6 m-0 font-weight-bold text-primary">@companyCompensation.CmpnyCmpnstnName</h2>
-                
-            </div>
-            <div class="card-body">
-                @foreach (var item in vwCompanyCompensationItems.OrderBy(item => item.DisplayOrder))
-                {
-                    <div class="custom-control">
-                        <span class="font-weight-bold text-gray-800">@item.ItemName</span>
-                    </div>
-                }
-            </div>
-        </div>
+        <CardCompensation Items="@vwCompanyCompensationItems" />
     </div>
 </div>
 

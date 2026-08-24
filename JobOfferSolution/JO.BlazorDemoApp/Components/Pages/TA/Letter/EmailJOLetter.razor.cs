@@ -19,7 +19,6 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Letter
         
         private JobOffers jobOffer = new();
         private VwDboxCandidates candidate = new();
-        private CompanyCompensation companyCompensation = new();
 
         private List<JOCompanyCompensation> joCompanyCompensation = new();
         private List<JOItemLetter> joItemLetters = new();
@@ -38,7 +37,6 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Letter
             
             candidate = await JOLetterService.GetVwDboxCandidate(jobOffer.CandidateId.GetValueOrDefault());
             vwCompanyCompensationItems = await CompensationService.GetVwCompanyCompensationItems(jobOffer.CmpnyCmpnstnId.GetValueOrDefault());
-            companyCompensation = await JOLetterService.GetCompanyCompensation(jobOffer.CmpnyCmpnstnId.GetValueOrDefault());
 
             decimal proposedSalary = joCompanyCompensation
                 .Where(jo => jo.OptionNumber > 0)
