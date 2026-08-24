@@ -16,7 +16,7 @@ namespace JO.BlazorDemoApp.Components.Pages.PEH.Approval
         {
             joDboxCandidates = await JODetailsService.GetVwJODboxCandidates();
             filteredJODboxCandidates = joDboxCandidates
-                .Where(jo => jo.StatusId == 3
+                .Where(jo => jo.StatusId == 3 && jo.WorkFlowId == 3
                     && (jo.OfferRangeId == 2 || jo.OfferRangeId == 3))
                 .ToList();
         }

@@ -12,7 +12,8 @@ namespace JO.DataModel.View
         public string? CandidateName { get; set; }
         public int? StatusId { get; set; }
         public string? StatusName { get; set; }
-        public string? BootstrapClass { get; set; }
+        public int? WorkFlowId { get; set; }
+        public string? FlowName { get; set; }
         public int? OfferRangeId { get; set; }
         public string? RangeName { get; set; }
         public string? CreatedByName { get; set; }

@@ -90,6 +90,7 @@
                         <th>Candidate ID</th>
                         <th>Candidate</th>
                         <th>Status</th>
+                        <th>Work Flow</th>
                         <th>Created</th>
                         <th>Modified</th>
                         <th class="text-center">Action</th>
@@ -102,11 +103,8 @@
                             <td><strong>@(joDboxCandidate.RefNum)</strong></td>
                             <td>@joDboxCandidate.DboxRefNum</td>
                             <td>@joDboxCandidate.CandidateName</td>
-                            <td>
-                                <span class="badge badge-info">
-                                    @joDboxCandidate.StatusName
-                                </span>
-                            </td>
+                            <td>@joDboxCandidate.StatusName</td>
+                            <td>@joDboxCandidate.FlowName</td>
                             <td>
                                 <div>@joDboxCandidate.CreatedByName</div>
                                 <small class="text-muted">@(joDboxCandidate.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
@@ -131,6 +129,20 @@
                                             <a class="dropdown-item"
                                                href="@($"{JORoutes.TA.Analysis}/{joDboxCandidate.Id}")">
                                                 Analysis
+                                            </a>
+                                        }
+
+                                        @if (joDboxCandidate.WorkFlowId == 4 
+                                            && (joDboxCandidate.StatusId == 4 
+                                                || joDboxCandidate.StatusId == 8))
+                                        {
+                                            <a class="dropdown-item"
+                                               href="@($"{JORoutes.TA.EmailLetter}/{joDboxCandidate.Id}")">
+                                                Letter
+                                            </a>
+                                            <a class="dropdown-item"
+                                               href="#">
+                                                Discussion
                                             </a>
                                         }
 

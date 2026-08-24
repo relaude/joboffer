@@ -1,0 +1,81 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.EmailLetter + "/{jobOfferId:int}")]
+
+<div class="row">
+    <div class="col-sm-8">
+        <CandidateBasicDetails Candidate="candidate" />
+    </div>
+
+    <div class="col-sm-4">
+        <div class="card shadow small mb-4">
+            <div class="card-header">
+                <h2 class="h6 m-0 font-weight-bold text-primary">@companyCompensation.CmpnyCmpnstnName</h2>
+                
+            </div>
+            <div class="card-body">
+                @foreach (var item in vwCompanyCompensationItems.OrderBy(item => item.DisplayOrder))
+                {
+                    <div class="custom-control">
+                        <span class="font-weight-bold text-gray-800">@item.ItemName</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+   
+    <div class="card-header py-3">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-2 mb-md-0">
+                <h6 class="m-0 font-weight-bold text-primary">@jobOffer.RefNum</h6>
+            </div>
+            <div class="col-md-6">
+                <label class="sr-only" for="compensation-option">Compensation option</label>
+                <select id="compensation-option"
+                        class="custom-select custom-select-sm"
+                        @onchange="OnCompensationOptionChanged">
+                    @foreach (var compensation in joCompanyCompensation
+                        .Where(jo => jo.OptionNumber > 0)
+                        .OrderBy(jo => jo.OptionNumber))
+                    {
+                        <option value="@compensation.ProposedSalary">@($"Option {compensation.OptionNumber} - {UtilitiesService.ToPeso(compensation.ProposedSalary)}")</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        @if (joItemLetters.Count == 0)
+        {
+            <div class="alert alert-info mb-0" role="alert">
+                No letter content is available for this job offer.
+            </div>
+        }
+        else
+        {
+            <TextEditor @ref="letterEditor"
+                        Toolbar="new Toolbar { ShowFullToolbar = true }"
+                        EditorContainerId="job-offer-letter-editor"
+                        Placeholder="Enter the job offer letter content...">
+            </TextEditor>
+        }
+    </div>
+
+    <div class="card-footer jo-actions">
+        <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+            Go Back
+        </a>
+        <button type="button" class="btn btn-outline-primary">
+            <i class="fas fa-envelope-open-text mr-1" aria-hidden="true"></i>
+            Test Email
+        </button>
+        <button type="button" class="btn btn-success">
+            <i class="fas fa-paper-plane mr-1" aria-hidden="true"></i>
+            Send Email
+        </button>
+    </div>
+</div>

@@ -82,6 +82,7 @@ namespace JO.Service.Constants
 
             //Letter
             public const string Letter = PrefixTA + "/letter";
+            public const string EmailLetter = PrefixTA + "/email-letter";
 
             //MS Form
             public const string MSFormResponse = PrefixTA + "/msform-response";

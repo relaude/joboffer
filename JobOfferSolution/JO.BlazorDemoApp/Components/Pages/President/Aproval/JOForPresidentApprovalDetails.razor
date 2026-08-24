@@ -30,7 +30,7 @@
             return;
         }
 
-        await ApprovalService.JobOfferChangeStatus(jobOfferId, 8);//President Approved
+        await ApprovalService.JobOfferChangeStatus(jobOfferId, 8, 4);//President Approved | Negotiation
         await AlertService.Success(
             message: "The job offer review has been approved successfully.",
             title: "Approve Complete");

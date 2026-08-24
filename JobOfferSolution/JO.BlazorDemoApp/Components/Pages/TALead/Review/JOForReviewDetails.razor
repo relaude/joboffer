@@ -30,7 +30,7 @@
             return;
         }
 
-        await ApprovalService.JobOfferChangeStatus(jobOfferId, 3);//Reviewed
+        await ApprovalService.JobOfferChangeStatus(jobOfferId, 3, 3);//Reviewed | Approval
         await AlertService.Success(
             message: "The job offer review has been approved successfully.",
             title: "Review Complete");

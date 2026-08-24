@@ -104,7 +104,6 @@
                             <span class="font-weight-bold">Status:</span>
                             @(string.IsNullOrWhiteSpace(compensation.BandStatus) ? "-" : compensation.BandStatus)
                         </div>
-                        <!--EDIT-->
                         @if (compensation.Escalate == true)
                         {
                             <div class="pt-2">
@@ -114,7 +113,6 @@
                                 </span>
                             </div>
                         }
-                        <!--EDIT-->
                     </div>
 
                 </div>
@@ -137,28 +135,40 @@
                         <th scope="col" class="is-highlighted">Annual</th>
                     </tr>
                 </thead>
+                <!--EDIT-->
                 <tbody>
                     @foreach (var category in compenItemCategoryDto)
                     {
-                        <tr>
-                            <td colspan="5" class="font-weight-bold text-primary">
-                                @category.CategoryName
-                            </td>
-                        </tr>
-
-                        @foreach (var item in category.CompensationItemDtos.OrderBy(item => item.DisplayOrder))
-                        {
-                            var currentItem = joCompanyCompensationItems.FirstOrDefault(jo =>
-                                jo.JOCmpnyCmpnstnId == currentJOCmpnyCmpnstnId && jo.ItemId == item.Id);
-                            var selectedItem = joCompanyCompensationItems.FirstOrDefault(jo =>
-                                jo.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId && jo.ItemId == item.Id);
-                            var hasAmount = (currentItem?.MonthlyAmount ?? 0) > 0
-                                || (currentItem?.AnnualAmount ?? 0) > 0
-                                || (selectedItem?.MonthlyAmount ?? 0) > 0
-                                || (selectedItem?.AnnualAmount ?? 0) > 0;
-
-                            @if (hasAmount)
+                        var categoryItems = category.CompensationItemDtos
+                            .OrderBy(item => item.DisplayOrder)
+                            .Select(item => new
                             {
+                                Item = item,
+                                CurrentItem = joCompanyCompensationItems.FirstOrDefault(jo =>
+                                    jo.JOCmpnyCmpnstnId == currentJOCmpnyCmpnstnId && jo.ItemId == item.Id),
+                                SelectedItem = joCompanyCompensationItems.FirstOrDefault(jo =>
+                                    jo.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId && jo.ItemId == item.Id)
+                            })
+                            .Where(row => (row.CurrentItem?.MonthlyAmount ?? 0) > 0
+                                || (row.CurrentItem?.AnnualAmount ?? 0) > 0
+                                || (row.SelectedItem?.MonthlyAmount ?? 0) > 0
+                                || (row.SelectedItem?.AnnualAmount ?? 0) > 0)
+                            .ToList();
+
+                        @if (categoryItems.Count > 0)
+                        {
+                            <tr>
+                                <td colspan="5" class="font-weight-bold text-primary">
+                                    @category.CategoryName
+                                </td>
+                            </tr>
+
+                            @foreach (var categoryItem in categoryItems)
+                            {
+                                var item = categoryItem.Item;
+                                var currentItem = categoryItem.CurrentItem;
+                                var selectedItem = categoryItem.SelectedItem;
+
                                 <tr @key="item.Id">
                                     <td>@item.ItemName</td>
                                     <td>@UtilitiesService.ToPeso(currentItem?.MonthlyAmount)</td>
@@ -186,6 +196,7 @@
                         }
                     }
                 </tbody>
+                <!--EDIT-->
                 <tfoot class="has-highlighted-total">
                     <tr>
                         <th scope="row">Total</th>
@@ -201,7 +212,7 @@
                         @{
                             var selectedItems = joCompanyCompensationItems.Where(jo => jo.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId);
                         }
-                        <th>
+                        <th class="is-highlighted">
                             @UtilitiesService.ToPeso(selectedItems.Sum(jo => jo.MonthlyAmount.GetValueOrDefault()))
                         </th>
                         <th class="is-highlighted">

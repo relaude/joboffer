@@ -181,6 +181,8 @@
     <Build Include="dbo\Tables\JOCompanyCompensation.sql" />
     <Build Include="dbo\Tables\JOCompanyCompensationItems.sql" />
     <Build Include="dbo\Tables\OfferRange.sql" />
+    <Build Include="dbo\Tables\JOWorkFlowStatus.sql" />
+    <Build Include="dbo\Tables\JOItemLetter.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

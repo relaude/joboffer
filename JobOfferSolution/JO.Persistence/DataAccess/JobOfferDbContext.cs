@@ -29,6 +29,8 @@ namespace JO.Persistence.DataAccess
         public DbSet<Departments> Departments { get; set; }
         public DbSet<Requests> Requests { get; set; }
         public DbSet<JobOffers> JobOffers { get; set; }
+        public DbSet<JOWorkFlowStatus> JOWorkFlowStatus { get; set; }
+        public DbSet<JOItemLetter> JOItemLetter { get; set; }
 
         //Legal
         public DbSet<LegalEntities> LegalEntities { get; set; }

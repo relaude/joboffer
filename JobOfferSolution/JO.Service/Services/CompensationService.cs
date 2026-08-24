@@ -23,9 +23,11 @@ namespace JO.Service.Services
             int selectedCmpnyCmpnstnId,
             int userId)
         {
-            jobOffer.StatusId = 2;//For Approval
+            jobOffer.StatusId = 2;//For Review
+            jobOffer.WorkFlowId = 2;//Review
             jobOffer.ModifiedBy = userId;
             jobOffer.ModifiedAt = DateTime.Now;
+            jobOffer.CmpnyCmpnstnId = selectedCmpnyCmpnstnId;
             jobOffer.Escalate = joCompanyCompensation.Any(jo => jo.Escalate == true);
             jobOffer.OfferRangeId = joCompanyCompensation.Max(jo => jo.OfferRangeId);
 
@@ -137,7 +139,8 @@ namespace JO.Service.Services
                 DepartmentId = candidate.DepartmentId,
                 CandidateId = candidate.Id,
                 Options = options,
-                StatusId = JOStatus.Application.New,
+                StatusId = 1, //Analysis
+                WorkFlowId = 1, //Analysis
                 CreatedAt = DateTime.Now,
                 CreatedBy = createdBy
             };
