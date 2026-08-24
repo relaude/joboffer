@@ -17,6 +17,12 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<VwJODboxCandidates> GetVwJODboxCandidates(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJODboxCandidates.FirstOrDefaultAsync(jo=>jo.Id == jobOfferId);
+        }
+
         public async Task<int> SubmitForApproval(JobOffers jobOffer,
             List<JOCompanyCompensation> joCompanyCompensation,
             List<JOCompanyCompensationItems> joCompanyCompensationItems,

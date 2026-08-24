@@ -13,6 +13,7 @@ namespace JO.Service.Services.Contracts
         Task<List<JOCompanyCompensation>> GetJOCompanyCompensation(int jobOfferId);
         Task<List<VwCompanyCompensation>> GetVwCompanyCompensation();
         Task<List<VwCompanyCompensationItems>> GetVwCompanyCompensationItems(int compensationId);
+        Task<VwJODboxCandidates> GetVwJODboxCandidates(int jobOfferId);
         Task<VwSalaryBands> GetVwSalaryBand(int companyId, int csgId);
         Task<int> SaveAnalysis(List<JOCompanyCompensation> joCompanyCompensation, List<JOCompanyCompensationItems> joCompanyCompensationItems, int selectedCmpnyCmpnstnId, int userId);
         Task<List<CompenItemCategoryDto>> SetUpCompenItemCategoryDto();

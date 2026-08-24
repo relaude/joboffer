@@ -1,0 +1,55 @@
+﻿<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                <span class="jo-pill jo-pill-gray mr-2">
+                    @(string.IsNullOrWhiteSpace(JobOffer.StatusName) ? "NO STATUS" : JobOffer.StatusName.ToUpperInvariant())
+                </span>
+
+                <h4 class="jo-title mt-3 mb-1">@(string.IsNullOrWhiteSpace(JobOffer.RefNum) ? "-" : JobOffer.RefNum)</h4>
+                <div>@(string.IsNullOrWhiteSpace(JobOffer.CandidateName) ? "-" : JobOffer.CandidateName)</div>
+                <div class="jo-code">@(string.IsNullOrWhiteSpace(JobOffer.DboxRefNum) ? "-" : JobOffer.DboxRefNum)</div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Workflow</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(JobOffer.FlowName) ? "-" : JobOffer.FlowName)</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Offer range</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(JobOffer.RangeName) ? "-" : JobOffer.RangeName)</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Created by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(JobOffer.CreatedByName) ? "-" : JobOffer.CreatedByName)</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Created at</div>
+                        <div class="jo-meta-value">@(JobOffer.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Modified by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(JobOffer.ModifiedByName) ? "-" : JobOffer.ModifiedByName)</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="jo-meta-label">Modified at</div>
+                        <div class="jo-meta-value">@(JobOffer.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public VwJODboxCandidates JobOffer { get; set; }
+}

@@ -21,6 +21,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
         private VwDboxCandidates candidate = new();
         private JobOffers jobOffer = new();
+        private VwJODboxCandidates vwjobOffer = new();
         private List<CompanyCompensation> companyCompensation = new();
         private List<VwCompanyCompensationItems> vwCompanyCompensationItems = new();
         private List<JOCompanyCompensation> joCompanyCompensation = new();
@@ -40,6 +41,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         protected override async Task OnParametersSetAsync()
         {
             jobOffer = await CompensationService.GetJobOffer(jobOfferId);
+            vwjobOffer = await CompensationService.GetVwJODboxCandidates(jobOfferId);
             candidate = await CandidateService.GetVwDboxCandidate(jobOffer.CandidateId.GetValueOrDefault());
             companyCompensation = await CompensationService.GetCompanyCompensation(jobOffer.CompanyId.GetValueOrDefault());
             joCompanyCompensation = await CompensationService.GetJOCompanyCompensation(jobOfferId);
