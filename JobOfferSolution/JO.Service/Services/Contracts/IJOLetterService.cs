@@ -11,6 +11,7 @@ namespace JO.Service.Services.Contracts
         Task<List<JOItemLetter>> GetJOItemLetter(int compensationId);
         Task<List<VwCompanyCompensationItems>> GetVwCompanyCompensationItems(int compensationId);
         Task<VwDboxCandidates> GetVwDboxCandidate(int candidateId);
+        Task<VwJODboxCandidates> GetVwJODboxCandidates(int jobOfferId);
         void UpdateItemLetterPlaceHolder(List<JOItemLetter> joItemLetter, VwDboxCandidates candidate, decimal proposedSalary);
     }
 }

@@ -19,6 +19,33 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<JobOffers> GetJobOffer(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JobOffers.FindAsync(jobOfferId);
+        }
+
+        public async Task<VwJODboxCandidates> GetVwJODboxCandidates(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJODboxCandidates.FirstOrDefaultAsync(jo => jo.Id == jobOfferId);
+        }
+
+        public async Task<VwDboxCandidates> GetVwDboxCandidate(int candidateId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwDboxCandidates.FirstOrDefaultAsync(jo => jo.Id == candidateId);
+        }
+
+        public async Task<List<JOCompanyCompensation>> GetJOCompanyCompensation(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JOCompanyCompensation
+                .AsNoTracking()
+                .Where(jo => jo.JobOfferId == jobOfferId)
+                .ToListAsync();
+        }
+
         public async Task<int> TagAsAccepted(int jobOfferId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();

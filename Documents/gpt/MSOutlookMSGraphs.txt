@@ -1,0 +1,98 @@
+Yes. A Blazor Server app can securely read a Microsoft 365 Outlook inbox because the Graph calls and credentials remain on the server.
+
+The recommended approach is Microsoft Graph with application-only authentication—not signing in using the service account’s username and password.
+
+### Required setup
+
+1. Register an application in Microsoft Entra ID.
+2. Add a Microsoft Graph **Application** permission:
+   - `Mail.ReadBasic.All` for metadata only.
+   - `Mail.Read` if you need message bodies or attachments.
+   - `Mail.ReadWrite` only if the app must modify messages.
+3. Have an administrator grant tenant-wide admin consent.
+4. Give the app a certificate or client secret. A certificate is preferable for production.
+5. Restrict the application to the service mailbox using **Exchange Online Application RBAC**. Otherwise, `Mail.Read` application permission can grant access to every mailbox in the tenant. [Microsoft’s Application RBAC documentation](https://learn.microsoft.com/en-us/exchange/permissions-exo/application-rbac)
+
+Microsoft Graph treats this as an application identity rather than a traditional service account. [Microsoft explains that distinction here](https://learn.microsoft.com/en-us/graph/migrate-exchange-web-services-authentication).
+
+### Blazor Server example
+
+Install:
+
+```powershell
+dotnet add package Microsoft.Graph
+dotnet add package Azure.Identity
+```
+
+Register the Graph client in `Program.cs`:
+
+```csharp
+using Azure.Identity;
+using Microsoft.Graph;
+
+var tenantId = builder.Configuration["MicrosoftGraph:TenantId"];
+var clientId = builder.Configuration["MicrosoftGraph:ClientId"];
+var clientSecret = builder.Configuration["MicrosoftGraph:ClientSecret"];
+
+var credential = new ClientSecretCredential(
+    tenantId,
+    clientId,
+    clientSecret);
+
+builder.Services.AddSingleton(
+    new GraphServiceClient(
+        credential,
+        new[] { "https://graph.microsoft.com/.default" }));
+```
+
+Read the inbox from a server-side service:
+
+```csharp
+using Microsoft.Graph;
+
+public sealed class OutlookInboxService
+{
+    private readonly GraphServiceClient _graph;
+
+    public OutlookInboxService(GraphServiceClient graph)
+    {
+        _graph = graph;
+    }
+
+    public async Task<object?> GetLatestMessagesAsync(
+        string mailboxAddress,
+        CancellationToken cancellationToken = default)
+    {
+        return await _graph.Users[mailboxAddress]
+            .MailFolders["Inbox"]
+            .Messages
+            .GetAsync(options =>
+            {
+                options.QueryParameters.Top = 25;
+                options.QueryParameters.Select =
+                [
+                    "id",
+                    "subject",
+                    "from",
+                    "receivedDateTime",
+                    "isRead",
+                    "bodyPreview"
+                ];
+                options.QueryParameters.Orderby =
+                [
+                    "receivedDateTime desc"
+                ];
+            }, cancellationToken);
+    }
+}
+```
+
+Register your service:
+
+```csharp
+builder.Services.AddScoped<OutlookInboxService>();
+```
+
+Microsoft documents this mailbox endpoint and its permissions in the [List messages API reference](https://learn.microsoft.com/en-us/graph/api/user-list-messages?view=graph-rest-1.0).
+
+Do not store the client secret in source control or expose it to a Razor component running in the browser. Use environment variables, Azure Key Vault, .NET user secrets for development, or preferably a certificate/managed identity in production. If by “service account” you mean only an email address and password, that alone is not the recommended setup—you will still need an Entra application registration and OAuth authorization.

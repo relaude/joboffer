@@ -1,7 +1,5 @@
-@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.DboxCandidates)]
-
-
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.DboxCandidates)]
 
 <div class="row">
     <div class="col-xl-4 col-md-4 mb-4">

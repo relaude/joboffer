@@ -26,6 +26,12 @@ namespace JO.Service.Services
             return await context.JobOffers.FindAsync(jobOfferId);
         }
 
+        public async Task<VwJODboxCandidates> GetVwJODboxCandidates(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJODboxCandidates.FirstOrDefaultAsync(jo=> jo.Id==jobOfferId);
+        }
+
         public async Task<VwDboxCandidates> GetVwDboxCandidate(int candidateId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();

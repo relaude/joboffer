@@ -6,7 +6,7 @@ using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace JO.BlazorDemoApp.Components.Pages.TA.Candidate
+namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
 {
     public partial class DboxCandidateList
     {

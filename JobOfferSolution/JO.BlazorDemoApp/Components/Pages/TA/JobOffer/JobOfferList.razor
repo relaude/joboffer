@@ -141,16 +141,23 @@
                                                 Letter
                                             </a>
                                             <a class="dropdown-item"
-                                               href="#">
+                                               href="@($"{JORoutes.TA.Discussion}/{joDboxCandidate.Id}")">
                                                 Discussion
                                             </a>
                                         }
 
-                                        <a class="dropdown-item"
-                                           href="@($"{JORoutes.Transaction.JobOffer}/{joDboxCandidate.Id}")">
-                                            Details
-                                        </a>
+                                        @if (joDboxCandidate.WorkFlowId == 4)
+                                        {
+                                            <a class="dropdown-item"
+                                               href="@($"{JORoutes.TA.JobOfferTagging}/{joDboxCandidate.Id}")">
+                                                Tag As...
+                                            </a>
+                                        }
 
+                                        <a class="dropdown-item"
+                                           href="@($"{JORoutes.TA.JobOfferDetails}/{joDboxCandidate.Id}")">
+                                            View Details
+                                        </a>
                                     </div>
                                 </div>
                             </td>

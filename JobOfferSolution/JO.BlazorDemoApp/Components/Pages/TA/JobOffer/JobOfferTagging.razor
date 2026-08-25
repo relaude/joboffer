@@ -1,0 +1,23 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.JobOfferTagging + "/{jobOfferId:int}")]
+
+<JOAnalysis jobOfferId="jobOfferId" />
+
+<div class="jo-actions mb-4">
+    <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+        Go Back
+    </a>
+    <button type="button" class="btn btn-danger">
+        <i class="fas fa-times mr-1" aria-hidden="true"></i>
+        Declined
+    </button>
+    <button type="button" class="btn btn-success">
+        <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
+        Accepted
+    </button>
+    <button type="button" class="btn btn-success">
+        <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
+        Completed
+    </button>
+</div>

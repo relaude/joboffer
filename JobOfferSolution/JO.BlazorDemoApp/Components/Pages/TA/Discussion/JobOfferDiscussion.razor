@@ -1,0 +1,134 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.Discussion + "/{jobOfferId:int}")]
+
+<CardJOSummary JobOffer="@vwJODboxCandidates" />
+
+<CardCandidateCompensation Candidate="@candidate" CompensationItems="@vwCompanyCompensationItems" />
+
+<div class="card shadow mb-4 small">
+
+    <div class="card-header">
+        <h6 class="jo-title">Discussion</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <!-- Entry -->
+            <div class="col-lg-5 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-clipboard-list fa-fw text-primary mr-2"></i>Entry
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold text-gray-700 mb-1">Discussion Date</label>
+                                <input type="date" class="form-control" @bind="discussion.DiscussAt" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold text-gray-700 mb-1">Channel</label>
+                                <select class="custom-select"
+                                        @bind="discussion.ChannelId">
+                                    @foreach (var channel in channels)
+                                    {
+                                        <option value="@channel.Id">@channel.ChannelName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Step</label>
+                            <select class="custom-select"
+                                    @bind="discussion.StepId">
+                                @foreach (var step in steps)
+                                {
+                                    <option value="@step.Id">@step.StepName</option>
+                                }
+                            </select>
+                        </div>
+                    
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Candidate Response</label>
+                            <select class="custom-select"
+                                    @bind="discussion.ResponseId">
+                                @foreach (var response in responses)
+                                {
+                                    <option value="@response.Id">@response.ResponseName</option>
+                                }
+                            </select>
+                        </div>
+                    
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Selected Option</label>
+                            <select class="custom-select"
+                                    @bind="discussion.ProposalId">
+                                @foreach (var proposal in filteredJOCompanyCompensation)
+                                {
+                                    <option value="@proposal.Id">@($"Option {proposal.OptionNumber} - {UtilitiesService.ToPeso(proposal.ProposedSalary)}")</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1">Discussion Notes</label>
+                            <textarea class="form-control form-control-sm" rows="4" @bind="discussion.Comments"></textarea>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label class="font-weight-bold text-gray-700 mb-1">Candidate Feedback</label>
+                            <textarea class="form-control form-control-sm" rows="3" @bind="discussion.FeedBack"></textarea>
+                        </div>
+                    </div>
+                
+                    <div class="card-footer jo-actions">
+                        <button class="btn btn-sm btn-primary" @onclick="SaveDiscussion">Save</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timeline -->
+            <div class="col-lg-7 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-history fa-fw text-info mr-2"></i>
+                            Discussion Timeline
+                        </h6>
+                        <small class="text-muted">Recent contact history and candidate signals.</small>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var item in vwDiscussions)
+                        {
+                            <div class="d-flex pb-3 mb-3 border-bottom">
+                                <div class="btn-circle btn-sm bg-info text-white mr-3">
+                                    <i class="@item.Icon"></i>
+                                </div>
+                                <div class="flex-fill">
+                                    <div class="d-flex flex-column flex-md-row justify-content-between">
+                                        <div class="font-weight-bold text-gray-900">
+                                            <div>@item.StepName</div>
+                                            <small class="text-muted">Option @item.OptionNumber</small>
+                                        </div>
+                                        <small class="text-muted">@UtilitiesService.FormatDate(item.DiscussAt, CommonConstant.DefaultShortDateFormat)</small>
+                                    </div>
+                                    <div class="text-muted">Candidate Response: @item.ResponseName</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="jo-actions mb-4">
+    <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+        Go Back
+    </a>
+</div>

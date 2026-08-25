@@ -18,8 +18,8 @@ namespace JO.DataModel.View
         public int? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string? RefNum { get; set; }
-        public int? OptionNum { get; set; }
-        public decimal? ProposeSalary { get; set; }
+        public int? OptionNumber { get; set; }
+        public decimal? ProposedSalary { get; set; }
         public string? StepName { get; set; }
         public string? Icon { get; set; }
         public string? ChannelName { get; set; }

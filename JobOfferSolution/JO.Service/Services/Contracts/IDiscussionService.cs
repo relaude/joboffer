@@ -11,6 +11,10 @@ namespace JO.Service.Services.Contracts
         Task<List<ChannelTypes>> GetChannelTypes();
         Task<List<VwDiscussions>> GetDiscussions(int jobOfferId);
         Task<List<DiscussSteps>> GetDiscussSteps();
+        Task<JobOffers> GetJobOffer(int jobOfferId);
+        Task<List<JOCompanyCompensation>> GetJOCompanyCompensation(int jobOfferId);
+        Task<VwDboxCandidates> GetVwDboxCandidate(int candidateId);
+        Task<VwJODboxCandidates> GetVwJODboxCandidates(int jobOfferId);
         Task<int> SaveDiscussion(Discussions discussion);
         Task<int> SaveDiscussion(DiscussionDto dto);
         Task<int> TagAsAccepted(int jobOfferId);

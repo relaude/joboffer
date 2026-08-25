@@ -1,6 +1,8 @@
 ﻿using JO.DataModel.DTOs;
+using JO.Persistence.DataAccess;
 using JO.Service.Constants;
 using JO.Service.Services.Contracts;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -11,9 +13,10 @@ namespace JO.Service.Services
 {
     public class EmailService : IEmailService
     {
-        public EmailService()
+        private readonly IDbContextFactory<JobOfferDbContext> _dbContext;
+        public EmailService(IDbContextFactory<JobOfferDbContext> dbContext)
         {
-
+            _dbContext = dbContext;
         }
 
         public async Task TestMailAsync(string recipients)
@@ -82,6 +85,39 @@ namespace JO.Service.Services
                     await client.SendMailAsync(mail);
                 }
             }
+        }
+
+        public async Task<int> SendAsync(string recipients,
+            string subject,
+            string body)
+        {
+            var parameters = new
+            {
+                Profile_name = "HRSMTP",
+                Recipients = recipients,
+                Body = body,
+                Body_format = "HTML",
+                Subject = subject,
+                From_address = "",
+                Blind_copy_recipients = "",
+                Importance = "Normal",
+                Reply_to = ""
+            };
+
+            //exec msdb.dbo.sp_send_dbmail
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.Database.ExecuteSqlInterpolatedAsync($"""
+                EXEC msdb.dbo.sp_send_dbmail
+                    @profile_name = {parameters.Profile_name},
+                    @recipients = {parameters.Recipients},
+                    @body = {parameters.Body},
+                    @body_format = {parameters.Body_format},
+                    @subject = {parameters.Subject},
+                    @from_address = {parameters.From_address},
+                    @blind_copy_recipients = {parameters.Blind_copy_recipients},
+                    @importance = {parameters.Importance},
+                    @reply_to = {parameters.Reply_to}
+                """);
         }
 
         private void AddEmails(MailAddressCollection collection, string? emails)

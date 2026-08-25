@@ -49,6 +49,9 @@ namespace JO.Service.Constants
             public const string SalaryMatrixNew = PrefixAdmin + "/salary-matrix/new";
             public const string JobFamily = PrefixAdmin + "/job-family";
             public const string CompensationBenefits = PrefixAdmin + "/compensation-benefits";
+
+            public const string MSFormResponse = PrefixAdmin + "/msform-response";
+            public const string DboxCandidates = PrefixAdmin + "/dbox/candidates";
         }
 
         public static class TA
@@ -76,6 +79,8 @@ namespace JO.Service.Constants
             //Tracker
             public const string RequestTracker = PrefixTA + "/request-tracker";
             public const string JobOfferTracker = PrefixTA + "/joboffer-tracker";
+            public const string JobOfferTagging = PrefixTA + "/joboffer-tagging";
+            public const string JobOfferDetails = PrefixTA + "/joboffer-details";
 
             //Proposal
             public const string NewOffer = PrefixTA + "/new-offer";

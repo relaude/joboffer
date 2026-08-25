@@ -190,7 +190,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
                 userId);
 
             await AlertService.Success("Analysis successfully submitted for approval.");
-            Navigation.NavigateTo($"{JORoutes.Transaction.JobOffer}/{submittedJobOfferId}");
+            Navigation.NavigateTo($"{JORoutes.TA.JobOfferDetails}/{submittedJobOfferId}");
         }
 
         private void CollectJOCompanyCompensationErrors(List<string> errors)
