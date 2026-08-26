@@ -3,9 +3,7 @@
 
 <div class="card shadow mb-4 small">
     <div class="card-header py-3 d-flex align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">
-            <i class="fas fa-users fa-fw mr-2"></i>Job Offer Users
-        </h6>
+        <h6 class="jo-title">Job Offer Users</h6>
 
         <a class="btn btn-primary" href="@JORoutes.Admin.UserDetails">
             <i class="fas fa-user-plus fa-fw mr-1"></i>New User
@@ -69,12 +67,18 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right shadow-sm">
                                             <a class="dropdown-item"
-                                               href="@($"{JORoutes.Admin.UserDetails}/{user.Id}")">
-                                                View
-                                            </a>
-                                            <a class="dropdown-item"
                                                href="@($"{JORoutes.Admin.EditUser}/{user.Id}")">
                                                 Edit
+                                            </a>
+
+                                            <a class="dropdown-item"
+                                               href="@($"{JORoutes.Admin.UserDivisionAccess}/{user.Id}")">
+                                                Access
+                                            </a>
+
+                                            <a class="dropdown-item"
+                                               href="@($"{JORoutes.Admin.UserDetails}/{user.Id}")">
+                                                View
                                             </a>
                                         </div>
                                     </div>

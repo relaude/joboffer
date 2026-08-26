@@ -33,23 +33,102 @@
 </div>
 
 <div class="card shadow mb-4 small">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h6 class="jo-title">Salary Structure Guidelines</h6>
+    </div>
+
+    <div class="card-body">
+        
+        <div class="row">
+            <div class="col-lg-4 mb-3 mb-lg-0">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header">
+                        <h6 class="jo-title">Salary Grade</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="jo-meta-label">Grade Name</div>
+                            <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(vwSalaryBand.GradeName) ? "-" : vwSalaryBand.GradeName)</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="jo-meta-label">Minimum</div>
+                            <div class="jo-meta-value">@UtilitiesService.ToPeso(vwSalaryBand.Minimum)</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="jo-meta-label">Midpoint</div>
+                            <div class="jo-meta-value">@UtilitiesService.ToPeso(vwSalaryBand.Midpoint)</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="jo-meta-label">Maximum</div>
+                            <div class="jo-meta-value">@UtilitiesService.ToPeso(vwSalaryBand.Maximum)</div>
+                        </div>
+                        <div>
+                            <div class="jo-meta-label">Compa Ratio</div>
+                            <div class="jo-meta-value">@UtilitiesService.ToPeso(vwSalaryBand.CompaRatio)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-3 mb-lg-0">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header">
+                        <h6 class="jo-title">Current</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="currentMonthlyBasic">Monthly Basic</label>
+                            <input id="currentMonthlyBasic" type="text" class="form-control" 
+                                value="@(UtilitiesService.ToPeso(candidate.CurrentMonthlyBasicSalary))" readonly />
+                        </div>
+                        <div class="form-group mb-0">
+                            <label for="currentTotalMonthsPay">Total Months Pay</label>
+                            <input id="currentTotalMonthsPay" type="text" class="form-control"
+                                value="@candidate.GuaranteedMonthsPay" readonly/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header">
+                        <h6 class="jo-title">UL Equivalent</h6>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="form-group">
+                            <label for="ulEquivalentMonthlyBasic">Monthly Basic</label>
+                            <input id="ulEquivalentMonthlyBasic"
+                                   type="text"
+                                   class="form-control"
+                                   value="@UtilitiesService.ToPeso(ComputeUlEquivalentMonthlyBasic())"
+                                   readonly />
+                        </div>
+                        <div class="form-group mb-0">
+                            <label for="ulEquivalentTotalMonthsPay">Total Months Pay</label>
+                            <select id="ulEquivalentTotalMonthsPay"
+                                    class="custom-select"
+                                    @bind="ulEquivalentTotalMonthsPay">
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
     
     <div class="card-header d-flex align-items-center justify-content-between">
         <h6 class="jo-title">Analysis</h6>
-        <div class="d-flex align-items-center">
-            <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
-                Go Back
-            </a>
-            <button type="button" class="btn btn-primary ml-2" @onclick="SaveAnalysis">
-                <i class="fas fa-save mr-1" aria-hidden="true"></i>
-                Save Analysis
-            </button>
-            <button type="button" class="btn btn-success ml-2" @onclick="SubmitForApproval">
-                <i class="fas fa-paper-plane mr-1" aria-hidden="true"></i>
-                Submit for Approval
-            </button>
-        </div>
     </div>
     
     <div class="card-body">
@@ -89,7 +168,7 @@
                             </div>
                         </div>
                         <div class="border-top py-2">
-                            <div class="text-xs text-uppercase text-gray-500">Increase</div>
+                            <div class="text-xs text-uppercase text-gray-500">Increase Monthly</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.Increase)</div>
                         </div>
                         <div class="border-top py-2">
@@ -99,6 +178,14 @@
                         <div class="border-top py-2">
                             <div class="text-xs text-uppercase text-gray-500">Annual Difference</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.DiffTotalAnnually)</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-uppercase text-gray-500">Overtaken Incumbents</div>
+                            <input type="number" class="form-control form-control-sm" />
+                        </div>
+                        <div>
+                            <div class="text-xs text-uppercase text-gray-500">Remarks</div>
+                            <textarea rows="3" class="form-control form-control-sm"></textarea>
                         </div>
                         <div class="small text-gray-600 border-top pt-2">
                             <span class="font-weight-bold">Status:</span>
@@ -373,4 +460,19 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="jo-actions mb-4">
+    <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+        Go Back
+    </a>
+    <button type="button" class="btn btn-primary" @onclick="SaveAnalysis">
+        <i class="fas fa-save mr-1" aria-hidden="true"></i>
+        Save Analysis
+    </button>
+    <button type="button" class="btn btn-success" @onclick="SubmitForApproval">
+        <i class="fas fa-paper-plane mr-1" aria-hidden="true"></i>
+        Submit for Approval
+    </button>
 </div>

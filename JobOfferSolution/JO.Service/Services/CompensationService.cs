@@ -147,6 +147,8 @@ namespace JO.Service.Services
                 Options = options,
                 StatusId = 1, //Analysis
                 WorkFlowId = 1, //Analysis
+                ActionId = 1, //TA Create JO
+                NextActionId = 2, //TA Lead For Review
                 CreatedAt = DateTime.Now,
                 CreatedBy = createdBy
             };
@@ -254,7 +256,36 @@ namespace JO.Service.Services
                 }
             }
 
+            //JOActionLogs
+            JOActionLogs actionLogs = new JOActionLogs { 
+                JobOfferId = newJO.Id,
+                ActionId = 1, //TA Create JO
+                ActionAt = DateTime.Now,
+                ActionBy = createdBy
+            };
+
+
+            //JORoleActionStatus
+            List<JORoleActionStatus> newJORoleActionStatus = new();
+            var roleList = await context.JOUserRoles
+                .AsNoTracking()
+                .OrderBy(jo => jo.OrderBy)
+                .ToListAsync();
+
+            foreach (var role in roleList)
+            {
+                newJORoleActionStatus.Add(new JORoleActionStatus
+                {
+                    JobOfferId = newJO.Id,
+                    RoleId = role.Id,
+                    ActionId = role.Id == 1 ? 1 : 0, //TA Partner | TA Create JO
+                });
+            }
+
+            //Save JOCompanyCompensationItems, JOActionLogs, JORoleActionStatus
             await context.JOCompanyCompensationItems.AddRangeAsync(joCmpnyCompensationItemsB);
+            await context.JOActionLogs.AddAsync(actionLogs);
+            await context.JORoleActionStatus.AddRangeAsync(newJORoleActionStatus);
             await context.SaveChangesAsync();
 
             return newJO.Id;

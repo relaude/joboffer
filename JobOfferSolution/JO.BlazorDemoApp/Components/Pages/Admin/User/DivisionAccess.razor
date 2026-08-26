@@ -1,0 +1,133 @@
+﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.UserDivisionAccess + "/{joUserId:int}")]
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="jo-title">User Division Access</h6>
+        <div class="jo-actions">
+            <a href="@($"{JORoutes.Admin.UserDetails}/{joUserId}")" class="btn btn-outline-secondary">← Back</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                @if (user.IsActive == true)
+                {
+                    <span class="jo-pill jo-pill-green mr-2">ACTIVE</span>
+                }
+                else
+                {
+                    <span class="jo-pill jo-pill-gray mr-2">INACTIVE</span>
+                }
+
+                <h4 class="jo-title mt-3 mb-1">@(string.IsNullOrWhiteSpace(user.Name) ? "-" : user.Name)</h4>
+                <div>@(string.IsNullOrWhiteSpace(user.Email) ? "-" : user.Email)</div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Roles</div>
+                        <div class="jo-meta-value">@user.CountRoles</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Created by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(user.CreatedByName) ? "-" : user.CreatedByName)</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Created at</div>
+                        <div class="jo-meta-value">@(user.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 mb-3"></div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Modified by</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(user.ModifiedByName) ? "-" : user.ModifiedByName)</div>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <div class="jo-meta-label">Modified at</div>
+                        <div class="jo-meta-value">@(user.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">Select Divisions</h6>
+    </div>
+    <div class="card-body">
+        <div class="form-group row mb-4">
+            <div class="col-sm-10 col-md-6">
+                <select id="company"
+                        class="custom-select"
+                        value="@selectedCompanyId"
+                        @onchange="OnCompanyChanged">
+                    <option value="">Select company</option>
+                    @foreach (var company in companies)
+                    {
+                        <option value="@company.Id">
+                            @(string.IsNullOrWhiteSpace(company.CompanyName) ? company.CompanyCode : company.CompanyName)
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 90px;">
+                            <input type="checkbox"
+                                   checked="@AreAllDivisionsSelected"
+                                   disabled="@(!divisions.Any())"
+                                   @onchange="ToggleAllDivisions"
+                                   aria-label="Select all divisions" />
+                        </th>
+                        <th>Division Code</th>
+                        <th>Division Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (divisions.Any())
+                    {
+                        @foreach (var division in divisions)
+                        {
+                            <tr @key="division.Id">
+                                <td class="text-center">
+                                    <input type="checkbox"
+                                           checked="@selectedDivisionIds.Contains(division.Id)"
+                                           @onchange="eventArgs => ToggleDivision(division.Id, eventArgs)"
+                                           aria-label="Select @division.DivisionName" />
+                                </td>
+                                <td>@(string.IsNullOrWhiteSpace(division.DivisionCode) ? "-" : division.DivisionCode)</td>
+                                <td><strong>@(string.IsNullOrWhiteSpace(division.DivisionName) ? "-" : division.DivisionName)</strong></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-3">
+                                @(selectedCompanyId.HasValue ? "No divisions found." : "Select a company to display its divisions.")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer jo-actions">
+        <div></div>
+        <button type="button"
+                class="btn btn-primary px-4"
+                disabled="@isSaving"
+                @onclick="SaveDivisionAccess">
+            @(isSaving ? "Saving..." : "Save")
+        </button>
+    </div>
+</div>

@@ -19,6 +19,8 @@ namespace JO.DataModel.Entity
         public int? LegalId { get; set; }
         public int? StatusId { get; set; }
         public int? WorkFlowId { get; set; }
+        public int? ActionId { get; set; }
+        public int? NextActionId { get; set; }
         public int? Options { get; set; }
         public int? CmpnyCmpnstnId { get; set; }
         public int? OfferRangeId { get; set; }

@@ -10,6 +10,8 @@
     [LegalId]        INT           NULL,
     [StatusId]       INT           NULL,
     [WorkFlowId]     INT           NULL,
+    [ActionId]       INT           NULL,
+    [NextActionId]   INT           NULL,
     [Options]        INT           NULL,
     [CmpnyCmpnstnId] INT           NULL,
     [OfferRangeId]   INT           NULL,

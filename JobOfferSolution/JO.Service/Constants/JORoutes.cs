@@ -43,7 +43,11 @@ namespace JO.Service.Constants
             public const string Roles = PrefixAdmin + "/roles";
             public const string UserDetails = PrefixAdmin + "/user";
             public const string EditUser = PrefixAdmin + "/edit-user";
+            public const string UserDivisionAccess = PrefixAdmin + "/user/division-access";
 
+            public const string Companies = PrefixAdmin + "/companies";
+            public const string CompanyDetails = PrefixAdmin + "/company";
+            
             public const string ToggleActive = PrefixAdmin + "/toggle-user";
             public const string SalaryMatrix = PrefixAdmin + "/salary-matrix";
             public const string SalaryMatrixNew = PrefixAdmin + "/salary-matrix/new";

@@ -5,6 +5,7 @@ using JO.Service.Constants;
 using JO.Service.Services;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components;
+using System.Diagnostics.Contracts;
 
 namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
 {
@@ -25,6 +26,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         private int selectedCmpnyCmpnstnId = 0;
         private int selectedJOCmpnyCmpnstnId = 0;
         private int selectedOptionNumber = 1;
+        private int ulEquivalentTotalMonthsPay = 15;
 
         private VwDboxCandidates candidate = new();
         private JobOffers jobOffer = new();
@@ -373,6 +375,21 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         private static string FormatPercent(decimal? value)
         {
             return value.HasValue ? $"{value.Value:N2}%" : "-";
+        }
+
+        private decimal? ComputeUlEquivalentMonthlyBasic()
+        {
+            int currentMonth = candidate.GuaranteedMonthsPay switch
+            {
+                "13th Month Pay" => 13,
+                "14th Month Pay" => 14,
+                "15th Month Pay" => 15,
+                "16th Month Pay" => 16,
+                _ => 0
+            };
+
+            decimal ulEquivalentMonthlybasic = (candidate.CurrentMonthlyBasicSalary.GetValueOrDefault() * currentMonth) / ulEquivalentTotalMonthsPay;
+            return ulEquivalentMonthlybasic;
         }
     }
 }

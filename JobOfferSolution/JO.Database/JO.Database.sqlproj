@@ -183,6 +183,10 @@
     <Build Include="dbo\Tables\OfferRange.sql" />
     <Build Include="dbo\Tables\JOWorkFlowStatus.sql" />
     <Build Include="dbo\Tables\JOItemLetter.sql" />
+    <Build Include="dbo\Views\vw_Companies.sql" />
+    <Build Include="dbo\Tables\JORoleActionStatus.sql" />
+    <Build Include="dbo\Tables\JOActionStatus.sql" />
+    <Build Include="dbo\Tables\JOActionLogs.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

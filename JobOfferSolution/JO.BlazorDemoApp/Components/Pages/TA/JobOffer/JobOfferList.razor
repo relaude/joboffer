@@ -91,6 +91,8 @@
                         <th>Candidate</th>
                         <th>Status</th>
                         <th>Work Flow</th>
+                        <th>Action</th>
+                        <th>Next Action</th>
                         <th>Created</th>
                         <th>Modified</th>
                         <th class="text-center">Action</th>
@@ -100,11 +102,17 @@
                     @foreach (var joDboxCandidate in joDboxCandidates)
                     {
                         <tr @key="joDboxCandidate.Id">
-                            <td><strong>@(joDboxCandidate.RefNum)</strong></td>
+                            <td>
+                                <a href="@($"{JORoutes.TA.JobOfferDetails}/{joDboxCandidate.Id}")">
+                                    <strong>@(joDboxCandidate.RefNum)</strong>
+                                </a>
+                            </td>
                             <td>@joDboxCandidate.DboxRefNum</td>
                             <td>@joDboxCandidate.CandidateName</td>
                             <td>@joDboxCandidate.StatusName</td>
                             <td>@joDboxCandidate.FlowName</td>
+                            <td>@joDboxCandidate.ActionName</td>
+                            <td>@joDboxCandidate.NextActionName</td>
                             <td>
                                 <div>@joDboxCandidate.CreatedByName</div>
                                 <small class="text-muted">@(joDboxCandidate.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
@@ -153,11 +161,6 @@
                                                 Tag As...
                                             </a>
                                         }
-
-                                        <a class="dropdown-item"
-                                           href="@($"{JORoutes.TA.JobOfferDetails}/{joDboxCandidate.Id}")">
-                                            View Details
-                                        </a>
                                     </div>
                                 </div>
                             </td>
