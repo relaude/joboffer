@@ -2,10 +2,8 @@
 AS
 BEGIN
 	truncate table JobOffers;
-
-	truncate table CompensationPackage;
-	truncate table CompensationOptions;
-
+	truncate table JOAnalysis;
 	truncate table JOCompanyCompensation;
 	truncate table JOCompanyCompensationItems;
+	truncate table JOActionLogs;
 END

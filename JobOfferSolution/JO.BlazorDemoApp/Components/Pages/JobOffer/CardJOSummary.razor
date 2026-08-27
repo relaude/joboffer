@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-lg-4 mb-3">
                 <span class="jo-pill jo-pill-gray mr-2">
-                    @(string.IsNullOrWhiteSpace(JobOffer.StatusName) ? "NO STATUS" : JobOffer.StatusName.ToUpperInvariant())
+                    @(string.IsNullOrWhiteSpace(JobOffer.FlowName) ? "NO STATUS" : JobOffer.FlowName.ToUpperInvariant())
                 </span>
 
                 <h4 class="jo-title mt-3 mb-1">@(string.IsNullOrWhiteSpace(JobOffer.RefNum) ? "-" : JobOffer.RefNum)</h4>
@@ -17,8 +17,8 @@
             <div class="col-lg-8">
                 <div class="row">
                     <div class="col-sm-4 mb-3">
-                        <div class="jo-meta-label">Workflow</div>
-                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(JobOffer.FlowName) ? "-" : JobOffer.FlowName)</div>
+                        <div class="jo-meta-label">Action per Status</div>
+                        <div class="jo-meta-value">@(string.IsNullOrWhiteSpace(JobOffer.ActionByName) ? "-" : JobOffer.ActionByName)</div>
                     </div>
                     <div class="col-sm-4 mb-3">
                         <div class="jo-meta-label">Offer range</div>

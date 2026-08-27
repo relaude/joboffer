@@ -27,6 +27,21 @@ namespace JO.Service.Services
             _email = email;
         }
 
+        public async Task<string> GetCandidateLink(VwDboxCandidates candidate)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var jobOffer = await context.JobOffers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(jo=>jo.CandidateId==candidate.Id);
+
+            if(candidate.StatusId == 2)
+            {
+                return $"{JORoutes.TA.Analysis}/{jobOffer.Id}";
+            }
+
+            return $"{JORoutes.TA.Candidate}/{candidate.Id}";
+        }
+
         public async Task<List<DboxCandidates>> GetDboxCandidates()
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -76,32 +91,42 @@ namespace JO.Service.Services
             var newJO = new JobOffers
             {
                 RefNum = $"JO-{DateTime.Now.Year}-{candidate.DboxRefNum}-{countJO:D5}",
+                CompanyId = candidate.CompanyId,
+                DivisionId = candidate.DivisionId,
+                DepartmentId = candidate.DepartmentId,
                 CandidateId = candidate.Id,
                 Options = options,
-                StatusId = JOStatus.Application.New,
+                WorkFlowId = 1, //Draft
                 CreatedAt = DateTime.Now,
                 CreatedBy = createdBy
             };
             await context.JobOffers.AddAsync(newJO);
             await context.SaveChangesAsync();
 
-            //Candidate Current Package
-            CompensationPackage currentPackage = new CompensationPackage
+            //JOAnalysis
+            JOAnalysis newAnalysis = new JOAnalysis
+            {
+                JobOfferId = newJO.Id,
+                CreatedAt = DateTime.Now,
+                CreatedBy = createdBy
+            };
+            await context.JOAnalysis.AddAsync(newAnalysis);
+            await context.SaveChangesAsync();
+
+            //Candidate Current
+            JOCompanyCompensation joCompanyCompensationA = new JOCompanyCompensation
             {
                 CreatedAt = DateTime.Now,
                 CreatedBy = createdBy,
                 JobOfferId = newJO.Id,
-                OptionType = JOCompensation.OptionTypeCurrent,
-                OptionNumber = 0,
-                IncreasePercent = 0,
-                MonthlyBasic = candidate.CurrentMonthlyBasicSalary.GetValueOrDefault()
+                JOAnalysisId = newAnalysis.Id,
+                OptionNumber = 0
             };
 
-            await context.CompensationPackage.AddAsync(currentPackage);
+            await context.JOCompanyCompensation.AddAsync(joCompanyCompensationA);
             await context.SaveChangesAsync();
 
-            //Candidate Current Package Items
-            var currentOptions = new List<CompensationOptions>();
+            List<JOCompanyCompensationItems> joCmpnyCompensationItemsA = new();
             var compItems = await context.CompensationItems.ToListAsync();
 
             var basicSalary = candidate.CurrentMonthlyBasicSalary.GetValueOrDefault();
@@ -130,75 +155,84 @@ namespace JO.Service.Services
 
             foreach (var item in compItems)
             {
-                var option = item.Id switch
+                var compensationItem = item.Id switch
                 {
-                    1 => new CompensationOptions { MonthlyAmount = basicSalary, AnnualAmount = basicSalary * 12m },
-                    2 => new CompensationOptions { AnnualAmount = basicSalary },
-                    3 => new CompensationOptions { AnnualAmount = candidate.AnnualGuaranteedBonusAmount.GetValueOrDefault() },
-                    7 => new CompensationOptions
+                    1 => new JOCompanyCompensationItems { MonthlyAmount = basicSalary, AnnualAmount = basicSalary * 12m },
+                    2 => new JOCompanyCompensationItems { AnnualAmount = basicSalary },
+                    3 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualGuaranteedBonusAmount.GetValueOrDefault() },
+                    7 => new JOCompanyCompensationItems
                     {
                         MonthlyAmount = monthlyAllowance,
                         AnnualAmount = monthlyAllowance * 12m + candidate.AnnualNonTaxableAllowanceAmount.GetValueOrDefault()
                     },
-                    11 => new CompensationOptions { AnnualAmount = candidate.AnnualProfitSharingAmount.GetValueOrDefault() },
-                    12 => new CompensationOptions { AnnualAmount = candidate.AnnualIncentiveAmount.GetValueOrDefault() },
-                    13 => new CompensationOptions { AnnualAmount = candidate.AnnualVariablePayAmount.GetValueOrDefault() }
+                    11 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualProfitSharingAmount.GetValueOrDefault() },
+                    12 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualIncentiveAmount.GetValueOrDefault() },
+                    13 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualVariablePayAmount.GetValueOrDefault() },
+                    _ => null
                 };
 
-                if (option is not null)
+                if (compensationItem is not null)
                 {
-                    option.ItemId = item.Id;
-                    option.JobOfferId = newJO.Id;
-                    option.PackageId = currentPackage.Id;
-                    currentOptions.Add(option);
+                    compensationItem.ItemId = item.Id;
+                    compensationItem.JobOfferId = newJO.Id;
+                    compensationItem.JOCmpnyCmpnstnId = joCompanyCompensationA.Id;
+                    joCmpnyCompensationItemsA.Add(compensationItem);
                 }
             }
 
-            await context.CompensationOptions.AddRangeAsync(currentOptions);
+            await context.JOCompanyCompensationItems.AddRangeAsync(joCmpnyCompensationItemsA);
             await context.SaveChangesAsync();
 
-            //Options Package
-            List<CompensationPackage> optionsPackage = new();
+            //Options
+            List<JOCompanyCompensation> joCompanyCompensationsB = new();
             for (int i = 1; i <= options; i++)
             {
-                optionsPackage.Add(new CompensationPackage
+                joCompanyCompensationsB.Add(new JOCompanyCompensation
                 {
                     CreatedAt = DateTime.Now,
                     CreatedBy = createdBy,
                     JobOfferId = newJO.Id,
-                    OptionType = JOCompensation.OptionType,
+                    JOAnalysisId = newAnalysis.Id,
+                    CSGId = candidate.CSGId,
                     OptionNumber = i,
-                    IncreasePercent = 0,
-                    MonthlyBasic = candidate.CurrentMonthlyBasicSalary.GetValueOrDefault()
+                    CurrentSalary = basicSalary
                 });
             }
 
-            await context.CompensationPackage.AddRangeAsync(optionsPackage);
+            await context.JOCompanyCompensation.AddRangeAsync(joCompanyCompensationsB);
             await context.SaveChangesAsync();
 
-            List<CompensationOptions> newOptions = new();
-            foreach (var package in optionsPackage)
+            List<JOCompanyCompensationItems> joCmpnyCompensationItemsB = new();
+            foreach (var joCompanyCompensation in joCompanyCompensationsB)
             {
                 foreach (var item in compItems)
                 {
-                    var option = item.Id switch
+                    joCmpnyCompensationItemsB.Add(new JOCompanyCompensationItems
                     {
-                        1 => new CompensationOptions { MonthlyAmount = basicSalary, AnnualAmount = basicSalary * 12m },
-                        2 => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = basicSalary },
-                        _ => new CompensationOptions { MonthlyAmount = 0, AnnualAmount = 0 }
-                    };
-
-                    if (option is not null)
-                    {
-                        option.ItemId = item.Id;
-                        option.JobOfferId = newJO.Id;
-                        option.PackageId = package.Id;
-                        newOptions.Add(option);
-                    }
+                        JobOfferId = newJO.Id,
+                        JOCmpnyCmpnstnId = joCompanyCompensation.Id,
+                        ItemId = item.Id
+                    });
                 }
             }
 
-            await context.CompensationOptions.AddRangeAsync(newOptions);
+            //JOActionLogs
+            JOActionLogs actionLogs = new JOActionLogs
+            {
+                JobOfferId = newJO.Id,
+                RoleId = 1, //TA Partner
+                ActionId = 1, //Created
+                ActionAt = DateTime.Now,
+                ActionBy = createdBy
+            };
+
+            //DboxCandidates
+            var dboxCandidate = await context.DboxCandidates.FindAsync(candidate.Id);
+            dboxCandidate.StatusId = 2;//JO Draft
+
+            await context.JOCompanyCompensationItems.AddRangeAsync(joCmpnyCompensationItemsB);
+            await context.JOActionLogs.AddAsync(actionLogs);
+            context.DboxCandidates.Update(dboxCandidate);
             await context.SaveChangesAsync();
 
             return newJO.Id;

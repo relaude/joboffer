@@ -13,6 +13,7 @@
     [ActionId]       INT           NULL,
     [NextActionId]   INT           NULL,
     [Options]        INT           NULL,
+    [JOAnalysisId]   INT           NULL,
     [CmpnyCmpnstnId] INT           NULL,
     [OfferRangeId]   INT           NULL,
     [Escalate]       BIT           NULL,

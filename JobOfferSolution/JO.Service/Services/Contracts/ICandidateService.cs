@@ -10,6 +10,7 @@ namespace JO.Service.Services.Contracts
         Task<int> CreateJobOffer(VwDboxCandidates candidate, int options, int createdBy);
         Task<int> EmailRequest(Requests entity);
         Task<Candidates> GetCandidate(int id);
+        Task<string> GetCandidateLink(VwDboxCandidates candidate);
         Task<CandidateResponses> GetCandidateResponse(int id);
         Task<List<CandidateResponses>> GetCandidateResponses();
         Task<List<Candidates>> GetCandidates();

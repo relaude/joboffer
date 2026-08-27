@@ -16,8 +16,11 @@
     [JobPosition]   NVARCHAR (500) NULL,
     [EmailAddress]  NVARCHAR (500) NULL,
     [ContactNumber] NVARCHAR (500) NULL,
+    [StatusId]      INT            NULL,
     CONSTRAINT [PK_DboxCandidates] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

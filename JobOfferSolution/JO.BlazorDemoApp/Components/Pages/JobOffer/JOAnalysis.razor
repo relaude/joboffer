@@ -2,9 +2,111 @@
 
 <CardCandidateCompensation Candidate="@candidate" CompensationItems="@vwCompanyCompensationItems" />
 
+<!--Salary Structure Guidelines-->
+<div class="card shadow mb-4 small">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h6 class="jo-title">Salary Structure Guidelines</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="card shadow-sm mb-2">
+            <div class="card-header"></div>
+            <div class="card-body">
+                <div class="table-responsive mb-3">
+                    <table class="jo-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Salary Grade</th>
+                                <th scope="col">Minimum</th>
+                                <th scope="col">Midpoint</th>
+                                <th scope="col">Maximum</th>
+                                <th scope="col">Compa Ratio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-weight-bold text-gray-800">@(string.IsNullOrWhiteSpace(vwSalaryBand.GradeName) ? "-" : vwSalaryBand.GradeName)</td>
+                                <td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(vwSalaryBand.Minimum)</td>
+                                <td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(vwSalaryBand.Midpoint)</td>
+                                <td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(vwSalaryBand.Maximum)</td>
+                                <td class="font-weight-bold text-gray-800">@UtilitiesService.ToPeso(vwSalaryBand.CompaRatio)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-3 mb-lg-0">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header">
+                        <h6 class="jo-title">Current</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="currentMonthlyBasic">Monthly Basic</label>
+                            <input id="currentMonthlyBasic" type="text" class="form-control"
+                                   value="@(UtilitiesService.ToPeso(candidate.CurrentMonthlyBasicSalary))" readonly />
+                        </div>
+                        <div class="form-group mb-0">
+                            <label for="currentTotalMonthsPay">Total Months Pay</label>
+                            <input id="currentTotalMonthsPay" type="text" class="form-control"
+                                   value="@MonthPayToInt()" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header">
+                        <h6 class="jo-title">UL Equivalent</h6>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="form-group">
+                            <label for="ulEquivalentMonthlyBasic">Monthly Basic</label>
+                            <input id="ulEquivalentMonthlyBasic"
+                                   type="text"
+                                   class="form-control"
+                                   value="@UtilitiesService.ToPeso(ComputeUlEquivalentMonthlyBasic())"
+                                   readonly />
+                        </div>
+                        <div class="form-group mb-0">
+                            <label for="ulEquivalentTotalMonthsPay">Total Months Pay</label>
+                            <select id="ulEquivalentTotalMonthsPay"
+                                    class="custom-select"
+                                    @bind="ulEquivalentTotalMonthsPay">
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--Candidate Remarks-->
 <div class="card shadow mb-4 small">
     <div class="card-header">
-        <h6 class="jo-title">Job Offer Options</h6>
+        <h6 class="jo-title">Candidate Remarks</h6>
+    </div>
+    <div class="card-body">
+        <textarea rows="5" class="form-control" @bind="joAnalysis.CandidateReamrks"></textarea>
+    </div>
+</div>
+
+<!--Analysis-->
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">Analysis</h6>
     </div>
 
     <div class="card-body">
@@ -32,27 +134,47 @@
                             </div>
                         </div>
                         <div class="border-top py-2">
-                            <div class="text-xs text-uppercase text-gray-500">Current Salary</div>
-                            <div class="font-weight-bold text-gray-800">
-                                @UtilitiesService.ToPeso(compensation.CurrentSalary)
-                            </div>
-                        </div>
-                        <div class="border-top py-2">
-                            <div class="text-xs text-uppercase text-gray-500">Increase</div>
+                            <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.Increase)</div>
                         </div>
                         <div class="border-top py-2">
-                            <div class="text-xs text-uppercase text-gray-500">Monthly Difference</div>
+                            <div class="text-xs text-uppercase text-gray-500">% Monthly Difference</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.DiffTotalMonthly)</div>
                         </div>
                         <div class="border-top py-2">
-                            <div class="text-xs text-uppercase text-gray-500">Annual Difference</div>
+                            <div class="text-xs text-uppercase text-gray-500">% Annual Difference</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.DiffTotalAnnually)</div>
                         </div>
-                        <div class="small text-gray-600 border-top pt-2">
-                            <span class="font-weight-bold">Status:</span>
-                            @(string.IsNullOrWhiteSpace(compensation.BandStatus) ? "-" : compensation.BandStatus)
+                        <div class="border-top py-2">
+                            <div class="text-xs text-uppercase text-gray-500">Overtaken Incumbent</div>
+                            <div class="font-weight-bold text-gray-800">@compensation.Incumbents</div>
                         </div>
+                        <div>
+                            <div class="text-xs font-weight-bold text-uppercase text-gray-600 mb-1">Remarks</div>
+                            <textarea rows="3" class="form-control form-control-sm" readonly>compensation.Remarks</textarea>
+                        </div>
+                        
+                        @if (!string.IsNullOrWhiteSpace(compensation.BandStatus))
+                        {
+                            <div class="border-top pt-2">
+                                <span class="badge @(compensation.OfferRangeId is 1 or 2
+                                                                          ? "badge-success"
+                                                                          : compensation.OfferRangeId == 3
+                                                                              ? "badge-danger"
+                                                                              : "badge-info")">
+                                    @if (compensation.OfferRangeId is 1 or 2)
+                                    {
+                                        <i class="fas fa-check mr-1" aria-hidden="true"></i>
+                                    }
+                                    else if (compensation.OfferRangeId == 3)
+                                    {
+                                        <i class="fas fa-times mr-1" aria-hidden="true"></i>
+                                    }
+                                    @compensation.BandStatus
+                                </span>
+                            </div>
+                        }
+
                         @if (compensation.Escalate == true)
                         {
                             <div class="pt-2">

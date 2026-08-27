@@ -16,8 +16,7 @@ namespace JO.BlazorDemoApp.Components.Pages.DHL1.Approval.AboveStandard
         {
             joDboxCandidates = await JODetailsService.GetVwJODboxCandidates();
             filteredJODboxCandidates = joDboxCandidates
-                .Where(jo => jo.StatusId == 5 && jo.WorkFlowId == 3
-                    && (jo.OfferRangeId == 2 || jo.OfferRangeId == 3))
+                .Where(jo => jo.WorkFlowId == 5)
                 .ToList();
         }
     }

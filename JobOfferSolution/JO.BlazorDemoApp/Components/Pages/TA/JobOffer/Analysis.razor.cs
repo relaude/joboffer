@@ -30,6 +30,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
 
         private VwDboxCandidates candidate = new();
         private JobOffers jobOffer = new();
+        private JOAnalysis joAnalysis = new();
+        private VwJODboxCandidates vwjobOffer = new();
         private VwSalaryBands vwSalaryBand = new();
 
         private List<CompanyCompensation> companyCompensation = new();
@@ -52,6 +54,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         {
             userId = await AccountService.GetJobOfferUserId();
             jobOffer = await CompensationService.GetJobOffer(jobOfferId);
+            joAnalysis = await CompensationService.GetJOAnalysis(jobOfferId);
+            vwjobOffer = await CompensationService.GetVwJODboxCandidate(jobOfferId);
             candidate = await CandidateService.GetVwDboxCandidate(jobOffer.CandidateId.GetValueOrDefault());
             vwSalaryBand = await CompensationService.GetVwSalaryBand(jobOffer.CompanyId.GetValueOrDefault(), candidate.CSGId.GetValueOrDefault());
             companyCompensation = await CompensationService.GetCompanyCompensation(jobOffer.CompanyId.GetValueOrDefault());
@@ -161,10 +165,14 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
             await CompensationService.SaveAnalysis(
                 joCompanyCompensation,
                 joCompanyCompensationItems,
+                joAnalysis,
+                jobOffer,
                 selectedCmpnyCmpnstnId,
+                candidate.Id,
                 userId);
 
             await AlertService.Success("Analysis successfully saved.");
+            Navigation.Refresh();
         }
 
         private async Task SubmitForApproval()
@@ -186,9 +194,11 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
 
             var submittedJobOfferId = await CompensationService.SubmitForApproval(
                 jobOffer,
+                joAnalysis,
                 joCompanyCompensation,
                 joCompanyCompensationItems,
                 selectedCmpnyCmpnstnId,
+                candidate.Id,
                 userId);
 
             await AlertService.Success("Analysis successfully submitted for approval.");
@@ -210,6 +220,12 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
                 if (!option.ProposedSalary.HasValue)
                 {
                     errors.Add($"Option {optionNumber}: Proposed Salary is required.");
+                    continue;
+                }
+
+                if (!option.OfferRangeId.HasValue)
+                {
+                    errors.Add($"Option {optionNumber}: Proposed Salary is out of range.");
                     continue;
                 }
 
@@ -279,24 +295,34 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
             }
 
             decimal proposedSalary = compensation.ProposedSalary.GetValueOrDefault();
-            decimal maximum = vwSalaryBand.Maximum.Value;
+            decimal minimum = vwSalaryBand.Minimum.GetValueOrDefault();
+            decimal midpoint = vwSalaryBand.Midpoint.GetValueOrDefault();
+            decimal maximum = vwSalaryBand.Maximum.GetValueOrDefault();
             decimal compaRatio = vwSalaryBand.CompaRatio.Value;
 
-            if (proposedSalary <= maximum)
+            if (proposedSalary >= minimum && proposedSalary <= midpoint)
             {
-                compensation.BandStatus = "Standard, Within Range";
-                compensation.OfferRangeId = 1;//Standard
+                compensation.BandStatus = "Min to Mid";
+                compensation.OfferRangeId = 1;
+                compensation.Escalate = false;
             }
-            else if (proposedSalary < compaRatio)
+            else if (proposedSalary > midpoint && proposedSalary <= maximum)
             {
-                compensation.BandStatus = "Above Standard Maximum of Salary Grade to <150% Compa Ratio";
-                compensation.OfferRangeId = 2;//Above Standard
+                compensation.BandStatus = "Mid to Max";
+                compensation.OfferRangeId = 2;
+                compensation.Escalate = false;
+            }
+            else if (proposedSalary > maximum && proposedSalary <= compaRatio)
+            {
+                compensation.BandStatus = "Above Max";
+                compensation.OfferRangeId = 3;
+                compensation.Escalate = true;
             }
             else
             {
-                compensation.BandStatus = "Above Standard > 150% Comp Ratio Salary Grade";
-                compensation.OfferRangeId = 3;//Above Standard Maximum
-                compensation.Escalate = true;
+                compensation.BandStatus = "Out of Range";
+                compensation.OfferRangeId = null;
+                compensation.Escalate = null;
             }
         }
 
@@ -379,7 +405,15 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
 
         private decimal? ComputeUlEquivalentMonthlyBasic()
         {
-            int currentMonth = candidate.GuaranteedMonthsPay switch
+            int currentMonth = MonthPayToInt();
+
+            decimal ulEquivalentMonthlybasic = (candidate.CurrentMonthlyBasicSalary.GetValueOrDefault() * currentMonth) / ulEquivalentTotalMonthsPay;
+            return ulEquivalentMonthlybasic;
+        }
+
+        private int MonthPayToInt()
+        {
+            return candidate.GuaranteedMonthsPay switch
             {
                 "13th Month Pay" => 13,
                 "14th Month Pay" => 14,
@@ -387,9 +421,25 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
                 "16th Month Pay" => 16,
                 _ => 0
             };
+        }
 
-            decimal ulEquivalentMonthlybasic = (candidate.CurrentMonthlyBasicSalary.GetValueOrDefault() * currentMonth) / ulEquivalentTotalMonthsPay;
-            return ulEquivalentMonthlybasic;
+        private async Task ClickGoBack()
+        {
+            if (!await AlertService.Confirm(
+                title: "Go back without saving?",
+                confirmText: "Yes"))
+            {
+                return;
+            }
+
+            if(jobOffer.WorkFlowId == 1)
+            {
+                Navigation.NavigateTo(JORoutes.TA.Candidates);
+            }
+            else
+            {
+                Navigation.NavigateTo(JORoutes.TA.JobOfferTracker);
+            }
         }
     }
 }

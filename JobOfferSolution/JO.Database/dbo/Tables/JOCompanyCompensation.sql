@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[JOCompanyCompensation] (
     [Id]                INT             IDENTITY (1, 1) NOT NULL,
     [JobOfferId]        INT             NULL,
+    [JOAnalysisId]      INT             NULL,
     [CSGId]             INT             NULL,
     [CmpnyCmpnstnId]    INT             NULL,
     [OptionNumber]      INT             NULL,
@@ -14,6 +15,8 @@
     [BandStatus]        NVARCHAR (200)  NULL,
     [Escalate]          BIT             NULL,
     [OfferRangeId]      INT             NULL,
+    [Incumbents]        INT             NULL,
+    [Remarks]           NVARCHAR (500)  NULL,
     [CreatedAt]         DATETIME        NULL,
     [CreatedBy]         INT             NULL,
     [ModifiedAt]        DATETIME        NULL,

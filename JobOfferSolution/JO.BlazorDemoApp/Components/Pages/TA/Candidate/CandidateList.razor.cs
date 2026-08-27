@@ -16,23 +16,43 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Candidate
         [Inject] private IAccountService AccountService { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
 
-    private List<VwDboxCandidates> candidates = new();
+        private List<VwDboxCandidates> candidates = new();
+        private List<VwDboxCandidates> filteredCandidates = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        candidates = await CandidateService.GetVwDboxCandidates();
-    }
+        private int?[] AMSG = { 1, 109 };
+        private int total = 0; 
+        private int withResponse = 0; 
+        private int withOutResponse = 0; 
+        private int joCreated = 0; 
+        private int joDraft = 0; 
+        private int forJOCreation = 0; 
+        protected override async Task OnInitializedAsync()
+        {
+            candidates = await CandidateService.GetVwDboxCandidates();
 
-    private async Task CreateJobOffer(int candidateId)
-    {
-        int numProposal = await AlertService.ConfirmProposalNumber();
+            filteredCandidates = candidates
+                .Where(jo => !AMSG.Contains(jo.CSGId)
+                    && jo.DivisionId != 3)
+                .ToList();
 
-        if (numProposal == 0) return;
+            SetKpiCount();
+        }
 
-        int createdBy = await AccountService.GetJobOfferUserId();
-        int jobOfferId = await CandidateService.CreateJobOffer(candidateId, createdBy);
+        private void SetKpiCount()
+        {
+            total = filteredCandidates.Count();
+            withResponse = filteredCandidates.Where(jo => jo.ResponseId > 0).Count();
+            withOutResponse = total - withResponse;
 
-        Navigation.NavigateTo($"{JORoutes.TA.NewOffer}/{jobOfferId}/{numProposal}");
-    }
+            forJOCreation = filteredCandidates.Where(jo => jo.StatusId==1).Count();
+            joDraft = filteredCandidates.Where(jo => jo.StatusId==2).Count();
+            joCreated = filteredCandidates.Where(jo => jo.StatusId==3).Count();
+        }
+
+        private async Task OpenCandidate(VwDboxCandidates candidate)
+        {
+            var candidateLink = await CandidateService.GetCandidateLink(candidate);
+            Navigation.NavigateTo(candidateLink);
+        }
     }
 }

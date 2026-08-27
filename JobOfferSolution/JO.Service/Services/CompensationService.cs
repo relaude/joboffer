@@ -17,43 +17,105 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<JOAnalysis> GetJOAnalysis(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JOAnalysis.FirstOrDefaultAsync(jo => jo.Id == jobOfferId);
+        }
+
+        public async Task<VwJobOffers> GetVwJobOffer(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJobOffers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(jo => jo.Id == jobOfferId);
+        }
+
+        public async Task<VwJODboxCandidates> GetVwJODboxCandidate(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJODboxCandidates
+                .AsNoTracking()
+                .FirstOrDefaultAsync(jo => jo.Id == jobOfferId);
+        }
+
         public async Task<VwJODboxCandidates> GetVwJODboxCandidates(int jobOfferId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
-            return await context.VwJODboxCandidates.FirstOrDefaultAsync(jo=>jo.Id == jobOfferId);
+            return await context.VwJODboxCandidates
+                .AsNoTracking()
+                .FirstOrDefaultAsync(jo=>jo.Id == jobOfferId);
         }
 
-        public async Task<int> SubmitForApproval(JobOffers jobOffer,
+        public async Task<int> SubmitForApproval(
+            JobOffers jobOffer,
+            JOAnalysis joAnalysis,
             List<JOCompanyCompensation> joCompanyCompensation,
             List<JOCompanyCompensationItems> joCompanyCompensationItems,
             int selectedCmpnyCmpnstnId,
+            int candidateId,
             int userId)
         {
-            jobOffer.StatusId = 2;//For Review
-            jobOffer.WorkFlowId = 2;//Review
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            //JobOffers
+            jobOffer.WorkFlowId = 3;//For Review
             jobOffer.ModifiedBy = userId;
             jobOffer.ModifiedAt = DateTime.Now;
             jobOffer.CmpnyCmpnstnId = selectedCmpnyCmpnstnId;
             jobOffer.Escalate = joCompanyCompensation.Any(jo => jo.Escalate == true);
             jobOffer.OfferRangeId = joCompanyCompensation.Max(jo => jo.OfferRangeId);
 
-            await using var context = await _dbContext.CreateDbContextAsync();
-            context.JobOffers.Update(jobOffer);
-            await context.SaveChangesAsync();
+            //JOAnalysis
+            joAnalysis.ModifiedBy = userId;
+            joAnalysis.ModifiedAt = DateTime.Now;
+            
+            JOActionLogs newLog = new JOActionLogs
+            {
+                JobOfferId = jobOffer.Id,
+                RoleId = 1,//TA Partner
+                ActionId = 2,//Prepared
+                ActionAt = DateTime.Now,
+                ActionBy = userId
+            };
 
-            await SaveAnalysis(joCompanyCompensation, 
-                joCompanyCompensationItems, 
-                selectedCmpnyCmpnstnId, 
-                userId);
+            //joCompanyCompensation
+            foreach (var joCompensation in joCompanyCompensation)
+            {
+                joCompensation.CmpnyCmpnstnId = selectedCmpnyCmpnstnId;
+                joCompensation.ModifiedBy = userId;
+                joCompensation.ModifiedAt = DateTime.Now;
+            }
+
+            var candidate = await context.DboxCandidates.FindAsync(candidateId);
+            candidate.StatusId = 3;//JO Created
+            
+            context.JobOffers.Update(jobOffer);
+            context.JOAnalysis.Update(joAnalysis);
+            await context.JOActionLogs.AddAsync(newLog);
+            context.DboxCandidates.Update(candidate);
+            context.JOCompanyCompensation.UpdateRange(joCompanyCompensation);
+            context.JOCompanyCompensationItems.UpdateRange(joCompanyCompensationItems);
+            
+            await context.SaveChangesAsync();
 
             return jobOffer.Id;
         }
 
-        public async Task<int> SaveAnalysis(List<JOCompanyCompensation> joCompanyCompensation,
+        public async Task<int> SaveAnalysis(
+            List<JOCompanyCompensation> joCompanyCompensation,
             List<JOCompanyCompensationItems> joCompanyCompensationItems,
+            JOAnalysis joAnalysis,
+            JobOffers jobOffer,
             int selectedCmpnyCmpnstnId,
+            int candidateId,
             int userId)
         {
+            joAnalysis.ModifiedBy = userId;
+            joAnalysis.ModifiedAt = DateTime.Now;
+
+            jobOffer.WorkFlowId = 2;//Created
+
             foreach (var joCompensation in joCompanyCompensation)
             {
                 joCompensation.CmpnyCmpnstnId = selectedCmpnyCmpnstnId;
@@ -62,6 +124,13 @@ namespace JO.Service.Services
             }
 
             await using var context = await _dbContext.CreateDbContextAsync();
+
+            var candidate = await context.DboxCandidates.FindAsync(candidateId);
+            candidate.StatusId = 3;//JO Created
+
+            context.JOAnalysis.Update(joAnalysis);
+            context.JobOffers.Update(jobOffer);
+            context.DboxCandidates.Update(candidate);
             context.JOCompanyCompensation.UpdateRange(joCompanyCompensation);
             context.JOCompanyCompensationItems.UpdateRange(joCompanyCompensationItems);
 
@@ -145,14 +214,21 @@ namespace JO.Service.Services
                 DepartmentId = candidate.DepartmentId,
                 CandidateId = candidate.Id,
                 Options = options,
-                StatusId = 1, //Analysis
-                WorkFlowId = 1, //Analysis
-                ActionId = 1, //TA Create JO
-                NextActionId = 2, //TA Lead For Review
+                WorkFlowId = 1, //Draft
                 CreatedAt = DateTime.Now,
                 CreatedBy = createdBy
             };
             await context.JobOffers.AddAsync(newJO);
+            await context.SaveChangesAsync();
+
+            //JOAnalysis
+            JOAnalysis newAnalysis = new JOAnalysis
+            {
+                JobOfferId = newJO.Id,
+                CreatedAt = DateTime.Now,
+                CreatedBy = createdBy
+            };
+            await context.JOAnalysis.AddAsync(newAnalysis);
             await context.SaveChangesAsync();
 
             //Candidate Current
@@ -161,6 +237,7 @@ namespace JO.Service.Services
                 CreatedAt = DateTime.Now,
                 CreatedBy = createdBy,
                 JobOfferId = newJO.Id,
+                JOAnalysisId = newAnalysis.Id,
                 OptionNumber = 0
             };
 
@@ -233,6 +310,7 @@ namespace JO.Service.Services
                     CreatedAt = DateTime.Now,
                     CreatedBy = createdBy,
                     JobOfferId = newJO.Id,
+                    JOAnalysisId = newAnalysis.Id,
                     CSGId = candidate.CSGId,
                     OptionNumber = i,
                     CurrentSalary = basicSalary
@@ -259,13 +337,14 @@ namespace JO.Service.Services
             //JOActionLogs
             JOActionLogs actionLogs = new JOActionLogs { 
                 JobOfferId = newJO.Id,
-                ActionId = 1, //TA Create JO
+                ActionId = 1, //Created
                 ActionAt = DateTime.Now,
                 ActionBy = createdBy
             };
 
 
             //JORoleActionStatus
+            /*
             List<JORoleActionStatus> newJORoleActionStatus = new();
             var roleList = await context.JOUserRoles
                 .AsNoTracking()
@@ -278,14 +357,13 @@ namespace JO.Service.Services
                 {
                     JobOfferId = newJO.Id,
                     RoleId = role.Id,
-                    ActionId = role.Id == 1 ? 1 : 0, //TA Partner | TA Create JO
+                    ActionId = role.Id == 1 ? 1 : 0, 
                 });
-            }
+            }*/
 
-            //Save JOCompanyCompensationItems, JOActionLogs, JORoleActionStatus
             await context.JOCompanyCompensationItems.AddRangeAsync(joCmpnyCompensationItemsB);
             await context.JOActionLogs.AddAsync(actionLogs);
-            await context.JORoleActionStatus.AddRangeAsync(newJORoleActionStatus);
+            //await context.JORoleActionStatus.AddRangeAsync(newJORoleActionStatus);
             await context.SaveChangesAsync();
 
             return newJO.Id;

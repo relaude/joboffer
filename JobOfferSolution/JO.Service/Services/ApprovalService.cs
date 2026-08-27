@@ -29,13 +29,35 @@ namespace JO.Service.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task JobOfferChangeStatus(int jobOfferId, int statusId)
+        public async Task JobOfferChangeStatus(int jobOfferId, int workFlowId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
 
-            jobOffer.StatusId = statusId;
+            jobOffer.WorkFlowId = workFlowId;
+
             context.JobOffers.Update(jobOffer);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task JobOfferActionFlowStatus(int jobOfferId, int workFlowId, int roleId, int actionId, int userId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
+            jobOffer.WorkFlowId = workFlowId;
+
+            JOActionLogs newLog = new JOActionLogs
+            {
+                JobOfferId = jobOfferId,
+                RoleId = roleId,
+                ActionId = actionId,
+                ActionAt = DateTime.Now,
+                ActionBy = userId
+            };
+
+            context.JobOffers.Update(jobOffer);
+            await context.JOActionLogs.AddAsync(newLog);
             await context.SaveChangesAsync();
         }
 

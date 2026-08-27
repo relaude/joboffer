@@ -18,10 +18,14 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         private int selectedCmpnyCmpnstnId;
         private int selectedJOCmpnyCmpnstnId;
         private int selectedOptionNumber = 1;
+        private int ulEquivalentTotalMonthsPay = 15;
 
         private VwDboxCandidates candidate = new();
         private JobOffers jobOffer = new();
+        private JO.DataModel.Entity.JOAnalysis joAnalysis = new();
         private VwJODboxCandidates vwjobOffer = new();
+        private VwSalaryBands vwSalaryBand = new();
+
         private List<CompanyCompensation> companyCompensation = new();
         private List<VwCompanyCompensationItems> vwCompanyCompensationItems = new();
         private List<JOCompanyCompensation> joCompanyCompensation = new();
@@ -41,8 +45,11 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         protected override async Task OnParametersSetAsync()
         {
             jobOffer = await CompensationService.GetJobOffer(jobOfferId);
+            joAnalysis = await CompensationService.GetJOAnalysis(jobOfferId);
             vwjobOffer = await CompensationService.GetVwJODboxCandidates(jobOfferId);
             candidate = await CandidateService.GetVwDboxCandidate(jobOffer.CandidateId.GetValueOrDefault());
+            vwSalaryBand = await CompensationService.GetVwSalaryBand(jobOffer.CompanyId.GetValueOrDefault(), candidate.CSGId.GetValueOrDefault());
+
             companyCompensation = await CompensationService.GetCompanyCompensation(jobOffer.CompanyId.GetValueOrDefault());
             joCompanyCompensation = await CompensationService.GetJOCompanyCompensation(jobOfferId);
             joCompanyCompensationItems = await CompensationService.GetJOCmpnyCompensationItems(jobOfferId);
@@ -119,6 +126,26 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         private static string FormatPercent(decimal? value)
         {
             return value.HasValue ? $"{value.Value:N2}%" : "-";
+        }
+
+        private decimal? ComputeUlEquivalentMonthlyBasic()
+        {
+            int currentMonth = MonthPayToInt();
+
+            decimal ulEquivalentMonthlybasic = (candidate.CurrentMonthlyBasicSalary.GetValueOrDefault() * currentMonth) / ulEquivalentTotalMonthsPay;
+            return ulEquivalentMonthlybasic;
+        }
+
+        private int MonthPayToInt()
+        {
+            return candidate.GuaranteedMonthsPay switch
+            {
+                "13th Month Pay" => 13,
+                "14th Month Pay" => 14,
+                "15th Month Pay" => 15,
+                "16th Month Pay" => 16,
+                _ => 0
+            };
         }
     }
 }

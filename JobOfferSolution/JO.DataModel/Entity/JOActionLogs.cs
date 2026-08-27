@@ -7,6 +7,7 @@ namespace JO.DataModel.Entity
     {
         [Key] public int Id { get; set; }
         public int? JobOfferId { get; set; }
+        public int? RoleId { get; set; }
         public int? ActionId { get; set; }
         public DateTime? ActionAt { get; set; }
         public int? ActionBy { get; set; }

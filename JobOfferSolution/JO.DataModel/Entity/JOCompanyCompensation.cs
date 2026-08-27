@@ -6,6 +6,7 @@ namespace JO.DataModel.Entity
     {
         [Key] public int Id { get; set; }
         public int? JobOfferId { get; set; }
+        public int? JOAnalysisId { get; set; }
         public int? CSGId { get; set; }
         public int? CmpnyCmpnstnId { get; set; }
         public int? OptionNumber { get; set; }
@@ -19,6 +20,8 @@ namespace JO.DataModel.Entity
         public string? BandStatus { get; set; }
         public bool? Escalate { get; set; }
         public int? OfferRangeId { get; set; }
+        public int? Incumbents { get; set; }
+        public string? Remarks { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }

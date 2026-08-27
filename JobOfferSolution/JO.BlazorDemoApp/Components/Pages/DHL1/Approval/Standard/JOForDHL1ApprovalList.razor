@@ -51,7 +51,7 @@
                             <td>@joDboxCandidate.CandidateName</td>
                             <td>
                                 <span class="badge badge-info">
-                                    @joDboxCandidate.StatusName
+                                    @joDboxCandidate.ActionByName
                                 </span>
                             </td>
                             <td>
@@ -73,7 +73,7 @@
                                         •••
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-right shadow-sm">
-                                        @if (joDboxCandidate.StatusId == 3)
+                                        @if (joDboxCandidate.WorkFlowId == 3)
                                         {
                                             <a class="dropdown-item"
                                                href="@($"{JORoutes.DHL1.JOForApprovalStandard}/{joDboxCandidate.Id}")">

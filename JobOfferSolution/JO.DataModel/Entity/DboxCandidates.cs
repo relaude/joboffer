@@ -21,5 +21,6 @@ namespace JO.DataModel.Entity
         public string? JobPosition { get; set; }
         public string? EmailAddress { get; set; }
         public string? ContactNumber { get; set; }
+        public int? StatusId { get; set; }
     }
 }

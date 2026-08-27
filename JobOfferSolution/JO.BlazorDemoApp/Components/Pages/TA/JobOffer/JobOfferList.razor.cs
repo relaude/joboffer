@@ -14,26 +14,38 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         [Inject] private NavigationManager Navigation { get; set; } = default!;
 
         private List<VwJODboxCandidates> joDboxCandidates = new();
+        private List<VwJODboxCandidates> filteredJODboxCandidates = new();
 
-        private int countAnalysis = 0;
+        private int total = 0;
         private int countForReview = 0;
-        private int countReviwed = 0;
+        private int countForApproval = 0;
         private int countApproved = 0;
 
         protected override async Task OnInitializedAsync()
         {
             joDboxCandidates = await JODetailsService.GetVwJODboxCandidates();
+            filteredJODboxCandidates = joDboxCandidates.Where(jo => jo.WorkFlowId > 1).ToList();
             SetUpCountStatus();
         }
 
         private void SetUpCountStatus()
         {
-            int?[] approvedStatusIds = { 4,5,6,7,8 };
+            int?[] forApprovalIds = { 4,5,6,7 };
 
-            countAnalysis = joDboxCandidates.Where(jo => jo.StatusId == 1).Count();//Analysis
-            countForReview = joDboxCandidates.Where(jo => jo.StatusId == 2).Count();//For Review
-            countReviwed = joDboxCandidates.Where(jo => jo.StatusId == 3).Count();//Reviewed
-            countApproved = joDboxCandidates.Where(jo => approvedStatusIds.Contains(jo.StatusId)).Count();//Approved
+            total = filteredJODboxCandidates.Count();
+            countForReview = filteredJODboxCandidates.Where(jo => jo.WorkFlowId == 3).Count();//For Review
+            countApproved = filteredJODboxCandidates.Where(jo => jo.WorkFlowId == 8).Count();//For Discussion
+            countForApproval = filteredJODboxCandidates.Where(jo => forApprovalIds.Contains(jo.WorkFlowId)).Count();//For Approval
+        }
+
+        private string SetJOlink(VwJODboxCandidates joDboxCandidate)
+        {
+            if(joDboxCandidate.WorkFlowId == 2)//Created
+            {
+                return $"{JORoutes.TA.Analysis}/{joDboxCandidate.Id}";
+            }
+
+            return $"{JORoutes.TA.JobOfferDetails}/{joDboxCandidate.Id}";
         }
     }
 }

@@ -17,25 +17,25 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Candidate
         [Inject] private ICompensationService CompensationService { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
 
-    [Parameter] public int candidateId { get; set; }
-    private VwDboxCandidates candidate = new();
+        [Parameter] public int candidateId { get; set; }
+        private VwDboxCandidates candidate = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        candidate = await CandidateService.GetVwDboxCandidate(candidateId);
-    }
+        protected override async Task OnInitializedAsync()
+        {
+            candidate = await CandidateService.GetVwDboxCandidate(candidateId);
+        }
 
-    private async Task CreateJobOffer()
-    {
-        int numProposal = await AlertService.ConfirmProposalNumber();
+        private async Task CreateJobOffer()
+        {
+            int numProposal = await AlertService.ConfirmProposalNumber();
 
-        if (numProposal == 0) return;
+            if (numProposal == 0) return;
 
-        int createdBy = await AccountService.GetJobOfferUserId();
-        int jobOfferId = await CompensationService.CreateJobOffer(candidate, numProposal, createdBy);
+            int createdBy = await AccountService.GetJobOfferUserId();
+            int jobOfferId = await CandidateService.CreateJobOffer(candidate, numProposal, createdBy);
 
-        Navigation.NavigateTo($"{JORoutes.TA.Analysis}/{jobOfferId}");
-    }
+            Navigation.NavigateTo($"{JORoutes.TA.Analysis}/{jobOfferId}");
+        }
 
     }
 }

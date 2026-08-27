@@ -2,6 +2,7 @@
 @attribute [Route(JORoutes.PEH.JOForApproval + "/{jobOfferId:int}")]
 
 @inject IApprovalService ApprovalService
+@inject IAccountService AccountService
 @inject IAlertService AlertService
 @inject NavigationManager Navigation
 
@@ -12,9 +13,9 @@
         <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
         Go Back
     </a>
-    <button type="button" class="btn btn-danger">
-        <i class="fas fa-times mr-1" aria-hidden="true"></i>
-        Reject
+    <button type="button" class="btn btn-outline-primary">
+        <i class="fas fa-reply mr-1" aria-hidden="true"></i>
+        Send Back
     </button>
     <button type="button" class="btn btn-success" @onclick="ApproveJobOffer">
         <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
@@ -34,7 +35,10 @@
             return;
         }
 
-        await ApprovalService.JobOfferChangeStatus(jobOfferId, 5);//PE Head Approved
+        int userId = await AccountService.GetJobOfferUserId();
+
+        //For Division Head Approval,PE Head, Approved
+        await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 5, 3, 4, userId);
         await AlertService.Success(
             message: "The job offer review has been approved successfully.",
             title: "Approve Complete");

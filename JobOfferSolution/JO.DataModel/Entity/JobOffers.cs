@@ -22,6 +22,7 @@ namespace JO.DataModel.Entity
         public int? ActionId { get; set; }
         public int? NextActionId { get; set; }
         public int? Options { get; set; }
+        public int? JOAnalysisId { get; set; }
         public int? CmpnyCmpnstnId { get; set; }
         public int? OfferRangeId { get; set; }
         public bool? Escalate { get; set; }

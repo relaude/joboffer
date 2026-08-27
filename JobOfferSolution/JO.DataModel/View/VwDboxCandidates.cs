@@ -21,6 +21,8 @@ namespace JO.DataModel.View
         public string? JobPosition { get; set; }
         public string? EmailAddress { get; set; }
         public string? ContactNumber { get; set; }
+        public int? StatusId { get; set; }
+        public string? StatusName { get; set; }
         public string? CompanyName { get; set; }
         public string? GradeName { get; set; }
         public string? HasDataPrivacyConsent { get; set; }

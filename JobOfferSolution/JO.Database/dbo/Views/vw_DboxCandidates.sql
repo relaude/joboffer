@@ -1,8 +1,8 @@
 ﻿
-
 CREATE View [dbo].[vw_DboxCandidates]
 As
 Select dbxc.*
+,dcs.StatusName
 ,vwcsg.CompanyName,vwcsg.GradeName
 ,[HasDataPrivacyConsent]
 ,[CandidateFullName]
@@ -47,5 +47,6 @@ Select dbxc.*
 ,[VehicleBenefit]
 ,[MobilePhoneBenefit]
 From DboxCandidates dbxc
+Left Join DboxCandidateStatus dcs On dcs.Id=dbxc.StatusId
 Left Join vw_CompanySalaryGrades vwcsg On vwcsg.Id=dbxc.CSGId
 Left Join CandidateResponses crs On crs.Id=dbxc.ResponseId;

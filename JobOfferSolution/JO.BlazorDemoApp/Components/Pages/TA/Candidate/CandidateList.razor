@@ -1,51 +1,85 @@
 @attribute [Authorize(Roles = JOUserRole.TA)]
 @attribute [Route(JORoutes.TA.Candidates)]
 
-
-
 <div class="row">
-    <div class="col-xl-4 col-md-4 mb-4">
+    <!--Total-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
         <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">@candidates.Count</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@total</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-4 col-md-4 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">With Responses</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">@candidates.Count</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-comments fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-4 col-md-4 mb-4">
+    <!--With Responses-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
         <div class="card border-left-info shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">JO Created</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">With Response</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@withResponse</div>
                     </div>
-                    <div class="col-auto">
-                        <i class="fas fa-file-signature fa-2x text-gray-300"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Without Response-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">No Response</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@withOutResponse</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Created-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Created</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@joCreated</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Draft-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Draft</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@joDraft</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--For Creation-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">For Creation</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@forJOCreation</div>
                     </div>
                 </div>
             </div>
@@ -71,16 +105,21 @@
                             <th>Company</th>
                             <th>Division</th>
                             <th>Department</th>
+                            <th>Response</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var row in candidates)
+                        @foreach (var row in filteredCandidates)
                         {
                             <tr>
                                 <td class="jo-title">
-                                    <a href="@($"{JORoutes.TA.Candidate}/{row.Id}")">
+                                    <button type="button"
+                                            class="btn btn-link p-0 btn-sm"
+                                            role="link"
+                                            @onclick="() => OpenCandidate(row)">
                                         @row.CandidateName
-                                    </a>
+                                    </button>
                                 </td>
                                 <td>@row.DboxRefNum</td>
                                 <td>@row.EmailAddress</td>
@@ -88,6 +127,17 @@
                                 <td>@row.Company</td>
                                 <td>@row.Division</td>
                                 <td>@row.Department</td>
+                                <td>
+                                    @if (row.ResponseId > 0)
+                                    {
+                                        <span class="badge badge-info">With Response</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-warning">No Response</span>
+                                    }
+                                </td>
+                                <td>@(string.IsNullOrEmpty(row.StatusName) ? "-" : row.StatusName)</td>
                             </tr>
                         }
                     </tbody>

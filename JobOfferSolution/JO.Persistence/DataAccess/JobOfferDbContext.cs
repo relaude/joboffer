@@ -34,6 +34,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<JOActionLogs> JOActionLogs { get; set; }
         public DbSet<JORoleActionStatus> JORoleActionStatus { get; set; }
         public DbSet<JOUserRoles> JOUserRoles { get; set; }
+        public DbSet<JOAnalysis> JOAnalysis { get; set; }
 
         //Legal
         public DbSet<LegalEntities> LegalEntities { get; set; }

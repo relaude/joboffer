@@ -2,78 +2,89 @@
 @attribute [Route(JORoutes.TA.JobOfferTracker)]
 
 <div class="row">
-    <div class="col-xl-3 col-md-6 mb-4">
+    <!--Total-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
         <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Analysis</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            @countAnalysis
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@total</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6 mb-4">
+    <!--For Review-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
         <div class="card border-left-info shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">For Review</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            @countForReview
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@countForReview</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6 mb-4">
+    <!--Reviewed-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
         <div class="card border-left-info shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Reviewed</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            @countReviwed
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
+    <!--For Approval-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">For Approval</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@countForApproval</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Approved-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Approved</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            @countApproved
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@countApproved</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!--Accepted-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Accepted</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="card shadow mb-4 small">
@@ -90,29 +101,24 @@
                         <th>Candidate ID</th>
                         <th>Candidate</th>
                         <th>Status</th>
-                        <th>Work Flow</th>
-                        <th>Action</th>
-                        <th>Next Action</th>
+                        <th>Workflow</th>
                         <th>Created</th>
                         <th>Modified</th>
-                        <th class="text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var joDboxCandidate in joDboxCandidates)
+                    @foreach (var joDboxCandidate in filteredJODboxCandidates)
                     {
                         <tr @key="joDboxCandidate.Id">
                             <td>
-                                <a href="@($"{JORoutes.TA.JobOfferDetails}/{joDboxCandidate.Id}")">
+                                <a href="@SetJOlink(joDboxCandidate)">
                                     <strong>@(joDboxCandidate.RefNum)</strong>
                                 </a>
                             </td>
                             <td>@joDboxCandidate.DboxRefNum</td>
                             <td>@joDboxCandidate.CandidateName</td>
-                            <td>@joDboxCandidate.StatusName</td>
+                            <td>@joDboxCandidate.ActionByName</td>
                             <td>@joDboxCandidate.FlowName</td>
-                            <td>@joDboxCandidate.ActionName</td>
-                            <td>@joDboxCandidate.NextActionName</td>
                             <td>
                                 <div>@joDboxCandidate.CreatedByName</div>
                                 <small class="text-muted">@(joDboxCandidate.CreatedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
@@ -120,49 +126,6 @@
                             <td>
                                 <div>@joDboxCandidate.ModifiedByName</div>
                                 <small class="text-muted">@(joDboxCandidate.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
-                            </td>
-                            <td class="text-right">
-                                <div class="dropdown">
-                                    <button type="button"
-                                            class="btn btn-link text-dark font-weight-bold"
-                                            data-toggle="dropdown"
-                                            aria-haspopup="true"
-                                            aria-expanded="false"
-                                            aria-label="Actions for @joDboxCandidate.RefNum">
-                                        •••
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right shadow-sm">
-                                        @if (joDboxCandidate.StatusId == 1)
-                                        {
-                                            <a class="dropdown-item"
-                                               href="@($"{JORoutes.TA.Analysis}/{joDboxCandidate.Id}")">
-                                                Analysis
-                                            </a>
-                                        }
-
-                                        @if (joDboxCandidate.WorkFlowId == 4 
-                                            && (joDboxCandidate.StatusId == 4 
-                                                || joDboxCandidate.StatusId == 8))
-                                        {
-                                            <a class="dropdown-item"
-                                               href="@($"{JORoutes.TA.EmailLetter}/{joDboxCandidate.Id}")">
-                                                Letter
-                                            </a>
-                                            <a class="dropdown-item"
-                                               href="@($"{JORoutes.TA.Discussion}/{joDboxCandidate.Id}")">
-                                                Discussion
-                                            </a>
-                                        }
-
-                                        @if (joDboxCandidate.WorkFlowId == 4)
-                                        {
-                                            <a class="dropdown-item"
-                                               href="@($"{JORoutes.TA.JobOfferTagging}/{joDboxCandidate.Id}")">
-                                                Tag As...
-                                            </a>
-                                        }
-                                    </div>
-                                </div>
                             </td>
                         </tr>
                     }

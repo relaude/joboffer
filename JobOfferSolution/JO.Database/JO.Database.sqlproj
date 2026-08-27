@@ -187,6 +187,9 @@
     <Build Include="dbo\Tables\JORoleActionStatus.sql" />
     <Build Include="dbo\Tables\JOActionStatus.sql" />
     <Build Include="dbo\Tables\JOActionLogs.sql" />
+    <Build Include="dbo\Tables\JOAnalysis.sql" />
+    <Build Include="dbo\Tables\DboxCandidateStatus.sql" />
+    <Build Include="dbo\Views\vw_JOActionLogs.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />
