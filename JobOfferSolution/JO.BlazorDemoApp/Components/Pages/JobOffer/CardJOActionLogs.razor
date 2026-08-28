@@ -1,0 +1,63 @@
+﻿
+<div class="card shadow mb-4 small jo-action-log-card">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <div>
+            <h6 class="jo-title mb-1">
+                <i class="fas fa-stream fa-fw text-primary mr-2" aria-hidden="true"></i>@Title
+            </h6>
+            @if (!string.IsNullOrWhiteSpace(Subtitle))
+            {
+                <small class="text-muted">@Subtitle</small>
+            }
+        </div>
+        @if (!isLoading)
+        {
+            <span class="badge badge-light border">@actionLogs.Count action@(actionLogs.Count == 1 ? string.Empty : "s")</span>
+        }
+    </div>
+
+    <div class="card-body">
+        @if (isLoading)
+        {
+            <div class="jo-action-log-state text-muted" role="status">
+                <span class="spinner-border spinner-border-sm text-primary mr-2" aria-hidden="true"></span>
+                Loading action history...
+            </div>
+        }
+        else if (actionLogs.Count == 0)
+        {
+            <div class="jo-action-log-state text-muted">
+                <i class="fas fa-history fa-2x mb-2" aria-hidden="true"></i>
+                <span>@EmptyMessage</span>
+            </div>
+        }
+        else
+        {
+            <div class="jo-action-log-timeline">
+                @foreach (var item in actionLogs)
+                {
+                    <article class="jo-action-log-item" @key="item.Id">
+                        <div class="jo-action-log-marker @GetMarkerClass(item.ActionId)">
+                            <i class="fas @GetActionIcon(item.ActionId)" aria-hidden="true"></i>
+                        </div>
+                        <div class="jo-action-log-content">
+                            <div class="jo-action-log-heading">
+                                <div>
+                                    <span class="jo-action-log-name">@(item.ActionName ?? "Unknown Action")</span>
+                                    @* <span class="badge @GetBadgeClass(item.ActionId) ml-2">@GetActionCategory(item.ActionId)</span> *@
+                                </div>
+                                <time class="jo-action-log-date" datetime="@item.ActionAt?.ToString("O")">
+                                    @(item.ActionAt?.ToString("dd MMM yyyy, hh:mm tt") ?? "Date unavailable")
+                                </time>
+                            </div>
+                            <div class="jo-action-log-meta">
+                                <span>@DisplayValue(item.ActionByName, "Unknown user")</span>
+                                <span>@DisplayValue(item.RoleName, "Role unavailable")</span>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</div>

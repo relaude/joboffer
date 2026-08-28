@@ -1,10 +1,11 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.Discussion + "/{jobOfferId:int}")]
+﻿@* @attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.Discussion + "/{jobOfferId:int}")] *@
 
 <CardJOSummary JobOffer="@vwJODboxCandidates" />
 
 <CardCandidateCompensation Candidate="@candidate" CompensationItems="@vwCompanyCompensationItems" />
 
+<!--SHARED-->
 <div class="card shadow mb-4 small">
 
     <div class="card-header">
@@ -125,6 +126,7 @@
     </div>
 
 </div>
+<!--SHARED-->
 
 <div class="jo-actions mb-4">
     <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">

@@ -1,0 +1,129 @@
+﻿
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">Discussion</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <!-- Entry -->
+            <div class="col-lg-5 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-clipboard-list fa-fw text-primary mr-2"></i>Entry
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold text-gray-700 mb-1" for="@DiscussionDateId">Discussion Date</label>
+                                <input id="@DiscussionDateId" type="date" class="form-control" @bind="Discussion.DiscussAt" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold text-gray-700 mb-1" for="@ChannelId">Channel</label>
+                                <select id="@ChannelId" class="custom-select" @bind="Discussion.ChannelId">
+                                    @foreach (var channel in Channels)
+                                    {
+                                        <option value="@channel.Id">@channel.ChannelName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1" for="@StepId">Step</label>
+                            <select id="@StepId" class="custom-select" @bind="Discussion.StepId">
+                                @foreach (var step in Steps)
+                                {
+                                    <option value="@step.Id">@step.StepName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1" for="@ResponseId">Candidate Response</label>
+                            <select id="@ResponseId" class="custom-select" @bind="Discussion.ResponseId">
+                                @foreach (var response in Responses)
+                                {
+                                    <option value="@response.Id">@response.ResponseName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1" for="@ProposalId">Selected Option</label>
+                            <select id="@ProposalId" class="custom-select" @bind="Discussion.ProposalId">
+                                @foreach (var proposal in Proposals.Where(proposal => proposal.OptionNumber > 0))
+                                {
+                                    <option value="@proposal.Id">@($"Option {proposal.OptionNumber} - {UtilitiesService.ToPeso(proposal.ProposedSalary)}")</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1" for="@NotesId">Discussion Notes</label>
+                            <textarea id="@NotesId" class="form-control form-control-sm" rows="4" @bind="Discussion.Comments"></textarea>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label class="font-weight-bold text-gray-700 mb-1" for="@FeedbackId">Candidate Feedback</label>
+                            <textarea id="@FeedbackId" class="form-control form-control-sm" rows="3" @bind="Discussion.FeedBack"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="card-footer jo-actions">
+                        <button type="button" class="btn btn-sm btn-primary" disabled="@IsSaving" @onclick="SaveAsync">
+                            @if (IsSaving)
+                            {
+                                <span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span>
+                            }
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="col-lg-7 mb-4">
+                <!--SHARED-->
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-history fa-fw text-info mr-2"></i>Discussion Timeline
+                        </h6>
+                        <small class="text-muted">Recent contact history and candidate signals.</small>
+                    </div>
+                    <div class="card-body">
+                        @if (Discussions.Count == 0)
+                        {
+                            <div class="text-center text-muted py-4">No discussion history is available.</div>
+                        }
+                        else
+                        {
+                            @foreach (var item in Discussions)
+                            {
+                                <div class="d-flex pb-3 mb-3 border-bottom" @key="item.Id">
+                                    <div class="btn-circle btn-sm bg-info text-white mr-3">
+                                        <i class="@item.Icon"></i>
+                                    </div>
+                                    <div class="flex-fill">
+                                        <div class="d-flex flex-column flex-md-row justify-content-between">
+                                            <div class="font-weight-bold text-gray-900">
+                                                <div>@item.StepName</div>
+                                                <small class="text-muted">Option @item.OptionNumber</small>
+                                            </div>
+                                            <small class="text-muted">@UtilitiesService.FormatDate(item.DiscussAt, CommonConstant.DefaultShortDateFormat)</small>
+                                        </div>
+                                        <div class="text-muted">Candidate Response: @item.ResponseName</div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+                <!--SHARED-->
+            </div>
+        </div>
+    </div>
+</div>

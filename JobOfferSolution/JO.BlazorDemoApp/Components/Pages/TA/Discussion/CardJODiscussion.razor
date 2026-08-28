@@ -1,0 +1,41 @@
+﻿
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <h6 class="jo-title">
+            <i class="fas fa-history fa-fw text-info mr-2"></i>@Title
+        </h6>
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <small class="text-muted">@Subtitle</small>
+        }
+    </div>
+    <div class="card-body">
+        @if (Discussions.Count == 0)
+        {
+            <div class="text-center text-muted py-4">@EmptyMessage</div>
+        }
+        else
+        {
+            @foreach (var item in Discussions)
+            {
+                <div class="d-flex pb-3 mb-3 border-bottom" @key="item.Id">
+                    <div class="btn-circle btn-sm bg-info text-white mr-3">
+                        <i class="@item.Icon" aria-hidden="true"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <div class="d-flex flex-column flex-md-row justify-content-between">
+                            <div class="font-weight-bold text-gray-900">
+                                <div>@item.StepName</div>
+                                <small class="text-muted">Option @item.OptionNumber</small>
+                            </div>
+                            <small class="text-muted">
+                                @UtilitiesService.FormatDate(item.DiscussAt, CommonConstant.DefaultShortDateFormat)
+                            </small>
+                        </div>
+                        <div class="text-muted">Candidate Response: @item.ResponseName</div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

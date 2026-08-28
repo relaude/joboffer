@@ -907,3 +907,90 @@
     .jo-analysis-option-tab,
     .jo-analysis-option-add { min-height: 0; }
 }
+
+/* Job offer action-log timeline. */
+.jo-action-log-card .card-body { padding: 1.5rem; }
+
+.jo-action-log-state {
+    display: flex;
+    min-height: 9rem;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.jo-action-log-timeline { position: relative; }
+
+.jo-action-log-timeline::before {
+    position: absolute;
+    top: 1.35rem;
+    bottom: 1.35rem;
+    left: 1.35rem;
+    width: 2px;
+    background: var(--jo-border);
+    content: "";
+}
+
+.jo-action-log-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+}
+
+.jo-action-log-item:last-child { padding-bottom: 0; }
+
+.jo-action-log-marker {
+    z-index: 1;
+    display: flex;
+    width: 2.75rem;
+    height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--jo-surface);
+    border-radius: 50%;
+    background: #eef1f6;
+    color: var(--jo-text-muted);
+    box-shadow: 0 0 0 1px var(--jo-border);
+}
+
+.jo-action-log-marker.is-blue { background: #eaf0ff; color: var(--jo-blue); }
+.jo-action-log-marker.is-purple { background: #f0eafd; color: #6f42c1; }
+.jo-action-log-marker.is-green { background: #e7f6ef; color: var(--jo-green); }
+.jo-action-log-marker.is-red { background: #feeceb; color: var(--jo-red); }
+.jo-action-log-marker.is-amber { background: #fff3d6; color: var(--jo-amber); }
+
+.jo-action-log-content {
+    min-width: 0;
+    padding: .9rem 1rem;
+    border: 1px solid var(--jo-border);
+    border-radius: .65rem;
+    background: var(--jo-surface-muted);
+}
+
+.jo-action-log-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.jo-action-log-name { color: var(--jo-text); font-size: .82rem; font-weight: 800; }
+.jo-action-log-date { flex: 0 0 auto; color: var(--jo-text-muted); font-size: .68rem; font-weight: 700; }
+
+.jo-action-log-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.25rem;
+    margin-top: .55rem;
+    color: var(--jo-text-muted);
+    font-size: .7rem;
+}
+
+@media (max-width: 575.98px) {
+    .jo-action-log-card .card-body { padding: 1rem; }
+    .jo-action-log-heading { align-items: flex-start; flex-direction: column; gap: .45rem; }
+    .jo-action-log-date { flex-basis: auto; }
+}

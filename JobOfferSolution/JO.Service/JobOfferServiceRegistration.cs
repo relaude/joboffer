@@ -34,6 +34,7 @@ namespace JO.Service
             services.AddScoped<IJOLetterService, JOLetterService>();
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IDivisionAccessService, DivisionAccessService>();
+            services.AddScoped<IJOLogsService, JOLogsService>();
 
             return services;
         }

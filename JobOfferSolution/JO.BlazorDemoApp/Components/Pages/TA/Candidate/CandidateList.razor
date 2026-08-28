@@ -4,7 +4,8 @@
 <div class="row">
     <!--Total-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
+        <div class="card border-left-primary shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(null)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -18,7 +19,8 @@
 
     <!--With Responses-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(WithResponseFilter)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -32,7 +34,8 @@
 
     <!--Without Response-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(WithoutResponseFilter)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -46,7 +49,8 @@
 
     <!--Created-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(3)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -60,7 +64,8 @@
 
     <!--Draft-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(2)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -74,7 +79,8 @@
 
     <!--For Creation-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(1)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -89,7 +95,7 @@
 
 <div class="card shadow mb-4 small">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Candidates</h6>
+        <h6 class="jo-title">Candidates</h6>
     </div>
 
     <div class="card-body">
@@ -99,14 +105,14 @@
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Response</th>
+                            <th>Status</th>
                             <th>Candidate ID</th>
                             <th>Email</th>
                             <th>Job Position</th>
                             <th>Company</th>
                             <th>Division</th>
                             <th>Department</th>
-                            <th>Response</th>
-                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -121,12 +127,6 @@
                                         @row.CandidateName
                                     </button>
                                 </td>
-                                <td>@row.DboxRefNum</td>
-                                <td>@row.EmailAddress</td>
-                                <td>@row.JobPosition</td>
-                                <td>@row.Company</td>
-                                <td>@row.Division</td>
-                                <td>@row.Department</td>
                                 <td>
                                     @if (row.ResponseId > 0)
                                     {
@@ -138,6 +138,12 @@
                                     }
                                 </td>
                                 <td>@(string.IsNullOrEmpty(row.StatusName) ? "-" : row.StatusName)</td>
+                                <td>@row.DboxRefNum</td>
+                                <td>@row.EmailAddress</td>
+                                <td>@row.JobPosition</td>
+                                <td>@row.Company</td>
+                                <td>@row.Division</td>
+                                <td>@row.Department</td>
                             </tr>
                         }
                     </tbody>

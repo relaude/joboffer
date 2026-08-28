@@ -14,28 +14,51 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         [Inject] private NavigationManager Navigation { get; set; } = default!;
 
         private List<VwJODboxCandidates> joDboxCandidates = new();
+        private List<VwJODboxCandidates> trackableJODboxCandidates = new();
         private List<VwJODboxCandidates> filteredJODboxCandidates = new();
+
+        private const int ForApprovalFilter = -1;
+        private static readonly int?[] ForApprovalWorkFlowIds = { 4, 5, 6, 7 };
 
         private int total = 0;
         private int countForReview = 0;
+        private int countReviewed = 0;
         private int countForApproval = 0;
         private int countApproved = 0;
+        private int countAcccepted = 0;
 
         protected override async Task OnInitializedAsync()
         {
             joDboxCandidates = await JODetailsService.GetVwJODboxCandidates();
-            filteredJODboxCandidates = joDboxCandidates.Where(jo => jo.WorkFlowId > 1).ToList();
+            trackableJODboxCandidates = joDboxCandidates
+                .Where(jo => jo.WorkFlowId > 1)
+                .ToList();
+            filteredJODboxCandidates = trackableJODboxCandidates.ToList();
             SetUpCountStatus();
         }
 
         private void SetUpCountStatus()
         {
-            int?[] forApprovalIds = { 4,5,6,7 };
+            total = trackableJODboxCandidates.Count;
+            countForReview = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 3);
+            countReviewed = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 4);
+            countForApproval = trackableJODboxCandidates.Count(jo => ForApprovalWorkFlowIds.Contains(jo.WorkFlowId));
+            countApproved = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 8);
+            countAcccepted = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 9);
+        }
 
-            total = filteredJODboxCandidates.Count();
-            countForReview = filteredJODboxCandidates.Where(jo => jo.WorkFlowId == 3).Count();//For Review
-            countApproved = filteredJODboxCandidates.Where(jo => jo.WorkFlowId == 8).Count();//For Discussion
-            countForApproval = filteredJODboxCandidates.Where(jo => forApprovalIds.Contains(jo.WorkFlowId)).Count();//For Approval
+        private void FilterByWorkFlow(int? workFlowId)
+        {
+            filteredJODboxCandidates = workFlowId switch
+            {
+                null => trackableJODboxCandidates.ToList(),
+                ForApprovalFilter => trackableJODboxCandidates
+                    .Where(jo => ForApprovalWorkFlowIds.Contains(jo.WorkFlowId))
+                    .ToList(),
+                _ => trackableJODboxCandidates
+                    .Where(jo => jo.WorkFlowId == workFlowId)
+                    .ToList()
+            };
         }
 
         private string SetJOlink(VwJODboxCandidates joDboxCandidate)
@@ -43,6 +66,16 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
             if(joDboxCandidate.WorkFlowId == 2)//Created
             {
                 return $"{JORoutes.TA.Analysis}/{joDboxCandidate.Id}";
+            }
+
+            if(joDboxCandidate.WorkFlowId == 8)//For Discussion
+            {
+                return $"{JORoutes.TA.Discussion}/{joDboxCandidate.Id}";
+            }
+
+            if(joDboxCandidate.WorkFlowId == 9)//Accepted & Completed
+            {
+                return $"{JORoutes.TA.JobOfferComplete}/{joDboxCandidate.Id}";
             }
 
             return $"{JORoutes.TA.JobOfferDetails}/{joDboxCandidate.Id}";

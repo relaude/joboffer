@@ -17,7 +17,11 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Candidate
         [Inject] private NavigationManager Navigation { get; set; } = default!;
 
         private List<VwDboxCandidates> candidates = new();
+        private List<VwDboxCandidates> eligibleCandidates = new();
         private List<VwDboxCandidates> filteredCandidates = new();
+
+        private const int WithResponseFilter = -1;
+        private const int WithoutResponseFilter = -2;
 
         private int?[] AMSG = { 1, 109 };
         private int total = 0; 
@@ -30,23 +34,42 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Candidate
         {
             candidates = await CandidateService.GetVwDboxCandidates();
 
-            filteredCandidates = candidates
+            eligibleCandidates = candidates
                 .Where(jo => !AMSG.Contains(jo.CSGId)
                     && jo.DivisionId != 3)
                 .ToList();
+
+            filteredCandidates = eligibleCandidates.ToList();
 
             SetKpiCount();
         }
 
         private void SetKpiCount()
         {
-            total = filteredCandidates.Count();
-            withResponse = filteredCandidates.Where(jo => jo.ResponseId > 0).Count();
+            total = eligibleCandidates.Count;
+            withResponse = eligibleCandidates.Count(jo => jo.ResponseId > 0);
             withOutResponse = total - withResponse;
 
-            forJOCreation = filteredCandidates.Where(jo => jo.StatusId==1).Count();
-            joDraft = filteredCandidates.Where(jo => jo.StatusId==2).Count();
-            joCreated = filteredCandidates.Where(jo => jo.StatusId==3).Count();
+            forJOCreation = eligibleCandidates.Count(jo => jo.StatusId == 1);
+            joDraft = eligibleCandidates.Count(jo => jo.StatusId == 2);
+            joCreated = eligibleCandidates.Count(jo => jo.StatusId == 3);
+        }
+
+        private void FilterCandidates(int? statusId)
+        {
+            filteredCandidates = statusId switch
+            {
+                null => eligibleCandidates.ToList(),
+                WithResponseFilter => eligibleCandidates
+                    .Where(candidate => candidate.ResponseId > 0)
+                    .ToList(),
+                WithoutResponseFilter => eligibleCandidates
+                    .Where(candidate => candidate.ResponseId.GetValueOrDefault() <= 0)
+                    .ToList(),
+                _ => eligibleCandidates
+                    .Where(candidate => candidate.StatusId == statusId)
+                    .ToList()
+            };
         }
 
         private async Task OpenCandidate(VwDboxCandidates candidate)

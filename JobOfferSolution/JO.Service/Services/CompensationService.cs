@@ -114,7 +114,8 @@ namespace JO.Service.Services
             joAnalysis.ModifiedBy = userId;
             joAnalysis.ModifiedAt = DateTime.Now;
 
-            jobOffer.WorkFlowId = 2;//Created
+            jobOffer.ModifiedBy = userId;
+            jobOffer.ModifiedAt = DateTime.Now;
 
             foreach (var joCompensation in joCompanyCompensation)
             {
@@ -125,12 +126,12 @@ namespace JO.Service.Services
 
             await using var context = await _dbContext.CreateDbContextAsync();
 
-            var candidate = await context.DboxCandidates.FindAsync(candidateId);
-            candidate.StatusId = 3;//JO Created
+            //var candidate = await context.DboxCandidates.FindAsync(candidateId);
+            //candidate.StatusId = 3;//JO Created
 
             context.JOAnalysis.Update(joAnalysis);
             context.JobOffers.Update(jobOffer);
-            context.DboxCandidates.Update(candidate);
+            //context.DboxCandidates.Update(candidate);
             context.JOCompanyCompensation.UpdateRange(joCompanyCompensation);
             context.JOCompanyCompensationItems.UpdateRange(joCompanyCompensationItems);
 

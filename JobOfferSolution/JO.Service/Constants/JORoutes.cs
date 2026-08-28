@@ -85,6 +85,7 @@ namespace JO.Service.Constants
             public const string JobOfferTracker = PrefixTA + "/joboffer-tracker";
             public const string JobOfferTagging = PrefixTA + "/joboffer-tagging";
             public const string JobOfferDetails = PrefixTA + "/joboffer-details";
+            public const string JobOfferComplete = PrefixTA + "/joboffer-complete";
 
             //Proposal
             public const string NewOffer = PrefixTA + "/new-offer";

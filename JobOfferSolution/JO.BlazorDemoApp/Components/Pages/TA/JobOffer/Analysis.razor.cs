@@ -172,7 +172,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
                 userId);
 
             await AlertService.Success("Analysis successfully saved.");
-            Navigation.Refresh();
+            //Navigation.Refresh();
         }
 
         private async Task SubmitForApproval()

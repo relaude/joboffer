@@ -1,0 +1,125 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.Discussion + "/{jobOfferId:int}")]
+
+<CardJOSummary JobOffer="@vwJODboxCandidates" />
+
+<CardCandidateCompensation Candidate="@candidate" CompensationItems="@vwCompanyCompensationItems" />
+
+<ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link px-4 @(activeTab == TabName.JODetails ? "active" : string.Empty)"
+                role="tab" aria-selected="@(activeTab == TabName.JODetails)"
+                @onclick="() => SelectTab(TabName.JODetails)">
+            <i class="fas fa-briefcase fa-fw mr-1"></i>JO Details
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link px-4 @(activeTab == TabName.Discussion ? "active" : string.Empty)"
+                role="tab" aria-selected="@(activeTab == TabName.Discussion)"
+                @onclick="() => SelectTab(TabName.Discussion)">
+            <i class="fas fa-comments fa-fw mr-1"></i>Discussion
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link px-4 @(activeTab == TabName.Letter ? "active" : string.Empty)"
+                role="tab" aria-selected="@(activeTab == TabName.Letter)"
+                @onclick="() => SelectTab(TabName.Letter)">
+            <i class="fas fa-envelope-open-text fa-fw mr-1"></i>Letter
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link px-4 @(activeTab == TabName.ActionLogs ? "active" : string.Empty)"
+                role="tab" aria-selected="@(activeTab == TabName.ActionLogs)" 
+                @onclick="() => SelectTab(TabName.ActionLogs)">
+            <i class="fas fa-history fa-fw mr-1" aria-hidden="true"></i>Action Logs
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content">
+    @switch (activeTab)
+    {
+        case TabName.JODetails:
+            <div role="tabpanel">
+                <SharedJOAnalysis Candidate="@candidate"
+                    SalaryBand="@vwSalaryBand"
+                    Analysis="@joAnalysis"
+                    CompanyCompensations="@companyCompensation"
+                    JOCompanyCompensations="@joCompanyCompensation"
+                    JOCompanyCompensationItems="@joCompanyCompensationItems"
+                    CompensationItemCategories="@compenItemCategoryDto"
+                    ComponentId="job-offer-analysis" />
+            </div>
+            break;
+
+        case TabName.Discussion:
+            <div role="tabpanel">
+                <SharedJODiscussion
+                    Discussion="@discussion"
+                    Channels="@channels"
+                    Steps="@steps"
+                    Responses="@responses"
+                    Proposals="@filteredJOCompanyCompensation"
+                    Discussions="@vwDiscussions"
+                    OnSave="@SaveDiscussion"
+                    IsSaving="@isSaving"
+                    ComponentId="job-offer-discussion" />
+            </div>
+            break;
+
+        case TabName.Letter:
+            <div role="tabpanel">
+                <SharedEmailJOLetter
+                    Candidate="@candidate"
+                    CompensationOptions="@joCompanyCompensation"
+                    InitialSelectedProposedSalary="@selectedProposedSalary"
+                    LetterBody="@letterBody"
+                    InitialEmailSubject="@emailSubject"
+                    InitialTestEmailRecipient="@testEmailRecipient"
+                    OnCompensationOptionChanged="@ChangeLetterCompensationOption"
+                    OnSendTestEmail="@SendTestMail"
+                    OnSendEmail="@SendEmail"
+                    IsSending="@isSending"
+                    AcceptedFileTypes=".pdf,.doc,.docx"
+                    MaxAttachmentSize="@(3L * 1024 * 1024)"
+                    ComponentId="job-offer-email-letter" />
+            </div>
+            break;
+
+        case TabName.ActionLogs:
+            <div role="tabpanel">
+                <CardJOActionLogs JobOfferId="@jobOfferId"
+                                  Title="Job Offer Activity"
+                                  Subtitle="Complete workflow and decision history."
+                                  EmptyMessage="No activity has been recorded." />
+            </div>
+            break;
+    }
+</div>
+
+<div class="jo-actions mb-4">
+    <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+        Go Back
+    </a>
+
+    <button type="button" class="btn btn-outline-primary">
+        <i class="fas fa-comments-dollar mr-1" aria-hidden="true"></i>
+        For Negotiation
+    </button>
+
+    <button type="button"
+            class="btn btn-success"
+            disabled="@isCompleting"
+            @onclick="AcceptAndComplete">
+        @if (isCompleting)
+        {
+            <span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span>
+        }
+        else
+        {
+            <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
+        }
+        Accept &amp; Completed
+    </button>
+</div>

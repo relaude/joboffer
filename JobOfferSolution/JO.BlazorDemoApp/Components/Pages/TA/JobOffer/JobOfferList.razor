@@ -4,7 +4,8 @@
 <div class="row">
     <!--Total-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
+        <div class="card border-left-primary shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterByWorkFlow(null)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -18,7 +19,8 @@
 
     <!--For Review-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterByWorkFlow(3)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -32,12 +34,13 @@
 
     <!--Reviewed-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterByWorkFlow(4)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Reviewed</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@countReviewed</div>
                     </div>
                 </div>
             </div>
@@ -46,7 +49,8 @@
 
     <!--For Approval-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterByWorkFlow(ForApprovalFilter)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -60,7 +64,8 @@
 
     <!--Approved-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterByWorkFlow(8)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
@@ -74,12 +79,13 @@
 
     <!--Accepted-->
     <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterByWorkFlow(9)">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Accepted</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@countAcccepted</div>
                     </div>
                 </div>
             </div>
@@ -89,7 +95,7 @@
 
 <div class="card shadow mb-4 small">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Job Offers</h6>
+        <h6 class="jo-title">Job Offers</h6>
     </div>
 
     <div class="card-body">

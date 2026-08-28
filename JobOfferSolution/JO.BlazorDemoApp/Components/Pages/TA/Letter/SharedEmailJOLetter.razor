@@ -1,0 +1,133 @@
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-2 mb-md-0">
+                <h6 class="jo-title">Letter</h6>
+            </div>
+            <div class="col-md-6">
+                <label class="sr-only" for="@CompensationOptionId">Compensation option</label>
+                <select id="@CompensationOptionId" class="custom-select custom-select-sm"
+                        value="@selectedProposedSalary" @onchange="ChangeCompensationOptionAsync">
+                        @foreach (var compensation in CompensationOptions
+                        .Where(item => item.OptionNumber > 0)
+                        .OrderBy(item => item.OptionNumber))
+                    {
+                        <option value="@compensation.ProposedSalary">
+                            @($"Option {compensation.OptionNumber} - {UtilitiesService.ToPeso(compensation.ProposedSalary)}")
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="form-row">
+            <div class="form-group col-lg-6">
+                <label for="@EmailRecipientId" class="font-weight-bold text-gray-700 mb-1">Email Recipient</label>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text" aria-hidden="true"><i class="fas fa-at"></i></span></div>
+                    <input id="@EmailRecipientId" name="emailRecipient" type="email" class="form-control"
+                           value="@Candidate.EmailAddress" placeholder="candidate@example.com" autocomplete="email" readonly />
+                </div>
+            </div>
+
+            <div class="form-group col-lg-6">
+                <label for="@EmailSubjectId" class="font-weight-bold text-gray-700 mb-1">Email Subject</label>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text" aria-hidden="true"><i class="fas fa-heading"></i></span></div>
+                    <input id="@EmailSubjectId" name="emailSubject" type="text" class="form-control"
+                           @bind="emailSubject" placeholder="Enter the email subject" autocomplete="off" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="@TestEmailRecipientId" class="font-weight-bold text-gray-700 mb-1">Test Email Recipient</label>
+            <div class="input-group">
+                <div class="input-group-prepend"><span class="input-group-text" aria-hidden="true"><i class="fas fa-envelope-open-text"></i></span></div>
+                <input id="@TestEmailRecipientId" name="testEmailRecipient" type="email" class="form-control"
+                       @bind="testEmailRecipient" placeholder="Enter an email address for the test message" autocomplete="email" />
+            </div>
+            <small class="form-text text-muted">Test emails will be sent to this address only.</small>
+        </div>
+
+        <div class="border-top pt-3">
+            <label class="font-weight-bold text-gray-700 mb-2" for="@LetterEditorId">Email Message</label>
+            @if (!HasLetterContent)
+            {
+                <div class="alert alert-info mb-0" role="alert">No letter content is available for this job offer.</div>
+            }
+            else
+            {
+                <TextEditor @ref="letterEditor"
+                            Toolbar="new Toolbar { ShowFullToolbar = true }"
+                            EditorContainerId="@LetterEditorId"
+                            Placeholder="Enter the job offer letter content...">
+                </TextEditor>
+            }
+        </div>
+
+        <div class="border-top mt-3 pt-3">
+            <label class="font-weight-bold text-gray-700 mb-2" for="@AttachmentId">Attachment</label>
+            <div class="custom-file">
+                <InputFile id="@AttachmentId"
+                           class="custom-file-input"
+                           accept="@AcceptedFileTypes"
+                           disabled="@(IsSending || isReadingAttachment)"
+                           OnChange="SelectAttachmentAsync" />
+                <label class="custom-file-label" for="@AttachmentId">
+                    @(attachment is null ? "Choose file" : attachment.Name)
+                </label>
+            </div>
+            <small class="form-text text-muted">
+                Maximum file size: @FormatFileSize(MaxAttachmentSize).
+            </small>
+
+            @if (isReadingAttachment)
+            {
+                <div class="alert alert-info mt-3 mb-0" role="status">
+                    <span class="spinner-border spinner-border-sm mr-2" aria-hidden="true"></span>
+                    Reading attachment...
+                </div>
+            }
+            else if (!string.IsNullOrWhiteSpace(attachmentError))
+            {
+                <div class="alert alert-danger mt-3 mb-0" role="alert">
+                    <i class="fas fa-exclamation-circle mr-1" aria-hidden="true"></i>
+                    @attachmentError
+                </div>
+            }
+            else if (attachment is not null)
+            {
+                <div class="card border-left-info mt-3">
+                    <div class="card-body py-3">
+                        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+                            <div class="d-flex align-items-center mb-2 mb-md-0">
+                                <i class="fas fa-paperclip fa-2x text-info mr-3" aria-hidden="true"></i>
+                                <div>
+                                    <div class="font-weight-bold text-gray-800">@attachment.Name</div>
+                                    <small class="text-muted">
+                                        @attachmentContentType &middot; @attachment.SizeInKb
+                                    </small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger" @onclick="RemoveAttachment">
+                                <i class="fas fa-times mr-1" aria-hidden="true"></i>Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card-footer jo-actions">
+        <button type="button" class="btn btn-outline-primary" disabled="@(IsSending || isReadingAttachment)" @onclick="SendTestEmailAsync">
+            <i class="fas fa-envelope-open-text mr-1" aria-hidden="true"></i>Test Email
+        </button>
+        <button type="button" class="btn btn-outline-success" disabled="@(IsSending || isReadingAttachment)" @onclick="SendEmailAsync">
+            <i class="fas fa-paper-plane mr-1" aria-hidden="true"></i>Send Email
+        </button>
+    </div>
+</div>

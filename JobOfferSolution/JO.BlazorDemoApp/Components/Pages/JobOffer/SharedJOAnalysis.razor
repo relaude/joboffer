@@ -1,0 +1,118 @@
+<!-- Salary Structure Guidelines -->
+<div class="card shadow mb-4 small">
+    <div class="card-header"><h6 class="jo-title">Salary Structure Guidelines</h6></div>
+    <div class="card-body">
+        <div class="table-responsive mb-3">
+            <table class="jo-table">
+                <thead><tr><th>Salary Grade</th><th>Minimum</th><th>Midpoint</th><th>Maximum</th><th>Compa Ratio</th></tr></thead>
+                <tbody><tr>
+                    <td class="font-weight-bold">@(string.IsNullOrWhiteSpace(SalaryBand.GradeName) ? "-" : SalaryBand.GradeName)</td>
+                    <td>@UtilitiesService.ToPeso(SalaryBand.Minimum)</td><td>@UtilitiesService.ToPeso(SalaryBand.Midpoint)</td>
+                    <td>@UtilitiesService.ToPeso(SalaryBand.Maximum)</td><td>@UtilitiesService.ToPeso(SalaryBand.CompaRatio)</td>
+                </tr></tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mb-3 mb-lg-0"><div class="card h-100 border-0 shadow-sm">
+                <div class="card-header"><h6 class="jo-title">Current</h6></div>
+                <div class="card-body">
+                    <div class="form-group"><label>Monthly Basic</label><input class="form-control" value="@UtilitiesService.ToPeso(Candidate.CurrentMonthlyBasicSalary)" readonly /></div>
+                    <div class="form-group mb-0"><label>Total Months Pay</label><input class="form-control" value="@CurrentMonthsPay()" readonly /></div>
+                </div>
+            </div></div>
+            <div class="col-lg-6"><div class="card h-100 border-0 shadow-sm">
+                <div class="card-header"><h6 class="jo-title">UL Equivalent</h6></div>
+                <div class="card-body">
+                    <div class="form-group"><label>Monthly Basic</label><input class="form-control" value="@UtilitiesService.ToPeso(UlMonthlyBasic())" readonly /></div>
+                    <div class="form-group mb-0"><label>Total Months Pay</label><select class="custom-select" @bind="ulMonthsPay">
+                        <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
+                    </select></div>
+                </div>
+            </div></div>
+        </div>
+    </div>
+</div>
+
+<!-- Candidate Remarks -->
+<div class="card shadow mb-4 small">
+    <div class="card-header"><h6 class="jo-title">Candidate Remarks</h6></div>
+    <div class="card-body"><textarea rows="5" class="form-control" @bind="Analysis.CandidateReamrks"></textarea></div>
+</div>
+
+<!-- Analysis -->
+<div class="card shadow mb-4 small">
+    <div class="card-header"><h6 class="jo-title">Analysis</h6></div>
+    <div class="card-body">
+        <div class="jo-analysis-option-tabs" role="tablist">
+            @foreach (var compensation in JOCompanyCompensations.Where(x => x.OptionNumber > 0))
+            {
+                <div role="tab" tabindex="0" aria-selected="@(selectedOptionNumber == compensation.OptionNumber)"
+                     class="jo-analysis-option-tab @(selectedOptionNumber == compensation.OptionNumber ? "active" : null)"
+                     @onclick="() => SelectOption(compensation)">
+                    <div class="d-flex justify-content-between mb-2"><span class="jo-analysis-option-title">Option @compensation.OptionNumber</span><small>@GetCompanyName(compensation.CmpnyCmpnstnId)</small></div>
+                    <div class="font-weight-bold mb-2">@UtilitiesService.ToPeso(compensation.ProposedSalary)</div>
+                    <div class="border-top py-2">% Increase Monthly<span class="float-right">@Percent(compensation.Increase)</span></div>
+                    <div class="border-top py-2">% Monthly Difference <span class="float-right">@Percent(compensation.DiffTotalMonthly)</span></div>
+                    <div class="border-top py-2">% Annual Difference <span class="float-right">@Percent(compensation.DiffTotalAnnually)</span></div>
+                    <div class="border-top py-2">Overtaken Incumbent <span class="float-right">@compensation.Incumbents</span></div>
+                    <label>Remarks</label><textarea rows="3" class="form-control form-control-sm" readonly>@compensation.Remarks</textarea>
+                    @if (!string.IsNullOrWhiteSpace(compensation.BandStatus))
+                    { <span class="badge mt-2 @(compensation.OfferRangeId is 1 or 2 ? "badge-success" : compensation.OfferRangeId == 3 ? "badge-danger" : "badge-info")">@compensation.BandStatus</span> }
+                    @if (compensation.Escalate == true)
+                    { <span class="badge badge-warning mt-2"><i class="fas fa-exclamation-triangle mr-1"></i>Requires Escalation</span> }
+                </div>
+            }
+        </div>
+
+        <div class="table-responsive"><table class="jo-table">
+            <thead><tr><th rowspan="2">Compensation</th><th colspan="2">Current</th><th colspan="2" class="is-highlighted">Option @selectedOptionNumber</th></tr>
+            <tr><th>Monthly</th><th>Annual</th><th class="is-highlighted">Monthly</th><th class="is-highlighted">Annual</th></tr></thead>
+            <tbody>
+                @foreach (var category in CompensationItemCategories)
+                {
+                    var visible = category.CompensationItemDtos.Where(item => JOCompanyCompensationItems.Any(x => x.ItemId == item.Id && (x.JOCmpnyCmpnstnId == currentId || x.JOCmpnyCmpnstnId == selectedId) && ((x.MonthlyAmount ?? 0) > 0 || (x.AnnualAmount ?? 0) > 0))).ToList();
+                    @if (visible.Count > 0)
+                    {
+                        <tr><td colspan="5" class="font-weight-bold text-primary">@category.CategoryName</td></tr>
+                        @foreach (var item in visible.OrderBy(x => x.DisplayOrder))
+                        {
+                            var current = JOCompanyCompensationItems.FirstOrDefault(x => x.JOCmpnyCmpnstnId == currentId && x.ItemId == item.Id);
+                            var selected = JOCompanyCompensationItems.FirstOrDefault(x => x.JOCmpnyCmpnstnId == selectedId && x.ItemId == item.Id);
+                            <tr><td>@item.ItemName</td><td>@UtilitiesService.ToPeso(current?.MonthlyAmount)</td><td>@UtilitiesService.ToPeso(current?.AnnualAmount)</td>
+                                <td class="is-highlighted">@UtilitiesService.ToPeso(selected?.MonthlyAmount)</td><td class="is-highlighted">@UtilitiesService.ToPeso(selected?.AnnualAmount)</td></tr>
+                        }
+                    }
+                }
+            </tbody>
+            <tfoot class="has-highlighted-total"><tr><th>Total</th>
+                <th>@UtilitiesService.ToPeso(JOCompanyCompensationItems.Where(x => x.JOCmpnyCmpnstnId == currentId).Sum(x => x.MonthlyAmount ?? 0))</th>
+                <th>@UtilitiesService.ToPeso(JOCompanyCompensationItems.Where(x => x.JOCmpnyCmpnstnId == currentId).Sum(x => x.AnnualAmount ?? 0))</th>
+                <th class="is-highlighted">@UtilitiesService.ToPeso(JOCompanyCompensationItems.Where(x => x.JOCmpnyCmpnstnId == selectedId).Sum(x => x.MonthlyAmount ?? 0))</th>
+                <th class="is-highlighted">@UtilitiesService.ToPeso(JOCompanyCompensationItems.Where(x => x.JOCmpnyCmpnstnId == selectedId).Sum(x => x.AnnualAmount ?? 0))</th>
+            </tr></tfoot>
+        </table></div>
+    </div>
+</div>
+
+<!-- Comparative View -->
+<div class="card shadow mb-4 small">
+    <a href="#@ComparativeViewId" class="card-header text-decoration-none" data-toggle="collapse" role="button" aria-controls="@ComparativeViewId">
+        <div class="table-responsive"><table class="jo-table"><thead><tr><th>Details</th>
+            @foreach (var compensation in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <th class="text-center">Option @compensation.OptionNumber</th> }
+        </tr></thead><tbody>
+            <tr><th>Compensation</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-center font-weight-bold">@GetCompanyName(x.CmpnyCmpnstnId)</td> }</tr>
+            <tr><th>Proposed Salary</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@UtilitiesService.ToPeso(x.ProposedSalary)</td> }</tr>
+            <tr><th>Current Salary</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@UtilitiesService.ToPeso(x.CurrentSalary)</td> }</tr>
+            <tr><th>Increase</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@Percent(x.Increase)</td> }</tr>
+            <tr><th>Monthly Difference</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@Percent(x.DiffTotalMonthly)</td> }</tr>
+            <tr><th>Annual Difference</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@Percent(x.DiffTotalAnnually)</td> }</tr>
+        </tbody></table></div>
+    </a>
+    <div id="@ComparativeViewId" class="collapse"><div class="card-body"><div class="table-responsive"><table class="jo-table">
+        <thead><tr><th rowspan="2">Compensation</th>@foreach (var x in ComparativeCompensations) { <th colspan="2" class="text-center @Highlight(x)">@(x.OptionNumber == 0 ? "Current" : $"Option {x.OptionNumber}")</th> }</tr>
+        <tr>@foreach (var x in ComparativeCompensations) { <th class="@Highlight(x)">Monthly</th><th class="@Highlight(x)">Annual</th> }</tr></thead>
+        <tbody>@foreach (var itemId in ComparativeItemIds.Where(id => JOCompanyCompensationItems.Any(x => x.ItemId == id && ((x.MonthlyAmount ?? 0) > 0 || (x.AnnualAmount ?? 0) > 0))))
+        { <tr><td>@GetItemName(itemId)</td>@foreach (var x in ComparativeCompensations) { var item = JOCompanyCompensationItems.FirstOrDefault(i => i.JOCmpnyCmpnstnId == x.Id && i.ItemId == itemId); <td class="text-right @Highlight(x)">@UtilitiesService.ToPeso(item?.MonthlyAmount)</td><td class="text-right @Highlight(x)">@UtilitiesService.ToPeso(item?.AnnualAmount)</td> }</tr> }</tbody>
+        <tfoot><tr><th>Total</th>@foreach (var x in ComparativeCompensations) { var items = JOCompanyCompensationItems.Where(i => i.JOCmpnyCmpnstnId == x.Id); <th class="text-right @Highlight(x)">@UtilitiesService.ToPeso(items.Sum(i => i.MonthlyAmount ?? 0))</th><th class="text-right @Highlight(x)">@UtilitiesService.ToPeso(items.Sum(i => i.AnnualAmount ?? 0))</th> }</tr></tfoot>
+    </table></div></div></div>
+</div>
