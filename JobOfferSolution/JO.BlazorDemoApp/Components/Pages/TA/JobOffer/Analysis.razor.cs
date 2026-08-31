@@ -27,6 +27,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         private int selectedJOCmpnyCmpnstnId = 0;
         private int selectedOptionNumber = 1;
         private int ulEquivalentTotalMonthsPay = 15;
+        private string taPartnerRemarks = string.Empty;
 
         private VwDboxCandidates candidate = new();
         private JobOffers jobOffer = new();
@@ -199,7 +200,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
                 joCompanyCompensationItems,
                 selectedCmpnyCmpnstnId,
                 candidate.Id,
-                userId);
+                userId,
+                taPartnerRemarks);
 
             await AlertService.Success("Analysis successfully submitted for approval.");
             Navigation.NavigateTo($"{JORoutes.TA.JobOfferDetails}/{submittedJobOfferId}");
@@ -207,6 +209,11 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
 
         private void CollectJOCompanyCompensationErrors(List<string> errors)
         {
+            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
+            {
+                errors.Add("TA Partner Remarks is required.");
+            }
+
             var options = joCompanyCompensation
                 .Where(compensation => compensation.OptionNumber > 0)
                 .OrderBy(compensation => compensation.OptionNumber)
@@ -432,7 +439,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
                 return;
             }
 
-            if(jobOffer.WorkFlowId == 1)
+            if(jobOffer.WorkFlowId == 1 || jobOffer.WorkFlowId == null)
             {
                 Navigation.NavigateTo(JORoutes.TA.Candidates);
             }

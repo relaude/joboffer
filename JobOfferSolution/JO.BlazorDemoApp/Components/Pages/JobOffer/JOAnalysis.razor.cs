@@ -13,6 +13,8 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         [Inject] private ICompensationService CompensationService { get; set; } = default!;
 
         [Parameter] public int jobOfferId { get; set; }
+        [Parameter] public string GoBackUrl { get; set; } = "#";
+        [Parameter] public bool ShowGoBackUrl { get; set; } = true;
 
         private int currentJOCmpnyCmpnstnId;
         private int selectedCmpnyCmpnstnId;
@@ -22,6 +24,13 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
         private VwDboxCandidates candidate = new();
         private JobOffers jobOffer = new();
+
+        /// <summary>
+        /// Gets the current job offer after parameter loading has completed.
+        /// Access this property through a parent component's @ref to JOAnalysis.
+        /// </summary>
+        public JobOffers JobOffer => jobOffer;
+
         private JO.DataModel.Entity.JOAnalysis joAnalysis = new();
         private VwJODboxCandidates vwjobOffer = new();
         private VwSalaryBands vwSalaryBand = new();

@@ -17,6 +17,8 @@
     [OfferRangeId]      INT             NULL,
     [Incumbents]        INT             NULL,
     [Remarks]           NVARCHAR (500)  NULL,
+    [Accepted]          BIT             NULL,
+    [Declined]          BIT             NULL,
     [CreatedAt]         DATETIME        NULL,
     [CreatedBy]         INT             NULL,
     [ModifiedAt]        DATETIME        NULL,

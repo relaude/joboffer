@@ -92,7 +92,15 @@ namespace JO.Service.Services
 
         public async Task<int> SaveDiscussion(DiscussionDto dto)
         {
+            if (!dto.ProposalId.HasValue)
+                throw new ArgumentException("A proposal must be selected before saving a discussion.", nameof(dto));
+
             await using var context = await _dbContext.CreateDbContextAsync();
+
+            var joCompen = await context.JOCompanyCompensation.FindAsync(dto.ProposalId.Value);
+            if (joCompen is null || joCompen.JobOfferId != dto.JobOfferId
+                || !(joCompen.OptionNumber > 0) || joCompen.Declined == true)
+                throw new ArgumentException("The selected proposal is not available for this job offer.", nameof(dto));
 
             var newDiscussion = new Discussions
             {
@@ -107,10 +115,13 @@ namespace JO.Service.Services
                 CreatedBy = dto.CreatedBy,
                 CreatedAt = DateTime.Now
             };
-
             await context.Discussions.AddAsync(newDiscussion);
-            await context.SaveChangesAsync();
 
+            joCompen.Declined = dto.ResponseId == 5; //Declined
+            joCompen.Accepted = dto.ResponseId == 3; //Accepted
+            context.JOCompanyCompensation.Update(joCompen);
+
+            await context.SaveChangesAsync();
             return newDiscussion.Id;
         }
 

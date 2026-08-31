@@ -1,0 +1,57 @@
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="jo-title">@Title</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Response</th>
+                        <th>Status</th>
+                        <th>Candidate ID</th>
+                        <th>Email</th>
+                        <th>Job Position</th>
+                        <th>Company</th>
+                        <th>Division</th>
+                        <th>Department</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var candidate in Candidates)
+                    {
+                        <tr @key="candidate.Id">
+                            <td class="jo-title">
+                                <button type="button"
+                                        class="btn btn-link p-0 btn-sm"
+                                        role="link"
+                                        @onclick="() => OpenCandidate(candidate)">
+                                    @candidate.CandidateName
+                                </button>
+                            </td>
+                            <td>
+                                @if (candidate.ResponseId > 0)
+                                {
+                                    <span class="badge badge-info">With Response</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning">No Response</span>
+                                }
+                            </td>
+                            <td>@(string.IsNullOrEmpty(candidate.StatusName) ? "-" : candidate.StatusName)</td>
+                            <td>@candidate.DboxRefNum</td>
+                            <td>@candidate.EmailAddress</td>
+                            <td>@candidate.JobPosition</td>
+                            <td>@candidate.Company</td>
+                            <td>@candidate.Division</td>
+                            <td>@candidate.Department</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

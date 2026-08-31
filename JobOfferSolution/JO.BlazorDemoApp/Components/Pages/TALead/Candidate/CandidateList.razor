@@ -1,0 +1,14 @@
+@using JO.BlazorDemoApp.Components.Pages.Candidate
+@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TALead.Candidates)]
+
+<CandidateKpiBoxes Total="@total"
+                   WithResponseCount="@withResponse"
+                   NoResponseCount="@withOutResponse"
+                   CreatedCount="@joCreated"
+                   DraftCount="@joDraft"
+                   ForCreationCount="@forJOCreation"
+                   OnFilterChanged="FilterCandidates" />
+
+<CandidateTableList Candidates="@filteredCandidates"
+                    RoleId="@JOUserRole.TALead" />

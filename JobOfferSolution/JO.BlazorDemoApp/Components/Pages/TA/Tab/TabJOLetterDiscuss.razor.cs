@@ -1,3 +1,4 @@
+using Humanizer;
 using JO.DataModel.DTOs;
 using JO.DataModel.Entity;
 using JO.DataModel.View;
@@ -84,13 +85,17 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
             responses = await DiscussionService.GetCandResponse();
             filteredJOCompanyCompensation = joCompanyCompensation.Where(jo => jo.OptionNumber > 0).ToList();
 
-            var defaultProposal = joCompanyCompensation
-                .Where(jo => jo.OptionNumber > 0)
+            var availableProposals = joCompanyCompensation
+                .Where(jo => jo.OptionNumber > 0 && jo.Declined == false)
                 .OrderBy(jo => jo.OptionNumber)
-                .FirstOrDefault();
+                .ToList();
 
-            discussion.ProposalId ??= defaultProposal?.Id;
-            selectedProposedSalary = defaultProposal?.ProposedSalary.GetValueOrDefault() ?? 0m;
+            var selectedProposal = availableProposals
+                .FirstOrDefault(jo => jo.Id == discussion.ProposalId)
+                ?? availableProposals.FirstOrDefault();
+
+            discussion.ProposalId = selectedProposal?.Id;
+            selectedProposedSalary = selectedProposal?.ProposedSalary.GetValueOrDefault() ?? 0m;
             lastSyncedDiscussionProposalId = discussion.ProposalId;
 
             await GetDiscussions();
@@ -125,6 +130,15 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
                 model.JobOfferId = jobOfferId;
                 await DiscussionService.SaveDiscussion(model);
 
+                //Declined
+                if (model.ResponseId == 5)
+                {
+                    joCompanyCompensation = await CompensationService.GetJOCompanyCompensation(jobOfferId);
+                    filteredJOCompanyCompensation = joCompanyCompensation
+                        .Where(jo => jo.OptionNumber > 0)
+                        .ToList();
+                }
+
                 ResetEntries();
                 await GetDiscussions();
             }
@@ -139,15 +153,18 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
             vwDiscussions = await DiscussionService.GetDiscussions(jobOfferId);
         }
 
+        private bool HasAcceptedLetterDiscussion => vwDiscussions.Any(item =>
+            item.StepId == 11 && item.ResponseId == 3);
+
+        private bool HasNegotiationRequested => vwDiscussions.Any(item =>
+            item.StepId == 7 && item.ResponseId == 4);
+
         private async Task AcceptAndComplete()
         {
-            var hasAcceptedDiscussion = vwDiscussions.Any(item =>
-                item.StepId == 8 && item.ResponseId == 3);
-
-            if (!hasAcceptedDiscussion)
+            if (!HasAcceptedLetterDiscussion)
             {
                 await AlertService.Error(
-                    "Record a discussion with the Accepted step and Verbally Accepted response before completing this Job Offer.",
+                    "Record a discussion with the Email JO Letter step and Accepted response before completing this Job Offer.",
                     "Acceptance Discussion Required");
                 return;
             }

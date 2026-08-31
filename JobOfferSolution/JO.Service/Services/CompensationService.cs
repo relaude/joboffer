@@ -54,7 +54,8 @@ namespace JO.Service.Services
             List<JOCompanyCompensationItems> joCompanyCompensationItems,
             int selectedCmpnyCmpnstnId,
             int candidateId,
-            int userId)
+            int userId,
+            string taPartnerRemarks)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
 
@@ -69,14 +70,16 @@ namespace JO.Service.Services
             //JOAnalysis
             joAnalysis.ModifiedBy = userId;
             joAnalysis.ModifiedAt = DateTime.Now;
-            
+
+            //JOActionLogs
             JOActionLogs newLog = new JOActionLogs
             {
                 JobOfferId = jobOffer.Id,
                 RoleId = 1,//TA Partner
                 ActionId = 2,//Prepared
                 ActionAt = DateTime.Now,
-                ActionBy = userId
+                ActionBy = userId,
+                Remarks = taPartnerRemarks
             };
 
             //joCompanyCompensation
@@ -89,10 +92,35 @@ namespace JO.Service.Services
 
             var candidate = await context.DboxCandidates.FindAsync(candidateId);
             candidate.StatusId = 3;//JO Created
-            
+
+            //JOApprovalFlow
+            List<JOApprovalFlow> newApprovalFlow = new();
+            newApprovalFlow.AddRange(
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 1, IsAproved = true }, //TA Partner
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 2 }, //TA Lead
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5 } //Division Head Approver L1
+                );
+
+            if(jobOffer.OfferRangeId == 2)
+            {
+                newApprovalFlow.Add(
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId=4 } //HROD Head Approver
+                );
+            }
+
+            if(jobOffer.OfferRangeId == 3)
+            {
+                newApprovalFlow.AddRange(
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId=4 }, //HROD Head Approver
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId=7 } //President
+                );
+            }
+
+            await context.JOActionLogs.AddAsync(newLog);
+            await context.JOApprovalFlow.AddRangeAsync(newApprovalFlow);
+
             context.JobOffers.Update(jobOffer);
             context.JOAnalysis.Update(joAnalysis);
-            await context.JOActionLogs.AddAsync(newLog);
             context.DboxCandidates.Update(candidate);
             context.JOCompanyCompensation.UpdateRange(joCompanyCompensation);
             context.JOCompanyCompensationItems.UpdateRange(joCompanyCompensationItems);
@@ -116,6 +144,7 @@ namespace JO.Service.Services
 
             jobOffer.ModifiedBy = userId;
             jobOffer.ModifiedAt = DateTime.Now;
+            jobOffer.WorkFlowId = 1;//Draft
 
             foreach (var joCompensation in joCompanyCompensation)
             {
@@ -126,12 +155,12 @@ namespace JO.Service.Services
 
             await using var context = await _dbContext.CreateDbContextAsync();
 
-            //var candidate = await context.DboxCandidates.FindAsync(candidateId);
-            //candidate.StatusId = 3;//JO Created
+            var candidate = await context.DboxCandidates.FindAsync(candidateId);
+            candidate.StatusId = 2;//JO Draft
 
             context.JOAnalysis.Update(joAnalysis);
             context.JobOffers.Update(jobOffer);
-            //context.DboxCandidates.Update(candidate);
+            context.DboxCandidates.Update(candidate);
             context.JOCompanyCompensation.UpdateRange(joCompanyCompensation);
             context.JOCompanyCompensationItems.UpdateRange(joCompanyCompensationItems);
 

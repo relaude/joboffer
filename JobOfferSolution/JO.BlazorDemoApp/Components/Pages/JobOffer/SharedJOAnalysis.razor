@@ -44,22 +44,80 @@
     <div class="card-header"><h6 class="jo-title">Analysis</h6></div>
     <div class="card-body">
         <div class="jo-analysis-option-tabs" role="tablist">
-            @foreach (var compensation in JOCompanyCompensations.Where(x => x.OptionNumber > 0))
+            @foreach (var compensation in JOCompanyCompensations.Where(item => item.OptionNumber > 0))
             {
-                <div role="tab" tabindex="0" aria-selected="@(selectedOptionNumber == compensation.OptionNumber)"
+                <div role="tab"
+                     tabindex="0"
+                     aria-selected="@(selectedOptionNumber == compensation.OptionNumber)"
                      class="jo-analysis-option-tab @(selectedOptionNumber == compensation.OptionNumber ? "active" : null)"
                      @onclick="() => SelectOption(compensation)">
-                    <div class="d-flex justify-content-between mb-2"><span class="jo-analysis-option-title">Option @compensation.OptionNumber</span><small>@GetCompanyName(compensation.CmpnyCmpnstnId)</small></div>
-                    <div class="font-weight-bold mb-2">@UtilitiesService.ToPeso(compensation.ProposedSalary)</div>
-                    <div class="border-top py-2">% Increase Monthly<span class="float-right">@Percent(compensation.Increase)</span></div>
-                    <div class="border-top py-2">% Monthly Difference <span class="float-right">@Percent(compensation.DiffTotalMonthly)</span></div>
-                    <div class="border-top py-2">% Annual Difference <span class="float-right">@Percent(compensation.DiffTotalAnnually)</span></div>
-                    <div class="border-top py-2">Overtaken Incumbent <span class="float-right">@compensation.Incumbents</span></div>
-                    <label>Remarks</label><textarea rows="3" class="form-control form-control-sm" readonly>@compensation.Remarks</textarea>
-                    @if (!string.IsNullOrWhiteSpace(compensation.BandStatus))
-                    { <span class="badge mt-2 @(compensation.OfferRangeId is 1 or 2 ? "badge-success" : compensation.OfferRangeId == 3 ? "badge-danger" : "badge-info")">@compensation.BandStatus</span> }
-                    @if (compensation.Escalate == true)
-                    { <span class="badge badge-warning mt-2"><i class="fas fa-exclamation-triangle mr-1"></i>Requires Escalation</span> }
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="jo-analysis-option-title">Option @compensation.OptionNumber</span>
+                        <small class="text-muted text-right text-truncate ml-2"
+                               title="@GetCompanyName(compensation.CmpnyCmpnstnId)">
+                            @GetCompanyName(compensation.CmpnyCmpnstnId)
+                        </small>
+                    </div>
+
+                    <div>
+                        <div class="pb-2">
+                            <div class="text-xs font-weight-bold text-uppercase text-gray-600">Amount</div>
+                            <div class="font-weight-bold text-gray-800">
+                                @UtilitiesService.ToPeso(compensation.ProposedSalary)
+                            </div>
+                        </div>
+                        @* <div class="border-top py-2">
+                            <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
+                            <div class="font-weight-bold text-gray-800">@Percent(compensation.Increase)</div>
+                        </div> *@
+                        <div class="border-top py-2">
+                            <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
+                            <div class="font-weight-bold text-gray-800">@Percent(compensation.DiffTotalMonthly)</div>
+                        </div>
+                        <div class="border-top py-2">
+                            <div class="text-xs text-uppercase text-gray-500">% Increase Annual</div>
+                            <div class="font-weight-bold text-gray-800">@Percent(compensation.DiffTotalAnnually)</div>
+                        </div>
+                        <div class="border-top py-2">
+                            <div class="text-xs text-uppercase text-gray-500">Overtaken Incumbent</div>
+                            <div class="font-weight-bold text-gray-800">@compensation.Incumbents</div>
+                        </div>
+                        <div>
+                            <div class="text-xs font-weight-bold text-uppercase text-gray-600 mb-1">Remarks</div>
+                            <textarea rows="3" class="form-control form-control-sm" readonly>@compensation.Remarks</textarea>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(compensation.BandStatus))
+                        {
+                            <div class="border-top pt-2">
+                                <span class="badge @(compensation.OfferRangeId is 1 or 2
+                                                                          ? "badge-success"
+                                                                          : compensation.OfferRangeId == 3
+                                                                              ? "badge-danger"
+                                                                              : "badge-info")">
+                                    @if (compensation.OfferRangeId is 1 or 2)
+                                    {
+                                        <i class="fas fa-check mr-1" aria-hidden="true"></i>
+                                    }
+                                    else if (compensation.OfferRangeId == 3)
+                                    {
+                                        <i class="fas fa-times mr-1" aria-hidden="true"></i>
+                                    }
+                                    @compensation.BandStatus
+                                </span>
+                            </div>
+                        }
+
+                        @if (compensation.Escalate == true)
+                        {
+                            <div class="pt-2">
+                                <span class="badge badge-warning">
+                                    <i class="fas fa-exclamation-triangle mr-1" aria-hidden="true"></i>
+                                    Requires Escalation
+                                </span>
+                            </div>
+                        }
+                    </div>
                 </div>
             }
         </div>

@@ -7,13 +7,15 @@
             <div class="col-md-6">
                 <label class="sr-only" for="@CompensationOptionId">Compensation option</label>
                 <select id="@CompensationOptionId" class="custom-select custom-select-sm"
-                        value="@selectedProposedSalary" @onchange="ChangeCompensationOptionAsync">
+                        @bind:get="selectedProposedSalary" @bind:set="ChangeCompensationOptionAsync">
                         @foreach (var compensation in CompensationOptions
                         .Where(item => item.OptionNumber > 0)
                         .OrderBy(item => item.OptionNumber))
                     {
-                        <option value="@compensation.ProposedSalary">
-                            @($"Option {compensation.OptionNumber} - {UtilitiesService.ToPeso(compensation.ProposedSalary)}")
+                        <option value="@compensation.ProposedSalary.GetValueOrDefault().ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                            disabled="@(compensation.Declined == true)"
+                            style="@(compensation.Declined == true ? "color: #6c757d; background-color: #e9ecef;" : null)">
+                            @($"Option {compensation.OptionNumber} - {UtilitiesService.ToPeso(compensation.ProposedSalary)}{(compensation.Declined == true ? " (Declined)" : string.Empty)}")
                         </option>
                     }
                 </select>

@@ -1,14 +1,7 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.JobOfferDetails + "/{jobOfferId:int}")]
+﻿@* @attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TA.JobOfferDetails + "/{jobOfferId:int}")] *@
 
-<JOAnalysis jobOfferId="jobOfferId" />
-
-<div class="jo-actions mb-4">
-    <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
-        Go Back
-    </a>
-</div>
+<JOAnalysis jobOfferId="jobOfferId" GoBackUrl="@JORoutes.TA.JobOfferTracker" />
 
 @code {
     [Parameter] public int jobOfferId { get; set; }

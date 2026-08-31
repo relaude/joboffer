@@ -1,0 +1,14 @@
+@attribute [Authorize(Roles = JOUserRole.DivisionHeadApproverL1)]
+@attribute [Route(JORoutes.DHL1.JOForApproval)]
+
+<ApproverKpiBoxes Total="@total"
+                  ForApprovalCount="@countForApproval"
+                  SendBackCount="@countSendBack"
+                  ApprovedCount="@countApproved"
+                  ForApprovalWorkFlowId="@ForApprovalWorkFlowId"
+                  SendBackWorkFlowId="@SendBackWorkFlowId"
+                  ApprovedWorkFlowId="@ApprovedWorkFlowId"
+                  OnFilterChanged="FilterByWorkFlow" />
+
+<JobOfferTableList JobOffers="@filteredJODboxCandidates"
+                   Role="@JOUserRole.DivisionHeadApproverL1" />

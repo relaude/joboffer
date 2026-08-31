@@ -1,3 +1,4 @@
+using JO.BlazorDemoApp.Components.Pages.Candidate;
 using JO.DataModel.DTOs;
 using JO.DataModel.Entity;
 using JO.DataModel.View;
@@ -14,14 +15,10 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Candidate
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private IAlertService AlertService { get; set; } = default!;
         [Inject] private IAccountService AccountService { get; set; } = default!;
-        [Inject] private NavigationManager Navigation { get; set; } = default!;
 
         private List<VwDboxCandidates> candidates = new();
         private List<VwDboxCandidates> eligibleCandidates = new();
         private List<VwDboxCandidates> filteredCandidates = new();
-
-        private const int WithResponseFilter = -1;
-        private const int WithoutResponseFilter = -2;
 
         private int?[] AMSG = { 1, 109 };
         private int total = 0; 
@@ -60,10 +57,10 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Candidate
             filteredCandidates = statusId switch
             {
                 null => eligibleCandidates.ToList(),
-                WithResponseFilter => eligibleCandidates
+                CandidateKpiBoxes.WithResponseFilter => eligibleCandidates
                     .Where(candidate => candidate.ResponseId > 0)
                     .ToList(),
-                WithoutResponseFilter => eligibleCandidates
+                CandidateKpiBoxes.WithoutResponseFilter => eligibleCandidates
                     .Where(candidate => candidate.ResponseId.GetValueOrDefault() <= 0)
                     .ToList(),
                 _ => eligibleCandidates
@@ -72,10 +69,5 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Candidate
             };
         }
 
-        private async Task OpenCandidate(VwDboxCandidates candidate)
-        {
-            var candidateLink = await CandidateService.GetCandidateLink(candidate);
-            Navigation.NavigateTo(candidateLink);
-        }
     }
 }

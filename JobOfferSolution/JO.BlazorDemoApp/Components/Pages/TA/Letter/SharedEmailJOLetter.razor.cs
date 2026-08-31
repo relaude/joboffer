@@ -1,4 +1,3 @@
-using System.Globalization;
 using JO.DataModel.DTOs;
 using JO.DataModel.Entity;
 using JO.DataModel.View;
@@ -54,12 +53,13 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Letter
                 initialized = true;
                 emailSubject = InitialEmailSubject;
                 testEmailRecipient = InitialTestEmailRecipient;
-                var defaultProposedSalary = CompensationOptions
-                    .Where(item => item.OptionNumber > 0)
-                    .OrderBy(item => item.OptionNumber)
-                    .FirstOrDefault()?.ProposedSalary.GetValueOrDefault() ?? 0m;
-                selectedProposedSalary = InitialSelectedProposedSalary ?? defaultProposedSalary;
             }
+
+            var defaultProposedSalary = CompensationOptions
+                .Where(item => item.OptionNumber > 0 && item.Declined == false)
+                .OrderBy(item => item.OptionNumber)
+                .FirstOrDefault()?.ProposedSalary.GetValueOrDefault() ?? 0m;
+            selectedProposedSalary = InitialSelectedProposedSalary ?? defaultProposedSalary;
 
             if (!string.Equals(loadedLetterBody, LetterBody, StringComparison.Ordinal))
             {
@@ -79,13 +79,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Letter
             await letterEditor.LoadHTMLContent(LetterBody);
         }
 
-        private async Task ChangeCompensationOptionAsync(ChangeEventArgs args)
+        private async Task ChangeCompensationOptionAsync(decimal proposedSalary)
         {
-            var value = args.Value?.ToString();
-            if (!decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var proposedSalary)
-                && !decimal.TryParse(value, NumberStyles.Number, CultureInfo.CurrentCulture, out proposedSalary))
-                return;
-
             selectedProposedSalary = proposedSalary;
             await OnCompensationOptionChanged.InvokeAsync(proposedSalary);
         }

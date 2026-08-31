@@ -6,7 +6,17 @@
 @inject IAlertService AlertService
 @inject NavigationManager Navigation
 
-<JOAnalysis jobOfferId ="jobOfferId" />
+<JOAnalysis @ref="analysis" jobOfferId="jobOfferId" ShowGoBackUrl="false" />
+
+<!--Reviewer Remarks-->
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">TA Lead Remarks</h6>
+    </div>
+    <div class="card-body">
+        <textarea rows="5" class="form-control" @bind="taLeadRemarks"></textarea>
+    </div>
+</div>
 
 <div class="jo-actions mb-4">
     <a href="@JORoutes.TALead.JOForReview" class="btn btn-outline-secondary">
@@ -25,9 +35,16 @@
 
 @code {
     [Parameter] public int jobOfferId { get; set; }
+    private Components.Pages.JobOffer.JOAnalysis? analysis;
+    private string taLeadRemarks = string.Empty;
 
     private async Task ApproveJobOffer()
     {
+        if (string.IsNullOrWhiteSpace(taLeadRemarks))
+        {
+            await AlertService.Error("TA Lead Remarks is required."); return;
+        }
+
         if (!await AlertService.Confirm(
             title: "Approve this reviewed job offer?",
             confirmText: "Approve Job Offer"))
@@ -37,7 +54,20 @@
 
         int userId = await AccountService.GetJobOfferUserId();
 
-        await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 4, 2, 3, userId);//For Approval,TA Lead, Reviewed
+        int offerRangeId = analysis.JobOffer.OfferRangeId.GetValueOrDefault();
+
+        if (offerRangeId == 1)
+        {
+            //For Division Head Approval,TA Lead, Reviewed
+            await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 5, 2, 3, userId, taLeadRemarks);
+        }
+
+        if (offerRangeId == 2 || offerRangeId == 3)
+        {
+            //For PE Head Approval,TA Lead, Reviewed
+            await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 4, 2, 3, userId, taLeadRemarks);
+        }
+        
         await AlertService.Success(
             message: "The job offer review has been approved successfully.",
             title: "Review Complete");

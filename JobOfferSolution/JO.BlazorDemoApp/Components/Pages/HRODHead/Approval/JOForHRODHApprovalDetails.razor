@@ -6,7 +6,17 @@
 @inject IAlertService AlertService
 @inject NavigationManager Navigation
 
-<JOAnalysis jobOfferId="jobOfferId" />
+<JOAnalysis jobOfferId="jobOfferId" ShowGoBackUrl="false" />
+
+<!--Remarks-->
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">Remarks</h6>
+    </div>
+    <div class="card-body">
+        <textarea rows="5" class="form-control" @bind="approverRemarks"></textarea>
+    </div>
+</div>
 
 <div class="jo-actions mb-4">
     <a href="@JORoutes.HRODHead.JOForApproval" class="btn btn-outline-secondary">
@@ -25,9 +35,15 @@
 
 @code {
     [Parameter] public int jobOfferId { get; set; }
+    private string approverRemarks = string.Empty;
 
     private async Task ApproveJobOffer()
     {
+        if (string.IsNullOrWhiteSpace(approverRemarks))
+        {
+            await AlertService.Error("Remarks is required."); return;
+        }
+
         if (!await AlertService.Confirm(
             title: "Approve this job offer?",
             confirmText: "Approve Job Offer"))
@@ -37,7 +53,7 @@
         int userId = await AccountService.GetJobOfferUserId();
 
         //For President Approval,HROD Head Approver, Approved
-        await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 7, 4, 4, userId);
+        await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 7, 4, 4, userId, approverRemarks);
         await AlertService.Success(
             message: "The job offer review has been approved successfully.",
             title: "Approve Complete");

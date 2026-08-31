@@ -22,6 +22,8 @@ namespace JO.DataModel.Entity
         public int? OfferRangeId { get; set; }
         public int? Incumbents { get; set; }
         public string? Remarks { get; set; }
+        public bool? Accepted { get; set; }
+        public bool? Declined { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }

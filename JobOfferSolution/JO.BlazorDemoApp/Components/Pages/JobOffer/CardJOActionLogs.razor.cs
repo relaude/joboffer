@@ -14,6 +14,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         [Parameter] public string EmptyMessage { get; set; } = "No action history is available for this job offer.";
 
         private List<VwJOActionLogs> actionLogs = [];
+        private List<VwJOApprovalFlow> approvalFlow = [];
         private bool isLoading;
 
         protected override async Task OnParametersSetAsync()
@@ -22,6 +23,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
             try
             {
                 actionLogs = await JOLogsService.GetVwJOActionLogs(JobOfferId);
+                approvalFlow = await JOLogsService.GetVwJOApprovalFlow(JobOfferId);
             }
             finally
             {
@@ -74,7 +76,17 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
             _ => "Activity"
         };
 
-        private static string DisplayValue(string? value, string fallback) =>
+        private static string GetApprovalFlowStatus(VwJOApprovalFlow step) =>
+            step.IsAproved == true
+                ? step.RoleId switch
+                {
+                    1 => "Prepared",
+                    2 => "Reviewed",
+                    _ => "Approved"
+                }
+                : "Pending";
+
+        private static string DisplayValue(string? value, string fallback = "-") =>
             string.IsNullOrWhiteSpace(value) ? fallback : value;
     }
 }

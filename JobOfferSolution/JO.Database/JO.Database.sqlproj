@@ -190,6 +190,8 @@
     <Build Include="dbo\Tables\JOAnalysis.sql" />
     <Build Include="dbo\Tables\DboxCandidateStatus.sql" />
     <Build Include="dbo\Views\vw_JOActionLogs.sql" />
+    <Build Include="dbo\Tables\JOApprovalFlow.sql" />
+    <Build Include="dbo\Views\vw_JOApprovalFlow.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

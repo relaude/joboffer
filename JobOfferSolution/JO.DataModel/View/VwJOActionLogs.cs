@@ -8,6 +8,7 @@ namespace JO.DataModel.View
         public int? ActionId { get; set; }
         public DateTime? ActionAt { get; set; }
         public int? ActionBy { get; set; }
+        public string? Remarks { get; set; }
         public string? ActionName { get; set; }
         public string? ActionByName { get; set; }
         public string? RoleName { get; set; }

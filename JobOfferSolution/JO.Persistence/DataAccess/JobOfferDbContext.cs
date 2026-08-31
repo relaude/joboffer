@@ -29,6 +29,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<Departments> Departments { get; set; }
         public DbSet<Requests> Requests { get; set; }
         public DbSet<JobOffers> JobOffers { get; set; }
+        public DbSet<JOApprovalFlow> JOApprovalFlow { get; set; }
         public DbSet<JOWorkFlowStatus> JOWorkFlowStatus { get; set; }
         public DbSet<JOItemLetter> JOItemLetter { get; set; }
         public DbSet<JOActionLogs> JOActionLogs { get; set; }
@@ -105,6 +106,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<WorkFlowStatus> WorkFlowStatus { get; set; }
 
         //Views
+        public DbSet<VwJOApprovalFlow> VwJOApprovalFlow { get; set; }
         public DbSet<VwJOActionLogs> VwJOActionLogs { get; set; }
         public DbSet<VwApprovals> VwApprovals { get; set; }
         public DbSet<VwCompanies> VwCompanies { get; set; }
@@ -138,6 +140,7 @@ namespace JO.Persistence.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Views
+            modelBuilder.Entity<VwJOApprovalFlow>().HasNoKey().ToView("vw_JOApprovalFlow");
             modelBuilder.Entity<VwJOActionLogs>().HasNoKey().ToView("vw_JOActionLogs");
             modelBuilder.Entity<VwApprovals>().HasNoKey().ToView("vw_Approvals");
             modelBuilder.Entity<VwCompanies>().HasNoKey().ToView("vw_Companies");

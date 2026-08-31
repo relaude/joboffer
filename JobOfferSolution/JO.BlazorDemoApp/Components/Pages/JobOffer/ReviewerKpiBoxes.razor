@@ -1,0 +1,62 @@
+<div class="row">
+    <!--Total-->
+    <div class="col-12 col-sm-6 col-lg-3 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterByWorkFlow(null)">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Total</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--For Review-->
+    <div class="col-12 col-sm-6 col-lg-3 mb-4">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterByWorkFlow(3)">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">For Review</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@ForReviewCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Send Back-->
+    <div class="col-12 col-sm-6 col-lg-3 mb-4">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterByWorkFlow(10)">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Send Back</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@SendBackCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Reviewed-->
+    <div class="col-12 col-sm-6 col-lg-3 mb-4">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterByWorkFlow(4)">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Reviewed</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@ReviewedCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

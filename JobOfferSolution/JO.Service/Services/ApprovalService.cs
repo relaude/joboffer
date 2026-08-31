@@ -40,7 +40,11 @@ namespace JO.Service.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task JobOfferActionFlowStatus(int jobOfferId, int workFlowId, int roleId, int actionId, int userId)
+        public async Task JobOfferActionFlowStatus(int jobOfferId, 
+            int workFlowId, 
+            int roleId, 
+            int actionId, 
+            int userId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
 
@@ -58,6 +62,39 @@ namespace JO.Service.Services
 
             context.JobOffers.Update(jobOffer);
             await context.JOActionLogs.AddAsync(newLog);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task JobOfferActionFlowStatus(int jobOfferId, 
+            int workFlowId, 
+            int roleId, 
+            int actionId, 
+            int userId, 
+            string remarks)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
+            jobOffer.WorkFlowId = workFlowId;
+
+            JOActionLogs newLog = new JOActionLogs
+            {
+                JobOfferId = jobOfferId,
+                RoleId = roleId,
+                ActionId = actionId,
+                ActionAt = DateTime.Now,
+                ActionBy = userId,
+                Remarks = remarks
+            };
+
+            JOApprovalFlow approvalFlow = await context.JOApprovalFlow
+                .FirstOrDefaultAsync(jo=>jo.JobOfferId==jobOfferId && jo.RoleId==roleId);
+            approvalFlow.IsAproved = true;
+
+            context.JobOffers.Update(jobOffer);
+            context.JOApprovalFlow.Update(approvalFlow);
+            await context.JOActionLogs.AddAsync(newLog);
+
             await context.SaveChangesAsync();
         }
 

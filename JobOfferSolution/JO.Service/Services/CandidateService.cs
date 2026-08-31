@@ -27,6 +27,21 @@ namespace JO.Service.Services
             _email = email;
         }
 
+        public async Task<string> GetTALeadCandidateLink(VwDboxCandidates candidate)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var jobOffer = await context.JobOffers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(jo=>jo.CandidateId==candidate.Id);
+
+            if(candidate.StatusId == 2 || jobOffer != null)
+            {
+                return $"{JORoutes.TALead.Analysis}/{jobOffer.Id}";
+            }
+
+            return $"{JORoutes.TALead.Candidate}/{candidate.Id}";
+        }
+
         public async Task<string> GetCandidateLink(VwDboxCandidates candidate)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -34,7 +49,7 @@ namespace JO.Service.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(jo=>jo.CandidateId==candidate.Id);
 
-            if(candidate.StatusId == 2)
+            if(candidate.StatusId == 2 || jobOffer != null)
             {
                 return $"{JORoutes.TA.Analysis}/{jobOffer.Id}";
             }
@@ -87,16 +102,17 @@ namespace JO.Service.Services
         public async Task<int> CreateJobOffer(VwDboxCandidates candidate, int options, int createdBy)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
-            int countJO = await context.JobOffers.CountAsync() + 1;
+            //int countJO = await context.JobOffers.Where(jo=>jo.CandidateId=candidate.Id).CountAsync() + 1;
             var newJO = new JobOffers
             {
-                RefNum = $"JO-{DateTime.Now.Year}-{candidate.DboxRefNum}-{countJO:D5}",
+                //RefNum = $"JO-{DateTime.Now.Year}-{candidate.DboxRefNum}-{countJO:D2}",
+                RefNum = $"JO-{DateTime.Now.Year}-{candidate.DboxRefNum}",
                 CompanyId = candidate.CompanyId,
                 DivisionId = candidate.DivisionId,
                 DepartmentId = candidate.DepartmentId,
                 CandidateId = candidate.Id,
                 Options = options,
-                WorkFlowId = 1, //Draft
+                //WorkFlowId = 1, //Draft
                 CreatedAt = DateTime.Now,
                 CreatedBy = createdBy
             };
@@ -227,12 +243,12 @@ namespace JO.Service.Services
             };
 
             //DboxCandidates
-            var dboxCandidate = await context.DboxCandidates.FindAsync(candidate.Id);
-            dboxCandidate.StatusId = 2;//JO Draft
+            //var dboxCandidate = await context.DboxCandidates.FindAsync(candidate.Id);
+            //dboxCandidate.StatusId = 2;//JO Draft
 
             await context.JOCompanyCompensationItems.AddRangeAsync(joCmpnyCompensationItemsB);
             await context.JOActionLogs.AddAsync(actionLogs);
-            context.DboxCandidates.Update(dboxCandidate);
+            //context.DboxCandidates.Update(dboxCandidate);
             await context.SaveChangesAsync();
 
             return newJO.Id;

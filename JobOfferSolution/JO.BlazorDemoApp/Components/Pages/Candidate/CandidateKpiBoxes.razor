@@ -1,0 +1,91 @@
+<div class="row">
+    <!--Total-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(null)">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Total</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--With Responses-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(WithResponseFilter)">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">With Response</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@WithResponseCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Without Response-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(WithoutResponseFilter)">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">No Response</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@NoResponseCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Created-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(3)">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Created</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@CreatedCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Draft-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(2)">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Draft</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@DraftCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--For Creation-->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+        <div class="card border-left-info shadow h-100 py-2"
+             role="button" tabindex="0" @onclick="() => FilterCandidates(1)">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">For Creation</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@ForCreationCount</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

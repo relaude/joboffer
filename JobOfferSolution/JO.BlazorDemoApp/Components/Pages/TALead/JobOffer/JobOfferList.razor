@@ -1,0 +1,14 @@
+@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TALead.JobOfferTracker)]
+
+<JobOfferKpiBoxes Total="@total"
+                  ForReviewCount="@countForReview"
+                  ReviewedCount="@countReviewed"
+                  SendBackCount="@countSendBack"
+                  ForApprovalCount="@countForApproval"
+                  ApprovedCount="@countApproved"
+                  AcceptedCount="@countAcccepted"
+                  OnFilterChanged="FilterByWorkFlow" />
+
+<JobOfferTableList JobOffers="@filteredJODboxCandidates"
+                   Role="@JOUserRole.TALead" />

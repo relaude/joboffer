@@ -1,0 +1,77 @@
+﻿@attribute [Authorize(Roles = JOUserRole.DivisionHeadApproverL1)]
+@attribute [Route(JORoutes.DHL1.JOForApproval + "/{jobOfferId:int}")]
+
+@inject IApprovalService ApprovalService
+@inject IAccountService AccountService
+@inject IAlertService AlertService
+@inject NavigationManager Navigation
+
+<JOAnalysis @ref="analysis" jobOfferId="jobOfferId" ShowGoBackUrl="false" />
+
+<!--Remarks-->
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">Remarks</h6>
+    </div>
+    <div class="card-body">
+        <textarea rows="5" class="form-control" @bind="approverRemarks"></textarea>
+    </div>
+</div>
+
+<div class="jo-actions mb-4">
+    <a href="@JORoutes.DHL1.JOForApproval" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+        Go Back
+    </a>
+    <button type="button" class="btn btn-outline-primary">
+        <i class="fas fa-reply mr-1" aria-hidden="true"></i>
+        Send Back
+    </button>
+    <button type="button" class="btn btn-success" @onclick="ApproveJobOffer">
+        <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
+        Approve
+    </button>
+</div>
+
+@code {
+    [Parameter] public int jobOfferId { get; set; }
+    private Components.Pages.JobOffer.JOAnalysis? analysis;
+    private string approverRemarks = string.Empty;
+
+    private async Task ApproveJobOffer()
+    {
+        if (string.IsNullOrWhiteSpace(approverRemarks))
+        {
+            await AlertService.Error("Remarks is required."); return;
+        }
+
+        if (!await AlertService.Confirm(
+            title: "Approve this reviewed job offer?",
+            confirmText: "Approve Job Offer"))
+        {
+            return;
+        }
+
+        int userId = await AccountService.GetJobOfferUserId();
+
+        int offerRangeId = analysis.JobOffer.OfferRangeId.GetValueOrDefault();
+
+        if (offerRangeId == 1)
+        {
+            //For Discussion, Division Head Approver L1, Approved
+            await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 8, 5, 4, userId, approverRemarks);
+        }
+
+        if (offerRangeId == 2 || offerRangeId == 3)
+        {
+            //For HROD Head Approval,Division Head Approver L1, Approved
+            await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 6, 5, 4, userId, approverRemarks);
+        }
+        
+        await AlertService.Success(
+            message: "The job offer review has been approved successfully.",
+            title: "Approve Complete");
+
+        Navigation.NavigateTo(JORoutes.DHL1.JOForApproval);
+    }
+}

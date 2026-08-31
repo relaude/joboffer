@@ -16,6 +16,19 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<VwJOApprovalFlow>> GetVwJOApprovalFlow(int jobOfferId)
+        {
+            if (jobOfferId <= 0)
+                return [];
+
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJOApprovalFlow
+                .AsNoTracking()
+                .Where(jo => jo.JobOfferId == jobOfferId)
+                .OrderBy(jo => jo.Id)
+                .ToListAsync();
+        }
+
         public async Task<List<VwJOActionLogs>> GetVwJOActionLogs(int jobOfferId)
         {
             if (jobOfferId <= 0)

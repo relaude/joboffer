@@ -17,6 +17,37 @@
     </div>
 
     <div class="card-body">
+        @if (!isLoading && approvalFlow.Count > 0)
+        {
+            <section class="jo-approval-flow" aria-label="Approval progress">
+                <h6 class="jo-title mb-3">Approval Progress</h6>
+                <ol class="jo-approval-flow-steps">
+                    @for (var index = 0; index < approvalFlow.Count; index++)
+                    {
+                        var step = approvalFlow[index];
+                        var approved = step.IsAproved == true;
+                        <li class="jo-approval-flow-step @(approved ? "is-approved" : "is-pending")" @key="step.Id">
+                            <span class="jo-approval-flow-marker" aria-hidden="true">
+                                @if (approved)
+                                {
+                                    <i class="fas fa-check"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-clock"></i>
+                                }
+                            </span>
+                            <span class="jo-approval-flow-number">Step @(index + 1)</span>
+                            <span class="jo-approval-flow-role">@DisplayValue(step.RoleName, "Role unavailable")</span>
+                            <!--EDIT-->
+                            <span class="jo-approval-flow-status">@GetApprovalFlowStatus(step)</span>
+                            <!--EDIT-->
+                        </li>
+                    }
+                </ol>
+            </section>
+        }
+
         @if (isLoading)
         {
             <div class="jo-action-log-state text-muted" role="status">
@@ -43,16 +74,15 @@
                         <div class="jo-action-log-content">
                             <div class="jo-action-log-heading">
                                 <div>
-                                    <span class="jo-action-log-name">@(item.ActionName ?? "Unknown Action")</span>
-                                    @* <span class="badge @GetBadgeClass(item.ActionId) ml-2">@GetActionCategory(item.ActionId)</span> *@
+                                    <span class="jo-action-log-name">@DisplayValue(item.ActionName, "Unknown action") by @DisplayValue(item.ActionByName, "Unknown user")</span>
+                                    <small class="d-block text-muted">@DisplayValue(item.RoleName, "Role unavailable")</small>
                                 </div>
                                 <time class="jo-action-log-date" datetime="@item.ActionAt?.ToString("O")">
-                                    @(item.ActionAt?.ToString("dd MMM yyyy, hh:mm tt") ?? "Date unavailable")
+                                    Date: @(item.ActionAt?.ToString("dd MMM yyyy, hh:mm tt") ?? "Date unavailable")
                                 </time>
                             </div>
-                            <div class="jo-action-log-meta">
-                                <span>@DisplayValue(item.ActionByName, "Unknown user")</span>
-                                <span>@DisplayValue(item.RoleName, "Role unavailable")</span>
+                            <div class="jo-action-log-meta flex-column">
+                                <div style="overflow-wrap: anywhere; white-space: pre-wrap;">@DisplayValue(item.Remarks)</div>
                             </div>
                         </div>
                     </article>

@@ -1,8 +1,11 @@
+@* Parent usage: <JOAnalysis @ref="analysis" jobOfferId="@jobOfferId" />
+   Declare a JOAnalysis? analysis field in the parent, then read analysis?.JobOffer
+   after this component has finished loading (for example, in a later button handler).
+   The reference is unavailable before rendering, and JobOffer is initially empty. *@
 <CardJOSummary JobOffer="@vwjobOffer" />
 
 <CardCandidateCompensation Candidate="@candidate" CompensationItems="@vwCompanyCompensationItems" />
 
-<!--SHARED-->
 <!--Salary Structure Guidelines-->
 <div class="card shadow mb-4 small">
     <div class="card-header d-flex align-items-center justify-content-between">
@@ -129,21 +132,21 @@
 
                     <div>
                         <div class="pb-2">
-                            <div class="text-xs font-weight-bold text-uppercase text-gray-600">Proposed Salary</div>
+                            <div class="text-xs font-weight-bold text-uppercase text-gray-600">Amount</div>
                             <div class="font-weight-bold text-gray-800">
                                 @UtilitiesService.ToPeso(compensation.ProposedSalary)
                             </div>
                         </div>
-                        <div class="border-top py-2">
+                        @* <div class="border-top py-2">
                             <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.Increase)</div>
-                        </div>
+                        </div> *@
                         <div class="border-top py-2">
-                            <div class="text-xs text-uppercase text-gray-500">% Monthly Difference</div>
+                            <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.DiffTotalMonthly)</div>
                         </div>
                         <div class="border-top py-2">
-                            <div class="text-xs text-uppercase text-gray-500">% Annual Difference</div>
+                            <div class="text-xs text-uppercase text-gray-500">% Increase Annual</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.DiffTotalAnnually)</div>
                         </div>
                         <div class="border-top py-2">
@@ -388,4 +391,14 @@
         </div>
     </div>
 </div>
-<!--SHARED-->
+
+@if (ShowGoBackUrl)
+{
+    <div class="jo-actions mb-4">
+        <a href="@GoBackUrl" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+            Go Back
+        </a>
+    </div>
+}
+

@@ -106,7 +106,12 @@ namespace JO.Service.Constants
 
         public static class TALead
         {
+            public const string Candidates = PrefixTALead + "/candidates";
+            public const string Candidate = PrefixTALead + "/candidate";
             public const string JOForReview = PrefixTALead + "/for-review";
+            public const string JobOfferTracker = PrefixTALead + "/joboffer-tracker";
+            public const string JobOfferDetails = PrefixTALead + "/joboffer-details";
+            public const string Analysis = PrefixTALead + "/analysis";
         }
 
         public static class HROD
@@ -153,22 +158,26 @@ namespace JO.Service.Constants
         public static class PEH
         {
             public const string JOForApproval = PrefixPEH + "/for-approval";
+            public const string JobOfferDetails = PrefixPEH + "/joboffer-details";
         }
 
         public static class DHL1
         {
-            public const string JOForApprovalStandard = PrefixDHL1 + "/approval-standard";
-            public const string JOForApprovalAboveStandard = PrefixDHL1 + "/approval-abovestandard";
+            public const string JOForApproval = PrefixDHL1 + "/for-approval";
+            public const string JobOfferDetails = PrefixDHL1 + "/joboffer-details";
         }
 
         public static class HRODHead
         {
             public const string JOForApproval = PrefixHRODHead + "/for-approval";
+            public const string JobOfferDetails = PrefixHRODHead + "/joboffer-details";
         }
 
         public static class President
         {
             public const string JOForApproval = PrefixPres + "/for-approval";
+            public const string JobOfferDetails = PrefixPres + "/joboffer-details";
+
             public const string Approvals = PrefixPres + "/approvals";
             public const string Approve = PrefixPres + "/approve";
         }

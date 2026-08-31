@@ -11,5 +11,6 @@ namespace JO.DataModel.Entity
         public int? ActionId { get; set; }
         public DateTime? ActionAt { get; set; }
         public int? ActionBy { get; set; }
+        public string? Remarks { get; set; }
     }
 }

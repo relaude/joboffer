@@ -878,3 +878,79 @@
     .jo-analysis-option-tab,
     .jo-analysis-option-add { min-height: 0; }
 }
+
+/* Approval progress above the action history timeline. */
+.jo-approval-flow {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #e3e6f0;
+}
+.jo-approval-flow-steps {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: .25rem 0 .75rem;
+    overflow-x: auto;
+}
+.jo-approval-flow-step {
+    position: relative;
+    flex: 1 0 160px;
+    min-width: 0;
+    padding-right: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.jo-approval-flow-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 13px;
+    left: 28px;
+    right: 0;
+    height: 2px;
+    background: #d1d5db;
+}
+.jo-approval-flow-step.is-approved::after { background: #42c995; }
+.jo-approval-flow-marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-bottom: .65rem;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #5a6268;
+    font-size: .75rem;
+}
+.jo-approval-flow-step.is-approved .jo-approval-flow-marker {
+    background: #42c995;
+    color: #fff;
+}
+.jo-approval-flow-number {
+    font-size: .6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #5a6268;
+}
+.jo-approval-flow-role {
+    margin: .25rem 0 .5rem;
+    font-size: .75rem;
+    font-weight: 600;
+    color: #212529;
+    overflow-wrap: anywhere;
+}
+.jo-approval-flow-status {
+    margin-top: auto;
+    padding: .15rem .6rem;
+    border-radius: 999px;
+    background: #e9ecef;
+    color: #495057;
+    font-size: .65rem;
+    font-weight: 600;
+}
+.jo-approval-flow-step.is-approved .jo-approval-flow-status {
+    background: #d4edda;
+    color: #155724;
+}

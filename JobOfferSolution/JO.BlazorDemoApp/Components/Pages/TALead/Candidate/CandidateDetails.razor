@@ -1,0 +1,26 @@
+@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Route(JORoutes.TALead.Candidate + "/{candidateId:int}")]
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h2 class="h6 m-0 font-weight-bold text-primary">Candidate Summary</h2>
+
+        <div class="ml-auto">
+            <a href="@JORoutes.TALead.Candidates" class="btn btn-outline-secondary mr-2">Back</a>
+            @if (candidate.StatusId == 1)
+            {
+                <button type="button" class="btn btn-primary" @onclick="CreateJobOffer">
+                    Create Job Offer
+                </button>
+            }
+        </div>
+    </div>
+
+    <CandidateSummary Candidate="candidate" />
+</div>
+
+<CandidateCompensation Candidate="candidate" />
+
+<CandidateBenefits Candidate="candidate" />
+
+<MockUpCandidateFiles />
