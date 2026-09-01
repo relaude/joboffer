@@ -9,5 +9,6 @@ namespace JO.DataModel.Entity
     {
         [Key] public int Id { get; set; }
         public string? ResponseName { get; set; }
+        public int? DisplayOrder { get; set; }
     }
 }

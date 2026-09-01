@@ -11,7 +11,7 @@
 <!--Reviewer Remarks-->
 <div class="card shadow mb-4 small">
     <div class="card-header">
-        <h6 class="jo-title">TA Lead Remarks</h6>
+        <h6 class="jo-title">TA Lead Remarks <span class="text-danger" aria-label="required">*</span></h6>
     </div>
     <div class="card-body">
         <textarea rows="5" class="form-control" @bind="taLeadRemarks"></textarea>
@@ -23,7 +23,7 @@
         <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
         Go Back
     </a>
-    <button type="button" class="btn btn-outline-primary">
+    <button type="button" class="btn btn-outline-primary" @onclick="SendBackJobOffer">
         <i class="fas fa-reply mr-1" aria-hidden="true"></i>
         Send Back
     </button>
@@ -37,6 +37,30 @@
     [Parameter] public int jobOfferId { get; set; }
     private Components.Pages.JobOffer.JOAnalysis? analysis;
     private string taLeadRemarks = string.Empty;
+
+    private async Task SendBackJobOffer()
+    {
+        if (string.IsNullOrWhiteSpace(taLeadRemarks))
+        {
+            await AlertService.Error("TA Lead Remarks is required."); return;
+        }
+
+        if (!await AlertService.Confirm(
+            title: "Send back this reviewed job offer?",
+            confirmText: "Send Back Job Offer"))
+        {
+            return;
+        }
+
+        int userId = await AccountService.GetJobOfferUserId();
+        await ApprovalService.JobOfferActionSendBack(jobOfferId, 2, userId, taLeadRemarks);
+
+        await AlertService.Success(
+            message: "The job offer review has been send back successfully.",
+            title: "Send Back Complete");
+
+        Navigation.NavigateTo(JORoutes.TALead.JOForReview);
+    }
 
     private async Task ApproveJobOffer()
     {

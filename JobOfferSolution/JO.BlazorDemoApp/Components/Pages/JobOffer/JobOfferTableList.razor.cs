@@ -57,12 +57,16 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                         2 => JORoutes.TA.Analysis,
                         8 => JORoutes.TA.Discussion,
                         9 => JORoutes.TA.JobOfferComplete,
+                        10 => JORoutes.TA.AnalysisSendBack,
                         _ => JORoutes.TA.JobOfferDetails
                     },
 
-                    JOUserRole.TALead => jobOffer.WorkFlowId == 3
-                        ? JORoutes.TALead.JOForReview
-                        : JORoutes.TALead.JobOfferDetails,
+                    JOUserRole.TALead => jobOffer.WorkFlowId switch
+                    {
+                        3 => JORoutes.TALead.JOForReview,
+                        10 => JORoutes.TALead.AnalysisSendBack,
+                        _ => JORoutes.TALead.JobOfferDetails
+                    },
 
                     JOUserRole.PEHead => jobOffer.WorkFlowId == 4
                         ? JORoutes.PEH.JOForApproval

@@ -132,7 +132,7 @@
         <h6 class="jo-title">Candidate Remarks</h6>
     </div>
     <div class="card-body">
-        <textarea rows="5" class="form-control" @bind="joAnalysis.CandidateReamrks"></textarea>
+        <textarea rows="3" class="form-control" @bind="joAnalysis.CandidateReamrks"></textarea>
     </div>
 </div>
 
@@ -165,7 +165,7 @@
                     <div>
                         <label class="text-xs font-weight-bold text-uppercase text-gray-600 mb-1"
                                for="amount-@compensation.OptionNumber">
-                            Proposed Salary
+                            Amount
                         </label>
                         <PesoInput TValue="decimal?"
                                    @bind-Value="compensation.ProposedSalary"
@@ -173,16 +173,16 @@
                                    class="form-control form-control-sm" />
                         <small class="form-text text-muted mb-2">Press Enter to apply.</small>
 
-                        <div class="border-top py-2">
+                        @* <div class="border-top py-2">
                             <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.Increase)</div>
-                        </div>
+                        </div> *@
                         <div class="border-top py-2">
-                            <div class="text-xs text-uppercase text-gray-500">% Monthly Difference</div>
+                            <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.DiffTotalMonthly)</div>
                         </div>
                         <div class="border-top py-2">
-                            <div class="text-xs text-uppercase text-gray-500">% Annual Difference</div>
+                            <div class="text-xs text-uppercase text-gray-500">% Increase Annual</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.DiffTotalAnnually)</div>
                         </div>
                         <div>
@@ -200,8 +200,8 @@
                                 <span class="badge @(compensation.OfferRangeId is 1 or 2
                                     ? "badge-success"
                                     : compensation.OfferRangeId == 3
-                                        ? "badge-danger"
-                                        : "badge-warning")">
+                                    ? "badge-warning"
+                                    : "badge-danger")">
                                     @if (compensation.OfferRangeId is 1 or 2)
                                     {
                                         <i class="fas fa-check mr-1" aria-hidden="true"></i>
@@ -486,6 +486,17 @@
     </div>
 </div>
 
+<!--Remarks-->
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">TA Lead Remarks <span class="text-danger" aria-label="required">*</span></h6>
+    </div>
+    <div class="card-body">
+        <textarea rows="5" class="form-control" @bind="taPartnerRemarks"></textarea>
+    </div>
+</div>
+
+<!--Action Buttons-->
 <div class="jo-actions mb-4">
     <button class="btn btn-outline-secondary" @onclick="ClickGoBack">
         <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>

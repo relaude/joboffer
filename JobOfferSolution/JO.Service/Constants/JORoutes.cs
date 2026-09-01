@@ -75,7 +75,9 @@ namespace JO.Service.Constants
             //JO Analysis
             public const string ApplicationDetails = PrefixTA + "/application-details";
             public const string Analysis = PrefixTA + "/analysis";
+            public const string AnalysisSendBack = PrefixTA + "/analysis-sendback";
             public const string JOAnalysisDetails = PrefixTA + "/analysis-details";
+            
 
             //Discussion
             public const string Discussion = PrefixTA + "/discussion";
@@ -112,6 +114,7 @@ namespace JO.Service.Constants
             public const string JobOfferTracker = PrefixTALead + "/joboffer-tracker";
             public const string JobOfferDetails = PrefixTALead + "/joboffer-details";
             public const string Analysis = PrefixTALead + "/analysis";
+            public const string AnalysisSendBack = PrefixTALead + "/analysis-sendback";
         }
 
         public static class HROD

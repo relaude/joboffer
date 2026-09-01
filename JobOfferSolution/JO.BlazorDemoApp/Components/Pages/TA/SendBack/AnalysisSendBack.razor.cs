@@ -7,9 +7,9 @@ using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics.Contracts;
 
-namespace JO.BlazorDemoApp.Components.Pages.TALead.JobOffer
+namespace JO.BlazorDemoApp.Components.Pages.TA.SendBack
 {
-    public partial class Analysis
+    public partial class AnalysisSendBack
     {
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private IAlertService AlertService { get; set; } = default!;
@@ -182,7 +182,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.JobOffer
 
             if (string.IsNullOrWhiteSpace(taPartnerRemarks))
             {
-                errors.Add("TA Lead Remarks is required.");
+                errors.Add("TA Partner Remarks is required.");
             }
 
             if (errors.Any())
@@ -198,7 +198,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.JobOffer
                 return;
             }
 
-            var submittedJobOfferId = await CompensationService.SubmitForApprovalByTALead(
+            var submittedJobOfferId = await CompensationService.SubmitForApproval(
                 jobOffer,
                 joAnalysis,
                 joCompanyCompensation,
@@ -209,7 +209,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.JobOffer
                 taPartnerRemarks);
 
             await AlertService.Success("Analysis successfully submitted for approval.");
-            Navigation.NavigateTo($"{JORoutes.TALead.JobOfferDetails}/{submittedJobOfferId}");
+            Navigation.NavigateTo($"{JORoutes.TA.JobOfferDetails}/{submittedJobOfferId}");
         }
 
         private void CollectJOCompanyCompensationErrors(List<string> errors)
@@ -327,7 +327,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.JobOffer
             }
             else
             {
-                compensation.BandStatus = "Beyond Salary Grade";
+                compensation.BandStatus = "Out of Range";
                 compensation.OfferRangeId = null;
                 compensation.Escalate = null;
             }
@@ -441,11 +441,11 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.JobOffer
 
             if(jobOffer.WorkFlowId == 1 || jobOffer.WorkFlowId == null)
             {
-                Navigation.NavigateTo(JORoutes.TALead.Candidates);
+                Navigation.NavigateTo(JORoutes.TA.Candidates);
             }
             else
             {
-                Navigation.NavigateTo(JORoutes.TALead.JobOfferTracker);
+                Navigation.NavigateTo(JORoutes.TA.JobOfferTracker);
             }
         }
     }

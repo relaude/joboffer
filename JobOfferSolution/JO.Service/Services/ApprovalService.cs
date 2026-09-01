@@ -65,6 +65,36 @@ namespace JO.Service.Services
             await context.SaveChangesAsync();
         }
 
+        public async Task JobOfferActionSendBack(int jobOfferId,
+            int roleId, 
+            int userId, 
+            string remarks)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
+            jobOffer.WorkFlowId = 10;//Send Back
+
+            JOActionLogs newLog = new JOActionLogs
+            {
+                JobOfferId = jobOfferId,
+                RoleId = roleId,
+                ActionId = 5, //Send Back
+                ActionAt = DateTime.Now,
+                ActionBy = userId,
+                Remarks = remarks
+            };
+
+            var removeApprovalFlow = await context.JOApprovalFlow
+                .Where(jo=>jo.JobOfferId==jobOfferId)
+                .ToListAsync();
+
+            context.JobOffers.Update(jobOffer);
+            context.JOApprovalFlow.RemoveRange(removeApprovalFlow);
+            await context.JOActionLogs.AddAsync(newLog);
+
+            await context.SaveChangesAsync();
+        }
         public async Task JobOfferActionFlowStatus(int jobOfferId, 
             int workFlowId, 
             int roleId, 

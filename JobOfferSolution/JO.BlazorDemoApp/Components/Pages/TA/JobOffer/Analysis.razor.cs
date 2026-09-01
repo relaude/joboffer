@@ -180,6 +180,11 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         {
             var errors = CollectErrors(new List<string>());
 
+            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
+            {
+                errors.Add("TA Partner Remarks is required.");
+            }
+
             if (errors.Any())
             {
                 await AlertService.Errors(errors);
@@ -209,11 +214,6 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
 
         private void CollectJOCompanyCompensationErrors(List<string> errors)
         {
-            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
-            {
-                errors.Add("TA Partner Remarks is required.");
-            }
-
             var options = joCompanyCompensation
                 .Where(compensation => compensation.OptionNumber > 0)
                 .OrderBy(compensation => compensation.OptionNumber)
@@ -327,7 +327,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
             }
             else
             {
-                compensation.BandStatus = "Out of Range";
+                compensation.BandStatus = "Beyond Salary Grade";
                 compensation.OfferRangeId = null;
                 compensation.Escalate = null;
             }

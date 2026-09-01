@@ -8,12 +8,22 @@
 
 <JOAnalysis jobOfferId="jobOfferId" ShowGoBackUrl="false" />
 
+<!--Remarks-->
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">Remarks <span class="text-danger" aria-label="required">*</span></h6>
+    </div>
+    <div class="card-body">
+        <textarea rows="5" class="form-control" @bind="approverRemarks"></textarea>
+    </div>
+</div>
+
 <div class="jo-actions mb-4">
     <a href="@JORoutes.PEH.JOForApproval" class="btn btn-outline-secondary">
         <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
         Go Back
     </a>
-    <button type="button" class="btn btn-outline-primary">
+    <button type="button" class="btn btn-outline-primary" @onclick="SendBackJobOffer">
         <i class="fas fa-reply mr-1" aria-hidden="true"></i>
         Send Back
     </button>
@@ -25,9 +35,39 @@
 
 @code {
     [Parameter] public int jobOfferId { get; set; }
+    private string approverRemarks = string.Empty;
+
+    private async Task SendBackJobOffer()
+    {
+        if (string.IsNullOrWhiteSpace(approverRemarks))
+        {
+            await AlertService.Error("Remarks is required."); return;
+        }
+
+        if (!await AlertService.Confirm(
+            title: "Send back this reviewed job offer?",
+            confirmText: "Send Back Job Offer"))
+        {
+            return;
+        }
+
+        int userId = await AccountService.GetJobOfferUserId();
+        await ApprovalService.JobOfferActionSendBack(jobOfferId, 3, userId, approverRemarks);
+
+        await AlertService.Success(
+            message: "The job offer review has been send back successfully.",
+            title: "Send Back Complete");
+
+        Navigation.NavigateTo(JORoutes.PEH.JOForApproval);
+    }
 
     private async Task ApproveJobOffer()
     {
+        if (string.IsNullOrWhiteSpace(approverRemarks))
+        {
+            await AlertService.Error("Remarks is required."); return;
+        }
+
         if (!await AlertService.Confirm(
             title: "Approve this reviewed job offer?",
             confirmText: "Approve Job Offer"))
@@ -38,7 +78,7 @@
         int userId = await AccountService.GetJobOfferUserId();
 
         //For Division Head Approval,PE Head, Approved
-        await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 5, 3, 4, userId);
+        await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 5, 3, 4, userId, approverRemarks);
         await AlertService.Success(
             message: "The job offer review has been approved successfully.",
             title: "Approve Complete");

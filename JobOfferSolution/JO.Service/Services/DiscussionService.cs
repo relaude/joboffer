@@ -128,13 +128,13 @@ namespace JO.Service.Services
         public async Task<List<CandResponse>> GetCandResponse()
         {
             await using var context = await _dbContext.CreateDbContextAsync();
-            return await context.CandResponse.AsNoTracking().ToListAsync();
+            return await context.CandResponse.AsNoTracking().OrderBy(jo => jo.DisplayOrder).ToListAsync();
         }
 
         public async Task<List<DiscussSteps>> GetDiscussSteps()
         {
             await using var context = await _dbContext.CreateDbContextAsync();
-            return await context.DiscussSteps.AsNoTracking().ToListAsync();
+            return await context.DiscussSteps.AsNoTracking().OrderBy(jo=>jo.DisplayOrder).ToListAsync();
         }
 
         public async Task<List<ChannelTypes>> GetChannelTypes()

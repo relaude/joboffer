@@ -154,7 +154,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
         }
 
         private bool HasAcceptedLetterDiscussion => vwDiscussions.Any(item =>
-            item.StepId == 11 && item.ResponseId == 3);
+            item.StepId == 8 && item.ResponseId == 3);
 
         private bool HasNegotiationRequested => vwDiscussions.Any(item =>
             item.StepId == 7 && item.ResponseId == 4);

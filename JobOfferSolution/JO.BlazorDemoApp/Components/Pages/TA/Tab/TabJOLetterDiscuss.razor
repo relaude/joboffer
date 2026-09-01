@@ -103,31 +103,16 @@
         Go Back
     </a>
 
-    <!--EDIT-->
-    @if (HasNegotiationRequested)
-    {
-        <button type="button" class="btn btn-outline-primary">
-            <i class="fas fa-comments-dollar mr-1" aria-hidden="true"></i>
-            For Negotiation
-        </button>
-    }
+    <button type="button" class="btn btn-outline-primary"
+            disabled="@(!HasNegotiationRequested)">
+        <i class="fas fa-comments-dollar mr-1" aria-hidden="true"></i>
+        For Negotiation
+    </button>
 
-    @if (HasAcceptedLetterDiscussion)
-    {
-        <button type="button"
-                class="btn btn-success"
-                disabled="@isCompleting"
-                @onclick="AcceptAndComplete">
-            @if (isCompleting)
-            {
-                <span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span>
-            }
-            else
-            {
-                <i class="fas fa-check-circle mr-1" aria-hidden="true"></i>
-            }
-            Completed
-        </button>
-    }
-    <!--EDIT-->
+    <button type="button" class="btn btn-success"
+            disabled="@(!HasAcceptedLetterDiscussion)"
+            @onclick="AcceptAndComplete">
+        <i class="fas fa-comments-dollar mr-1" aria-hidden="true"></i>
+        Completed
+    </button>
 </div>
