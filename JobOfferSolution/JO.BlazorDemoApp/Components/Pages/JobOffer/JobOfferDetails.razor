@@ -1,7 +1,7 @@
 ﻿@attribute [Authorize]
 @attribute [Route(JORoutes.Transaction.JobOffer + "/{jobOfferId:int}")]
 
-<JOAnalysis jobOfferId ="jobOfferId" />
+<JobOfferAnalysis jobOfferId ="jobOfferId" />
 
 @code {
     [Parameter] public int jobOfferId { get; set; }

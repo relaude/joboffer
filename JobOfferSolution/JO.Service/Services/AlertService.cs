@@ -53,14 +53,14 @@ namespace JO.Service.Services
             return confirmResult.IsConfirmed;
         }
 
-        public async Task<int> ConfirmProposalNumber()
+        public async Task<int> ConfirmProposalNumber(string inputValue = "4")
         {
             var confirmResult = await _swal.FireAsync(new SweetAlertOptions
             {
                 Icon = SweetAlertIcon.Question,
                 Title = "How many proposal?",
                 Input = SweetAlertInputType.Number,
-                InputValue = "4",
+                InputValue = inputValue,
                 InputAttributes = new Dictionary<string, string>
                 {
                     ["min"] = "1",

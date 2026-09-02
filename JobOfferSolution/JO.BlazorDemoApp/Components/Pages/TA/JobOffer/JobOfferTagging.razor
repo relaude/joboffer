@@ -1,7 +1,7 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
 @attribute [Route(JORoutes.TA.JobOfferTagging + "/{jobOfferId:int}")]
 
-<JOAnalysis jobOfferId="jobOfferId" />
+<JobOfferAnalysis jobOfferId="jobOfferId" />
 
 <div class="jo-actions mb-4">
     <a href="@JORoutes.TA.JobOfferTracker" class="btn btn-outline-secondary">

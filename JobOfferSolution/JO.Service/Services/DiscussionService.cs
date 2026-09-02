@@ -4,6 +4,7 @@ using JO.DataModel.View;
 using JO.Persistence.DataAccess;
 using JO.Service.Constants;
 using JO.Service.Services.Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,70 @@ namespace JO.Service.Services
         public DiscussionService(IDbContextFactory<JobOfferDbContext> dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task ForNegotiation(JobOffers jobOffer,
+            JOAnalysis joAnalysis,
+            VwDboxCandidates candidate,
+            List<JOCompanyCompensation> joCompanyCompensation,
+            int options, 
+            int createdBy)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            int lastOptionNumber = joCompanyCompensation
+                .Where(jo => jo.JobOfferId == jobOffer.Id)
+                .Max(jo => jo.OptionNumber.GetValueOrDefault());
+
+            //update status
+            jobOffer.WorkFlowId = 11;//For Negotiation
+            foreach (var item in joCompanyCompensation)
+            {
+                item.Declined = true;
+                item.Accepted = false;
+            }
+
+            context.JobOffers.Update(jobOffer);
+            context.JOCompanyCompensation.UpdateRange(joCompanyCompensation);
+            await context.SaveChangesAsync();
+
+
+            //Options
+            List<JOCompanyCompensation> joCompanyCompensationsB = new();
+            for (int i = 1; i <= options; i++)
+            {
+                joCompanyCompensationsB.Add(new JOCompanyCompensation
+                {
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = createdBy,
+                    JobOfferId = jobOffer.Id,
+                    JOAnalysisId = joAnalysis.Id,
+                    CSGId = candidate.CSGId,
+                    OptionNumber = i + lastOptionNumber,
+                    CurrentSalary = candidate.CurrentMonthlyBasicSalary
+                });
+            }
+
+            await context.JOCompanyCompensation.AddRangeAsync(joCompanyCompensationsB);
+            await context.SaveChangesAsync();
+
+            List<JOCompanyCompensationItems> joCmpnyCompensationItemsB = new();
+            var compItems = await context.CompensationItems.ToListAsync();
+            foreach (var itemA in joCompanyCompensationsB)
+            {
+                foreach (var itemB in compItems)
+                {
+                    joCmpnyCompensationItemsB.Add(new JOCompanyCompensationItems
+                    {
+                        JobOfferId = jobOffer.Id,
+                        JOCmpnyCmpnstnId = itemA.Id,
+                        ItemId = itemB.Id
+                    });
+                }
+            }
+
+            await context.JOCompanyCompensationItems.AddRangeAsync(joCmpnyCompensationItemsB);
+            await context.SaveChangesAsync();
         }
 
         public async Task<List<JODeclineReason>> GetJODeclineReason()

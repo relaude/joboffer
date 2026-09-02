@@ -8,7 +8,7 @@ using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
+namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
 {
     public partial class TabJOLetterDiscuss
     {
@@ -319,6 +319,20 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
             {
                 isSending = false;
             }
+        }
+
+        private async Task ForNegotiation()
+        {
+            int numProposal = await AlertService.ConfirmProposalNumber("1");
+
+            if (numProposal == 0) return;
+
+            await DiscussionService.ForNegotiation(jobOffer,
+                joAnalysis,
+                candidate,
+                joCompanyCompensation,
+                numProposal,
+                userId);
         }
     }
 }

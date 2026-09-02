@@ -1,7 +1,7 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.HRODHeadApprover)]
 @attribute [Route(JORoutes.HRODHead.JobOfferDetails + "/{jobOfferId:int}")]
 
-<JOAnalysis jobOfferId="jobOfferId" GoBackUrl="@JORoutes.HRODHead.JOForApproval" />
+<JobOfferAnalysis jobOfferId="jobOfferId" GoBackUrl="@JORoutes.HRODHead.JOForApproval" />
 
 @code {
     [Parameter] public int jobOfferId { get; set; }

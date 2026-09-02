@@ -1,7 +1,7 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.Analysis + "/{jobOfferId:int}")]
+@attribute [Route(JORoutes.TA.ForNegotiation + "/{jobOfferId:int}")]
 
-<Analysis @ref="analysis" jobOfferId="jobOfferId" />
+<ForNegotiationAnalysis @ref="analysis" jobOfferId="jobOfferId" />
 
 <div class="jo-actions mb-4">
     <button class="btn btn-outline-secondary" @onclick="HandleGoBack">

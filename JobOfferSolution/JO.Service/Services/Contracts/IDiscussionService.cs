@@ -6,6 +6,7 @@ namespace JO.Service.Services.Contracts
 {
     public interface IDiscussionService
     {
+        Task ForNegotiation(JobOffers jobOffer, JOAnalysis joAnalysis, VwDboxCandidates candidate, List<JOCompanyCompensation> joCompanyCompensation, int options, int createdBy);
         Task<List<Proposal>> GetApprovedProposal(int jobOfferId);
         Task<List<CandResponse>> GetCandResponse();
         Task<List<ChannelTypes>> GetChannelTypes();

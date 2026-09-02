@@ -1,7 +1,7 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TA)]
 @attribute [Route(JORoutes.TA.JobOfferDetails + "/{jobOfferId:int}")]
 
-<JOAnalysis jobOfferId="jobOfferId" GoBackUrl="@JORoutes.TA.JobOfferTracker" />
+<JobOfferAnalysis jobOfferId="jobOfferId" GoBackUrl="@JORoutes.TA.JobOfferTracker" />
 
 @code {
     [Parameter] public int jobOfferId { get; set; }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 {
-    public partial class JOAnalysis
+    public partial class JobOfferAnalysis
     {
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private ICandidateService CandidateService { get; set; } = default!;

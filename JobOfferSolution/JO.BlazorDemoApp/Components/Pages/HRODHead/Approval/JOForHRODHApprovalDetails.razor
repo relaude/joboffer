@@ -6,7 +6,7 @@
 @inject IAlertService AlertService
 @inject NavigationManager Navigation
 
-<JOAnalysis @ref="analysis" jobOfferId="jobOfferId" ShowGoBackUrl="false" />
+<JobOfferAnalysis @ref="analysis" jobOfferId="jobOfferId" ShowGoBackUrl="false" />
 
 <!--Remarks-->
 <div class="card shadow mb-4 small">
@@ -36,7 +36,7 @@
 @code {
     [Parameter] public int jobOfferId { get; set; }
     private string approverRemarks = string.Empty;
-    private Components.Pages.JobOffer.JOAnalysis? analysis;
+    private Components.Pages.JobOffer.JobOfferAnalysis? analysis;
 
     private async Task SendBackJobOffer()
     {

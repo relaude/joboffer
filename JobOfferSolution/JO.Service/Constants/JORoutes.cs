@@ -78,9 +78,9 @@ namespace JO.Service.Constants
             public const string AnalysisSendBack = PrefixTA + "/analysis-sendback";
             public const string JOAnalysisDetails = PrefixTA + "/analysis-details";
             
-
             //Discussion
             public const string Discussion = PrefixTA + "/discussion";
+            public const string ForNegotiation = PrefixTA + "/negotiation";
 
             //Tracker
             public const string RequestTracker = PrefixTA + "/request-tracker";
