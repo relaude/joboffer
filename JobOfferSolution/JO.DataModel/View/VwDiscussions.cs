@@ -9,6 +9,10 @@ namespace JO.DataModel.View
         public int Id { get; set; }
         public int? JobOfferId { get; set; }
         public int? ProposalId { get; set; }
+        public int? StatusId { get; set; }
+        public int? DeclineReasonId { get; set; }
+        public string? DeclineRemarks { get; set; }
+
         public int? StepId { get; set; }
         public int? ChannelId { get; set; }
         public int? ResponseId { get; set; }
@@ -17,12 +21,11 @@ namespace JO.DataModel.View
         public DateTime? DiscussAt { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
+
         public string? RefNum { get; set; }
         public int? OptionNumber { get; set; }
         public decimal? ProposedSalary { get; set; }
-        public string? StepName { get; set; }
-        public string? Icon { get; set; }
-        public string? ChannelName { get; set; }
-        public string? ResponseName { get; set; }
+        public string? StatusName { get; set; }
+        public string? ReasonName { get; set; }
     }
 }

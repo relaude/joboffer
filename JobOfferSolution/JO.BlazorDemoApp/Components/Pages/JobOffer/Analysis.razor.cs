@@ -7,7 +7,7 @@ using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics.Contracts;
 
-namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
+namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 {
     public partial class Analysis
     {
@@ -20,6 +20,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         [Inject] private ICompensationService CompensationService { get; set; } = default!;
 
         [Parameter] public int jobOfferId { get; set; }
+        [Parameter] public string GoBackUrl { get; set; } = string.Empty;
 
         private int userId = 0;
         private int currentJOCmpnyCmpnstnId = 0;
@@ -31,7 +32,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
 
         private VwDboxCandidates candidate = new();
         private JobOffers jobOffer = new();
-        private JOAnalysis joAnalysis = new();
+        public JobOffers JobOffer => jobOffer;
+        private JO.DataModel.Entity.JOAnalysis joAnalysis = new();
         private VwJODboxCandidates vwjobOffer = new();
         private VwSalaryBands vwSalaryBand = new();
 
@@ -146,7 +148,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
             return errors;
         }
 
-        private async Task SaveAnalysis()
+        public async Task SaveAnalysis()
         {
             var errors = CollectErrors(new List<string>());
 
@@ -173,16 +175,15 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
                 userId);
 
             await AlertService.Success("Analysis successfully saved.");
-            //Navigation.Refresh();
         }
 
-        private async Task SubmitForApproval()
+        public async Task SubmitForApproval(string returnUrl)
         {
             var errors = CollectErrors(new List<string>());
 
             if (string.IsNullOrWhiteSpace(taPartnerRemarks))
             {
-                errors.Add("TA Partner Remarks is required.");
+                errors.Add("Remarks is required.");
             }
 
             if (errors.Any())
@@ -209,7 +210,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
                 taPartnerRemarks);
 
             await AlertService.Success("Analysis successfully submitted for approval.");
-            Navigation.NavigateTo($"{JORoutes.TA.JobOfferDetails}/{submittedJobOfferId}");
+            //Navigation.NavigateTo($"{JORoutes.TA.JobOfferDetails}/{submittedJobOfferId}");
+            Navigation.NavigateTo($"{returnUrl}/{submittedJobOfferId}");
         }
 
         private void CollectJOCompanyCompensationErrors(List<string> errors)
@@ -236,10 +238,10 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
                     continue;
                 }
 
-                if (option.ProposedSalary.Value <= option.CurrentSalary.GetValueOrDefault())
-                {
-                    errors.Add($"Option {optionNumber}: Proposed Salary must be greater than Current Salary.");
-                }
+                //if (option.ProposedSalary.Value <= option.CurrentSalary.GetValueOrDefault())
+                //{
+                //    errors.Add($"Option {optionNumber}: Proposed Salary must be greater than Current Salary.");
+                //}
 
                 if (index > 0)
                 {
@@ -327,7 +329,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
             }
             else
             {
-                compensation.BandStatus = "Beyond Salary Grade";
+                compensation.BandStatus = "Beyond Salary Structure";
                 compensation.OfferRangeId = null;
                 compensation.Escalate = null;
             }
@@ -364,6 +366,15 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
                     jo.IsAnalysis == true))
                 {
                     bayanihanBonusItem.AnnualAmount = proposedSalary * 2m;
+                }
+
+                //Profit Share
+                foreach (var profitShareItem in joCompanyCompensationItems.Where(jo =>
+                    jo.JOCmpnyCmpnstnId == compensation.Id &&
+                    jo.ItemId == 11 &&
+                    jo.IsAnalysis == true))
+                {
+                    profitShareItem.AnnualAmount = proposedSalary;
                 }
 
                 //Performance Bonus
@@ -430,23 +441,27 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
             };
         }
 
-        private async Task ClickGoBack()
-        {
-            if (!await AlertService.Confirm(
-                title: "Go back without saving?",
-                confirmText: "Yes"))
-            {
-                return;
-            }
+        //private async Task HandleGoBack()
+        //{
+        //    if (!await AlertService.Confirm(
+        //        title: "Go back without saving?",
+        //        confirmText: "Yes"))
+        //    {
+        //        return;
+        //    }
 
-            if(jobOffer.WorkFlowId == 1 || jobOffer.WorkFlowId == null)
-            {
-                Navigation.NavigateTo(JORoutes.TA.Candidates);
-            }
-            else
-            {
-                Navigation.NavigateTo(JORoutes.TA.JobOfferTracker);
-            }
-        }
+        //    if (!string.IsNullOrWhiteSpace(GoBackUrl))
+        //    {
+        //        Navigation.NavigateTo(GoBackUrl);
+        //    }
+        //    else if (jobOffer.WorkFlowId == 1 || jobOffer.WorkFlowId == null)
+        //    {
+        //        Navigation.NavigateTo(JORoutes.TA.Candidates);
+        //    }
+        //    else
+        //    {
+        //        Navigation.NavigateTo(JORoutes.TA.JobOfferTracker);
+        //    }
+        //}
     }
 }

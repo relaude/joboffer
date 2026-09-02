@@ -4,59 +4,57 @@
     </div>
 
     <div class="card-body">
+        <!--EDIT-->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <small class="text-muted d-block">Candidate Name</small>
+                <span class="font-weight-bold text-gray-900">@Candidate.CandidateName</span>
+            </div>
+            <div class="col-md-6">
+                <small class="text-muted d-block">Job Position</small>
+                <span class="font-weight-bold text-gray-900">@Candidate.JobPosition</span>
+            </div>
+        </div>
+
         <div class="row">
-            <div class="col-lg-4 mb-3">
-                <div class="card bg-light border-0 h-100">
-                    <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
-                        <div class="text-primary mb-2">
-                            
-                        </div>
-                        <h3 class="h6 font-weight-bold text-gray-900 mb-1">@Candidate.CandidateName</h3>
-                        <div class="text-muted">@Candidate.JobPosition</div>
-                    </div>
+            <div class="col-md-6 mb-3">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Candidate Id</small>
+                    <span class="font-weight-bold text-gray-800">@Candidate.DboxRefNum</span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Email</small>
+                    <span class="font-weight-bold text-gray-800">@Candidate.EmailAddress</span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Contact Number</small>
+                    <span class="font-weight-bold text-gray-800">@Candidate.ContactNumber</span>
+                </div>
+                <div>
+                    <small class="text-muted d-block">Job Level / Grade</small>
+                    <span class="font-weight-bold text-gray-800">@Candidate.JobLevel / @Candidate.GradeName</span>
                 </div>
             </div>
-            <div class="col-lg-8 mb-3">
-                <div class="row">
-                    <div class="col-6 mb-3">
-                        <div class="mb-3">
-                            <small class="text-muted d-block">Candidate Id</small>
-                            <span class="font-weight-bold text-gray-800">@Candidate.DboxRefNum</span>
-                        </div>
-                        <div class="mb-3">
-                            <small class="text-muted d-block">Email</small>
-                            <span class="font-weight-bold text-gray-800">@Candidate.EmailAddress</span>
-                        </div>
-                        <div class="mb-3">
-                            <small class="text-muted d-block">Contact Number</small>
-                            <span class="font-weight-bold text-gray-800">@Candidate.ContactNumber</span>
-                        </div>
-                        <div>
-                            <small class="text-muted d-block">Job Level / Grade</small>
-                            <span class="font-weight-bold text-gray-800">@Candidate.JobLevel / @Candidate.GradeName</span>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="mb-3">
-                            <small class="text-muted d-block">Company</small>
-                            <span class="font-weight-bold text-gray-800">@Candidate.Company</span>
-                        </div>
-                        <div class="mb-3">
-                            <small class="text-muted d-block">Division</small>
-                            <span class="font-weight-bold text-gray-800">@Candidate.Division</span>
-                        </div>
-                        <div class="mb-3">
-                            <small class="text-muted d-block">Department</small>
-                            <span class="font-weight-bold text-gray-800">@Candidate.Department</span>
-                        </div>
-                        <div>
-                            <small class="text-muted d-block">Cost Center</small>
-                            <span class="font-weight-bold text-gray-800">@Candidate.CostCenter</span>
-                        </div>
-                    </div>
+            <div class="col-md-6 mb-3">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Company</small>
+                    <span class="font-weight-bold text-gray-800">@Candidate.Company</span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Division</small>
+                    <span class="font-weight-bold text-gray-800">@Candidate.Division</span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Department</small>
+                    <span class="font-weight-bold text-gray-800">@Candidate.Department</span>
+                </div>
+                <div>
+                    <small class="text-muted d-block">Cost Center</small>
+                    <span class="font-weight-bold text-gray-800">@Candidate.CostCenter</span>
                 </div>
             </div>
         </div>
+        <!--EDIT-->
     </div>
 </div>
 

@@ -9,7 +9,7 @@ using System.Diagnostics.Contracts;
 
 namespace JO.BlazorDemoApp.Components.Pages.TALead.JobOffer
 {
-    public partial class Analysis
+    public partial class XAnalysis
     {
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private IAlertService AlertService { get; set; } = default!;

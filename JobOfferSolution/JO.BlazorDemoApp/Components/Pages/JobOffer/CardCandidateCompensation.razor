@@ -5,19 +5,13 @@
 
     <div class="card-body">
         <div class="row">
-            <div class="col-lg-3 mb-3">
-                <div class="card bg-light border-0 h-100">
-                    <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
-                        <div class="text-primary mb-2">
-                            <i class="fas fa-user-circle fa-4x" aria-hidden="true"></i>
-                        </div>
-                        <h3 class="h6 font-weight-bold text-gray-900 mb-1">@(string.IsNullOrWhiteSpace(Candidate.CandidateName) ? "-" : Candidate.CandidateName)</h3>
-                        <div class="text-muted">@(string.IsNullOrWhiteSpace(Candidate.JobPosition) ? "-" : Candidate.JobPosition)</div>
-                    </div>
+            <div class="col-md-4 mb-3">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Candidate Name</small>
+                    <span class="font-weight-bold text-gray-900">
+                        @(string.IsNullOrWhiteSpace(Candidate.CandidateName) ? "-" : Candidate.CandidateName)
+                    </span>
                 </div>
-            </div>
-
-            <div class="col-lg-3 mb-3">
                 <div class="mb-3">
                     <small class="text-muted d-block">Candidate Id</small>
                     <span class="font-weight-bold text-gray-800">@(string.IsNullOrWhiteSpace(Candidate.DboxRefNum) ? "-" : Candidate.DboxRefNum)</span>
@@ -39,7 +33,13 @@
                 </div>
             </div>
 
-            <div class="col-lg-3 mb-3">
+            <div class="col-md-4 mb-3">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Job Position</small>
+                    <span class="font-weight-bold text-gray-900">
+                        @(string.IsNullOrWhiteSpace(Candidate.JobPosition) ? "-" : Candidate.JobPosition)
+                    </span>
+                </div>
                 <div class="mb-3">
                     <small class="text-muted d-block">Company</small>
                     <span class="font-weight-bold text-gray-800">@(string.IsNullOrWhiteSpace(Candidate.Company) ? "-" : Candidate.Company)</span>
@@ -58,15 +58,15 @@
                 </div>
             </div>
 
-            <div class="col-lg-3 mb-3">
+            <div class="col-md-4 mb-3">
                 <div class="mb-3">
-                    <small class="text-muted d-block">Compensation</small>
+                    <small class="text-muted d-block">Package Type</small>
                     <span class="font-weight-bold text-gray-800">
                         @(CompensationItems.FirstOrDefault()?.CmpnyCmpnstnName ?? string.Empty)
                     </span>
                 </div>
 
-                <small class="text-muted d-block mb-2">Compensation Items</small>
+                <small class="text-muted d-block mb-2">Package Items</small>
                 @if (CompensationItems.Any())
                 {
                     @foreach (var item in CompensationItems.OrderBy(item => item.DisplayOrder))

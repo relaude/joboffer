@@ -12,9 +12,11 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Discussion
         [Inject] private IAlertService AlertService { get; set; } = default!;
 
         [Parameter, EditorRequired] public DiscussionDto Discussion { get; set; } = new();
-        [Parameter, EditorRequired] public IReadOnlyList<ChannelTypes> Channels { get; set; } = [];
-        [Parameter, EditorRequired] public IReadOnlyList<DiscussSteps> Steps { get; set; } = [];
-        [Parameter, EditorRequired] public IReadOnlyList<CandResponse> Responses { get; set; } = [];
+        //[Parameter, EditorRequired] public IReadOnlyList<ChannelTypes> Channels { get; set; } = [];
+        //[Parameter, EditorRequired] public IReadOnlyList<DiscussSteps> Steps { get; set; } = [];
+        [Parameter, EditorRequired] public IReadOnlyList<DiscussionStatus> Status { get; set; } = [];
+        [Parameter, EditorRequired] public IReadOnlyList<JODeclineReason> DeclineReason { get; set; } = [];
+        //[Parameter, EditorRequired] public IReadOnlyList<CandResponse> Responses { get; set; } = [];
         [Parameter, EditorRequired] public IReadOnlyList<JOCompanyCompensation> Proposals { get; set; } = [];
         [Parameter, EditorRequired] public IReadOnlyList<VwDiscussions> Discussions { get; set; } = [];
         [Parameter, EditorRequired] public EventCallback<DiscussionDto> OnSave { get; set; }
@@ -24,6 +26,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Discussion
         private string DiscussionDateId => $"{ComponentId}-date";
         private string ChannelId => $"{ComponentId}-channel";
         private string StepId => $"{ComponentId}-step";
+        private string StatusId => $"{ComponentId}-status";
         private string ResponseId => $"{ComponentId}-response";
         private string ProposalId => $"{ComponentId}-proposal";
         private string NotesId => $"{ComponentId}-notes";
@@ -31,6 +34,15 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Discussion
 
         private async Task SaveAsync()
         {
+            if (!Discussion.StatusId.HasValue
+                || !Status.Any(status => status.Id == Discussion.StatusId.Value))
+            {
+                await AlertService.Error(
+                    "Select a valid status before saving the discussion.",
+                    "Status Required");
+                return;
+            }
+
             if (!Proposals.Any(proposal => proposal.Id == Discussion.ProposalId
                 && proposal.OptionNumber > 0 && proposal.Declined != true))
             {

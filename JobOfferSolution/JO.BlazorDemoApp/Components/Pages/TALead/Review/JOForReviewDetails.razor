@@ -11,7 +11,7 @@
 <!--Reviewer Remarks-->
 <div class="card shadow mb-4 small">
     <div class="card-header">
-        <h6 class="jo-title">TA Lead Remarks <span class="text-danger" aria-label="required">*</span></h6>
+        <h6 class="jo-title">Remarks <span class="text-danger" aria-label="required">*</span></h6>
     </div>
     <div class="card-body">
         <textarea rows="5" class="form-control" @bind="taLeadRemarks"></textarea>
@@ -66,7 +66,7 @@
     {
         if (string.IsNullOrWhiteSpace(taLeadRemarks))
         {
-            await AlertService.Error("TA Lead Remarks is required."); return;
+            await AlertService.Error("Remarks is required."); return;
         }
 
         if (!await AlertService.Confirm(

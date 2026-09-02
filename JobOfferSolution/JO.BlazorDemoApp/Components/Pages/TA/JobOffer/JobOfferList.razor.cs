@@ -25,6 +25,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         private int countReviewed = 0;
         private int countSendBack = 0;
         private int countForApproval = 0;
+        private int countForDiscussion = 0;
         private int countApproved = 0;
         private int countAcccepted = 0;
 
@@ -45,6 +46,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
             countReviewed = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 4);
             countSendBack = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 10);
             countForApproval = trackableJODboxCandidates.Count(jo => ForApprovalWorkFlowIds.Contains(jo.WorkFlowId));
+            countForDiscussion = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 8);
             countApproved = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 8);
             countAcccepted = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 9);
         }

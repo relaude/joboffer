@@ -194,76 +194,111 @@
         </div>
 
         <div class="table-responsive">
-            
+            <!--MIRROR-->
             <table class="jo-table">
                 <thead>
                     <tr>
-                        <th scope="col" rowspan="2">Compensation</th>
+                        <th scope="col"></th>
                         <th scope="colgroup" colspan="2">Current</th>
-                        <th scope="colgroup" colspan="2" class="is-highlighted">Option @selectedOptionNumber</th>
+                        <th scope="colgroup" colspan="3" class="is-highlighted">Option @selectedOptionNumber</th>
                     </tr>
                     <tr>
+                        <th scope="col">Compensation</th>
                         <th scope="col">Monthly</th>
                         <th scope="col">Annual</th>
+                        <th scope="col" class="is-highlighted">Compensation</th>
                         <th scope="col" class="is-highlighted">Monthly</th>
                         <th scope="col" class="is-highlighted">Annual</th>
                     </tr>
                 </thead>
+                
                 <tbody>
                     @foreach (var category in compenItemCategoryDto)
                     {
-                        var hasVisibleItems = category.CompensationItemDtos.Any(item =>
-                            joCompanyCompensationItems.Any(compensationItem =>
-                                compensationItem.ItemId == item.Id
-                                && (compensationItem.JOCmpnyCmpnstnId == currentJOCmpnyCmpnstnId
-                                    || compensationItem.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId)
-                                && ((compensationItem.MonthlyAmount ?? 0) > 0
-                                    || (compensationItem.AnnualAmount ?? 0) > 0)));
+                        var categoryItems = category.CompensationItemDtos
+                            .Where(item => item.Id != 5
+                                && !(item.Id == 14 && item.CategoryId == 4))
+                            .OrderBy(item => item.DisplayOrder)
+                            .Select(item => new
+                            {
+                                Item = item,
+                                CurrentItem = joCompanyCompensationItems.FirstOrDefault(jo =>
+                                    jo.JOCmpnyCmpnstnId == currentJOCmpnyCmpnstnId && jo.ItemId == item.Id),
+                                SelectedItem = joCompanyCompensationItems.FirstOrDefault(jo =>
+                                    jo.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId && jo.ItemId == item.Id)
+                            })
+                            .ToList();
 
-                        @if (hasVisibleItems)
+                        @if (categoryItems.Count > 0)
                         {
                             <tr>
-                                <td colspan="5" class="font-weight-bold text-primary">@category.CategoryName</td>
+                                <td colspan="6" class="font-weight-bold text-primary">
+                                    @category.CategoryName
+                                </td>
                             </tr>
 
-                            @foreach (var item in category.CompensationItemDtos.OrderBy(item => item.DisplayOrder))
+                            @foreach (var categoryItem in categoryItems)
                             {
-                                var currentItem = joCompanyCompensationItems.FirstOrDefault(compensationItem =>
-                                    compensationItem.JOCmpnyCmpnstnId == currentJOCmpnyCmpnstnId && compensationItem.ItemId == item.Id);
-                                var selectedItem = joCompanyCompensationItems.FirstOrDefault(compensationItem =>
-                                    compensationItem.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId && compensationItem.ItemId == item.Id);
-                                var hasAmount = (currentItem?.MonthlyAmount ?? 0) > 0
-                                    || (currentItem?.AnnualAmount ?? 0) > 0
-                                    || (selectedItem?.MonthlyAmount ?? 0) > 0
-                                    || (selectedItem?.AnnualAmount ?? 0) > 0;
+                                var item = categoryItem.Item;
+                                var currentItem = categoryItem.CurrentItem;
+                                var selectedItem = categoryItem.SelectedItem;
 
-                                @if (hasAmount)
-                                {
-                                    <tr @key="item.Id">
-                                        <td>@item.ItemName</td>
-                                        <td>@UtilitiesService.ToPeso(currentItem?.MonthlyAmount)</td>
-                                        <td>@UtilitiesService.ToPeso(currentItem?.AnnualAmount)</td>
-                                        <td class="is-highlighted">@UtilitiesService.ToPeso(selectedItem?.MonthlyAmount)</td>
-                                        <td class="is-highlighted">@UtilitiesService.ToPeso(selectedItem?.AnnualAmount)</td>
-                                    </tr>
-                                }
+                                <tr @key="item.Id">
+                                    <td>
+                                        @if (item.Id != 4
+                                            && item.Id != 5
+                                            && item.Id != 6
+                                            && item.Id != 8
+                                            && item.Id != 9
+                                            && item.Id != 10
+                                            && item.Id != 14)
+                                        {
+                                            @item.ItemName
+                                        }
+                                    </td>
+                                    <td class="text-right">@UtilitiesService.ToPeso(currentItem?.MonthlyAmount)</td>
+                                    <td class="text-right">@UtilitiesService.ToPeso(currentItem?.AnnualAmount)</td>
+                                    <td class="is-highlighted">
+                                        @if (item.Id != 3
+                                            && item.Id != 7)
+                                        {
+                                            @item.ItemName
+                                        }
+                                    </td>
+                                    <td class="is-highlighted text-right">@UtilitiesService.ToPeso(selectedItem?.MonthlyAmount)</td>
+                                    <td class="is-highlighted text-right">@UtilitiesService.ToPeso(selectedItem?.AnnualAmount)</td>
+                                </tr>
                             }
                         }
                     }
                 </tbody>
+                
                 <tfoot class="has-highlighted-total">
                     <tr>
                         <th scope="row">Total</th>
-                        @{ var currentItems = joCompanyCompensationItems.Where(item => item.JOCmpnyCmpnstnId == currentJOCmpnyCmpnstnId); }
-                        <th>@UtilitiesService.ToPeso(currentItems.Sum(item => item.MonthlyAmount.GetValueOrDefault()))</th>
-                        <th>@UtilitiesService.ToPeso(currentItems.Sum(item => item.AnnualAmount.GetValueOrDefault()))</th>
-                        @{ var selectedItems = joCompanyCompensationItems.Where(item => item.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId); }
-                        <th class="is-highlighted">@UtilitiesService.ToPeso(selectedItems.Sum(item => item.MonthlyAmount.GetValueOrDefault()))</th>
-                        <th class="is-highlighted">@UtilitiesService.ToPeso(selectedItems.Sum(item => item.AnnualAmount.GetValueOrDefault()))</th>
+                        @{
+                            var currentItems = joCompanyCompensationItems.Where(jo => jo.JOCmpnyCmpnstnId == currentJOCmpnyCmpnstnId);
+                        }
+                        <th class="text-right">
+                            @UtilitiesService.ToPeso(currentItems.Sum(jo => jo.MonthlyAmount.GetValueOrDefault()))
+                        </th>
+                        <th class="text-right">
+                            @UtilitiesService.ToPeso(currentItems.Sum(jo => jo.AnnualAmount.GetValueOrDefault()))
+                        </th>
+                        <th class="is-highlighted" scope="row">Total</th>
+                        @{
+                            var selectedItems = joCompanyCompensationItems.Where(jo => jo.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId);
+                        }
+                        <th class="is-highlighted text-right">
+                            @UtilitiesService.ToPeso(selectedItems.Sum(jo => jo.MonthlyAmount.GetValueOrDefault()))
+                        </th>
+                        <th class="is-highlighted text-right">
+                            @UtilitiesService.ToPeso(selectedItems.Sum(jo => jo.AnnualAmount.GetValueOrDefault()))
+                        </th>
                     </tr>
                 </tfoot>
             </table>
-            
+            <!--MIRROR-->
         </div>
     </div>
 </div>
@@ -391,6 +426,12 @@
         </div>
     </div>
 </div>
+
+<CardJOActionLogs JobOfferId="@jobOfferId"
+    Title="Job Offer Activity"
+    Subtitle="Complete workflow and decision history."
+    EmptyMessage="No activity has been recorded." />
+
 
 @if (ShowGoBackUrl)
 {

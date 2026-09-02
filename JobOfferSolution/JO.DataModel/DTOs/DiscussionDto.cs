@@ -7,6 +7,7 @@ namespace JO.DataModel.DTOs
     public class DiscussionDto
     {
         public int? JobOfferId { get; set; }
+        public int? StatusId { get; set; }
         public int? ProposalId { get; set; }
         public int? StepId { get; set; }
         public int? ChannelId { get; set; }
@@ -15,5 +16,8 @@ namespace JO.DataModel.DTOs
         public string? FeedBack { get; set; }
         public DateTime? DiscussAt { get; set; }
         public int? CreatedBy { get; set; }
+        public int? DeclineReasonId { get; set; }
+        public string? DeclineRemarks { get; set; }
+
     }
 }

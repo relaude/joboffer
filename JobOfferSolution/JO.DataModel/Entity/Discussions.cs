@@ -10,6 +10,10 @@ namespace JO.DataModel.Entity
         [Key] public int Id { get; set; }
         public int? JobOfferId { get; set; }
         public int? ProposalId { get; set; }
+        public int? StatusId { get; set; }
+        public int? DeclineReasonId { get; set; }
+        public string? DeclineRemarks { get; set; }
+        
         public int? StepId { get; set; }
         public int? ChannelId { get; set; }
         public int? ResponseId { get; set; }

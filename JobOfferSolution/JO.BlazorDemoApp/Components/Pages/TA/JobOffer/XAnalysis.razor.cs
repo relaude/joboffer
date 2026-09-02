@@ -7,9 +7,9 @@ using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics.Contracts;
 
-namespace JO.BlazorDemoApp.Components.Pages.TA.JOAnalysisTab
+namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
 {
-    public partial class AnalysisTab
+    public partial class XAnalysis
     {
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private IAlertService AlertService { get; set; } = default!;
@@ -25,7 +25,6 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JOAnalysisTab
         private int currentJOCmpnyCmpnstnId = 0;
         private int selectedCmpnyCmpnstnId = 0;
         private int selectedJOCmpnyCmpnstnId = 0;
-        private int selectedAnalysisCompensationId = 0;
         private int selectedOptionNumber = 1;
         private int ulEquivalentTotalMonthsPay = 15;
         private string taPartnerRemarks = string.Empty;
@@ -81,10 +80,6 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JOAnalysisTab
             currentJOCmpnyCmpnstnId = joCompanyCompensation
                 .FirstOrDefault(jo => jo.OptionNumber == 0)?.Id ?? 0;
 
-            selectedAnalysisCompensationId = currentJOCmpnyCmpnstnId != 0
-                ? currentJOCmpnyCmpnstnId
-                : joCompanyCompensation.OrderBy(jo => jo.OptionNumber).FirstOrDefault()?.Id ?? 0;
-
             selectedJOCmpnyCmpnstnId = selectedCompensation?.Id ?? 0;
 
             selectedCmpnyCmpnstnId = selectedCompensation?.CmpnyCmpnstnId
@@ -96,11 +91,6 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JOAnalysisTab
         {
             selectedOptionNumber = compensation.OptionNumber.GetValueOrDefault();
             selectedJOCmpnyCmpnstnId = compensation.Id;
-        }
-
-        private void SelectAnalysisCompensationTab(int compensationId)
-        {
-            selectedAnalysisCompensationId = compensationId;
         }
 
         private async Task OnSelectCompensation()

@@ -1,7 +1,4 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TALead.Analysis + "/{jobOfferId:int}")]
-
-<CardJOSummary JobOffer="@vwjobOffer" />
+﻿<CardJOSummary JobOffer="@vwjobOffer" />
 
 <!--Candidate & Compensation-->
 <div class="row">
@@ -12,7 +9,7 @@
     <div class="col-sm-4">
         <div class="card shadow small mb-4">
             <div class="card-header">
-                <h6 class="jo-title">Compensation</h6>
+                <h6 class="jo-title">Package Type</h6>
                 <select class="custom-select custom-select-sm"
                         @bind="selectedCmpnyCmpnstnId"
                         @bind:after="OnSelectCompensation">
@@ -200,22 +197,22 @@
                                 <span class="badge @(compensation.OfferRangeId is 1 or 2
                                     ? "badge-success"
                                     : compensation.OfferRangeId == 3
-                                    ? "badge-warning"
-                                    : "badge-danger")">
+                                        ? "badge-warning"
+                                        : "badge-danger")">
                                     @if (compensation.OfferRangeId is 1 or 2)
                                     {
                                         <i class="fas fa-check mr-1" aria-hidden="true"></i>
                                     }
-                                    else if (compensation.OfferRangeId == 3)
+                                    else
                                     {
-                                        <i class="fas fa-times mr-1" aria-hidden="true"></i>
+                                        <i class="fas fa-exclamation-triangle mr-1" aria-hidden="true"></i>
                                     }
                                     @compensation.BandStatus
                                 </span>
                             </div>
                         }
                         
-                        @if (compensation.Escalate == true)
+                        @* @if (compensation.Escalate == true)
                         {
                             <div class="pt-2">
                                 <span class="badge badge-warning">
@@ -223,7 +220,7 @@
                                     Requires Escalation
                                 </span>
                             </div>
-                        }
+                        } *@
                     </div>
 
                 </div>
@@ -231,17 +228,19 @@
         </div>
 
         <div class="table-responsive">
-            
+            <!--MIRROR-->
             <table class="jo-table">
                 <thead>
                     <tr>
-                        <th scope="col" rowspan="2">Compensation</th>
+                        <th scope="col"></th>
                         <th scope="colgroup" colspan="2">Current</th>
-                        <th scope="colgroup" colspan="2" class="is-highlighted">Option @selectedOptionNumber</th>
+                        <th scope="colgroup" colspan="3" class="is-highlighted">Option @selectedOptionNumber</th>
                     </tr>
                     <tr>
+                        <th scope="col">Compensation</th>
                         <th scope="col">Monthly</th>
                         <th scope="col">Annual</th>
+                        <th scope="col" class="is-highlighted">Compensation</th>
                         <th scope="col" class="is-highlighted">Monthly</th>
                         <th scope="col" class="is-highlighted">Annual</th>
                     </tr>
@@ -251,6 +250,8 @@
                     @foreach (var category in compenItemCategoryDto)
                     {
                         var categoryItems = category.CompensationItemDtos
+                            .Where(item => item.Id != 5
+                                && !(item.Id == 14 && item.CategoryId == 4))
                             .OrderBy(item => item.DisplayOrder)
                             .Select(item => new
                             {
@@ -260,16 +261,12 @@
                                 SelectedItem = joCompanyCompensationItems.FirstOrDefault(jo =>
                                     jo.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId && jo.ItemId == item.Id)
                             })
-                            .Where(row => (row.CurrentItem?.MonthlyAmount ?? 0) > 0
-                                || (row.CurrentItem?.AnnualAmount ?? 0) > 0
-                                || (row.SelectedItem?.MonthlyAmount ?? 0) > 0
-                                || (row.SelectedItem?.AnnualAmount ?? 0) > 0)
                             .ToList();
 
                         @if (categoryItems.Count > 0)
                         {
                             <tr>
-                                <td colspan="5" class="font-weight-bold text-primary">
+                                <td colspan="6" class="font-weight-bold text-primary">
                                     @category.CategoryName
                                 </td>
                             </tr>
@@ -281,26 +278,46 @@
                                 var selectedItem = categoryItem.SelectedItem;
 
                                 <tr @key="item.Id">
-                                    <td>@item.ItemName</td>
-                                    <td>@UtilitiesService.ToPeso(currentItem?.MonthlyAmount)</td>
-                                    <td>@UtilitiesService.ToPeso(currentItem?.AnnualAmount)</td>
+                                    <td>
+                                        @if (item.Id != 4
+                                            && item.Id != 5
+                                            && item.Id != 6
+                                            && item.Id != 8
+                                            && item.Id != 9
+                                            && item.Id != 10
+                                            && item.Id != 14)
+                                        {
+                                            @item.ItemName
+                                        }
+                                    </td>
+                                    <td class="text-right">@UtilitiesService.ToPeso(currentItem?.MonthlyAmount)</td>
+                                    <td class="text-right">@UtilitiesService.ToPeso(currentItem?.AnnualAmount)</td>
+                                    <td class="is-highlighted">
+                                        @if (item.Id != 3
+                                            && item.Id != 7)
+                                        {
+                                            @item.ItemName
+                                        }
+                                    </td>
                                     @if (CanEditAnalysisItem(selectedItem))
                                     {
                                         <td class="is-highlighted">
                                             <PesoInput TValue="decimal?"
+                                                       class="text-right"
                                                        @bind-Value="selectedItem.MonthlyAmount"
                                                        aria-label="@($"Monthly amount for {item.ItemName}")" />
                                         </td>
                                         <td class="is-highlighted">
                                             <PesoInput TValue="decimal?"
+                                                       class="text-right"
                                                        @bind-Value="selectedItem.AnnualAmount"
                                                        aria-label="@($"Annual amount for {item.ItemName}")" />
                                         </td>
                                     }
                                     else
                                     {
-                                        <td class="is-highlighted">@UtilitiesService.ToPeso(selectedItem?.MonthlyAmount)</td>
-                                        <td class="is-highlighted">@UtilitiesService.ToPeso(selectedItem?.AnnualAmount)</td>
+                                        <td class="is-highlighted text-right">@UtilitiesService.ToPeso(selectedItem?.MonthlyAmount)</td>
+                                        <td class="is-highlighted text-right">@UtilitiesService.ToPeso(selectedItem?.AnnualAmount)</td>
                                     }
                                 </tr>
                             }
@@ -314,25 +331,26 @@
                         @{
                             var currentItems = joCompanyCompensationItems.Where(jo => jo.JOCmpnyCmpnstnId == currentJOCmpnyCmpnstnId);
                         }
-                        <th>
+                        <th class="text-right">
                             @UtilitiesService.ToPeso(currentItems.Sum(jo => jo.MonthlyAmount.GetValueOrDefault()))
                         </th>
-                        <th>
+                        <th class="text-right">
                             @UtilitiesService.ToPeso(currentItems.Sum(jo => jo.AnnualAmount.GetValueOrDefault()))
                         </th>
+                        <th class="is-highlighted" scope="row">Total</th>
                         @{
                             var selectedItems = joCompanyCompensationItems.Where(jo => jo.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId);
                         }
-                        <th class="is-highlighted">
+                        <th class="is-highlighted text-right">
                             @UtilitiesService.ToPeso(selectedItems.Sum(jo => jo.MonthlyAmount.GetValueOrDefault()))
                         </th>
-                        <th class="is-highlighted">
+                        <th class="is-highlighted text-right">
                             @UtilitiesService.ToPeso(selectedItems.Sum(jo => jo.AnnualAmount.GetValueOrDefault()))
                         </th>
                     </tr>
                 </tfoot>
             </table>
-            
+            <!--MIRROR-->
         </div>
 
     </div>
@@ -489,7 +507,7 @@
 <!--Remarks-->
 <div class="card shadow mb-4 small">
     <div class="card-header">
-        <h6 class="jo-title">TA Lead Remarks <span class="text-danger" aria-label="required">*</span></h6>
+        <h6 class="jo-title">Remarks <span class="text-danger" aria-label="required">*</span></h6>
     </div>
     <div class="card-body">
         <textarea rows="5" class="form-control" @bind="taPartnerRemarks"></textarea>
@@ -497,8 +515,8 @@
 </div>
 
 <!--Action Buttons-->
-<div class="jo-actions mb-4">
-    <button class="btn btn-outline-secondary" @onclick="ClickGoBack">
+@* <div class="jo-actions mb-4">
+    <button class="btn btn-outline-secondary" @onclick="HandleGoBack">
         <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
         Go Back
     </button>
@@ -511,4 +529,4 @@
         <i class="fas fa-paper-plane mr-1" aria-hidden="true"></i>
         Submit for Approval
     </button>
-</div>
+</div> *@

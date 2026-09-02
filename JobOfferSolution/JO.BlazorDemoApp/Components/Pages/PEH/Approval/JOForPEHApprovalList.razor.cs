@@ -20,30 +20,50 @@ namespace JO.BlazorDemoApp.Components.Pages.PEH.Approval
         private int countForApproval;
         private int countSendBack;
         private int countApproved;
+        private int?[] approvedIDs = { 5, 6, 7, 8, 9 };
 
         protected override async Task OnInitializedAsync()
         {
+            //joDboxCandidates = await JODetailsService.GetVwJODboxCandidates();
+            //eligibleJODboxCandidates = joDboxCandidates
+            //    .Where(jo => (jo.WorkFlowId == ForApprovalWorkFlowId
+            //            || jo.WorkFlowId == SendBackWorkFlowId
+            //            || jo.WorkFlowId == ApprovedWorkFlowId)
+            //        && (jo.OfferRangeId == 2 || jo.OfferRangeId == 3))
+            //    .ToList();
+
             joDboxCandidates = await JODetailsService.GetVwJODboxCandidates();
             eligibleJODboxCandidates = joDboxCandidates
-                .Where(jo => (jo.WorkFlowId == ForApprovalWorkFlowId
+                .Where(jo => (jo.OfferRangeId == 2 || jo.OfferRangeId == 3) 
+                        && jo.WorkFlowId == ForApprovalWorkFlowId
                         || jo.WorkFlowId == SendBackWorkFlowId
-                        || jo.WorkFlowId == ApprovedWorkFlowId)
-                    && (jo.OfferRangeId == 2 || jo.OfferRangeId == 3))
+                        || approvedIDs.Contains(jo.WorkFlowId))
                 .ToList();
 
             total = eligibleJODboxCandidates.Count;
             countForApproval = eligibleJODboxCandidates.Count(jo => jo.WorkFlowId == ForApprovalWorkFlowId);
             countSendBack = eligibleJODboxCandidates.Count(jo => jo.WorkFlowId == SendBackWorkFlowId);
-            countApproved = eligibleJODboxCandidates.Count(jo => jo.WorkFlowId == ApprovedWorkFlowId);
+            countApproved = eligibleJODboxCandidates.Count(jo => approvedIDs.Contains(jo.WorkFlowId));
 
             FilterByWorkFlow(null);
         }
 
         private void FilterByWorkFlow(int? workFlowId)
         {
-            filteredJODboxCandidates = workFlowId.HasValue
-                ? eligibleJODboxCandidates.Where(jo => jo.WorkFlowId == workFlowId).ToList()
-                : eligibleJODboxCandidates.ToList();
+            //filteredJODboxCandidates = workFlowId.HasValue
+            //    ? eligibleJODboxCandidates.Where(jo => jo.WorkFlowId == workFlowId).ToList()
+            //    : eligibleJODboxCandidates.ToList();
+
+            filteredJODboxCandidates = workFlowId switch
+            {
+                null => eligibleJODboxCandidates.ToList(),
+                ApprovedWorkFlowId => eligibleJODboxCandidates
+                    .Where(jo => approvedIDs.Contains(jo.WorkFlowId))
+                    .ToList(),
+                _ => eligibleJODboxCandidates
+                    .Where(jo => jo.WorkFlowId == workFlowId)
+                    .ToList()
+            };
         }
     }
 }

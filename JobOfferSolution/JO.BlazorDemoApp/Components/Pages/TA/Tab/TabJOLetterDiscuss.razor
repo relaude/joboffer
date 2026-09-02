@@ -31,7 +31,7 @@
         <button type="button" class="nav-link px-4 @(activeTab == TabName.ActionLogs ? "active" : string.Empty)"
                 role="tab" aria-selected="@(activeTab == TabName.ActionLogs)" 
                 @onclick="() => SelectTab(TabName.ActionLogs)">
-            <i class="fas fa-history fa-fw mr-1" aria-hidden="true"></i>Action Logs
+            <i class="fas fa-history fa-fw mr-1" aria-hidden="true"></i>Activities
         </button>
     </li>
 </ul>
@@ -56,11 +56,10 @@
             <div role="tabpanel">
                 <SharedJODiscussion
                     Discussion="@discussion"
-                    Channels="@channels"
-                    Steps="@steps"
-                    Responses="@responses"
                     Proposals="@filteredJOCompanyCompensation"
                     Discussions="@vwDiscussions"
+                    Status="@discussionStatus"
+                    DeclineReason="@declineReason"
                     OnSave="@SaveDiscussion"
                     IsSaving="@isSaving"
                     ComponentId="job-offer-discussion" />

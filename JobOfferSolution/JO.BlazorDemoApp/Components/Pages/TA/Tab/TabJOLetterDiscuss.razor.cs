@@ -12,6 +12,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
 {
     public partial class TabJOLetterDiscuss
     {
+        private const int TabTransitionDelayMilliseconds = 100;
+
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private IAlertService AlertService { get; set; } = default!;
         [Inject] private IAccountService AccountService { get; set; } = default!;
@@ -47,9 +49,11 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
             ChannelId = 1,
             ResponseId = 1
         };
-        private List<ChannelTypes> channels = new();
-        private List<DiscussSteps> steps = new();
-        private List<CandResponse> responses = new();
+        //private List<ChannelTypes> channels = new();
+        //private List<DiscussSteps> steps = new();
+        private List<DiscussionStatus> discussionStatus = new();
+        private List<JODeclineReason> declineReason = new();
+        //private List<CandResponse> responses = new();
         private List<JOCompanyCompensation> filteredJOCompanyCompensation = new();
         private List<VwDiscussions> vwDiscussions = new();
         private bool isSaving = false;
@@ -80,9 +84,18 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
             joCompanyCompensationItems = await CompensationService.GetJOCmpnyCompensationItems(jobOfferId);
             compenItemCategoryDto = await CompensationService.SetUpCompenItemCategoryDto();
 
-            channels = await DiscussionService.GetChannelTypes();
-            steps = await DiscussionService.GetDiscussSteps();
-            responses = await DiscussionService.GetCandResponse();
+            //channels = await DiscussionService.GetChannelTypes();
+            //steps = await DiscussionService.GetDiscussSteps();
+
+            discussionStatus = await DiscussionService.GetDiscussionStatus();
+            declineReason = await DiscussionService.GetJODeclineReason();
+
+            if (!discussion.StatusId.HasValue
+                || !discussionStatus.Any(status => status.Id == discussion.StatusId.Value))
+            {
+                discussion.StatusId = discussionStatus.FirstOrDefault()?.Id;
+            }
+
             filteredJOCompanyCompensation = joCompanyCompensation.Where(jo => jo.OptionNumber > 0).ToList();
 
             var availableProposals = joCompanyCompensation
@@ -104,6 +117,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
 
         private async Task SelectTab(TabName tab)
         {
+            await Task.Delay(TabTransitionDelayMilliseconds);
+
             if (tab == TabName.Letter)
                 await SyncLetterOptionFromDiscussion();
 
@@ -131,7 +146,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
                 await DiscussionService.SaveDiscussion(model);
 
                 //Declined
-                if (model.ResponseId == 5)
+                if (model.StatusId == 4)
                 {
                     joCompanyCompensation = await CompensationService.GetJOCompanyCompensation(jobOfferId);
                     filteredJOCompanyCompensation = joCompanyCompensation
@@ -139,8 +154,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
                         .ToList();
                 }
 
-                ResetEntries();
-                await GetDiscussions();
+                //ResetEntries();
+                //await GetDiscussions();
             }
             finally
             {
@@ -224,6 +239,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Tab
 
         private async Task SyncLetterOptionFromDiscussion()
         {
+            await Task.Delay(TabTransitionDelayMilliseconds);
+
             if (discussion.ProposalId == lastSyncedDiscussionProposalId)
                 return;
 

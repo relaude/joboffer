@@ -100,6 +100,8 @@ namespace JO.Persistence.DataAccess
         public DbSet<ChannelTypes> ChannelTypes { get; set; }
         public DbSet<DiscussSteps> DiscussSteps { get; set; }
         public DbSet<CandResponse> CandResponse { get; set; }
+        public DbSet<DiscussionStatus> DiscussionStatus { get; set; }
+        public DbSet<JODeclineReason> JODeclineReason { get; set; }
 
         //WorkFlow
         public DbSet<WorkFlow> WorkFlow { get; set; }

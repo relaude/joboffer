@@ -19,6 +19,18 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<JODeclineReason>> GetJODeclineReason()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JODeclineReason.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<DiscussionStatus>> GetDiscussionStatus()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.DiscussionStatus.AsNoTracking().ToListAsync();
+        }
+
         public async Task<JobOffers> GetJobOffer(int jobOfferId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -92,10 +104,16 @@ namespace JO.Service.Services
 
         public async Task<int> SaveDiscussion(DiscussionDto dto)
         {
+            if (!dto.StatusId.HasValue)
+                throw new ArgumentException("A status must be selected before saving a discussion.", nameof(dto));
+
             if (!dto.ProposalId.HasValue)
                 throw new ArgumentException("A proposal must be selected before saving a discussion.", nameof(dto));
 
             await using var context = await _dbContext.CreateDbContextAsync();
+
+            if (!await context.DiscussionStatus.AnyAsync(status => status.Id == dto.StatusId.Value))
+                throw new ArgumentException("The selected discussion status is invalid.", nameof(dto));
 
             var joCompen = await context.JOCompanyCompensation.FindAsync(dto.ProposalId.Value);
             if (joCompen is null || joCompen.JobOfferId != dto.JobOfferId
@@ -105,20 +123,21 @@ namespace JO.Service.Services
             var newDiscussion = new Discussions
             {
                 JobOfferId = dto.JobOfferId,
+                StatusId = dto.StatusId,
                 ProposalId = dto.ProposalId,
-                StepId = dto.StepId,
-                ChannelId = dto.ChannelId,
-                ResponseId = dto.ResponseId,
+                //StepId = dto.StepId,
+                //ChannelId = dto.ChannelId,
+                //ResponseId = dto.ResponseId,
                 Comments = dto.Comments,
-                FeedBack = dto.FeedBack,
+                //FeedBack = dto.FeedBack,
                 DiscussAt = dto.DiscussAt,
                 CreatedBy = dto.CreatedBy,
                 CreatedAt = DateTime.Now
             };
             await context.Discussions.AddAsync(newDiscussion);
 
-            joCompen.Declined = dto.ResponseId == 5; //Declined
-            joCompen.Accepted = dto.ResponseId == 3; //Accepted
+            joCompen.Declined = dto.StatusId == 4; //Declined Offer
+            joCompen.Accepted = dto.StatusId == 3; //Accepted Offer
             context.JOCompanyCompensation.Update(joCompen);
 
             await context.SaveChangesAsync();
