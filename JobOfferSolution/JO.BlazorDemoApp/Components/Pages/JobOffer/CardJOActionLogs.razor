@@ -68,7 +68,9 @@
                 @foreach (var item in actionLogs)
                 {
                     <article class="jo-action-log-item" @key="item.Id">
-                        <div class="jo-action-log-marker @GetMarkerClass(item.ActionId)">
+                        <div class="jo-action-log-marker @GetMarkerClass(item.ActionId)"
+                             title="@GetActionCategory(item.ActionId)"
+                             aria-label="@GetActionCategory(item.ActionId)">
                             <i class="fas @GetActionIcon(item.ActionId)" aria-hidden="true"></i>
                         </div>
                         <div class="jo-action-log-content">

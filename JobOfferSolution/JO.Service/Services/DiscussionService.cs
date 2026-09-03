@@ -33,12 +33,15 @@ namespace JO.Service.Services
                 .Where(jo => jo.JobOfferId == jobOffer.Id)
                 .Max(jo => jo.OptionNumber.GetValueOrDefault());
 
+            int cmpnyCmpnstnId = joCompanyCompensation.FirstOrDefault().CmpnyCmpnstnId.GetValueOrDefault();
+
             //update status
             jobOffer.WorkFlowId = 11;//For Negotiation
             foreach (var item in joCompanyCompensation)
             {
                 item.Declined = true;
                 item.Accepted = false;
+                item.ForNegotiation = false;
             }
 
             context.JobOffers.Update(jobOffer);
@@ -58,7 +61,9 @@ namespace JO.Service.Services
                     JOAnalysisId = joAnalysis.Id,
                     CSGId = candidate.CSGId,
                     OptionNumber = i + lastOptionNumber,
-                    CurrentSalary = candidate.CurrentMonthlyBasicSalary
+                    CurrentSalary = candidate.CurrentMonthlyBasicSalary,
+                    ForNegotiation = true,
+                    CmpnyCmpnstnId =cmpnyCmpnstnId
                 });
             }
 
@@ -82,6 +87,8 @@ namespace JO.Service.Services
 
             await context.JOCompanyCompensationItems.AddRangeAsync(joCmpnyCompensationItemsB);
             await context.SaveChangesAsync();
+
+            //
         }
 
         public async Task<List<JODeclineReason>> GetJODeclineReason()
@@ -190,20 +197,22 @@ namespace JO.Service.Services
                 JobOfferId = dto.JobOfferId,
                 StatusId = dto.StatusId,
                 ProposalId = dto.ProposalId,
-                //StepId = dto.StepId,
-                //ChannelId = dto.ChannelId,
-                //ResponseId = dto.ResponseId,
+                DeclineReasonId = dto.DeclineReasonId,
+                DeclineRemarks = dto.DeclineRemarks,
                 Comments = dto.Comments,
-                //FeedBack = dto.FeedBack,
+                FeedBack = dto.FeedBack,
                 DiscussAt = dto.DiscussAt,
                 CreatedBy = dto.CreatedBy,
                 CreatedAt = DateTime.Now
             };
             await context.Discussions.AddAsync(newDiscussion);
 
-            joCompen.Declined = dto.StatusId == 4; //Declined Offer
-            joCompen.Accepted = dto.StatusId == 3; //Accepted Offer
-            context.JOCompanyCompensation.Update(joCompen);
+            if(dto.StatusId == 3 || dto.StatusId == 4)
+            {
+                joCompen.Declined = dto.StatusId == 4; //Declined Offer
+                joCompen.Accepted = dto.StatusId == 3; //Accepted Offer
+                context.JOCompanyCompensation.Update(joCompen);
+            }
 
             await context.SaveChangesAsync();
             return newDiscussion.Id;

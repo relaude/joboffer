@@ -56,7 +56,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                     {
                         2 => JORoutes.TA.Analysis,
                         8 => JORoutes.TA.Discussion,
-                        9 => JORoutes.TA.JobOfferComplete,
+                        9 or 12 => JORoutes.TA.JobOfferComplete,
                         10 => JORoutes.TA.AnalysisSendBack,
                         11 => JORoutes.TA.ForNegotiation,
                         _ => JORoutes.TA.JobOfferDetails

@@ -56,6 +56,9 @@ namespace JO.Service.Constants
 
             public const string MSFormResponse = PrefixAdmin + "/msform-response";
             public const string DboxCandidates = PrefixAdmin + "/dbox/candidates";
+
+            public const string EmailTemplates = PrefixAdmin + "/email-templates";
+            public const string EmailTemplate = PrefixAdmin + "/email-template";
         }
 
         public static class TA

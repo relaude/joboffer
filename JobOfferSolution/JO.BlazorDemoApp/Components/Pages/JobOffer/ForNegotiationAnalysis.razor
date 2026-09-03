@@ -144,7 +144,7 @@
     <div class="card-body">
 
         <div class="jo-analysis-option-tabs" role="tablist">
-            @foreach (var compensation in joCompanyCompensation.Where(jo => jo.OptionNumber > 0))
+            @foreach (var compensation in joCompanyCompensation.Where(jo => jo.OptionNumber > 0 && jo.ForNegotiation == true))
             {
                 <div role="tab"
                      tabindex="0"
@@ -230,7 +230,7 @@
         </div>
 
         <div class="table-responsive">
-            <!--MIRROR-->
+            
             <table class="jo-table">
                 <thead>
                     <tr>
@@ -352,7 +352,7 @@
                     </tr>
                 </tfoot>
             </table>
-            <!--MIRROR-->
+            
         </div>
 
     </div>

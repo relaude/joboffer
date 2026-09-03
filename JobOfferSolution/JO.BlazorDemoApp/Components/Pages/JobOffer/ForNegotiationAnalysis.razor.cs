@@ -14,6 +14,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private IAlertService AlertService { get; set; } = default!;
         [Inject] private IAccountService AccountService { get; set; } = default!;
+        [Inject] private IForNegotiationService ForNegotiationService { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
 
         [Inject] private ICandidateService CandidateService { get; set; } = default!;
@@ -165,13 +166,11 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 return;
             }
 
-            await CompensationService.SaveAnalysis(
+            await ForNegotiationService.SaveAnalysis(
                 joCompanyCompensation,
                 joCompanyCompensationItems,
                 joAnalysis,
                 jobOffer,
-                selectedCmpnyCmpnstnId,
-                candidate.Id,
                 userId);
 
             await AlertService.Success("Analysis successfully saved.");
@@ -193,23 +192,21 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
             }
 
             if (!await AlertService.Confirm(
-                title: "Submit this analysis for approval?",
-                confirmText: "Submit for Approval"))
+                title: "Submit this analysis for review?",
+                confirmText: "Submit for Review"))
             {
                 return;
             }
 
-            var submittedJobOfferId = await CompensationService.SubmitForApproval(
+            var submittedJobOfferId = await ForNegotiationService.SubmitForApproval(
                 jobOffer,
                 joAnalysis,
                 joCompanyCompensation,
                 joCompanyCompensationItems,
-                selectedCmpnyCmpnstnId,
-                candidate.Id,
                 userId,
                 taPartnerRemarks);
 
-            await AlertService.Success("Analysis successfully submitted for approval.");
+            await AlertService.Success("Analysis successfully submitted for review.");
             //Navigation.NavigateTo($"{JORoutes.TA.JobOfferDetails}/{submittedJobOfferId}");
             Navigation.NavigateTo($"{returnUrl}/{submittedJobOfferId}");
         }

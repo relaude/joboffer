@@ -79,6 +79,25 @@ namespace JO.Service.Services
                 : 0;
         }
 
+        public async Task<string?> ConfirmRemarks(string inputValue = "", string title = "Enter remarks")
+        {
+            var confirmResult = await _swal.FireAsync(new SweetAlertOptions
+            {
+                Icon = SweetAlertIcon.Question,
+                Title = title,
+                Input = SweetAlertInputType.Textarea,
+                //InputLabel = "Remarks",
+                InputPlaceholder = "Enter your remarks here...",
+                InputValue = inputValue,
+                InputAutoTrim = true,
+                ShowCancelButton = true,
+                ConfirmButtonText = "Continue",
+                CancelButtonText = "Cancel"
+            });
+
+            return confirmResult.IsConfirmed ? confirmResult.Value : null;
+        }
+
         private string BuildUnorderedList(IEnumerable<string> items)
         {
             var sb = new StringBuilder();

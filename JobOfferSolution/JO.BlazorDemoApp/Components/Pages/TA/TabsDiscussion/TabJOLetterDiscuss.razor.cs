@@ -135,6 +135,39 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
 
         private async Task SaveDiscussion(DiscussionDto model)
         {
+            var errors = new List<string>();
+
+            if (!model.StatusId.HasValue)
+                errors.Add("Status is required.");
+
+            if (!model.ProposalId.HasValue)
+                errors.Add("Proposal is required.");
+
+            if (!model.DiscussAt.HasValue)
+                errors.Add("Discussion date is required.");
+
+            if (string.IsNullOrWhiteSpace(model.Comments))
+                errors.Add("Discussion Notes are required.");
+
+            if (string.IsNullOrWhiteSpace(model.FeedBack))
+                errors.Add("Feedback is required.");
+
+            if (model.StatusId == 4 && !model.DeclineReasonId.HasValue)
+                errors.Add("Decline reason is required for a declined offer.");
+
+            if (model.StatusId == 4
+                && model.DeclineReasonId == 5
+                && string.IsNullOrWhiteSpace(model.DeclineRemarks))
+            {
+                errors.Add("Decline remarks are required when the decline reason is Others.");
+            }
+
+            if (errors.Any())
+            {
+                await AlertService.Errors(errors, "Required Fields");
+                return;
+            }
+
             if (!await AlertService.Confirm())
                 return;
 
@@ -145,8 +178,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
                 model.JobOfferId = jobOfferId;
                 await DiscussionService.SaveDiscussion(model);
 
-                //Declined
-                if (model.StatusId == 4)
+                //Accepted Offer || Declined
+                if (model.StatusId == 3 || model.StatusId == 4)
                 {
                     joCompanyCompensation = await CompensationService.GetJOCompanyCompensation(jobOfferId);
                     filteredJOCompanyCompensation = joCompanyCompensation
@@ -155,7 +188,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
                 }
 
                 //ResetEntries();
-                //await GetDiscussions();
+                await GetDiscussions();
             }
             finally
             {
@@ -168,34 +201,32 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
             vwDiscussions = await DiscussionService.GetDiscussions(jobOfferId);
         }
 
-        private bool HasAcceptedLetterDiscussion => vwDiscussions.Any(item =>
-            item.StepId == 8 && item.ResponseId == 3);
-
-        private bool HasNegotiationRequested => vwDiscussions.Any(item =>
-            item.StepId == 7 && item.ResponseId == 4);
+        private bool HasAcceptedOffer => vwDiscussions.Any(item => item.StatusId == 3);
+        private bool HasDeclinedOffer => vwDiscussions.Any(item => item.StatusId == 4);
+        private bool HasForNegotiation => vwDiscussions.Any(item => item.StatusId == 5);
 
         private async Task AcceptAndComplete()
         {
-            if (!HasAcceptedLetterDiscussion)
-            {
-                await AlertService.Error(
-                    "Record a discussion with the Email JO Letter step and Accepted response before completing this Job Offer.",
-                    "Acceptance Discussion Required");
-                return;
-            }
+            //var confirmed = await AlertService.Confirm(
+            //    "Tag as Accept and Complete this Job Offer?",
+            //    "Accept & Complete",
+            //    "Cancel");
 
-            var confirmed = await AlertService.Confirm(
-                "Tag as Accept and Complete this Job Offer?",
-                "Accept & Complete",
-                "Cancel");
+            //if (!confirmed)
+            //    return;
 
-            if (!confirmed)
-                return;
+            string promptRemarks = await AlertService.ConfirmRemarks("", "Tag as Accept and Complete this Job Offer?");
+            if (string.IsNullOrEmpty(promptRemarks)) return;
 
             try
             {
                 isCompleting = true;
+
                 await DiscussionService.TagAsAccepted(jobOfferId);
+
+                // Accepted & Completed, TA Partner, Tag Accepted & Completed
+                await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 9, 1, 6, userId, promptRemarks);
+
                 await AlertService.Success(
                     "The job offer was accepted and completed.",
                     "Job Offer Completed");
@@ -205,8 +236,39 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
                 isCompleting = false;
             }
 
-            // Accepted & Completed, TA Partner, Tag Accepted & Completed
-            await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 9, 1, 6, userId);
+            Navigation.NavigateTo($"{JORoutes.TA.JobOfferComplete}/{jobOfferId}");
+        }
+
+        private async Task Decline()
+        {
+            //var confirmed = await AlertService.Confirm(
+            //    "Tag as Declined this Job Offer?",
+            //    "Declined",
+            //    "Cancel");
+
+            //if (!confirmed)
+            //    return;
+
+            string promptRemarks = await AlertService.ConfirmRemarks("","Tag as Declined this Job Offer?");
+            if (string.IsNullOrEmpty(promptRemarks)) return;
+
+            try
+            {
+                isCompleting = true;
+                await DiscussionService.TagAsAccepted(jobOfferId);
+
+                // Declined, TA Partner, Tag Decline
+                await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 12, 1, 9, userId, promptRemarks);
+
+                await AlertService.Success(
+                    "The job offer was declined.",
+                    "Job Offer Declined");
+            }
+            finally
+            {
+                isCompleting = false;
+            }
+
             Navigation.NavigateTo($"{JORoutes.TA.JobOfferComplete}/{jobOfferId}");
         }
 
@@ -333,6 +395,11 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
                 joCompanyCompensation,
                 numProposal,
                 userId);
+
+            // For Negotiation, TA Partner, Tag For Negotiation
+            await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 11, 1, 8, userId, $"Tag For Negotiation ({numProposal} Proposal/s)");
+
+            Navigation.NavigateTo($"{JORoutes.TA.ForNegotiation}/{jobOfferId}");
         }
     }
 }

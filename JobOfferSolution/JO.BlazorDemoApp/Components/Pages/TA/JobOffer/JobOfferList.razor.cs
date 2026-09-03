@@ -28,6 +28,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         private int countForDiscussion = 0;
         private int countApproved = 0;
         private int countAcccepted = 0;
+        private int countForNegotiation = 0;
+        private int countDeclined = 0;
 
         protected override async Task OnInitializedAsync()
         {
@@ -49,6 +51,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
             countForDiscussion = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 8);
             countApproved = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 8);
             countAcccepted = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 9);
+            countForNegotiation = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 11);
+            countDeclined = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 12);
         }
 
         private void FilterByWorkFlow(int? workFlowId)

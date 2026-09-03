@@ -32,11 +32,25 @@
                         </div> *@
 
                         <div class="form-group">
+                            <label class="font-weight-bold text-gray-700 mb-1" for="@ProposalId">Selected Option</label>
+                            <select id="@ProposalId" class="custom-select" @bind="Discussion.ProposalId">
+                                <option value="">Select an option</option>
+                                @foreach (var proposal in Proposals.Where(proposal => proposal.OptionNumber > 0))
+                                {
+                                    <option value="@proposal.Id"
+                                            disabled="@(proposal.Declined == true)"
+                                            style="@(proposal.Declined == true ? "color: #6c757d; background-color: #e9ecef;" : proposal.Accepted == true ? "color: #155724; background-color: #d4edda; font-weight: bold;" : null)">
+                                        @($"Option {proposal.OptionNumber} - {UtilitiesService.ToPeso(proposal.ProposedSalary)}{(proposal.Declined == true ? " (Declined)" : proposal.Accepted == true ? " (Accepted)" : string.Empty)}")
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <label class="font-weight-bold text-gray-700 mb-1" for="@DiscussionDateId">Date</label>
                             <input id="@DiscussionDateId" type="date" class="form-control" @bind="Discussion.DiscussAt" />
                         </div>
 
-                        <!--Analyse-->
                         <div class="form-group">
                             <label class="font-weight-bold text-gray-700 mb-1" for="@StatusId">Status</label>
                             <select id="@StatusId" class="custom-select" @bind="Discussion.StatusId">
@@ -47,19 +61,20 @@
                                 }
                             </select>
                         </div>
-                        <!--Analyse-->
 
-                        <div class="form-group">
-                            <label class="font-weight-bold text-gray-700 mb-1" >JO Decline Reason</label>
-                            <select class="custom-select" @bind="Discussion.DeclineReasonId">
-                                <option value="">Select a reason</option>
-                                @foreach (var item in DeclineReason)
-                                {
-                                    <option value="@item.Id">@item.ReasonName</option>
-                                }
-                            </select>
-                        </div>
-
+                        @if (Discussion.StatusId == 4)
+                        {
+                            <div class="form-group">
+                                <label class="font-weight-bold text-gray-700 mb-1">JO Decline Reason</label>
+                                <select class="custom-select" @bind="Discussion.DeclineReasonId">
+                                    <option value="">Select a reason</option>
+                                    @foreach (var item in DeclineReason)
+                                    {
+                                        <option value="@item.Id">@item.ReasonName</option>
+                                    }
+                                </select>
+                            </div>
+                        }
 
                         @* <div class="form-group">
                             <label class="font-weight-bold text-gray-700 mb-1" for="@StepId">Step</label>
@@ -81,34 +96,22 @@
                             </select>
                         </div> *@
 
-                        <div class="form-group">
-                            <label class="font-weight-bold text-gray-700 mb-1" for="@ProposalId">Selected Option</label>
-                            <select id="@ProposalId" class="custom-select" @bind="Discussion.ProposalId">
-                                <option value="">Select an option</option>
-                                @foreach (var proposal in Proposals.Where(proposal => proposal.OptionNumber > 0))
-                                {
-                                    <option value="@proposal.Id"
-                                            disabled="@(proposal.Declined == true)"
-                                            style="@(proposal.Declined == true ? "color: #6c757d; background-color: #e9ecef;" : proposal.Accepted == true ? "color: #155724; background-color: #d4edda; font-weight: bold;" : null)">
-                                        @($"Option {proposal.OptionNumber} - {UtilitiesService.ToPeso(proposal.ProposedSalary)}{(proposal.Declined == true ? " (Declined)" : proposal.Accepted == true ? " (Accepted)" : string.Empty)}")
-                                    </option>
-                                }
-                            </select>
-                        </div>
+                        @if (Discussion.StatusId == 4 && Discussion.DeclineReasonId == 5)
+                        {
+                            <div class="form-group">
+                                <label class="font-weight-bold text-gray-700 mb-1">Decline Reason Others Remarks</label>
+                                <textarea class="form-control form-control-sm" rows="4" @bind="Discussion.DeclineRemarks"></textarea>
+                            </div>
+                        }
 
                         <div class="form-group">
-                            <label class="font-weight-bold text-gray-700 mb-1">Decline Reason Others Remarks</label>
-                            <textarea class="form-control form-control-sm" rows="4" @bind="Discussion.DeclineRemarks"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="font-weight-bold text-gray-700 mb-1" for="@NotesId">Discussion Notes</label>
+                            <label class="font-weight-bold text-gray-700 mb-1" for="@NotesId">Discussion Notes<span class="text-danger">*</span></label>
                             <textarea id="@NotesId" class="form-control form-control-sm" rows="4" @bind="Discussion.Comments"></textarea>
                         </div>
 
                         <div class="form-group mb-0">
-                            <label class="font-weight-bold text-gray-700 mb-1" for="@FeedbackId">Candidate Feedback</label>
-                            <textarea id="@FeedbackId" class="form-control form-control-sm" rows="3" @bind="Discussion.FeedBack"></textarea>
+                            <label class="font-weight-bold text-gray-700 mb-1" for="@FeedbackId">Candidate Feedback<span class="text-danger">*</span></label>
+                            <textarea id="@FeedbackId" class="form-control form-control-sm" rows="4" @bind="Discussion.FeedBack"></textarea>
                         </div>
                     </div>
 
@@ -141,24 +144,78 @@
                         }
                         else
                         {
-                            @* @foreach (var item in Discussions)
-                            {
-                                <div class="d-flex pb-3 mb-3 border-bottom" @key="item.Id">
-                                    <div class="btn-circle btn-sm bg-info text-white mr-3">
-                                        <i class="@item.Icon"></i>
-                                    </div>
-                                    <div class="flex-fill">
-                                        <div class="d-flex flex-column flex-md-row justify-content-between">
-                                            <div class="font-weight-bold text-gray-900">
-                                                <div>@item.StepName</div>
-                                                <small class="text-muted">Option @item.OptionNumber</small>
+                            <!--EDIT-->
+                            <div class="pr-2"
+                                 style="max-height: 650px; overflow-y: auto; overflow-x: hidden;"
+                                 role="region"
+                                 aria-label="Discussion history"
+                                 tabindex="0">
+                                @foreach (var item in Discussions)
+                                {
+                                    <div class="d-flex pb-3 mb-3 border-bottom" @key="item.Id">
+
+                                        <div class="flex-fill">
+                                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                                                <div class="d-flex align-items-center flex-wrap mb-2 mb-md-0">
+                                                    <span class="badge badge-info px-3 mr-2">Option @item.OptionNumber</span>
+                                                    <span class="font-weight-bold text-gray-900 py-2">@item.StatusName</span>
+                                                </div>
+                                                <small class="text-muted">@UtilitiesService.FormatDate(item.DiscussAt, CommonConstant.DefaultShortDateFormat)</small>
                                             </div>
-                                            <small class="text-muted">@UtilitiesService.FormatDate(item.DiscussAt, CommonConstant.DefaultShortDateFormat)</small>
+
+                                        @if (!string.IsNullOrWhiteSpace(item.Comments)
+                                            || !string.IsNullOrWhiteSpace(item.FeedBack)
+                                            || !string.IsNullOrWhiteSpace(item.ReasonName)
+                                            || !string.IsNullOrWhiteSpace(item.DeclineRemarks))
+                                        {
+                                            <div class="row mt-3">
+                                                @if (!string.IsNullOrWhiteSpace(item.Comments))
+                                                {
+                                                    <div class="col-12 col-md-6 mb-3">
+                                                        <div class="border rounded bg-light p-3 h-100">
+                                                            <div class="small font-weight-bold text-gray-700 text-uppercase mb-1">Discussion Notes</div>
+                                                            <div class="text-gray-800 text-break">@item.Comments</div>
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                @if (!string.IsNullOrWhiteSpace(item.FeedBack))
+                                                {
+                                                    <div class="col-12 col-md-6 mb-3">
+                                                        <div class="border rounded bg-light p-3 h-100">
+                                                            <div class="small font-weight-bold text-gray-700 text-uppercase mb-1">Candidate Feedback</div>
+                                                            <div class="text-gray-800 text-break">@item.FeedBack</div>
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                @if (!string.IsNullOrWhiteSpace(item.ReasonName))
+                                                {
+                                                    <div class="col-12 col-md-6 mb-3">
+                                                        <div class="border rounded bg-light p-3 h-100">
+                                                            <div class="small font-weight-bold text-gray-700 text-uppercase mb-1">Decline Reason</div>
+                                                            <div class="text-gray-800 text-break">@item.ReasonName</div>
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                @if (!string.IsNullOrWhiteSpace(item.DeclineRemarks))
+                                                {
+                                                    <div class="col-12 col-md-6 mb-3">
+                                                        <div class="border rounded bg-light p-3 h-100">
+                                                            <div class="small font-weight-bold text-gray-700 text-uppercase mb-1">Other Decline Details</div>
+                                                            <div class="text-gray-800 text-break">@item.DeclineRemarks</div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+
                                         </div>
-                                        <div class="text-muted">Candidate Response: @item.ResponseName</div>
                                     </div>
-                                </div>
-                            } *@
+                                }
+                            </div>
+                            <!--EDIT-->
                         }
                     </div>
                 </div>

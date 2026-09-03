@@ -4,6 +4,7 @@
     {
         Task<bool> Confirm(string title = "Are you sure?", string confirmText = "Yes", string cancelText = "Cancel");
         Task<int> ConfirmProposalNumber(string inputValue = "4");
+        Task<string?> ConfirmRemarks(string inputValue = "", string title = "Enter remarks");
         Task Error(string message, string title = "Error");
         Task Errors(IEnumerable<string> errors, string title = "Error");
         Task Success(string message = "Successfully saved.", string title = "Success");

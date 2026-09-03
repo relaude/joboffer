@@ -133,9 +133,19 @@
                     <div>
                         <div class="pb-2">
                             <div class="text-xs font-weight-bold text-uppercase text-gray-600">Amount</div>
-                            <div class="font-weight-bold text-gray-800">
-                                @UtilitiesService.ToPeso(compensation.ProposedSalary)
-                            </div>
+                            @if (compensation.Declined == true)
+                            {
+                                <div class="font-weight-bold"
+                                     style="text-decoration: line-through; color: #dc3545;">
+                                    @UtilitiesService.ToPeso(compensation.ProposedSalary)
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="font-weight-bold text-gray-800">
+                                    @UtilitiesService.ToPeso(compensation.ProposedSalary)
+                                </div>
+                            }
                         </div>
                         @* <div class="border-top py-2">
                             <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
@@ -155,7 +165,7 @@
                         </div>
                         <div>
                             <div class="text-xs font-weight-bold text-uppercase text-gray-600 mb-1">Remarks</div>
-                            <textarea rows="3" class="form-control form-control-sm" readonly>compensation.Remarks</textarea>
+                            <textarea rows="3" class="form-control form-control-sm" readonly>@compensation.Remarks</textarea>
                         </div>
                         
                         @if (!string.IsNullOrWhiteSpace(compensation.BandStatus))

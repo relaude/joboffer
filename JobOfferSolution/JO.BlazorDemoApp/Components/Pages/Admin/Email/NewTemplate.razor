@@ -1,0 +1,139 @@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.EmailTemplate)]
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between">
+        <div class="mb-2 mb-sm-0">
+            <h6 class="jo-title mb-1"><i class="fas fa-envelope-open-text fa-fw text-primary mr-2"></i>New Email Template</h6>
+            <small class="text-muted">Create a reusable message for a job-offer action and role.</small>
+        </div>
+        <div>
+            <a class="btn btn-outline-secondary mr-2" href="@JORoutes.Admin.EmailTemplates">
+                <i class="fas fa-times fa-fw mr-1"></i>Cancel
+            </a>
+            <button type="button" class="btn btn-primary">
+                <i class="fas fa-save fa-fw mr-1"></i>Save Template
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="form-group mb-4">
+            <label class="font-weight-bold text-gray-700" for="template-action">Action by Role</label>
+            <div class="input-group">
+                <select id="template-action" class="custom-select" aria-label="Action">
+                    <option selected disabled>Select an action</option>
+                    <option>Job Offer Created</option>
+                    <option>For Review</option>
+                    <option>For Approval</option>
+                    <option>Approved</option>
+                    <option>Send Back</option>
+                    <option>For Discussion</option>
+                    <option>Tag For Negotiation</option>
+                    <option>Tag Accepted</option>
+                    <option>Tag Decline</option>
+                </select>
+
+                <div class="input-group-prepend input-group-append">
+                    <span class="input-group-text font-weight-bold">by</span>
+                </div>
+
+                <select id="template-role" class="custom-select" aria-label="Role">
+                    <option selected disabled>Select a role</option>
+                    <option>TA Partner</option>
+                    <option>TA Lead</option>
+                    <option>PE Head</option>
+                    <option>HROD Head Approver</option>
+                    <option>Division Head Approver L1</option>
+                    <option>Division Head Approver L2</option>
+                    <option>President</option>
+                    <option>Business Admin</option>
+                    <option>Onboarding Partner</option>
+                    <option>System Administrator</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group mb-4">
+            <label class="font-weight-bold text-gray-700" for="template-name">Email Subject</label>
+            <input id="template-name" type="text" class="form-control" placeholder="Enter a descriptive email subject" />
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="card h-100 border">
+                    <div class="card-header bg-light py-3">
+                        <h6 class="m-0 font-weight-bold text-gray-800">Recipients</h6>
+                        <small class="text-muted">Select one or more recipient roles.</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input id="recipient-ta-partner" type="checkbox" class="custom-control-input" />
+                            <label class="custom-control-label" for="recipient-ta-partner">TA Partner</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input id="recipient-ta-lead" type="checkbox" class="custom-control-input" />
+                            <label class="custom-control-label" for="recipient-ta-lead">TA Lead</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input id="recipient-pe-head" type="checkbox" class="custom-control-input" />
+                            <label class="custom-control-label" for="recipient-pe-head">PE Head</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input id="recipient-hrod-head" type="checkbox" class="custom-control-input" />
+                            <label class="custom-control-label" for="recipient-hrod-head">HROD Head Approver</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input id="recipient-division-l1" type="checkbox" class="custom-control-input" />
+                            <label class="custom-control-label" for="recipient-division-l1">Division Head Approver L1</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input id="recipient-division-l2" type="checkbox" class="custom-control-input" />
+                            <label class="custom-control-label" for="recipient-division-l2">Division Head Approver L2</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input id="recipient-president" type="checkbox" class="custom-control-input" />
+                            <label class="custom-control-label" for="recipient-president">President</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input id="recipient-business-admin" type="checkbox" class="custom-control-input" />
+                            <label class="custom-control-label" for="recipient-business-admin">Business Admin</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input id="recipient-onboarding" type="checkbox" class="custom-control-input" />
+                            <label class="custom-control-label" for="recipient-onboarding">Onboarding Partner</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-3">
+                            <input id="recipient-admin" type="checkbox" class="custom-control-input" />
+                            <label class="custom-control-label" for="recipient-admin">System Administrator</label>
+                        </div>
+
+                        <div class="form-group mb-0 pt-3 border-top">
+                            <label class="font-weight-bold text-gray-700" for="recipient-others">Others</label>
+                            <input id="recipient-others" type="text" class="form-control form-control-sm" placeholder="Enter email addresses" />
+                            <small class="form-text text-muted">Separate multiple addresses with commas.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card h-100 border">
+                    <div class="card-header bg-light py-3">
+                        <h6 class="m-0 font-weight-bold text-gray-800">Message</h6>
+                        <small class="text-muted">Compose the email content for this template.</small>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="form-group d-flex flex-column flex-grow-1 mb-0">
+                            
+                            <textarea id="email-message"
+                                      class="form-control flex-grow-1"
+                                      rows="18"
+                                      placeholder="Write the email message here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
