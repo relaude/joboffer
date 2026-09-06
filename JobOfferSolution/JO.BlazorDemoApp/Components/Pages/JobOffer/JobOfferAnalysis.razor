@@ -189,7 +189,7 @@
                             </div>
                         }
 
-                        @if (compensation.Escalate == true)
+                        @* @if (compensation.Escalate == true)
                         {
                             <div class="pt-2">
                                 <span class="badge badge-warning">
@@ -197,7 +197,7 @@
                                     Requires Escalation
                                 </span>
                             </div>
-                        }
+                        } *@
                     </div>
                 </div>
             }
@@ -340,13 +340,13 @@
                         }
                     </tr>
                     <tr>
-                        <th scope="row">Proposed Salary</th>
+                        <th scope="row">Amount</th>
                         @foreach (var compensation in ComparativeCompensations.Where(item => item.OptionNumber > 0))
                         {
                             <td class="text-right">@UtilitiesService.ToPeso(compensation.ProposedSalary)</td>
                         }
                     </tr>
-                    <tr>
+                    @* <tr>
                         <th scope="row">Current Salary</th>
                         @foreach (var compensation in ComparativeCompensations.Where(item => item.OptionNumber > 0))
                         {
@@ -359,16 +359,16 @@
                         {
                             <td class="text-right">@FormatPercent(compensation.Increase)</td>
                         }
-                    </tr>
+                    </tr> *@
                     <tr>
-                        <th scope="row">Monthly Difference</th>
+                        <th scope="row">% Increase Monthly</th>
                         @foreach (var compensation in ComparativeCompensations.Where(item => item.OptionNumber > 0))
                         {
                             <td class="text-right">@FormatPercent(compensation.DiffTotalMonthly)</td>
                         }
                     </tr>
                     <tr>
-                        <th scope="row">Annual Difference</th>
+                        <th scope="row">% Increase Annual</th>
                         @foreach (var compensation in ComparativeCompensations.Where(item => item.OptionNumber > 0))
                         {
                             <td class="text-right">@FormatPercent(compensation.DiffTotalAnnually)</td>

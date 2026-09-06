@@ -52,26 +52,32 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
             {
                 route = Role switch
                 {
-                    JOUserRole.TA => jobOffer.WorkFlowId switch
+                    JOUserRole.TAPartner => jobOffer.WorkFlowId switch
                     {
-                        2 => JORoutes.TA.Analysis,
-                        8 => JORoutes.TA.Discussion,
-                        9 or 12 => JORoutes.TA.JobOfferComplete,
-                        10 => JORoutes.TA.AnalysisSendBack,
-                        11 => JORoutes.TA.ForNegotiation,
-                        _ => JORoutes.TA.JobOfferDetails
+                        2 => JORoutes.TAPartner.Analysis,
+                        8 => JORoutes.TAPartner.Discussion,
+                        9 or 12 => JORoutes.TAPartner.JobOfferComplete,
+                        10 => JORoutes.TAPartner.Analysis,
+                        11 => JORoutes.TAPartner.ForNegotiation,
+                        _ => JORoutes.TAPartner.JobOfferDetails
                     },
 
                     JOUserRole.TALead => jobOffer.WorkFlowId switch
                     {
                         3 => JORoutes.TALead.JOForReview,
-                        10 => JORoutes.TALead.AnalysisSendBack,
+                        8 => JORoutes.TALead.Discussion,
+                        10 => JORoutes.TALead.Analysis,
+                        11 => JORoutes.TALead.ForNegotiation,
+                        9 or 12 => JORoutes.TALead.JobOfferComplete,
                         _ => JORoutes.TALead.JobOfferDetails
                     },
 
-                    JOUserRole.PEHead => jobOffer.WorkFlowId == 4
-                        ? JORoutes.PEH.JOForApproval
-                        : JORoutes.PEH.JobOfferDetails,
+                    JOUserRole.PEHead => jobOffer.WorkFlowId switch
+                    {
+                        4 => JORoutes.PEH.JOForApproval,
+                        14 => JORoutes.PEH.JOForReview,
+                        _ => JORoutes.PEH.JobOfferDetails
+                    },
 
                     JOUserRole.DivisionHeadApproverL1 => jobOffer.WorkFlowId == 5
                         ? JORoutes.DHL1.JOForApproval
@@ -80,6 +86,10 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                     JOUserRole.HRODHeadApprover => jobOffer.WorkFlowId == 6
                         ? JORoutes.HRODHead.JOForApproval
                         : JORoutes.HRODHead.JobOfferDetails,
+
+                    JOUserRole.DivisionHeadApproverL2 => jobOffer.WorkFlowId == 13
+                        ? JORoutes.DHL2.JOForApproval
+                        : JORoutes.DHL2.JobOfferDetails,
 
                     JOUserRole.President => jobOffer.WorkFlowId == 7
                         ? JORoutes.President.JOForApproval

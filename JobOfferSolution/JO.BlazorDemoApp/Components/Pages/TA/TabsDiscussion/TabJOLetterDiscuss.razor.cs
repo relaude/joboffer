@@ -168,7 +168,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
                 return;
             }
 
-            if (!await AlertService.Confirm())
+            if (!await AlertService.Confirm("Save discussion details?"))
                 return;
 
             try
@@ -207,25 +207,20 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
 
         private async Task AcceptAndComplete()
         {
-            //var confirmed = await AlertService.Confirm(
-            //    "Tag as Accept and Complete this Job Offer?",
-            //    "Accept & Complete",
-            //    "Cancel");
+            var confirmed = await AlertService.Confirm(
+                "Complete this job offer?",
+                "Completed",
+                "Cancel");
 
-            //if (!confirmed)
-            //    return;
-
-            string promptRemarks = await AlertService.ConfirmRemarks("", "Tag as Accept and Complete this Job Offer?");
-            if (string.IsNullOrEmpty(promptRemarks)) return;
+            if (!confirmed) return;
 
             try
             {
                 isCompleting = true;
-
-                await DiscussionService.TagAsAccepted(jobOfferId);
+                await DiscussionService.UpdateJobOfferWorkFlowStatus(jobOfferId, 9, userId);//Accepted & Completed
 
                 // Accepted & Completed, TA Partner, Tag Accepted & Completed
-                await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 9, 1, 6, userId, promptRemarks);
+                await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 9, 1, 6, userId, "Job Offer Completed.");
 
                 await AlertService.Success(
                     "The job offer was accepted and completed.",
@@ -236,29 +231,25 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
                 isCompleting = false;
             }
 
-            Navigation.NavigateTo($"{JORoutes.TA.JobOfferComplete}/{jobOfferId}");
+            Navigation.NavigateTo($"{JORoutes.TAPartner.JobOfferComplete}/{jobOfferId}");
         }
 
         private async Task Decline()
         {
-            //var confirmed = await AlertService.Confirm(
-            //    "Tag as Declined this Job Offer?",
-            //    "Declined",
-            //    "Cancel");
+            var confirmed = await AlertService.Confirm(
+                "Decline this job offer?",
+                "Declined",
+                "Cancel");
 
-            //if (!confirmed)
-            //    return;
-
-            string promptRemarks = await AlertService.ConfirmRemarks("","Tag as Declined this Job Offer?");
-            if (string.IsNullOrEmpty(promptRemarks)) return;
+            if (!confirmed) return;
 
             try
             {
                 isCompleting = true;
-                await DiscussionService.TagAsAccepted(jobOfferId);
+                await DiscussionService.UpdateJobOfferWorkFlowStatus(jobOfferId, 12, userId);//Declined
 
                 // Declined, TA Partner, Tag Decline
-                await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 12, 1, 9, userId, promptRemarks);
+                await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 12, 1, 9, userId, "Declined Job Offer");
 
                 await AlertService.Success(
                     "The job offer was declined.",
@@ -269,7 +260,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
                 isCompleting = false;
             }
 
-            Navigation.NavigateTo($"{JORoutes.TA.JobOfferComplete}/{jobOfferId}");
+            Navigation.NavigateTo($"{JORoutes.TAPartner.JobOfferComplete}/{jobOfferId}");
         }
 
         private void ResetEntries()
@@ -389,6 +380,10 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
 
             if (numProposal == 0) return;
 
+
+            // For Negotiation, TA Partner, Tag For Negotiation
+            await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 11, 1, 8, userId, $"Tag For Negotiation ({numProposal} Proposal/s)");
+
             await DiscussionService.ForNegotiation(jobOffer,
                 joAnalysis,
                 candidate,
@@ -396,10 +391,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
                 numProposal,
                 userId);
 
-            // For Negotiation, TA Partner, Tag For Negotiation
-            await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 11, 1, 8, userId, $"Tag For Negotiation ({numProposal} Proposal/s)");
-
-            Navigation.NavigateTo($"{JORoutes.TA.ForNegotiation}/{jobOfferId}");
+            Navigation.NavigateTo($"{JORoutes.TAPartner.ForNegotiation}/{jobOfferId}");
         }
     }
 }

@@ -8,22 +8,22 @@
 
     @if (user.Identity?.IsAuthenticated == true)
     {
-        @if (user.IsInRole(JOUserRole.TA) == true)
+        @if (user.IsInRole(JOUserRole.TAPartner) == true)
         {
             <TAMenu />
         }
 
-        @if (user.IsInRole(JOUserRole.TR) == true)
+        @if (user.IsInRole(JOUserRole.BusinessAdmin) == true)
         {
             <TRMenu />
         }
 
-        @if (user.IsInRole(JOUserRole.HROD) == true)
+        @if (user.IsInRole(JOUserRole.HRODHeadApprover) == true)
         {
             <HRODMenu />
         }
 
-        @if (user.IsInRole(JOUserRole.DH) == true)
+        @if (user.IsInRole(JOUserRole.DivisionHeadApproverL1) == true)
         {
             <DHMenu />
         }

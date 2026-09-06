@@ -13,10 +13,12 @@
                         <th>Status</th>
                         <th>Candidate ID</th>
                         <th>Email</th>
+                        <th>Job Level</th>
                         <th>Job Position</th>
                         <th>Company</th>
                         <th>Division</th>
                         <th>Department</th>
+                        <th>Contact</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -44,10 +46,12 @@
                             <td>@(string.IsNullOrEmpty(candidate.StatusName) ? "-" : candidate.StatusName)</td>
                             <td>@candidate.DboxRefNum</td>
                             <td>@candidate.EmailAddress</td>
+                            <td>@candidate.JobLevel</td>
                             <td>@candidate.JobPosition</td>
                             <td>@candidate.Company</td>
                             <td>@candidate.Division</td>
                             <td>@candidate.Department</td>
+                            <td>@candidate.ContactNumber</td>
                         </tr>
                     }
                 </tbody>

@@ -22,6 +22,7 @@ namespace JO.Service.Services.Contracts
         Task<List<CompenItemCategoryDto>> SetUpCompenItemCategoryDto();
         Task<int> SubmitForApproval(JobOffers jobOffer, JOAnalysis joAnalysis, List<JOCompanyCompensation> joCompanyCompensation, List<JOCompanyCompensationItems> joCompanyCompensationItems, int selectedCmpnyCmpnstnId, int candidateId, int userId, string taPartnerRemarks);
         Task<int> SubmitForApprovalByTALead(JobOffers jobOffer, JOAnalysis joAnalysis, List<JOCompanyCompensation> joCompanyCompensation, List<JOCompanyCompensationItems> joCompanyCompensationItems, int selectedCmpnyCmpnstnId, int candidateId, int userId, string taPartnerRemarks);
+        Task<int> TALeadSubmitForApproval(JobOffers jobOffer, JOAnalysis joAnalysis, List<JOCompanyCompensation> joCompanyCompensation, List<JOCompanyCompensationItems> joCompanyCompensationItems, int selectedCmpnyCmpnstnId, int candidateId, int userId, string taPartnerRemarks);
         Task<int> UpdateCompensationItems(List<VwCompanyCompensationItems> compensationItems, int userId);
     }
 }

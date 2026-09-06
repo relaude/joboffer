@@ -7,7 +7,7 @@ namespace JO.Service.Constants
     public class JORoutes
     {
         private const string PrefixAdmin = "/admin";
-        private const string PrefixTA = "/ta";
+        private const string PrefixTAPartner = "/ta-partner";
         private const string PrefixTALead = "/ta-lead";
         private const string PrefixTR = "/tr";
         private const string PrefixBA = "/ba";
@@ -16,6 +16,7 @@ namespace JO.Service.Constants
         private const string PrefixDH = "/dh";
         private const string PrefixPEH = "/peh";
         private const string PrefixDHL1 = "/dh-l1";
+        private const string PrefixDHL2 = "/dh-l2";
         private const string PrefixHRODHead = "/hrod-head";
         private const string PrefixPres = "/president";
         private const string PrefixMock = "/mock";
@@ -61,52 +62,18 @@ namespace JO.Service.Constants
             public const string EmailTemplate = PrefixAdmin + "/email-template";
         }
 
-        public static class TA
+        public static class TAPartner
         {
-            public const string Dashboard = PrefixTA + "/dashboard";
-            public const string Candidates = PrefixTA + "/candidates";
-            public const string DboxCandidates = PrefixTA + "/dbox/candidates";
-            public const string Candidate = PrefixTA + "/candidate";
-
-            //public const string MSFormCandidate = PrefixTA + "/msform-candidate";
-            public const string MSFormDetails = PrefixTA + "/msform-details";
-            public const string Upload = PrefixTA + "/upload";
-
-            //Legal Entity
-            public const string Legal = PrefixTA + "/legal";
-
-            //JO Analysis
-            public const string ApplicationDetails = PrefixTA + "/application-details";
-            public const string Analysis = PrefixTA + "/analysis";
-            public const string AnalysisSendBack = PrefixTA + "/analysis-sendback";
-            public const string JOAnalysisDetails = PrefixTA + "/analysis-details";
-            
-            //Discussion
-            public const string Discussion = PrefixTA + "/discussion";
-            public const string ForNegotiation = PrefixTA + "/negotiation";
-
-            //Tracker
-            public const string RequestTracker = PrefixTA + "/request-tracker";
-            public const string JobOfferTracker = PrefixTA + "/joboffer-tracker";
-            public const string JobOfferTagging = PrefixTA + "/joboffer-tagging";
-            public const string JobOfferDetails = PrefixTA + "/joboffer-details";
-            public const string JobOfferComplete = PrefixTA + "/joboffer-complete";
-
-            //Proposal
-            public const string NewOffer = PrefixTA + "/new-offer";
-
-            //Letter
-            public const string Letter = PrefixTA + "/letter";
-            public const string EmailLetter = PrefixTA + "/email-letter";
-
-            //MS Form
-            public const string MSFormResponse = PrefixTA + "/msform-response";
-
-            public const string JobOffer = PrefixTA + "/joboffer";
-            public const string Accept = PrefixTA + "/joboffer/accept";
-            public const string Return = PrefixTA + "/joboffer/return";
-            public const string Email = PrefixTA + "/email";
-            public const string MassUpload = PrefixTA + "/mass-upload";
+            public const string Candidates = PrefixTAPartner + "/candidates";
+            public const string Candidate = PrefixTAPartner + "/candidate";
+            public const string Analysis = PrefixTAPartner + "/analysis";
+            public const string Discussion = PrefixTAPartner + "/discussion";
+            public const string ForNegotiation = PrefixTAPartner + "/negotiation";
+            public const string JobOfferTracker = PrefixTAPartner + "/joboffer-tracker";
+            public const string JobOfferDetails = PrefixTAPartner + "/joboffer-details";
+            public const string JobOfferComplete = PrefixTAPartner + "/joboffer-complete";
+            public const string EmailTemplates = PrefixTAPartner + "/email-templates";
+            public const string EmailTemplate = PrefixTAPartner + "/email-template";
         }
 
         public static class TALead
@@ -118,6 +85,9 @@ namespace JO.Service.Constants
             public const string JobOfferDetails = PrefixTALead + "/joboffer-details";
             public const string Analysis = PrefixTALead + "/analysis";
             public const string AnalysisSendBack = PrefixTALead + "/analysis-sendback";
+            public const string Discussion = PrefixTALead + "/discussion";
+            public const string ForNegotiation = PrefixTALead + "/negotiation";
+            public const string JobOfferComplete = PrefixTALead + "/joboffer-complete";
         }
 
         public static class HROD
@@ -164,6 +134,7 @@ namespace JO.Service.Constants
         public static class PEH
         {
             public const string JOForApproval = PrefixPEH + "/for-approval";
+            public const string JOForReview = PrefixPEH + "/for-review";
             public const string JobOfferDetails = PrefixPEH + "/joboffer-details";
         }
 
@@ -171,6 +142,12 @@ namespace JO.Service.Constants
         {
             public const string JOForApproval = PrefixDHL1 + "/for-approval";
             public const string JobOfferDetails = PrefixDHL1 + "/joboffer-details";
+        }
+
+        public static class DHL2
+        {
+            public const string JOForApproval = PrefixDHL2 + "/for-approval";
+            public const string JobOfferDetails = PrefixDHL2 + "/joboffer-details";
         }
 
         public static class HRODHead

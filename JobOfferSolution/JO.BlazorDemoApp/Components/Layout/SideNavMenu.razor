@@ -34,6 +34,11 @@
             <DHL1 />
         }
 
+        @if (user.IsInRole(JOUserRole.DivisionHeadApproverL2) == true)
+        {
+            <DHL2 />
+        }
+
         @if (user.IsInRole(JOUserRole.President) == true)
         {
             <PresMenu />

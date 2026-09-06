@@ -42,12 +42,12 @@
     {
         if (string.IsNullOrWhiteSpace(taLeadRemarks))
         {
-            await AlertService.Error("TA Lead Remarks is required."); return;
+            await AlertService.Error("Remarks is required."); return;
         }
 
         if (!await AlertService.Confirm(
-            title: "Send back this reviewed job offer?",
-            confirmText: "Send Back Job Offer"))
+            title: "Send back this job offer?",
+            confirmText: "Send Back"))
         {
             return;
         }
@@ -56,7 +56,7 @@
         await ApprovalService.JobOfferActionSendBack(jobOfferId, 2, userId, taLeadRemarks);
 
         await AlertService.Success(
-            message: "The job offer review has been send back successfully.",
+            message: "The job offer has been send back successfully.",
             title: "Send Back Complete");
 
         Navigation.NavigateTo(JORoutes.TALead.JOForReview);
@@ -70,8 +70,8 @@
         }
 
         if (!await AlertService.Confirm(
-            title: "Approve this reviewed job offer?",
-            confirmText: "Approve Job Offer"))
+            title: "Approve this job offer?",
+            confirmText: "Approve"))
         {
             return;
         }
@@ -93,8 +93,8 @@
         }
         
         await AlertService.Success(
-            message: "The job offer review has been approved successfully.",
-            title: "Review Complete");
+            message: "The job offer has been approved successfully.",
+            title: "Approve Complete");
 
         Navigation.NavigateTo(JORoutes.TALead.JOForReview);
     }

@@ -8,6 +8,8 @@ namespace JO.DataModel.View
     {
         public int Id { get; set; }
         public string? RefNum { get; set; }
+        public bool? IsAM { get; set; }
+        public bool? IsHROD { get; set; }
         public string? DboxRefNum { get; set; }
         public string? CandidateName { get; set; }
         public int? WorkFlowId { get; set; }

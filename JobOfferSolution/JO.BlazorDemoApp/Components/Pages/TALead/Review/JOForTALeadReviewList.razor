@@ -1,0 +1,14 @@
+@attribute [Authorize(Roles = JOUserRole.TALead)]
+@attribute [Route(JORoutes.TALead.JOForReview)]
+
+<ReviewerKpiBoxes Total="@total"
+    ForReviewCount="@countForReview"
+    SendBackCount="@countSendBack"
+    ReviewedCount="@countReviewed"
+    ForReviewWorkFlowIds="@ForReviewWorkFlowIds"
+    SendBackWorkFlowIds="@SendBackWorkFlowIds"
+    ReviewedWorkFlowIds="@ReviewedWorkFlowIds"
+    OnFilterChanged="FilterByWorkFlow" />
+
+<JobOfferTableList JobOffers="@filteredJODboxCandidates"
+                   Role="@JOUserRole.TALead" />

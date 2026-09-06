@@ -18,7 +18,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Candidate
         /// CandidateService link resolver when Url is not supplied.
         /// </summary>
         [Parameter, EditorRequired]
-        public string RoleId { get; set; } = JOUserRole.TA;
+        public string RoleId { get; set; } = JOUserRole.TAPartner;
 
         /// <summary>
         /// Optional route override. When supplied, the candidate ID is appended

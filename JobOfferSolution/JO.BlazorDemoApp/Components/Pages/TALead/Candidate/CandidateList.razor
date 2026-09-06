@@ -1,5 +1,5 @@
 @using JO.BlazorDemoApp.Components.Pages.Candidate
-@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Authorize(Roles = JOUserRole.TALead)]
 @attribute [Route(JORoutes.TALead.Candidates)]
 
 <CandidateKpiBoxes Total="@total"

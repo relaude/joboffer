@@ -27,15 +27,26 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Candidate
 
         private async Task CreateJobOffer()
         {
-            int numProposal = await AlertService.ConfirmProposalNumber();
+            int jobOfferId = await CandidateService.GetJobOfferIdByCandidateId(candidate.Id);
 
-            if (numProposal == 0) return;
+            if (jobOfferId > 0)
+            {
+                Navigation.NavigateTo($"{JORoutes.TAPartner.Analysis}/{jobOfferId}");
+                return;
+            }
+
+            int proposalCount = await AlertService.ConfirmProposalNumber();
+
+            if (proposalCount == 0) return;
 
             int createdBy = await AccountService.GetJobOfferUserId();
-            int jobOfferId = await CandidateService.CreateJobOffer(candidate, numProposal, createdBy);
 
-            Navigation.NavigateTo($"{JORoutes.TA.Analysis}/{jobOfferId}");
+            jobOfferId = await CandidateService.CreateJobOffer(
+                candidate,
+                proposalCount,
+                createdBy);
+
+            Navigation.NavigateTo($"{JORoutes.TAPartner.Analysis}/{jobOfferId}");
         }
-
     }
 }

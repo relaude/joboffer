@@ -107,7 +107,12 @@ namespace JO.Persistence.DataAccess
         public DbSet<WorkFlow> WorkFlow { get; set; }
         public DbSet<WorkFlowStatus> WorkFlowStatus { get; set; }
 
+        //Email Template
+        public DbSet<EmailTemplate> EmailTemplate { get; set; }
+        public DbSet<EmailTemplateRoles> EmailTemplateRoles { get; set; }
+
         //Views
+        public DbSet<VwEmailTemplate> VwEmailTemplate { get; set; }
         public DbSet<VwJOApprovalFlow> VwJOApprovalFlow { get; set; }
         public DbSet<VwJOActionLogs> VwJOActionLogs { get; set; }
         public DbSet<VwApprovals> VwApprovals { get; set; }
@@ -138,10 +143,13 @@ namespace JO.Persistence.DataAccess
         public DbSet<VwJobOfferUsersAndRoles> VwJobOfferUsersAndRoles { get; set; }
         public DbSet<VwCompanyCompensation> VwCompanyCompensation { get; set; }
         public DbSet<VwCompanyCompensationItems> VwCompanyCompensationItems { get; set; }
+        public DbSet<VwTAPartnerDboxCandidates> VwTAPartnerDboxCandidates { get; set; }
+        public DbSet<VwTALeadDboxCandidates> VwTALeadDboxCandidates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Views
+            modelBuilder.Entity<VwEmailTemplate>().HasNoKey().ToView("vw_EmailTemplate");
             modelBuilder.Entity<VwJOApprovalFlow>().HasNoKey().ToView("vw_JOApprovalFlow");
             modelBuilder.Entity<VwJOActionLogs>().HasNoKey().ToView("vw_JOActionLogs");
             modelBuilder.Entity<VwApprovals>().HasNoKey().ToView("vw_Approvals");
@@ -172,6 +180,8 @@ namespace JO.Persistence.DataAccess
             modelBuilder.Entity<VwJobOfferUsersAndRoles>().HasNoKey().ToView("vw_JobOfferUsersAndRoles");
             modelBuilder.Entity<VwCompanyCompensation>().HasNoKey().ToView("vw_CompanyCompensation");
             modelBuilder.Entity<VwCompanyCompensationItems>().HasNoKey().ToView("vw_CompanyCompensationItems");
+            modelBuilder.Entity<VwTAPartnerDboxCandidates>().HasNoKey().ToView("vw_TAPartnerDboxCandidates");
+            modelBuilder.Entity<VwTALeadDboxCandidates>().HasNoKey().ToView("vw_TALeadDboxCandidates");
         }
     }
 }

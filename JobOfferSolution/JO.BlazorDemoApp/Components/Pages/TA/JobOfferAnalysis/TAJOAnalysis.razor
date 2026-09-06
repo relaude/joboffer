@@ -1,5 +1,5 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.Analysis + "/{jobOfferId:int}")]
+﻿@attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Route(JORoutes.TAPartner.Analysis + "/{jobOfferId:int}")]
 
 <Analysis @ref="analysis" jobOfferId="jobOfferId" />
 

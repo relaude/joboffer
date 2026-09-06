@@ -1,4 +1,4 @@
-@attribute [Authorize(Roles = JOUserRole.TA)]
+@attribute [Authorize(Roles = JOUserRole.TALead)]
 @attribute [Route(JORoutes.TALead.Candidate + "/{candidateId:int}")]
 
 <div class="card shadow mb-4">
@@ -7,7 +7,7 @@
 
         <div class="ml-auto">
             <a href="@JORoutes.TALead.Candidates" class="btn btn-outline-secondary mr-2">Back</a>
-            @if (candidate.StatusId == 1)
+            @if (candidate.StatusId == 1 || candidate.StatusId == 4)
             {
                 <button type="button" class="btn btn-primary" @onclick="CreateJobOffer">
                     Create Job Offer

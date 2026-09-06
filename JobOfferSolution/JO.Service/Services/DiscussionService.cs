@@ -37,6 +37,9 @@ namespace JO.Service.Services
 
             //update status
             jobOffer.WorkFlowId = 11;//For Negotiation
+            jobOffer.ModifiedAt = DateTime.Now;
+            jobOffer.ModifiedBy = createdBy;
+
             foreach (var item in joCompanyCompensation)
             {
                 item.Declined = true;
@@ -88,7 +91,12 @@ namespace JO.Service.Services
             await context.JOCompanyCompensationItems.AddRangeAsync(joCmpnyCompensationItemsB);
             await context.SaveChangesAsync();
 
-            //
+            //remove old JOApprovalFlow
+            var approvalFlow = await context.JOApprovalFlow
+                .Where(jo => jo.JobOfferId == jobOffer.Id)
+                .ToListAsync();
+            context.JOApprovalFlow.RemoveRange(approvalFlow);
+            await context.SaveChangesAsync();
         }
 
         public async Task<List<JODeclineReason>> GetJODeclineReason()
@@ -128,6 +136,20 @@ namespace JO.Service.Services
                 .AsNoTracking()
                 .Where(jo => jo.JobOfferId == jobOfferId)
                 .ToListAsync();
+        }
+
+        public async Task UpdateJobOfferWorkFlowStatus(int jobOfferId, int workFlowId, int userId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            //joboffer
+            var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
+            jobOffer.WorkFlowId = workFlowId;
+            jobOffer.ModifiedAt = DateTime.Now;
+            jobOffer.ModifiedBy = userId;
+
+            context.JobOffers.Update(jobOffer);
+            await context.SaveChangesAsync();
         }
 
         public async Task<int> TagAsAccepted(int jobOfferId)

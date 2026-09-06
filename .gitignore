@@ -406,3 +406,4 @@ JobOfferSolution/.dotnet
 .codex-tmp
 .codex-temp
 outputs
+.codex-build

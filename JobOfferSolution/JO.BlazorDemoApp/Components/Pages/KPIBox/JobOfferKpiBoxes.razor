@@ -1,0 +1,23 @@
+@foreach (var row in KpiBoxes.Chunk(5))
+{
+    <div class="row">
+        @foreach (var kpi in row)
+        {
+            <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
+                <div class="card @(kpi.IsTotal ? "border-left-primary" : "border-left-info") shadow h-100 py-2"
+                     role="button" tabindex="0" @onclick="() => FilterByWorkFlow(kpi.WorkFlowIds)">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold @(kpi.IsTotal ? "text-primary" : "text-info") text-uppercase mb-1">
+                                    @kpi.Label
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@kpi.Count</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

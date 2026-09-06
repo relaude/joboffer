@@ -25,10 +25,9 @@
                     <span class="font-weight-bold text-gray-800">@(string.IsNullOrWhiteSpace(Candidate.ContactNumber) ? "-" : Candidate.ContactNumber)</span>
                 </div>
                 <div>
-                    <small class="text-muted d-block">Job Level / Grade</small>
+                    <small class="text-muted d-block">Job Level</small>
                     <span class="font-weight-bold text-gray-800">
-                        @(string.IsNullOrWhiteSpace(Candidate.JobLevel) ? "-" : Candidate.JobLevel) /
-                        @(string.IsNullOrWhiteSpace(Candidate.GradeName) ? "-" : Candidate.GradeName)
+                        @(string.IsNullOrWhiteSpace(Candidate.JobLevel) ? "-" : Candidate.JobLevel)
                     </span>
                 </div>
             </div>

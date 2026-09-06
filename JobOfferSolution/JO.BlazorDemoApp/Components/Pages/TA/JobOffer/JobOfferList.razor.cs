@@ -17,8 +17,17 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         private List<VwJODboxCandidates> joDboxCandidates = new();
         private List<VwJODboxCandidates> trackableJODboxCandidates = new();
         private List<VwJODboxCandidates> filteredJODboxCandidates = new();
+        private List<VwTAPartnerDboxCandidates> vwTAPartnerDboxCandidates = new();
 
-        private static readonly int?[] ForApprovalWorkFlowIds = { 4, 5, 6, 7 };
+        private static readonly int[] ForReviewWorkFlowIds = [3];
+        private static readonly int[] ReviewedWorkFlowIds = [4];
+        private static readonly int[] SendBackWorkFlowIds = [10];
+        private static readonly int[] ForApprovalWorkFlowIds = [4, 5, 6, 7, 13];
+        private static readonly int[] ForDiscussionWorkFlowIds = [8];
+        private static readonly int[] ApprovedWorkFlowIds = [0];
+        private static readonly int[] AcceptedWorkFlowIds = [9];
+        private static readonly int[] ForNegotiationWorkFlowIds = [11];
+        private static readonly int[] DeclinedWorkFlowIds = [12];
 
         private int total = 0;
         private int countForReview = 0;
@@ -34,8 +43,11 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         protected override async Task OnInitializedAsync()
         {
             joDboxCandidates = await JODetailsService.GetVwJODboxCandidates();
+            vwTAPartnerDboxCandidates = await JODetailsService.GetVwTAPartnerDboxCandidates();
+
+            List<string?> candidateIds = vwTAPartnerDboxCandidates.Select(jo => jo.DboxRefNum).ToList();
             trackableJODboxCandidates = joDboxCandidates
-                .Where(jo => jo.WorkFlowId > 1)
+                .Where(jo => candidateIds.Contains(jo.DboxRefNum) && jo.WorkFlowId > 1)
                 .ToList();
             filteredJODboxCandidates = trackableJODboxCandidates.ToList();
             SetUpCountStatus();
@@ -44,31 +56,24 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         private void SetUpCountStatus()
         {
             total = trackableJODboxCandidates.Count;
-            countForReview = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 3);
-            countReviewed = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 4);
-            countSendBack = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 10);
-            countForApproval = trackableJODboxCandidates.Count(jo => ForApprovalWorkFlowIds.Contains(jo.WorkFlowId));
-            countForDiscussion = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 8);
-            countApproved = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 8);
-            countAcccepted = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 9);
-            countForNegotiation = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 11);
-            countDeclined = trackableJODboxCandidates.Count(jo => jo.WorkFlowId == 12);
+            countForReview = trackableJODboxCandidates.Count(jo => jo.WorkFlowId.HasValue && ForReviewWorkFlowIds.Contains(jo.WorkFlowId.Value));
+            countReviewed = trackableJODboxCandidates.Count(jo => jo.WorkFlowId.HasValue && ReviewedWorkFlowIds.Contains(jo.WorkFlowId.Value));
+            countSendBack = trackableJODboxCandidates.Count(jo => jo.WorkFlowId.HasValue && SendBackWorkFlowIds.Contains(jo.WorkFlowId.Value));
+            countForApproval = trackableJODboxCandidates.Count(jo => jo.WorkFlowId.HasValue && ForApprovalWorkFlowIds.Contains(jo.WorkFlowId.Value));
+            countForDiscussion = trackableJODboxCandidates.Count(jo => jo.WorkFlowId.HasValue && ForDiscussionWorkFlowIds.Contains(jo.WorkFlowId.Value));
+            countApproved = trackableJODboxCandidates.Count(jo => jo.WorkFlowId.HasValue && ApprovedWorkFlowIds.Contains(jo.WorkFlowId.Value));
+            countAcccepted = trackableJODboxCandidates.Count(jo => jo.WorkFlowId.HasValue && AcceptedWorkFlowIds.Contains(jo.WorkFlowId.Value));
+            countForNegotiation = trackableJODboxCandidates.Count(jo => jo.WorkFlowId.HasValue && ForNegotiationWorkFlowIds.Contains(jo.WorkFlowId.Value));
+            countDeclined = trackableJODboxCandidates.Count(jo => jo.WorkFlowId.HasValue && DeclinedWorkFlowIds.Contains(jo.WorkFlowId.Value));
         }
 
-        private void FilterByWorkFlow(int? workFlowId)
+        private void FilterByWorkFlow(int[]? workFlowIds)
         {
-            filteredJODboxCandidates = workFlowId switch
-            {
-                null => trackableJODboxCandidates.ToList(),
-                JobOfferKpiBoxes.ForApprovalFilter => trackableJODboxCandidates
-                    .Where(jo => ForApprovalWorkFlowIds.Contains(jo.WorkFlowId))
-                    .ToList(),
-                _ => trackableJODboxCandidates
-                    .Where(jo => jo.WorkFlowId == workFlowId)
-                    .ToList()
-            };
+            filteredJODboxCandidates = workFlowIds is null
+                ? trackableJODboxCandidates.ToList()
+                : trackableJODboxCandidates
+                    .Where(jo => jo.WorkFlowId.HasValue && workFlowIds.Contains(jo.WorkFlowId.Value))
+                    .ToList();
         }
-
-
     }
 }

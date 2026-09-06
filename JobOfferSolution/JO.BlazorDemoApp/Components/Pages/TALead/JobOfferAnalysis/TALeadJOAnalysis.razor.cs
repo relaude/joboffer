@@ -50,7 +50,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.JobOfferAnalysis
         {
             if (analysis is not null)
             {
-                await analysis.SubmitForApproval(JORoutes.TALead.JobOfferDetails);
+                await analysis.TALeadSubmitForApproval(JORoutes.TALead.JobOfferDetails);
             }
         }
     }

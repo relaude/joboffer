@@ -26,6 +26,8 @@ namespace JO.DataModel.Entity
         public int? CmpnyCmpnstnId { get; set; }
         public int? OfferRangeId { get; set; }
         public bool? Escalate { get; set; }
+        public bool? IsHROD { get; set; }
+        public bool? IsAM { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }

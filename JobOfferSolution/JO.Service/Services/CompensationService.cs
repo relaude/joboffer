@@ -187,35 +187,130 @@ namespace JO.Service.Services
             //JOApprovalFlow
             List<JOApprovalFlow> newApprovalFlow = new();
             newApprovalFlow.Add(
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 1, IsAproved = true } //TA Partner
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 1, ActionId = 2, IsAproved = true } //TA Partner
                 );
 
             if (jobOffer.OfferRangeId == 1)
             {
                 newApprovalFlow.AddRange(
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 2 }, //TA Lead
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5 } //Division Head Approver L1
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 3, RoleId = 2 }, //TA Lead
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId = 5 } //Division Head Approver L1
                 );
             }
 
             if (jobOffer.OfferRangeId == 2)
             {
                 newApprovalFlow.AddRange(
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 2 }, //TA Lead
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3 }, //PE Head
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5 }, //Division Head Approver L1
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4 } //HROD Head Approver
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 3, RoleId = 2 }, //TA Lead
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId = 3 }, //PE Head
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId = 5 }, //Division Head Approver L1
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId = 4 } //HROD Head Approver
                 );
             }
 
             if(jobOffer.OfferRangeId == 3)
             {
                 newApprovalFlow.AddRange(
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 2 }, //TA Lead
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3 }, //PE Head
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5 }, //Division Head Approver L1
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId=4 }, //HROD Head Approver
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId=7 } //President
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 3, RoleId = 2 }, //TA Lead
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId = 3 }, //PE Head
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId = 5 }, //Division Head Approver L1
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId =4 }, //HROD Head Approver
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId =6 }, //Division Head Approver L2
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId =7 } //President
+                );
+            }
+
+            await context.JOActionLogs.AddAsync(newLog);
+            await context.JOApprovalFlow.AddRangeAsync(newApprovalFlow);
+
+            context.JobOffers.Update(jobOffer);
+            context.JOAnalysis.Update(joAnalysis);
+            context.DboxCandidates.Update(candidate);
+            context.JOCompanyCompensation.UpdateRange(joCompanyCompensation);
+            context.JOCompanyCompensationItems.UpdateRange(joCompanyCompensationItems);
+            
+            await context.SaveChangesAsync();
+
+            return jobOffer.Id;
+        }
+        public async Task<int> TALeadSubmitForApproval(
+            JobOffers jobOffer,
+            JOAnalysis joAnalysis,
+            List<JOCompanyCompensation> joCompanyCompensation,
+            List<JOCompanyCompensationItems> joCompanyCompensationItems,
+            int selectedCmpnyCmpnstnId,
+            int candidateId,
+            int userId,
+            string taPartnerRemarks)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            //JobOffers
+            int offerRangeId = joCompanyCompensation.Max(jo => jo.OfferRangeId.GetValueOrDefault());
+
+            jobOffer.WorkFlowId = offerRangeId == 1 ? 5 : 14;// For Division Head Approval : For PE Head Review
+            jobOffer.ModifiedBy = userId;
+            jobOffer.ModifiedAt = DateTime.Now;
+            jobOffer.CmpnyCmpnstnId = selectedCmpnyCmpnstnId;
+            jobOffer.Escalate = joCompanyCompensation.Any(jo => jo.Escalate == true);
+            jobOffer.OfferRangeId = offerRangeId;
+
+            //JOAnalysis
+            joAnalysis.ModifiedBy = userId;
+            joAnalysis.ModifiedAt = DateTime.Now;
+
+            //JOActionLogs
+            JOActionLogs newLog = new JOActionLogs
+            {
+                JobOfferId = jobOffer.Id,
+                RoleId = 2,//TA Lead
+                ActionId = 2,//Prepared
+                ActionAt = DateTime.Now,
+                ActionBy = userId,
+                Remarks = taPartnerRemarks
+            };
+
+            //joCompanyCompensation
+            foreach (var joCompensation in joCompanyCompensation)
+            {
+                joCompensation.CmpnyCmpnstnId = selectedCmpnyCmpnstnId;
+                joCompensation.ModifiedBy = userId;
+                joCompensation.ModifiedAt = DateTime.Now;
+            }
+
+            var candidate = await context.DboxCandidates.FindAsync(candidateId);
+            candidate.StatusId = 3;//JO Created
+
+            //JOApprovalFlow
+            List<JOApprovalFlow> newApprovalFlow = new();
+            newApprovalFlow.Add(
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 2, ActionId = 2, IsAproved = true } //TA Lead , Prepared
+                );
+
+            if (jobOffer.OfferRangeId == 1)
+            {
+                newApprovalFlow.Add(
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 } //Division Head Approver L1, Approved
+                );
+            }
+
+            if (jobOffer.OfferRangeId == 2)
+            {
+                newApprovalFlow.AddRange(
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3, ActionId = 3 }, //PE Head, Reviewed
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 } //Division Head Approver L1, Approved
+                );
+            }
+
+            if(jobOffer.OfferRangeId == 3)
+            {
+                newApprovalFlow.AddRange(
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3, ActionId = 3 }, //PE Head, Reviewed
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 }, //Division Head Approver L1, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 6, ActionId = 4 }, //Division Head Approver L2, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 7, ActionId = 4 } //President, Approved
                 );
             }
 

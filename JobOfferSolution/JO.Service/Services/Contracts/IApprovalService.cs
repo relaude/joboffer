@@ -6,6 +6,7 @@ namespace JO.Service.Services.Contracts
     public interface IApprovalService
     {
         Task<int> DHApprovals(List<ProposalDto> joProposal);
+        Task<int> GetNextApproverRoleId(int jobOfferId, int currentRoleId);
         Task<List<ProposalDto>> GetProposalDto(int jobOfferId);
         Task<int> HRApprovals(List<ProposalDto> joProposal);
         Task JobOfferActionFlowStatus(int jobOfferId, int workFlowId, int roleId, int actionId, int userId);

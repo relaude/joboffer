@@ -36,7 +36,7 @@
 @code {
     [Parameter] public int jobOfferId { get; set; }
     private string approverRemarks = string.Empty;
-    private Components.Pages.JobOffer.JobOfferAnalysis? analysis;
+    private JobOfferAnalysis? analysis;
 
     private async Task SendBackJobOffer()
     {
@@ -46,8 +46,8 @@
         }
 
         if (!await AlertService.Confirm(
-            title: "Send back this reviewed job offer?",
-            confirmText: "Send Back Job Offer"))
+            title: "Send back this job offer?",
+            confirmText: "Send Back"))
         {
             return;
         }
@@ -56,7 +56,7 @@
         await ApprovalService.JobOfferActionSendBack(jobOfferId, 4, userId, approverRemarks);
 
         await AlertService.Success(
-            message: "The job offer review has been send back successfully.",
+            message: "The job offer has been send back successfully.",
             title: "Send Back Complete");
 
         Navigation.NavigateTo(JORoutes.HRODHead.JOForApproval);
@@ -71,18 +71,30 @@
 
         if (!await AlertService.Confirm(
             title: "Approve this job offer?",
-            confirmText: "Approve Job Offer"))
+            confirmText: "Approve"))
         {
             return;
         }
+
         int userId = await AccountService.GetJobOfferUserId();
+        int workFlowId = 0;
 
-        int workFlowId = analysis.JobOffer.OfferRangeId == 3 ? 7 : 8;
+        if (analysis.JobOffer.IsAM == true || analysis.JobOffer.IsHROD == true)
+        {
+            if (analysis.JobOffer.OfferRangeId == 2 || analysis.JobOffer.OfferRangeId == 3)
+            {
+                workFlowId = 5;//For Division Head Approval
+            }
+        }
 
-        //For President Approval,HROD Head Approver, Approved
+        if (analysis.JobOffer.IsAM == false && analysis.JobOffer.IsHROD == false)
+        {
+            workFlowId = analysis.JobOffer.OfferRangeId == 2 ? 8 : 13; //For Discussion : For Division Head L2 Approval
+        }
+
         await ApprovalService.JobOfferActionFlowStatus(jobOfferId, workFlowId, 4, 4, userId, approverRemarks);
         await AlertService.Success(
-            message: "The job offer review has been approved successfully.",
+            message: "The job offer has been approved successfully.",
             title: "Approve Complete");
 
         Navigation.NavigateTo(JORoutes.HRODHead.JOForApproval);

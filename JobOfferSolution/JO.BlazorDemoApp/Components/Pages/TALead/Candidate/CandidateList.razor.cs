@@ -47,7 +47,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.Candidate
             withResponse = eligibleCandidates.Count(jo => jo.ResponseId > 0);
             withOutResponse = total - withResponse;
 
-            forJOCreation = eligibleCandidates.Count(jo => jo.StatusId == 1);
+            forJOCreation = eligibleCandidates.Count(jo => jo.StatusId == 1 || jo.StatusId == 4);
             joDraft = eligibleCandidates.Count(jo => jo.StatusId == 2);
             joCreated = eligibleCandidates.Count(jo => jo.StatusId == 3);
         }
@@ -62,6 +62,9 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.Candidate
                     .ToList(),
                 CandidateKpiBoxes.WithoutResponseFilter => eligibleCandidates
                     .Where(candidate => candidate.ResponseId.GetValueOrDefault() <= 0)
+                    .ToList(),
+                1 => eligibleCandidates
+                    .Where(candidate => candidate.StatusId == statusId || candidate.StatusId == 4)
                     .ToList(),
                 _ => eligibleCandidates
                     .Where(candidate => candidate.StatusId == statusId)

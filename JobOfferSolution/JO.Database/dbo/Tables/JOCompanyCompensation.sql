@@ -19,6 +19,7 @@
     [Remarks]           NVARCHAR (500)  NULL,
     [Accepted]          BIT             NULL,
     [Declined]          BIT             NULL,
+    [ForNegotiation]    BIT             NULL,
     [CreatedAt]         DATETIME        NULL,
     [CreatedBy]         INT             NULL,
     [ModifiedAt]        DATETIME        NULL,

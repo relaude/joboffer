@@ -121,7 +121,7 @@
                             </div>
                         }
 
-                        @if (compensation.Escalate == true)
+                        @* @if (compensation.Escalate == true)
                         {
                             <div class="pt-2">
                                 <span class="badge badge-warning">
@@ -129,7 +129,7 @@
                                     Requires Escalation
                                 </span>
                             </div>
-                        }
+                        } *@
                     </div>
                 </div>
             }
@@ -252,11 +252,11 @@
             @foreach (var compensation in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <th class="text-center">Option @compensation.OptionNumber</th> }
         </tr></thead><tbody>
             <tr><th>Compensation</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-center font-weight-bold">@GetCompanyName(x.CmpnyCmpnstnId)</td> }</tr>
-            <tr><th>Proposed Salary</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@UtilitiesService.ToPeso(x.ProposedSalary)</td> }</tr>
-            <tr><th>Current Salary</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@UtilitiesService.ToPeso(x.CurrentSalary)</td> }</tr>
-            <tr><th>Increase</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@Percent(x.Increase)</td> }</tr>
-            <tr><th>Monthly Difference</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@Percent(x.DiffTotalMonthly)</td> }</tr>
-            <tr><th>Annual Difference</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@Percent(x.DiffTotalAnnually)</td> }</tr>
+            <tr><th>Amount</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@UtilitiesService.ToPeso(x.ProposedSalary)</td> }</tr>
+            @* <tr><th>Current Salary</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@UtilitiesService.ToPeso(x.CurrentSalary)</td> }</tr>
+            <tr><th>Increase</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@Percent(x.Increase)</td> }</tr> *@
+            <tr><th>% Increase Monthly</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@Percent(x.DiffTotalMonthly)</td> }</tr>
+            <tr><th>% Increase Annual</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@Percent(x.DiffTotalAnnually)</td> }</tr>
         </tbody></table></div>
     </a>
     <div id="@ComparativeViewId" class="collapse"><div class="card-body"><div class="table-responsive"><table class="jo-table">

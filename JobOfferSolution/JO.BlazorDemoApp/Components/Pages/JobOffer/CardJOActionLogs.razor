@@ -38,10 +38,8 @@
                                 }
                             </span>
                             <span class="jo-approval-flow-number">Step @(index + 1)</span>
-                            <span class="jo-approval-flow-role">@DisplayValue(step.RoleName, "Role unavailable")</span>
-                            <!--EDIT-->
-                            <span class="jo-approval-flow-status">@GetApprovalFlowStatus(step)</span>
-                            <!--EDIT-->
+                            <span class="jo-approval-flow-role">@step.RoleName</span>
+                            <span class="jo-approval-flow-status">@(approved ? step.ActionName : "Pending")</span>
                         </li>
                     }
                 </ol>

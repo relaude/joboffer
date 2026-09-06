@@ -1,0 +1,102 @@
+@attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Route(JORoutes.TAPartner.EmailTemplate + "/{templateId:int}")]
+
+@if (isLoading)
+{
+    <div class="alert alert-info" role="status">Loading email template...</div>
+}
+else if (!templateFound)
+{
+    <div class="alert alert-warning" role="alert">Email template was not found.</div>
+    <a class="btn btn-outline-secondary" href="@JORoutes.TAPartner.EmailTemplates">Back to templates</a>
+}
+else
+{
+    <div class="card shadow mb-4 small">
+        <div class="card-header py-3 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between">
+            <div class="mb-2 mb-sm-0">
+                <h6 class="jo-title mb-1"><i class="fas fa-envelope-open-text fa-fw text-primary mr-2"></i>Edit Email Template</h6>
+                <small class="text-muted">Update a reusable message for a job offer workflow.</small>
+            </div>
+            <div>
+                <a class="btn btn-outline-secondary mr-2" href="@JORoutes.TAPartner.EmailTemplates">
+                    <i class="fas fa-times fa-fw mr-1"></i>Cancel
+                </a>
+                <button type="button" class="btn btn-primary" disabled="@(isProcessingSave || loadMessageContent)" @onclick="SaveTemplateAsync">
+                    <i class="fas fa-save fa-fw mr-1"></i>Save Template
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="form-group mb-4">
+                <label class="font-weight-bold text-gray-700" for="template-workflow">Job Offer WorkFlow</label>
+                <select id="template-workflow" class="custom-select" @bind="emailTemplate.WorkFlowId" disabled>
+                    <option value="">Select a workflow</option>
+                    @foreach (var workflow in workFlowStatuses)
+                    {
+                        <option value="@workflow.Id">@workflow.FlowName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="font-weight-bold text-gray-700" for="template-name">Email Subject</label>
+                <input id="template-name" type="text" class="form-control" @bind="emailTemplate.EmailSubject" placeholder="Enter a descriptive email subject" />
+            </div>
+
+            <div class="custom-control custom-checkbox mb-4">
+                <input id="template-active" type="checkbox" class="custom-control-input" @bind="IsActive" />
+                <label class="custom-control-label" for="template-active">IsActive</label>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="card h-100 border">
+                        <div class="card-header bg-light py-3">
+                            <h6 class="m-0 font-weight-bold text-gray-800">Recipients</h6>
+                            <small class="text-muted">Select one or more recipient roles.</small>
+                        </div>
+                        <div class="card-body">
+                            @foreach (var role in recipientRoles)
+                            {
+                                <div class="custom-control custom-checkbox mb-2" @key="role.Id">
+                                    <input id="@($"recipient-role-{role.Id}")" type="checkbox" class="custom-control-input"
+                                           checked="@selectedRecipientRoleIds.Contains(role.Id)"
+                                           @onchange="args => UpdateRecipientRole(role.Id, args.Value is true)" />
+                                    <label class="custom-control-label" for="@($"recipient-role-{role.Id}")">@role.RoleName</label>
+                                </div>
+                            }
+
+                            <div class="form-group mb-0 pt-3 border-top">
+                                <label class="font-weight-bold text-gray-700" for="recipient-others">Others</label>
+                                <input id="recipient-others" type="text" class="form-control form-control-sm" @bind="emailTemplate.OtherRecipient" placeholder="Enter email addresses" />
+                                <small class="form-text text-muted">Separate multiple addresses with semicolons (;).</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card h-100 border">
+                        <div class="card-header bg-light py-3">
+                            <h6 class="m-0 font-weight-bold text-gray-800">Message</h6>
+                            <small class="text-muted">Compose the email content for this template.</small>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="form-group d-flex flex-column flex-grow-1 mb-0"
+                                 @oninput="UpdateEmailMessageAsync" @onfocusout="UpdateEmailMessageAsync">
+                                <TextEditor @ref="messageEditor"
+                                            Toolbar="new Toolbar { ShowFullToolbar = true }"
+                                            EditorContainerId="email-message"
+                                            Placeholder="Write the email message here...">
+                                </TextEditor>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

@@ -5,7 +5,9 @@ namespace JO.DataModel.View
         public int Id { get; set; }
         public int? JobOfferId { get; set; }
         public int? RoleId { get; set; }
+        public int? ActionId { get; set; }
         public bool? IsAproved { get; set; }
         public string? RoleName { get; set; }
+        public string? ActionName { get; set; }
     }
 }

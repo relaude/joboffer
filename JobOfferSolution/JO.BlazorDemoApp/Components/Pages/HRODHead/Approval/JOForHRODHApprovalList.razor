@@ -2,13 +2,13 @@
 @attribute [Route(JORoutes.HRODHead.JOForApproval)]
 
 <ApproverKpiBoxes Total="@total"
-                  ForApprovalCount="@countForApproval"
-                  SendBackCount="@countSendBack"
-                  ApprovedCount="@countApproved"
-                  ForApprovalWorkFlowId="@ForApprovalWorkFlowId"
-                  SendBackWorkFlowId="@SendBackWorkFlowId"
-                  ApprovedWorkFlowId="@ApprovedWorkFlowId"
-                  OnFilterChanged="FilterByWorkFlow" />
+    ForApprovalCount="@countForApproval"
+    SendBackCount="@countSendBack"
+    ApprovedCount="@countApproved"
+    ForApprovalWorkFlowIds="@ForApprovalWorkFlowIds"
+    SendBackWorkFlowIds="@SendBackWorkFlowIds"
+    ApprovedWorkFlowIds="@ApprovedWorkFlowIds"
+    OnFilterChanged="FilterByWorkFlow" />
 
 <JobOfferTableList JobOffers="@filteredJODboxCandidates"
                    Role="@JOUserRole.HRODHeadApprover" />

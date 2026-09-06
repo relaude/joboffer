@@ -34,12 +34,37 @@ namespace JO.Service.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(jo=>jo.CandidateId==candidate.Id);
 
-            if(candidate.StatusId == 2 || jobOffer != null)
+            if (candidate.StatusId == 2)
             {
                 return $"{JORoutes.TALead.Analysis}/{jobOffer.Id}";
             }
 
             return $"{JORoutes.TALead.Candidate}/{candidate.Id}";
+        }
+
+        public async Task<string> GetTAPartnerCandidateLink(VwTAPartnerDboxCandidates candidate)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var jobOffer = await context.JobOffers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(jo=>jo.CandidateId==candidate.Id);
+
+            if(candidate.StatusId == 2 || candidate.StatusId == 4)
+            {
+                return $"{JORoutes.TAPartner.Analysis}/{jobOffer.Id}";
+            }
+
+            return $"{JORoutes.TAPartner.Candidate}/{candidate.Id}";
+        }
+
+        public async Task<int> GetJobOfferIdByCandidateId(int candidateId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var jobOffer = await context.JobOffers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(jo => jo.CandidateId == candidateId);
+
+            return jobOffer != null ? jobOffer.Id : 0 ;
         }
 
         public async Task<string> GetCandidateLink(VwDboxCandidates candidate)
@@ -49,12 +74,12 @@ namespace JO.Service.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(jo=>jo.CandidateId==candidate.Id);
 
-            if(candidate.StatusId == 2 || jobOffer != null)
+            if(candidate.StatusId == 2)
             {
-                return $"{JORoutes.TA.Analysis}/{jobOffer.Id}";
+                return $"{JORoutes.TAPartner.Analysis}/{jobOffer.Id}";
             }
 
-            return $"{JORoutes.TA.Candidate}/{candidate.Id}";
+            return $"{JORoutes.TAPartner.Candidate}/{candidate.Id}";
         }
 
         public async Task<List<DboxCandidates>> GetDboxCandidates()
@@ -67,6 +92,12 @@ namespace JO.Service.Services
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.VwDboxCandidates.FirstOrDefaultAsync(jo=>jo.Id==candidateId);
+        }
+
+        public async Task<List<VwTAPartnerDboxCandidates>> GetVwTAPartnerDboxCandidates()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwTAPartnerDboxCandidates.AsNoTracking().ToListAsync();
         }
 
         public async Task<List<VwDboxCandidates>> GetVwDboxCandidates()
@@ -103,6 +134,14 @@ namespace JO.Service.Services
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             //int countJO = await context.JobOffers.Where(jo=>jo.CandidateId=candidate.Id).CountAsync() + 1;
+            
+            var companySG = await context.VwCompanySalaryGrades
+                .AsNoTracking()
+                .Where(jo=>jo.GradeId == 1)
+                .ToListAsync();
+
+            var companySGIds = companySG.Select(jo => jo.Id).ToList();
+
             var newJO = new JobOffers
             {
                 //RefNum = $"JO-{DateTime.Now.Year}-{candidate.DboxRefNum}-{countJO:D2}",
@@ -113,6 +152,8 @@ namespace JO.Service.Services
                 CandidateId = candidate.Id,
                 Options = options,
                 //WorkFlowId = 1, //Draft
+                IsHROD = candidate.DivisionId.GetValueOrDefault() == 3,
+                IsAM = companySGIds.Contains(candidate.CSGId.GetValueOrDefault()),
                 CreatedAt = DateTime.Now,
                 CreatedBy = createdBy
             };
@@ -243,12 +284,12 @@ namespace JO.Service.Services
             };
 
             //DboxCandidates
-            //var dboxCandidate = await context.DboxCandidates.FindAsync(candidate.Id);
-            //dboxCandidate.StatusId = 2;//JO Draft
+            var dboxCandidate = await context.DboxCandidates.FindAsync(candidate.Id);
+            dboxCandidate.StatusId = 4;//JO Initialize
 
             await context.JOCompanyCompensationItems.AddRangeAsync(joCmpnyCompensationItemsB);
             await context.JOActionLogs.AddAsync(actionLogs);
-            //context.DboxCandidates.Update(dboxCandidate);
+            context.DboxCandidates.Update(dboxCandidate);
             await context.SaveChangesAsync();
 
             return newJO.Id;

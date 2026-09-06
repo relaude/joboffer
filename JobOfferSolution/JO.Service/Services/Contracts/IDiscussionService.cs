@@ -21,5 +21,6 @@ namespace JO.Service.Services.Contracts
         Task<int> SaveDiscussion(Discussions discussion);
         Task<int> SaveDiscussion(DiscussionDto dto);
         Task<int> TagAsAccepted(int jobOfferId);
+        Task UpdateJobOfferWorkFlowStatus(int jobOfferId, int workFlowId, int userId);
     }
 }

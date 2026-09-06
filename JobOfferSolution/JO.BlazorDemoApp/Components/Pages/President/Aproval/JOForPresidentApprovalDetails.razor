@@ -45,8 +45,8 @@
         }
 
         if (!await AlertService.Confirm(
-            title: "Send back this reviewed job offer?",
-            confirmText: "Send Back Job Offer"))
+            title: "Send back this job offer?",
+            confirmText: "Send Back"))
         {
             return;
         }
@@ -55,7 +55,7 @@
         await ApprovalService.JobOfferActionSendBack(jobOfferId, 7, userId, approverRemarks);
 
         await AlertService.Success(
-            message: "The job offer review has been send back successfully.",
+            message: "The job offer has been send back successfully.",
             title: "Send Back Complete");
 
         Navigation.NavigateTo(JORoutes.President.JOForApproval);
@@ -70,7 +70,7 @@
 
         if (!await AlertService.Confirm(
             title: "Approve this job offer?",
-            confirmText: "Approve Job Offer"))
+            confirmText: "Approve"))
         {
             return;
         }
@@ -80,7 +80,7 @@
         //For Discussion,President, Approved
         await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 8, 7, 4, userId, approverRemarks);
         await AlertService.Success(
-            message: "The job offer review has been approved successfully.",
+            message: "The job offer has been approved successfully.",
             title: "Approve Complete");
 
         Navigation.NavigateTo(JORoutes.President.JOForApproval);

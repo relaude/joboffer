@@ -17,6 +17,8 @@
     [CmpnyCmpnstnId] INT           NULL,
     [OfferRangeId]   INT           NULL,
     [Escalate]       BIT           NULL,
+    [IsHROD]         BIT           NULL,
+    [IsAM]           BIT           NULL,
     [CreatedAt]      DATETIME      NULL,
     [CreatedBy]      INT           NULL,
     [ModifiedAt]     DATETIME      NULL,

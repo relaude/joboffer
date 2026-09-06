@@ -19,6 +19,22 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<List<VwTAPartnerDboxCandidates>> GetVwTAPartnerDboxCandidates()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwTAPartnerDboxCandidates
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<VwTALeadDboxCandidates>> GetVwTALeadDboxCandidates()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwTALeadDboxCandidates
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<List<VwPckgTempHasItms>> GetVwPckgTempHasItms(int templateId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -41,6 +57,108 @@ namespace JO.Service.Services
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.VwJODboxCandidates
                 .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<VwJODboxCandidates>> GetPEHeadForReviewVwJODboxCandidates(int userId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var actionLogs = await context.VwJOActionLogs.AsNoTracking()
+                .Where(jo => jo.ActionBy == userId)
+                .ToListAsync();
+
+            var joIds = actionLogs.Select(jo => jo.JobOfferId).Distinct().ToList();
+            //14 = For PE Head Review
+            return await context.VwJODboxCandidates
+                .AsNoTracking()
+                .Where(jo=>jo.WorkFlowId == 14
+                    || joIds.Contains(jo.Id))
+                .ToListAsync();
+        }
+
+        public async Task<List<VwJODboxCandidates>> GetTALeadForReviewVwJODboxCandidates(int userId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var actionLogs = await context.VwJOActionLogs.AsNoTracking()
+                .Where(jo => jo.ActionBy == userId)
+                .ToListAsync();
+
+            var joIds = actionLogs.Select(jo => jo.JobOfferId).Distinct().ToList();
+            //3 = For TA Lead Review
+            return await context.VwJODboxCandidates
+                .AsNoTracking()
+                .Where(jo=>jo.WorkFlowId == 3
+                    || joIds.Contains(jo.Id))
+                .ToListAsync();
+        }
+
+        public async Task<List<VwJODboxCandidates>> GetHRODHeadForApprovalVwJODboxCandidates(int userId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var actionLogs = await context.VwJOActionLogs.AsNoTracking()
+                .Where(jo => jo.ActionBy == userId)
+                .ToListAsync();
+
+            var joIds = actionLogs.Select(jo => jo.JobOfferId).Distinct().ToList();
+            //6 = For HROD Head Approval
+            return await context.VwJODboxCandidates
+                .AsNoTracking()
+                .Where(jo=>jo.WorkFlowId == 6
+                    || joIds.Contains(jo.Id))
+                .ToListAsync();
+        }
+
+        public async Task<List<VwJODboxCandidates>> GetDivHeadL1ForApprovalVwJODboxCandidates(int userId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var actionLogs = await context.VwJOActionLogs.AsNoTracking()
+                .Where(jo => jo.ActionBy == userId)
+                .ToListAsync();
+
+            var joIds = actionLogs.Select(jo => jo.JobOfferId).Distinct().ToList();
+            //5 = For Division Head Approval
+            return await context.VwJODboxCandidates
+                .AsNoTracking()
+                .Where(jo=>jo.WorkFlowId == 5
+                    || joIds.Contains(jo.Id))
+                .ToListAsync();
+        }
+
+        public async Task<List<VwJODboxCandidates>> GetDivHeadL2ForApprovalVwJODboxCandidates(int userId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var actionLogs = await context.VwJOActionLogs.AsNoTracking()
+                .Where(jo => jo.ActionBy == userId)
+                .ToListAsync();
+
+            var joIds = actionLogs.Select(jo => jo.JobOfferId).Distinct().ToList();
+            //13 = For Division Head L2 Approval
+            return await context.VwJODboxCandidates
+                .AsNoTracking()
+                .Where(jo=>jo.WorkFlowId == 13
+                    || joIds.Contains(jo.Id))
+                .ToListAsync();
+        }
+
+        public async Task<List<VwJODboxCandidates>> GetPresidentForApprovalVwJODboxCandidates(int userId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var actionLogs = await context.VwJOActionLogs.AsNoTracking()
+                .Where(jo => jo.ActionBy == userId)
+                .ToListAsync();
+
+            var joIds = actionLogs.Select(jo => jo.JobOfferId).Distinct().ToList();
+            //7 = For President Approval
+            return await context.VwJODboxCandidates
+                .AsNoTracking()
+                .Where(jo=>jo.WorkFlowId == 7
+                    || joIds.Contains(jo.Id))
                 .ToListAsync();
         }
 

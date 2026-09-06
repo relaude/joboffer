@@ -10,14 +10,17 @@
         <div class="card shadow small mb-4">
             <div class="card-header">
                 <h6 class="jo-title">Package Type</h6>
+                
                 <select class="custom-select custom-select-sm"
                         @bind="selectedCmpnyCmpnstnId"
                         @bind:after="OnSelectCompensation">
+                    <option value="0" disabled>Select a Package</option>
                     @foreach (var item in companyCompensation)
                     {
                         <option value="@item.Id">@item.CmpnyCmpnstnName</option>
                     }
                 </select>
+                
             </div>
 
             <div class="card-body">
@@ -170,14 +173,14 @@
                                    class="form-control form-control-sm" />
                         <small class="form-text text-muted mb-2">Press Enter to apply.</small>
 
-                        @* <div class="border-top py-2">
-                            <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
-                            <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.Increase)</div>
-                        </div> *@
                         <div class="border-top py-2">
                             <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.DiffTotalMonthly)</div>
                         </div>
+                        @* <div class="border-top py-2">
+                            <div class="text-xs text-uppercase text-gray-500">% Increase Monthly</div>
+                            <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.DiffTotalMonthly)</div>
+                        </div> *@
                         <div class="border-top py-2">
                             <div class="text-xs text-uppercase text-gray-500">% Increase Annual</div>
                             <div class="font-weight-bold text-gray-800">@FormatPercent(compensation.DiffTotalAnnually)</div>
@@ -228,13 +231,13 @@
         </div>
 
         <div class="table-responsive">
-            <!--MIRROR-->
+            
             <table class="jo-table">
                 <thead>
                     <tr>
                         <th scope="col"></th>
                         <th scope="colgroup" colspan="2">Current</th>
-                        <th scope="colgroup" colspan="3" class="is-highlighted">Option @selectedOptionNumber</th>
+                        <th scope="colgroup" colspan="3" class="is-highlighted text-center">Option @selectedOptionNumber</th>
                     </tr>
                     <tr>
                         <th scope="col">Compensation</th>
@@ -303,15 +306,15 @@
                                     {
                                         <td class="is-highlighted">
                                             <PesoInput TValue="decimal?"
-                                                       class="text-right"
-                                                       @bind-Value="selectedItem.MonthlyAmount"
-                                                       aria-label="@($"Monthly amount for {item.ItemName}")" />
+                                                class="text-right"
+                                                @bind-Value="selectedItem.MonthlyAmount"
+                                                aria-label="@($"Monthly amount for {item.ItemName}")" />
                                         </td>
                                         <td class="is-highlighted">
                                             <PesoInput TValue="decimal?"
-                                                       class="text-right"
-                                                       @bind-Value="selectedItem.AnnualAmount"
-                                                       aria-label="@($"Annual amount for {item.ItemName}")" />
+                                                class="text-right"
+                                                @bind-Value="selectedItem.AnnualAmount"
+                                                aria-label="@($"Annual amount for {item.ItemName}")" />
                                         </td>
                                     }
                                     else
@@ -350,7 +353,7 @@
                     </tr>
                 </tfoot>
             </table>
-            <!--MIRROR-->
+            
         </div>
 
     </div>
@@ -385,13 +388,14 @@
                         }
                     </tr>
                     <tr>
-                        <th scope="row">Proposed Salary</th>
+                        <th scope="row">Amount</th>
                         @foreach (var compensation in ComparativeCompensations.Where(jo => jo.OptionNumber > 0))
                         {
                             <td class="text-right">@UtilitiesService.ToPeso(compensation.ProposedSalary)</td>
                         }
                     </tr>
-                    <tr>
+
+                    @* <tr>
                         <th scope="row">Current Salary</th>
                         @foreach (var compensation in ComparativeCompensations.Where(jo => jo.OptionNumber > 0))
                         {
@@ -404,16 +408,17 @@
                         {
                             <td class="text-right">@FormatPercent(compensation.Increase)</td>
                         }
-                    </tr>
+                    </tr> *@
+
                     <tr>
-                        <th scope="row">Monthly Difference</th>
+                        <th scope="row">% Increase Monthly</th>
                         @foreach (var compensation in ComparativeCompensations.Where(jo => jo.OptionNumber > 0))
                         {
                             <td class="text-right">@FormatPercent(compensation.DiffTotalMonthly)</td>
                         }
                     </tr>
                     <tr>
-                        <th scope="row">Annual Difference</th>
+                        <th scope="row">% Increase Annual</th>
                         @foreach (var compensation in ComparativeCompensations.Where(jo => jo.OptionNumber > 0))
                         {
                             <td class="text-right">@FormatPercent(compensation.DiffTotalAnnually)</td>
@@ -513,20 +518,3 @@
         <textarea rows="5" class="form-control" @bind="taPartnerRemarks"></textarea>
     </div>
 </div>
-
-<!--Action Buttons-->
-@* <div class="jo-actions mb-4">
-    <button class="btn btn-outline-secondary" @onclick="HandleGoBack">
-        <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
-        Go Back
-    </button>
-
-    <button type="button" class="btn btn-primary" @onclick="SaveAnalysis">
-        <i class="fas fa-save mr-1" aria-hidden="true"></i>
-        Save
-    </button>
-    <button type="button" class="btn btn-success" @onclick="SubmitForApproval">
-        <i class="fas fa-paper-plane mr-1" aria-hidden="true"></i>
-        Submit for Approval
-    </button>
-</div> *@

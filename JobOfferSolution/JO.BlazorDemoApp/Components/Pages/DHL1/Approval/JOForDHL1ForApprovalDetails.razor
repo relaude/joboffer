@@ -41,7 +41,7 @@
 @code {
     [Parameter] public int jobOfferId { get; set; }
     private Components.Pages.JobOffer.JobOfferAnalysis? analysis;
-    private string approverRemarks = "Options: " + Environment.NewLine + "Maximum Offer:";
+    private string approverRemarks = "";
 
     private async Task SendBackJobOffer()
     {
@@ -51,8 +51,8 @@
         }
 
         if (!await AlertService.Confirm(
-            title: "Send back this reviewed job offer?",
-            confirmText: "Send Back Job Offer"))
+            title: "Send back this job offer?",
+            confirmText: "Send Back"))
         {
             return;
         }
@@ -61,7 +61,7 @@
         await ApprovalService.JobOfferActionSendBack(jobOfferId, 5, userId, approverRemarks);
 
         await AlertService.Success(
-            message: "The job offer review has been send back successfully.",
+            message: "The job offer has been send back successfully.",
             title: "Send Back Complete");
 
         Navigation.NavigateTo(JORoutes.DHL1.JOForApproval);
@@ -75,30 +75,36 @@
         }
 
         if (!await AlertService.Confirm(
-            title: "Approve this reviewed job offer?",
-            confirmText: "Approve Job Offer"))
+            title: "Approve this job offer?",
+            confirmText: "Approve"))
         {
             return;
         }
 
         int userId = await AccountService.GetJobOfferUserId();
+        int workFlowId = 0;
 
-        int offerRangeId = analysis.JobOffer.OfferRangeId.GetValueOrDefault();
-
-        if (offerRangeId == 1)
+        if (analysis.JobOffer.IsAM == true || analysis.JobOffer.IsHROD == true)
         {
-            //For Discussion, Division Head Approver L1, Approved
-            await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 8, 5, 4, userId, approverRemarks);
+            if (analysis.JobOffer.OfferRangeId == 1 || analysis.JobOffer.OfferRangeId == 2)
+            {
+                workFlowId = 8;//For Discussion
+            }
+
+            if (analysis.JobOffer.OfferRangeId == 3)
+            {
+                workFlowId = 13;//For Division Head L2 Approval
+            }
         }
 
-        if (offerRangeId == 2 || offerRangeId == 3)
+        if (analysis.JobOffer.IsAM == false && analysis.JobOffer.IsHROD == false)
         {
-            //For HROD Head Approval,Division Head Approver L1, Approved
-            await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 6, 5, 4, userId, approverRemarks);
+            workFlowId = analysis.JobOffer.OfferRangeId == 1 ? 8 : 6; //For Discussion : For HROD Head Approval
         }
-        
+
+        await ApprovalService.JobOfferActionFlowStatus(jobOfferId, workFlowId, 5, 4, userId, approverRemarks);
         await AlertService.Success(
-            message: "The job offer review has been approved successfully.",
+            message: "The job offer has been approved successfully.",
             title: "Approve Complete");
 
         Navigation.NavigateTo(JORoutes.DHL1.JOForApproval);

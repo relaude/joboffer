@@ -1,6 +1,7 @@
-﻿CREATE View [dbo].[vw_JODboxCandidates]
+﻿
+CREATE View [dbo].[vw_JODboxCandidates]
 As
-Select jof.Id, jof.RefNum
+Select jof.Id, jof.RefNum, jof.IsAM, jof.IsHROD
 ,vwcan.DboxRefNum,vwcan.CandidateName
 ,jof.WorkFlowId,wfs.FlowName
 ,jof.OfferRangeId,ofr.RangeName

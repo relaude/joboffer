@@ -1,4 +1,4 @@
-﻿@attribute [Authorize(Roles = JOUserRole.HROD)]
+﻿@attribute [Authorize(Roles = JOUserRole.HRODHeadApprover)]
 @attribute [Route(JORoutes.HROD.Approve + "/{jobOfferId:int}")]
 
 @inject IJODetailsService JODetailsService

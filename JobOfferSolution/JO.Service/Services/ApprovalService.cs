@@ -18,6 +18,20 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<int> GetNextApproverRoleId(int jobOfferId, int currentRoleId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var approvalProgress = await context.JOApprovalFlow
+                .AsNoTracking()
+                .Where(jo => jo.JobOfferId == jobOfferId
+                    && (jo.IsAproved == false || jo.IsAproved == null)
+                    && (jo.RoleId != currentRoleId))
+                .ToListAsync();
+
+            return approvalProgress.FirstOrDefault().RoleId.GetValueOrDefault();
+        }
+
         public async Task JobOfferChangeStatus(int jobOfferId, int statusId, int workFlowId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();

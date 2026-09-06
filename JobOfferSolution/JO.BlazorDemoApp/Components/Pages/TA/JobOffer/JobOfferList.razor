@@ -1,7 +1,8 @@
-@attribute [Authorize(Roles = JOUserRole.TA)]
-@attribute [Route(JORoutes.TA.JobOfferTracker)]
+@attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Route(JORoutes.TAPartner.JobOfferTracker)]
 
-<JobOfferKpiBoxes Total="@total"
+<JobOfferKpiBoxes
+                  Total="@total"
                   ForReviewCount="@countForReview"
                   ReviewedCount="@countReviewed"
                   SendBackCount="@countSendBack"
@@ -11,7 +12,16 @@
                   AcceptedCount="@countAcccepted"
                   ForNegotiationCount="@countForNegotiation"
                   DeclinedCount="@countDeclined"
+                  ForReviewWorkFlowIds="@ForReviewWorkFlowIds"
+                  ReviewedWorkFlowIds="@ReviewedWorkFlowIds"
+                  SendBackWorkFlowIds="@SendBackWorkFlowIds"
+                  ForApprovalWorkFlowIds="@ForApprovalWorkFlowIds"
+                  ForDiscussionWorkFlowIds="@ForDiscussionWorkFlowIds"
+                  ApprovedWorkFlowIds="@ApprovedWorkFlowIds"
+                  AcceptedWorkFlowIds="@AcceptedWorkFlowIds"
+                  ForNegotiationWorkFlowIds="@ForNegotiationWorkFlowIds"
+                  DeclinedWorkFlowIds="@DeclinedWorkFlowIds"
                   OnFilterChanged="FilterByWorkFlow" />
 
 <JobOfferTableList JobOffers="@filteredJODboxCandidates"
-                   Role="@JOUserRole.TA" />
+                   Role="@JOUserRole.TAPartner" />

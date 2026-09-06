@@ -25,6 +25,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         private int userId = 0;
         private int currentJOCmpnyCmpnstnId = 0;
         private int selectedCmpnyCmpnstnId = 0;
+        private int appliedCmpnyCmpnstnId = 0;
         private int selectedJOCmpnyCmpnstnId = 0;
         private int selectedOptionNumber = 1;
         private int ulEquivalentTotalMonthsPay = 15;
@@ -33,7 +34,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         private VwDboxCandidates candidate = new();
         private JobOffers jobOffer = new();
         public JobOffers JobOffer => jobOffer;
-        private JO.DataModel.Entity.JOAnalysis joAnalysis = new();
+        private JOAnalysis joAnalysis = new();
         private VwJODboxCandidates vwjobOffer = new();
         private VwSalaryBands vwSalaryBand = new();
 
@@ -68,10 +69,12 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
             SetIDdefaultValue();
 
-            vwCompanyCompensationItems = await CompensationService
-                .GetVwCompanyCompensationItems(selectedCmpnyCmpnstnId);
-            
-            ReFillAllJOCmpnyCompensationItems();
+            vwCompanyCompensationItems.Clear();
+            if (selectedCmpnyCmpnstnId != 0)
+            {
+                vwCompanyCompensationItems = await CompensationService
+                    .GetVwCompanyCompensationItems(selectedCmpnyCmpnstnId);
+            }
         }
 
         private void SetIDdefaultValue()
@@ -84,9 +87,10 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
             selectedJOCmpnyCmpnstnId = selectedCompensation?.Id ?? 0;
 
-            selectedCmpnyCmpnstnId = selectedCompensation?.CmpnyCmpnstnId
-                ?? companyCompensation.FirstOrDefault()?.Id
-                ?? 0;
+            selectedCmpnyCmpnstnId = jobOffer.WorkFlowId.HasValue
+                ? selectedCompensation?.CmpnyCmpnstnId ?? 0
+                : 0;
+            appliedCmpnyCmpnstnId = selectedCmpnyCmpnstnId;
         }
 
         private void ClickOptionTab(JOCompanyCompensation compensation)
@@ -97,9 +101,23 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
         private async Task OnSelectCompensation()
         {
+            var previousCmpnyCmpnstnId = appliedCmpnyCmpnstnId;
+
+            if (selectedCmpnyCmpnstnId == previousCmpnyCmpnstnId)
+                return;
+
+            if (!await AlertService.Confirm(
+                title: "Change Package Type?",
+                confirmText: "Change"))
+            {
+                selectedCmpnyCmpnstnId = previousCmpnyCmpnstnId;
+                return;
+            }
+
             vwCompanyCompensationItems = await CompensationService.GetVwCompanyCompensationItems(selectedCmpnyCmpnstnId);
 
             ReFillAllJOCmpnyCompensationItems();
+            appliedCmpnyCmpnstnId = selectedCmpnyCmpnstnId;
         }
 
         private void ReFillAllJOCmpnyCompensationItems()
@@ -112,30 +130,29 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 compensation.CmpnyCmpnstnId = selectedCmpnyCmpnstnId;
             }
 
-            //Reset All
+            // Selecting a package resets amounts to its template defaults.
+            // Editable items can be adjusted after the package is applied.
             foreach (var joCmpnyCompensationItem in joCompanyCompensationItems
                 .Where(jo=>IDs
                     .Contains(jo.JOCmpnyCmpnstnId.GetValueOrDefault())))
             {
-                joCmpnyCompensationItem.MonthlyAmount = null;
-                joCmpnyCompensationItem.AnnualAmount = null;
-                joCmpnyCompensationItem.IsAnalysis = null;
-                joCmpnyCompensationItem.IsEditable = null;
-            }
+                var templateItem = vwCompanyCompensationItems
+                    .FirstOrDefault(item => item.ItemId == joCmpnyCompensationItem.ItemId);
 
-            //Add Amount
-            foreach (var vwCompanyCompensationItem in vwCompanyCompensationItems)
-            {
-                foreach (var joCmpnyCompensationItem in joCompanyCompensationItems
-                    .Where(jo => IDs.Contains(jo.JOCmpnyCmpnstnId.GetValueOrDefault())
-                        && jo.ItemId == vwCompanyCompensationItem.ItemId)
-                )
+                if (templateItem is null)
                 {
-                    joCmpnyCompensationItem.MonthlyAmount = vwCompanyCompensationItem.MonthlyAmount;
-                    joCmpnyCompensationItem.AnnualAmount = vwCompanyCompensationItem.AnnualAmount;
-                    joCmpnyCompensationItem.IsAnalysis = vwCompanyCompensationItem.IsAnalysis;
-                    joCmpnyCompensationItem.IsEditable = vwCompanyCompensationItem.IsEditable;
+                    joCmpnyCompensationItem.MonthlyAmount = null;
+                    joCmpnyCompensationItem.AnnualAmount = null;
+                    joCmpnyCompensationItem.IsAnalysis = null;
+                    joCmpnyCompensationItem.IsEditable = null;
+                    continue;
                 }
+
+                joCmpnyCompensationItem.MonthlyAmount = templateItem.MonthlyAmount;
+                joCmpnyCompensationItem.AnnualAmount = templateItem.AnnualAmount;
+
+                joCmpnyCompensationItem.IsAnalysis = templateItem.IsAnalysis;
+                joCmpnyCompensationItem.IsEditable = templateItem.IsEditable;
             }
 
             ApplyProposedSalaryToBasicPayItems();
@@ -143,6 +160,11 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
         private List<string> CollectErrors(List<string> errors)
         {
+            if (selectedCmpnyCmpnstnId == 0)
+            {
+                errors.Add("Select a Package.");
+            }
+
             CollectJOCompanyCompensationErrors(errors);
 
             return errors;
@@ -193,8 +215,8 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
             }
 
             if (!await AlertService.Confirm(
-                title: "Submit this analysis for approval?",
-                confirmText: "Submit for Approval"))
+                title: "Submit for review?",
+                confirmText: "Submit"))
             {
                 return;
             }
@@ -209,8 +231,45 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 userId,
                 taPartnerRemarks);
 
-            await AlertService.Success("Analysis successfully submitted for approval.");
-            //Navigation.NavigateTo($"{JORoutes.TA.JobOfferDetails}/{submittedJobOfferId}");
+            await AlertService.Success("Analysis successfully submitted for review.");
+            
+            Navigation.NavigateTo($"{returnUrl}/{submittedJobOfferId}");
+        }
+
+        public async Task TALeadSubmitForApproval(string returnUrl)
+        {
+            var errors = CollectErrors(new List<string>());
+
+            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
+            {
+                errors.Add("Remarks is required.");
+            }
+
+            if (errors.Any())
+            {
+                await AlertService.Errors(errors);
+                return;
+            }
+
+            if (!await AlertService.Confirm(
+                title: "Submit for review?",
+                confirmText: "Submit"))
+            {
+                return;
+            }
+
+            var submittedJobOfferId = await CompensationService.TALeadSubmitForApproval(
+                jobOffer,
+                joAnalysis,
+                joCompanyCompensation,
+                joCompanyCompensationItems,
+                selectedCmpnyCmpnstnId,
+                candidate.Id,
+                userId,
+                taPartnerRemarks);
+
+            await AlertService.Success("Analysis successfully submitted for review.");
+            
             Navigation.NavigateTo($"{returnUrl}/{submittedJobOfferId}");
         }
 
@@ -261,6 +320,9 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         {
             decimal proposedSalary = compensation.ProposedSalary.GetValueOrDefault();
             decimal currentSalary = compensation.CurrentSalary.GetValueOrDefault();
+
+            decimal proposedSalaryAnnual = proposedSalary * 12;
+            decimal currentSalaryAnnual = currentSalary * 12;
 
             compensation.Increase = currentSalary == 0
                 ? 0
@@ -440,28 +502,5 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 _ => 0
             };
         }
-
-        //private async Task HandleGoBack()
-        //{
-        //    if (!await AlertService.Confirm(
-        //        title: "Go back without saving?",
-        //        confirmText: "Yes"))
-        //    {
-        //        return;
-        //    }
-
-        //    if (!string.IsNullOrWhiteSpace(GoBackUrl))
-        //    {
-        //        Navigation.NavigateTo(GoBackUrl);
-        //    }
-        //    else if (jobOffer.WorkFlowId == 1 || jobOffer.WorkFlowId == null)
-        //    {
-        //        Navigation.NavigateTo(JORoutes.TA.Candidates);
-        //    }
-        //    else
-        //    {
-        //        Navigation.NavigateTo(JORoutes.TA.JobOfferTracker);
-        //    }
-        //}
     }
 }
