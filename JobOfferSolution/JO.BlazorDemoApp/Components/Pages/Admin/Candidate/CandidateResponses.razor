@@ -60,11 +60,11 @@
             </small>
         </div>
         <div class="mt-2 mt-md-0">
-            <button type="button" class="btn btn-outline-success mr-2">
-                <i class="fas fa-file-excel fa-fw mr-1"></i>Import from Excel
+            <button type="button" class="btn btn-outline-success mr-2" @onclick="ImportFromExcelAsync" disabled="@(isImporting || isSyncing)">
+                <i class="fas fa-file-excel fa-fw mr-1"></i>@(isImporting ? "Downloading..." : "Import from Excel")
             </button>
-            <button type="button" class="btn btn-primary">
-                <i class="fas fa-sync-alt fa-fw mr-1"></i>MS-Forms Sync
+            <button type="button" class="btn btn-primary" @onclick="SyncMSFormsAsync" disabled="@(isSyncing || isImporting)">
+                <i class="fas fa-sync-alt fa-fw mr-1"></i>@(isSyncing ? "Syncing..." : "MS-Forms Sync")
             </button>
         </div>
     </div>

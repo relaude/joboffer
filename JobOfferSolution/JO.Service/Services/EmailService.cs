@@ -197,8 +197,37 @@ namespace JO.Service.Services
             emailTemplate.EmailSubject = ReplaceTemplateTokens(emailTemplate.EmailSubject, replacements, false);
             emailTemplate.EmailMessage = ReplaceTemplateTokens(
                 emailTemplate.EmailMessage, replacements, true, ComposeHtmlTable(compensations));
+            emailTemplate.EmailMessage = MinifyEmailMessage(emailTemplate.EmailMessage);
 
             return emailTemplate;
+        }
+
+        private static string MinifyEmailMessage(string? message)
+        {
+            if (string.IsNullOrEmpty(message))
+                return string.Empty;
+
+            // Explicit CSS whitespace rules can make spacing significant throughout the email.
+            if (message.Contains("white-space", StringComparison.OrdinalIgnoreCase))
+                return message;
+
+            try
+            {
+                // Keep tags/attributes, Outlook comments, and whitespace-sensitive blocks intact.
+                // Only collapse ordinary HTML text whitespace; keep one space between inline elements.
+                return Regex.Replace(message,
+                    """(?<preserve><!--[\s\S]*?-->|<(?<tag>pre|textarea|script|style)\b[^>]*(?:"[^"]*"|'[^']*')*[^>]*>[\s\S]*?</\k<tag>\s*>|<[^>"']*(?:"[^"]*"[^>"']*|'[^']*'[^>"']*)*>)|(?<text>[^<]+)""",
+                    match => match.Groups["preserve"].Success
+                        ? match.Value
+                        : Regex.Replace(match.Value, @"[ \t\r\n\f]+", " "),
+                    RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
+                    TimeSpan.FromSeconds(1));
+            }
+            catch (RegexMatchTimeoutException)
+            {
+                // Minification is optional; a complex template should still be sent unchanged.
+                return message;
+            }
         }
 
         private static string ReplaceTemplateTokens(

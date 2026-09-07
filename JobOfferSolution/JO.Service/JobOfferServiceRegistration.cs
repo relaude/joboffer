@@ -37,6 +37,8 @@ namespace JO.Service
             services.AddScoped<IJOLogsService, JOLogsService>();
             services.AddScoped<IForNegotiationService, ForNegotiationService>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+            services.AddScoped<IOneDriveService, OneDriveService>();
+            services.AddScoped<IMSFormSyncService, MSFormSyncService>();
 
             return services;
         }

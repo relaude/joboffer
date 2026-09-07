@@ -289,8 +289,9 @@ namespace JO.Service.Services
 
             if (jobOffer.OfferRangeId == 1)
             {
-                newApprovalFlow.Add(
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 } //Division Head Approver L1, Approved
+                newApprovalFlow.AddRange(
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 }, //Division Head Approver L1, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 } //HROD Head Approver, Approved
                 );
             }
 
@@ -299,7 +300,8 @@ namespace JO.Service.Services
                 newApprovalFlow.AddRange(
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3, ActionId = 3 }, //PE Head, Reviewed
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 } //Division Head Approver L1, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 }, //Division Head Approver L1, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 } //HROD Head Approver, Approved
                 );
             }
 
@@ -309,6 +311,7 @@ namespace JO.Service.Services
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3, ActionId = 3 }, //PE Head, Reviewed
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 }, //Division Head Approver L1, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 6, ActionId = 4 }, //Division Head Approver L2, Approved
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 7, ActionId = 4 } //President, Approved
                 );

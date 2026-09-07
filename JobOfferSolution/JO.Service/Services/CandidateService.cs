@@ -118,6 +118,12 @@ namespace JO.Service.Services
             return await context.CandidateResponses.AsNoTracking().ToListAsync();
         }
 
+        public async Task<List<CandidateResponseRawData>> GetCandidateResponsesRawData()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CandidateResponseRawData.AsNoTracking().ToListAsync();
+        }
+
         public async Task<List<Candidates>> GetCandidates()
         {
             await using var context = await _dbContext.CreateDbContextAsync();

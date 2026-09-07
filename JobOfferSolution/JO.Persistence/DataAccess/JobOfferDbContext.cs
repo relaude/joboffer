@@ -18,6 +18,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<UserPermissions> UserPermissions { get; set; }
 
         //Candidates
+        public DbSet<CandidateResponseRawData> CandidateResponseRawData { get; set; }
         public DbSet<CandidateResponses> CandidateResponses { get; set; }
         public DbSet<DboxCandidates> DboxCandidates { get; set; }
 

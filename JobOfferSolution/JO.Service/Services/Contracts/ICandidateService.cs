@@ -13,6 +13,7 @@ namespace JO.Service.Services.Contracts
         Task<string> GetCandidateLink(VwDboxCandidates candidate);
         Task<CandidateResponses> GetCandidateResponse(int id);
         Task<List<CandidateResponses>> GetCandidateResponses();
+        Task<List<CandidateResponseRawData>> GetCandidateResponsesRawData();
         Task<List<Candidates>> GetCandidates();
         Task<List<DboxCandidates>> GetDboxCandidates();
         Task<int> GetJobOfferIdByCandidateId(int candidateId);

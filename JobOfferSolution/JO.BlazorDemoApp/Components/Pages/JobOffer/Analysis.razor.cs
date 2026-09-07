@@ -18,6 +18,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
         [Inject] private ICandidateService CandidateService { get; set; } = default!;
         [Inject] private ICompensationService CompensationService { get; set; } = default!;
+        [Inject] private IEmailService EmailService { get; set; } = default!;
 
         [Parameter] public int jobOfferId { get; set; }
         [Parameter] public string GoBackUrl { get; set; } = string.Empty;
@@ -267,6 +268,8 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 candidate.Id,
                 userId,
                 taPartnerRemarks);
+
+            await EmailService.SendJOEmailNotification(jobOfferId, 5);//For Division Head Approval
 
             await AlertService.Success("Analysis successfully submitted for review.");
             

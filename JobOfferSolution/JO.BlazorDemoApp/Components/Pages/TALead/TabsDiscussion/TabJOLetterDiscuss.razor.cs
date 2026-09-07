@@ -222,6 +222,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.TabsDiscussion
                 // Accepted & Completed, TA Lead, Tag Accepted & Completed
                 await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 9, 2, 6, userId, "Job Offer Completed.");
 
+                await EmailService.SendJOEmailNotification(jobOfferId, 9);
+
                 await AlertService.Success(
                     "The job offer was accepted and completed.",
                     "Job Offer Completed");
@@ -231,7 +233,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.TabsDiscussion
                 isCompleting = false;
             }
 
-            Navigation.NavigateTo($"{JORoutes.TAPartner.JobOfferComplete}/{jobOfferId}");
+            Navigation.NavigateTo($"{JORoutes.TALead.JobOfferComplete}/{jobOfferId}");
         }
 
         private async Task Decline()

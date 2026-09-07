@@ -221,7 +221,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TabsDiscussion
 
                 // Accepted & Completed, TA Partner, Tag Accepted & Completed
                 await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 9, 1, 6, userId, "Job Offer Completed.");
-
+                await EmailService.SendJOEmailNotification(jobOfferId, 9);
                 await AlertService.Success(
                     "The job offer was accepted and completed.",
                     "Job Offer Completed");

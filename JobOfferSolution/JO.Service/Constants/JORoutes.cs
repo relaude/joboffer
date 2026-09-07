@@ -56,6 +56,7 @@ namespace JO.Service.Constants
             public const string CompensationBenefits = PrefixAdmin + "/compensation-benefits";
 
             public const string MSFormResponse = PrefixAdmin + "/msform-response";
+            public const string MSFormResponseRaw = PrefixAdmin + "/msform-response-raw";
             public const string DboxCandidates = PrefixAdmin + "/dbox/candidates";
 
             public const string EmailTemplates = PrefixAdmin + "/email-templates";
