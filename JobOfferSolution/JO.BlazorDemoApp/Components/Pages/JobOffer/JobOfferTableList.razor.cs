@@ -83,9 +83,15 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                         ? JORoutes.DHL1.JOForApproval
                         : JORoutes.DHL1.JobOfferDetails,
 
-                    JOUserRole.HRODHeadApprover => jobOffer.WorkFlowId == 6
-                        ? JORoutes.HRODHead.JOForApproval
-                        : JORoutes.HRODHead.JobOfferDetails,
+                    //JOUserRole.HRODHeadApprover => jobOffer.WorkFlowId == 6
+                    //    ? JORoutes.HRODHead.JOForApproval
+                    //    : JORoutes.HRODHead.JobOfferDetails,
+
+                    JOUserRole.HRODHeadApprover => jobOffer.WorkFlowId switch
+                    {
+                        6 or 15 => JORoutes.HRODHead.JOForApproval,
+                        _ => JORoutes.HRODHead.JobOfferDetails
+                    },
 
                     JOUserRole.DivisionHeadApproverL2 => jobOffer.WorkFlowId == 13
                         ? JORoutes.DHL2.JOForApproval

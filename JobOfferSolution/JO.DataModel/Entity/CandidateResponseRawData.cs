@@ -9,6 +9,7 @@ namespace JO.DataModel.Entity
         [Key]
         public int Id { get; set; }
         public string? CandidateResponseId { get; set; }
+        public string? CandidateDBoxID { get; set; }
         public string? ResponseStartedAt { get; set; }
         public string? ResponseCompletedAt { get; set; }
         public string? EmailAddress { get; set; }

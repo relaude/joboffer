@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\Pages\Pagination\" />
     <Folder Include="wwwroot\excel\" />
   </ItemGroup>
 

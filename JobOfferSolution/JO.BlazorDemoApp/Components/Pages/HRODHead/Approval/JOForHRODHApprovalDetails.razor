@@ -81,9 +81,14 @@
 
         if (analysis.JobOffer.IsAM == true || analysis.JobOffer.IsHROD == true)
         {
-            if (analysis.JobOffer.OfferRangeId == 2 || analysis.JobOffer.OfferRangeId == 3)
+            if (analysis.JobOffer.OfferRangeId == 1 || analysis.JobOffer.OfferRangeId == 2)
             {
-                workFlowId = 5;//For Division Head Approval
+                workFlowId = 8;//For Discussion
+            }
+
+            if (analysis.JobOffer.OfferRangeId == 3)
+            {
+                workFlowId = 13;//For Division Head L2 Approval
             }
         }
 

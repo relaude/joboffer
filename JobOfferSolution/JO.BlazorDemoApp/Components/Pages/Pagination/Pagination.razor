@@ -1,0 +1,26 @@
+@typeparam TItem
+
+
+<nav class="d-flex align-items-center justify-content-end text-nowrap" aria-label="@AriaLabel">
+    <span class="mr-2" aria-live="polite"><strong>@FirstRecord - @LastRecord</strong> of @Result.TotalCount</span>
+    <select class="custom-select custom-select-sm w-auto mr-3" aria-label="Results per page" value="@Result.PageSize" @onchange="ChangePageSizeAsync" disabled="@IsDisabled">
+        @foreach (var size in PageSizes.Append(Result.PageSize).Where(size => size > 0).Distinct().Order())
+        {
+            <option value="@size">@size per page</option>
+        }
+    </select>
+    <button type="button" class="btn btn-sm btn-link text-muted mr-2" aria-label="First page" @onclick="() => ChangePageAsync(1)" disabled="@(IsDisabled || Result.Page <= 1)">
+        <i class="fas fa-angle-double-left" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-sm btn-link text-muted mr-2" aria-label="Previous page" @onclick="() => ChangePageAsync(Result.Page - 1)" disabled="@(IsDisabled || Result.Page <= 1)">
+        <i class="fas fa-angle-left" aria-hidden="true"></i>
+    </button>
+    <input type="text" inputmode="numeric" class="form-control form-control-sm text-center w-auto" size="3" @bind:get="Result.Page" @bind:set="ChangePageAsync" aria-label="Current page" disabled="@IsDisabled" />
+    <span class="ml-2 mr-2">of @TotalPages</span>
+    <button type="button" class="btn btn-sm btn-link text-dark ml-2" aria-label="Next page" @onclick="() => ChangePageAsync(Result.Page + 1)" disabled="@(IsDisabled || Result.Page >= TotalPages)">
+        <i class="fas fa-angle-right" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-sm btn-link text-dark ml-2" aria-label="Last page" @onclick="() => ChangePageAsync(TotalPages)" disabled="@(IsDisabled || Result.Page >= TotalPages)">
+        <i class="fas fa-angle-double-right" aria-hidden="true"></i>
+    </button>
+</nav>

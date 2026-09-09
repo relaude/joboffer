@@ -269,8 +269,6 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 userId,
                 taPartnerRemarks);
 
-            await EmailService.SendJOEmailNotification(jobOfferId, 5);//For Division Head Approval
-
             await AlertService.Success("Analysis successfully submitted for review.");
             
             Navigation.NavigateTo($"{returnUrl}/{submittedJobOfferId}");

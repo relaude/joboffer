@@ -86,15 +86,17 @@
 
         if (analysis.JobOffer.IsAM == true || analysis.JobOffer.IsHROD == true)
         {
-            if (analysis.JobOffer.OfferRangeId == 1 || analysis.JobOffer.OfferRangeId == 2)
-            {
-                workFlowId = 8;//For Discussion
-            }
+            // if (analysis.JobOffer.OfferRangeId == 1 || analysis.JobOffer.OfferRangeId == 2)
+            // {
+            //     workFlowId = 8;For Discussion
+            // }
 
-            if (analysis.JobOffer.OfferRangeId == 3)
-            {
-                workFlowId = 13;//For Division Head L2 Approval
-            }
+            // if (analysis.JobOffer.OfferRangeId == 3)
+            // {
+            //     workFlowId = 13;For Division Head L2 Approval
+            // }
+
+            workFlowId = 15;//For HROD Head 2nd Approval
         }
 
         if (analysis.JobOffer.IsAM == false && analysis.JobOffer.IsHROD == false)

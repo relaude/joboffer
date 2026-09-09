@@ -9,9 +9,9 @@ namespace JO.BlazorDemoApp.Components.Pages.HRODHead.Approval
         [Inject] private IJODetailsService JODetailsService { get; set; } = default!;
         [Inject] private IAccountService AccountService { get; set; } = default!;
 
-        private static readonly int[] ForApprovalWorkFlowIds = [6];
+        private static readonly int[] ForApprovalWorkFlowIds = [6, 15];
         private static readonly int[] SendBackWorkFlowIds = [10];
-        private static readonly int[] ApprovedWorkFlowIds = [5, 7, 8, 9, 13];
+        private static readonly int[] ApprovedWorkFlowIds = [5, 8, 9, 13];
 
         private List<VwJODboxCandidates> joDboxCandidates = new();
         private List<VwJODboxCandidates> eligibleJODboxCandidates = new();

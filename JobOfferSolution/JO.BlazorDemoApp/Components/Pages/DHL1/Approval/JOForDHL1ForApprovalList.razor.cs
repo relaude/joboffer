@@ -11,7 +11,7 @@ namespace JO.BlazorDemoApp.Components.Pages.DHL1.Approval
 
         private static readonly int[] ForApprovalWorkFlowIds = [5];
         private static readonly int[] SendBackWorkFlowIds = [10];
-        private static readonly int[] ApprovedWorkFlowIds = [6, 7, 8, 9, 13];
+        private static readonly int[] ApprovedWorkFlowIds = [6, 7, 8, 9, 13, 15];
 
         private List<VwJODboxCandidates> joDboxCandidates = new();
         private List<VwJODboxCandidates> eligibleJODboxCandidates = new();

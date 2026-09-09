@@ -11,7 +11,7 @@ namespace JO.BlazorDemoApp.Components.Pages.PEHead.Review
 
         private static readonly int[] ForReviewWorkFlowIds = [14]; //For PE Head Review
         private static readonly int[] SendBackWorkFlowIds = [10]; //Send Back
-        private static readonly int[] ReviewedWorkFlowIds = [5, 6, 7, 8, 9, 13];
+        private static readonly int[] ReviewedWorkFlowIds = [5, 6, 8, 9, 13, 15];
 
         private List<VwJODboxCandidates> joDboxCandidates = new();
         private List<VwJODboxCandidates> eligibleJODboxCandidates = new();

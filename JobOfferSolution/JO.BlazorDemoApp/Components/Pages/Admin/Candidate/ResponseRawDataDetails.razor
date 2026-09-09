@@ -1,0 +1,114 @@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.MSFormResponseRaw + "/{rawDataId:int}")]
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="jo-title">Candidate Response Summary</h6>
+        <a href="@JORoutes.Admin.MSFormResponseRaw" class="btn btn-outline-secondary">Back</a>
+    </div>
+    <div class="card-body small" aria-busy="@(isLoading ? "true" : "false")">
+        @if (isLoading)
+        {
+            <p class="text-muted mb-0" role="status">Loading candidate response...</p>
+        }
+        else if (loadError is not null)
+        {
+            <div class="alert alert-danger mb-0" role="alert">
+                @loadError
+                <button type="button" class="btn btn-outline-danger btn-sm ml-2" @onclick="LoadResponseAsync">Try again</button>
+            </div>
+        }
+        else if (response is null)
+        {
+            <p class="text-muted mb-0" role="status">Candidate response not found.</p>
+        }
+        else
+        {
+            <div class="mb-3">
+                <strong>Validation status:</strong>
+                <span class="badge @ValidationBadge">@ValidationStatus</span>
+            </div>
+            <div class="mb-4">
+                <h3 class="h6 font-weight-bold text-gray-800">Validation errors</h3>
+                <div style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.ErrorMessage)</div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-4"><h3 class="h6 font-weight-bold text-gray-800 mb-2">Candidate Information</h3><div class="table-responsive"><table class="jo-table"><tbody>
+                    <tr><th scope="row">Candidate DBoxID</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.CandidateDBoxID)</td></tr>
+                    <tr><th scope="row">Candidate name</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.CandidateFullName)</td></tr>
+                    <tr><th scope="row">Respondent name</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.RespondentName)</td></tr>
+                    <tr><th scope="row">Email address</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.EmailAddress)</td></tr>
+                    <tr><th scope="row">Age</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.Age)</td></tr>
+                    <tr><th scope="row">Position applied for</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.PositionAppliedFor)</td></tr>
+                    <tr><th scope="row">Division</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.UnilabDivision)</td></tr>
+                </tbody></table></div></div>
+                <div class="col-lg-6 mb-4"><h3 class="h6 font-weight-bold text-gray-800 mb-2">Work Experience</h3><div class="table-responsive"><table class="jo-table"><tbody>
+                    <tr><th scope="row">Employment status</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.EmploymentStatus)</td></tr>
+                    <tr><th scope="row">Relevant experience</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.RelevantExperience)</td></tr>
+                    <tr><th scope="row">Current employer</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.CurrentEmployerName)</td></tr>
+                    <tr><th scope="row">Last employer industry</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.LastEmployerIndustry)</td></tr>
+                    <tr><th scope="row">Last position held</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.LastPositionHeld)</td></tr>
+                </tbody></table></div></div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (!isLoading && loadError is null && response is not null)
+{
+    <div class="card shadow mb-4 small">
+        <div class="card-header py-3"><h2 class="h6 jo-title mb-0">Compensation</h2></div>
+        <div class="card-body"><div class="table-responsive"><table class="jo-table"><tbody>
+            <tr><th scope="row">Expected monthly basic salary</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.ExpectedMonthlyBasicSalary)</td></tr>
+            <tr><th scope="row">Current monthly basic salary</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.CurrentMonthlyBasicSalary)</td></tr>
+            <tr><th scope="row">Guaranteed months pay</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.GuaranteedMonthsPay)</td></tr>
+            <tr><th scope="row">Annual guaranteed bonus description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualGuaranteedBonusDescription)</td></tr>
+            <tr><th scope="row">Annual guaranteed bonus amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualGuaranteedBonusAmount)</td></tr>
+            <tr><th scope="row">Monthly allowance description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MonthlyAllowanceDescription)</td></tr>
+            <tr><th scope="row">Monthly allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MonthlyAllowanceAmount)</td></tr>
+            <tr><th scope="row">Non-monthly allowance description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.NonMonthlyAllowanceDescription)</td></tr>
+            <tr><th scope="row">Non-monthly allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.NonMonthlyAllowanceAmount)</td></tr>
+            <tr><th scope="row">Monthly non-taxable allowance description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MonthlyNonTaxableAllowanceDescription)</td></tr>
+            <tr><th scope="row">Monthly non-taxable allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MonthlyNonTaxableAllowanceAmount)</td></tr>
+            <tr><th scope="row">Annual non-taxable allowance description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualNonTaxableAllowanceDescription)</td></tr>
+            <tr><th scope="row">Annual non-taxable allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualNonTaxableAllowanceAmount)</td></tr>
+            <tr><th scope="row">Annual profit sharing amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualProfitSharingAmount)</td></tr>
+            <tr><th scope="row">Annual incentive description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualIncentiveDescription)</td></tr>
+            <tr><th scope="row">Annual incentive amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualIncentiveAmount)</td></tr>
+            <tr><th scope="row">Annual variable pay description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualVariablePayDescription)</td></tr>
+            <tr><th scope="row">Annual variable pay amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualVariablePayAmount)</td></tr>
+        </tbody></table></div></div>
+    </div>
+    <div class="card shadow mb-4 small">
+        <div class="card-header py-3"><h2 class="h6 jo-title mb-0">Benefits</h2></div>
+        <div class="card-body"><div class="table-responsive"><table class="jo-table"><tbody>
+            <tr><th scope="row">Employee HMO benefit limit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.EmployeeHmoBenefitLimit)</td></tr>
+            <tr><th scope="row">Dependent HMO benefit limit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.DependentHmoBenefitLimit)</td></tr>
+            <tr><th scope="row">Dental benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.DentalBenefit)</td></tr>
+            <tr><th scope="row">Medicine reimbursement benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MedicineReimbursementBenefit)</td></tr>
+            <tr><th scope="row">Optical benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.OpticalBenefit)</td></tr>
+            <tr><th scope="row">Other health benefits</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.OtherHealthBenefits)</td></tr>
+            <tr><th scope="row">Vacation leave benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.VacationLeaveBenefit)</td></tr>
+            <tr><th scope="row">Sick leave benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.SickLeaveBenefit)</td></tr>
+            <tr><th scope="row">Other leave benefits</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.OtherLeaveBenefits)</td></tr>
+            <tr><th scope="row">Life insurance benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.LifeInsuranceBenefit)</td></tr>
+            <tr><th scope="row">Vehicle benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.VehicleBenefit)</td></tr>
+            <tr><th scope="row">Mobile phone benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MobilePhoneBenefit)</td></tr>
+            <tr><th scope="row">Other benefits</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.OtherBenefits)</td></tr>
+        </tbody></table></div></div>
+    </div>
+    <div class="card shadow mb-4 small">
+        <div class="card-header py-3"><h2 class="h6 jo-title mb-0">Submission Details</h2></div>
+        <div class="card-body"><div class="table-responsive"><table class="jo-table"><tbody>
+            <tr><th scope="row">Raw response ID</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.Id.ToString())</td></tr>
+            <tr><th scope="row">Candidate response ID</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.CandidateResponseId)</td></tr>
+            <tr><th scope="row">Response started at</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.ResponseStartedAt)</td></tr>
+            <tr><th scope="row">Response completed at</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.ResponseCompletedAt)</td></tr>
+            <tr><th scope="row">Form completed date</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.FormCompletedDate)</td></tr>
+            <tr><th scope="row">Data privacy consent</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.HasDataPrivacyConsent)</td></tr>
+            <tr><th scope="row">Created at</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.CreatedAt?.ToString("yyyy-MM-dd HH:mm:ss"))</td></tr>
+            <tr><th scope="row">Created by</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.CreatedBy?.ToString())</td></tr>
+        </tbody></table></div></div>
+    </div>
+}

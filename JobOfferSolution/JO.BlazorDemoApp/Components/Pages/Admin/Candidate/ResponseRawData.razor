@@ -1,2 +1,126 @@
-﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Authorize(Roles = JOUserRole.Admin)]
 @attribute [Route(JORoutes.Admin.MSFormResponseRaw)]
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="jo-title mb-1">Search candidate responses</h6>
+        <small class="text-muted">Match validation status exactly; search any part of a DBoxID, candidate name, or email.</small>
+    </div>
+    <div class="card-body">
+        <form @onsubmit="SearchResponses" @onsubmit:preventDefault>
+            <fieldset disabled="@(isLoading || isSyncing || loadError is not null)">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="response-dbox-id">Candidate DBoxID</label>
+                        <input id="response-dbox-id" class="form-control form-control-sm" @bind="candidateDBoxIdSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="response-name">Candidate name</label>
+                        <input id="response-name" class="form-control form-control-sm" @bind="candidateNameSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="response-email">Email address</label>
+                        <input id="response-email" type="text" class="form-control form-control-sm" @bind="emailSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="response-validation">Validation status</label>
+                        <select id="response-validation" class="custom-select custom-select-sm" @bind="validationStatusSearch">
+                            <option value="">All statuses</option>
+                            <option value="needs-review">Needs review</option>
+                            <option value="valid">Valid</option>
+                            <option value="not-validated">Not validated</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm mr-2">Search</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ClearSearch">Clear</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+        <div>
+            <h6 class="jo-title mb-1">Candidate Response Raw Data</h6>
+            <small class="text-muted" aria-live="polite">
+                <i class="fas fa-clock fa-fw mr-1" aria-hidden="true"></i>Last sync: @lastSyncDisplay
+            </small>
+        </div>
+        <div class="mt-2 mt-md-0">
+            <button type="button" class="btn btn-primary" @onclick="SyncMSFormsAsync" disabled="@(isSyncing || isLoading)">
+                <i class="fas fa-sync-alt fa-fw mr-1" aria-hidden="true"></i>@(isSyncing ? "Syncing..." : "MS-Forms Sync")
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (loadError is not null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @loadError
+                <button type="button" class="btn btn-outline-danger btn-sm ml-2" @onclick="LoadResponsesAsync" disabled="@(isLoading || isSyncing)">Try again</button>
+            </div>
+        }
+        <div class="table-responsive" aria-busy="@(isLoading ? "true" : "false")">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Candidate DBoxID</th>
+                        <th scope="col">Candidate</th>
+                        <th scope="col">Email address</th>
+                        <th scope="col">Position applied for</th>
+                        <th scope="col">Employment status</th>
+                        <th scope="col">Expected salary</th>
+                        <th scope="col">Validation status</th>
+                        <th scope="col">Validation errors</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (isLoading)
+                    {
+                        <tr><td colspan="8" class="text-center text-muted py-4" role="status">Loading candidate responses...</td></tr>
+                    }
+                    else if (loadError is not null)
+                    {
+                        <tr><td colspan="8" class="text-center text-muted py-4">Candidate responses could not be loaded.</td></tr>
+                    }
+                    else if (responses.Count == 0)
+                    {
+                        <tr><td colspan="8" class="text-center text-muted py-4">No raw responses found. Sync MS-Forms responses to populate this list.</td></tr>
+                    }
+                    else if (pagedResponses.TotalCount == 0)
+                    {
+                        <tr><td colspan="8" class="text-center text-muted py-4" role="status">No responses match your search. Change or clear the filters.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var response in pagedResponses.Data)
+                        {
+                            <tr @key="response.Id">
+                                <td>@DisplayValue(response.CandidateDBoxID)</td>
+                                <td class="jo-title"><a href="@(JORoutes.Admin.MSFormResponseRaw + "/" + response.Id)">@DisplayValue(GetCandidateName(response))</a></td>
+                                <td>@DisplayValue(response.EmailAddress)</td>
+                                <td>@DisplayValue(response.PositionAppliedFor)</td>
+                                <td>@DisplayValue(response.EmploymentStatus)</td>
+                                <td>@DisplayValue(response.ExpectedMonthlyBasicSalary)</td>
+                                <td>
+                                    <span class="badge @(response.InvalidResponse == true ? "badge-warning" : response.InvalidResponse == false ? "badge-success" : "badge-secondary")">
+                                        @(response.InvalidResponse == true ? "Needs review" : response.InvalidResponse == false ? "Valid" : "Not validated")
+                                    </span>
+                                </td>
+                                <td style="white-space: pre-line">@DisplayValue(response.ErrorMessage)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="8">
+                            <Pagination Result="@pagedResponses" PageChanged="ChangePage" PageSizeChanged="ChangePageSize" Disabled="@(isLoading || isSyncing || loadError is not null)" AriaLabel="Candidate response pages" />
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

@@ -11,7 +11,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.Review
 
         private static readonly int[] ForReviewWorkFlowIds = [3]; //For TA Lead Review
         private static readonly int[] SendBackWorkFlowIds = [10]; //Send Back
-        private static readonly int[] ReviewedWorkFlowIds = [4, 5, 6, 7, 8, 9, 13];
+        private static readonly int[] ReviewedWorkFlowIds = [8, 9];
 
         private List<VwJODboxCandidates> joDboxCandidates = new();
         private List<VwJODboxCandidates> eligibleJODboxCandidates = new();

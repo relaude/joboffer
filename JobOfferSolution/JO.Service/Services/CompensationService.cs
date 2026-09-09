@@ -11,10 +11,11 @@ namespace JO.Service.Services
     public class CompensationService : ICompensationService
     {
         private readonly IDbContextFactory<JobOfferDbContext> _dbContext;
-
-        public CompensationService(IDbContextFactory<JobOfferDbContext> dbContext)
+        private readonly IEmailService _emailService;
+        public CompensationService(IDbContextFactory<JobOfferDbContext> dbContext, IEmailService emailService)
         {
             _dbContext = dbContext;
+            _emailService = emailService;
         }
 
         public async Task<JOAnalysis> GetJOAnalysis(int jobOfferId)
@@ -327,6 +328,11 @@ namespace JO.Service.Services
             context.JOCompanyCompensationItems.UpdateRange(joCompanyCompensationItems);
             
             await context.SaveChangesAsync();
+
+            if(jobOffer.OfferRangeId == 1)
+            {
+                await _emailService.SendJOEmailNotification(jobOffer.Id, 5);//For Division Head Approval
+            }
 
             return jobOffer.Id;
         }

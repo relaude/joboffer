@@ -22,6 +22,12 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<DateTime?> GetLatestDateTimeMSFormAsync()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.MSFormSyncLogs.MaxAsync(jo => jo.SyncDate);
+        }
+
         public async Task<List<CandidateResponseRawData>> SaveCandidateResponseRawData(int createdBy)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -29,6 +35,15 @@ namespace JO.Service.Services
             var responseRawData = await GetCandidateResponses(createdBy);
             ResponseValidation(responseRawData);
             await context.CandidateResponseRawData.AddRangeAsync(responseRawData);
+            await context.SaveChangesAsync();
+
+            MSFormSyncLogs syncLog = new MSFormSyncLogs
+            {
+                SyncDate = DateTime.Now,
+                TotalRows = responseRawData.Count,
+                InvalidCount = responseRawData.Where(jo=>jo.InvalidResponse == true).Count(),
+            };
+            await context.MSFormSyncLogs.AddAsync(syncLog);
             await context.SaveChangesAsync();
 
             return responseRawData;
@@ -60,6 +75,14 @@ namespace JO.Service.Services
                     columns.TryAdd(header, column);
             }
 
+            if (!columns.ContainsKey(NormalizeHeader("Candidate DBoxID"))
+                && !columns.ContainsKey(NormalizeHeader("CandidateDBoxID")))
+            {
+                throw new ValidationException(
+                    "CandidateResponseSample.xlsx is missing the required 'Candidate DBoxID' column. " +
+                    "Update the source workbook (header in B1), populate the candidate IDs, and download it again before syncing.");
+            }
+
             var createdAt = DateTime.Now;
             for (var row = headerRow + 1; row <= worksheet.Dimension.End.Row; row++)
             {
@@ -82,6 +105,7 @@ namespace JO.Service.Services
                 rawData.Add(new CandidateResponseRawData
                 {
                     CandidateResponseId = Read("Id"),
+                    CandidateDBoxID = Read("Candidate DBoxID", "CandidateDBoxID"),
                     ResponseStartedAt = Read("Start time"),
                     ResponseCompletedAt = Read("Completion time"),
                     EmailAddress = Read("Email"),
@@ -147,6 +171,11 @@ namespace JO.Service.Services
             foreach (var response in responseRawData)
             {
                 var errors = new List<string>();
+
+                if (string.IsNullOrWhiteSpace(response.CandidateDBoxID))
+                {
+                    errors.Add("CandidateDBoxID is required.");
+                }
 
                 void ValidateDate(string? value, string field)
                 {

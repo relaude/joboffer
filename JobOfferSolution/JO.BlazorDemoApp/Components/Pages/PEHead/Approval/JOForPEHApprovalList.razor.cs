@@ -10,7 +10,7 @@ namespace JO.BlazorDemoApp.Components.Pages.PEHead.Approval
 
         private static readonly int[] ForApprovalWorkFlowIds = [4];
         private static readonly int[] SendBackWorkFlowIds = [10];
-        private static readonly int[] ApprovedWorkFlowIds = [5, 6, 7, 8, 9];
+        private static readonly int[] ApprovedWorkFlowIds = [8, 9];
 
         private List<VwJODboxCandidates> joDboxCandidates = new();
         private List<VwJODboxCandidates> eligibleJODboxCandidates = new();
