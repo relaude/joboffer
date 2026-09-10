@@ -1,5 +1,6 @@
 ﻿using JO.DataModel.Identity;
 using JO.Persistence.DataAccess;
+using JO.DataModel.View;
 using JO.Service.Constants;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -89,6 +90,34 @@ namespace JO.Service.Services
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
                 await _roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+
+        public async Task<List<VwJOUserRoles>> GetUserRolesAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return new List<VwJOUserRoles>();
+
+            var roleNames = await _userManager.GetRolesAsync(user);
+            var roles = new List<IdentityRole>();
+
+            foreach (var roleName in roleNames)
+            {
+                var role = await _roleManager.FindByNameAsync(roleName);
+                if (role != null)
+                    roles.Add(role);
+            }
+
+            var roleIds = roles.Select(role => role.Id).ToList();
+            if (roleIds.Count == 0)
+                return new List<VwJOUserRoles>();
+
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.VwJOUserRoles
+                .AsNoTracking()
+                .Where(role => role.AspNetRoleId != null && roleIds.Contains(role.AspNetRoleId))
+                .OrderBy(role => role.OrderBy)
+                .ToListAsync();
         }
 
         private async Task<ClaimsPrincipal> GetUserAsync()

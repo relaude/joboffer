@@ -1070,3 +1070,82 @@
     background: #d4edda;
     color: #155724;
 }
+
+/* ==========================================================================
+   JO Dashboard styles
+   Copied from the TA dashboard layout. Root: .jo-dashboard.
+   Custom classes use jo-dashboard-* (tabs, KPI cards, pipeline, Kanban,
+   monitoring, badges and quick actions). Includes mobile layout overrides.
+   ========================================================================== */
+.jo-dashboard {
+    --surface-border: #e3e6f0;
+    --page-text: #30344a;
+    color: var(--page-text);
+    font-family: Nunito, sans-serif;
+
+/*    background: #f4f6fb;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    margin: 0;
+    padding: 1.5rem 2rem;*/
+}
+
+.jo-dashboard-tabs { gap: .375rem; margin-bottom: 1.25rem; }
+.jo-dashboard-tab {
+    background: #fff;
+    border: 1px solid #d9dde8;
+    border-radius: .45rem;
+    color: #6e7185;
+    font-size: .72rem;
+    line-height: 1;
+    padding: .65rem .8rem;
+}
+.jo-dashboard-tab.active { background: #4e73df; border-color: #4e73df; color: #fff; font-weight: 700; }
+
+.jo-dashboard-card { background: #fff; border: 1px solid var(--surface-border); border-radius: .65rem; }
+.jo-dashboard-kpi-card { border-left: 5px solid var(--accent); min-height: 112px; padding: 1.15rem .85rem; }
+.jo-dashboard-kpi-label { color: var(--accent); font-size: .66rem; font-weight: 700; margin-bottom: .35rem; }
+.jo-dashboard-kpi-value { color: var(--page-text); font-size: 1.75rem; font-weight: 700; line-height: 1.25; }
+.jo-dashboard-kpi-hint { color: #9ba0b4; font-size: .65rem; margin-top: .15rem; }
+
+.jo-dashboard-panel-card { padding: 1rem 1.2rem; }
+.jo-dashboard-panel-card h2 { color: var(--page-text); font-size: .95rem; font-weight: 700; margin: 0; }
+.jo-dashboard-panel-subtitle { color: #858796; font-size: .66rem; margin: .15rem 0 0; }
+.jo-dashboard-soft-badge, .jo-dashboard-status-badge, .jo-dashboard-count-badge { border-radius: 50rem; display: inline-block; font-size: .62rem; font-weight: 700; padding: .3rem .5rem; white-space: nowrap; }
+.jo-dashboard-soft-danger { background: #fdecea; color: #c53d32; }
+.jo-dashboard-soft-warning { background: #fff4d6; color: #9b6a00; }
+.jo-dashboard-soft-success { background: #e7f8f1; color: #178a62; }
+
+.jo-dashboard-pending-table { font-size: .7rem; }
+.jo-dashboard-pending-table thead th { border-top: 0; color: #858796; font-size: .58rem; padding: .45rem .25rem; }
+.jo-dashboard-pending-table td { border-color: #eaecf4; padding: .55rem .25rem; vertical-align: middle; }
+.jo-dashboard-action-link { color: #4e73df; font-weight: 700; }
+
+.jo-dashboard-pipeline-item { font-size: .65rem; margin-bottom: .65rem; }
+.jo-dashboard-pipeline-track { background: #eaecf4; border-radius: 1rem; height: 6px; margin-top: .38rem; overflow: hidden; }
+.jo-dashboard-pipeline-bar { border-radius: 1rem; height: 100%; }
+
+.jo-dashboard-kanban-grid { display: grid; gap: .8rem; grid-template-columns: repeat(5, minmax(170px, 1fr)); overflow-x: auto; }
+.jo-dashboard-kanban-column { background: #f8f9fc; border: 1px solid var(--surface-border); border-radius: .5rem; min-height: 200px; padding: .75rem; }
+.jo-dashboard-kanban-column strong { font-size: .7rem; }
+.jo-dashboard-count-badge { color: #fff; min-width: 1.4rem; text-align: center; }
+.jo-dashboard-candidate-card { background: #fff; border: 1px solid var(--surface-border); border-radius: .45rem; margin-bottom: .55rem; min-height: 60px; padding: .6rem; }
+.jo-dashboard-candidate-card strong, .jo-dashboard-candidate-card small { display: block; }
+.jo-dashboard-candidate-card small { color: #858796; font-size: .59rem; margin-top: .45rem; }
+
+.jo-dashboard-monitor-card { min-height: 218px; }
+.jo-dashboard-monitor-row { align-items: center; display: grid; font-size: .68rem; gap: 1rem; grid-template-columns: 1.3fr 1.4fr auto; min-height: 47px; }
+.jo-dashboard-status-success { background: #1cc88a; color: #fff; }
+.jo-dashboard-status-warning { background: #f6c23e; color: #fff; }
+.jo-dashboard-status-danger { background: #e74a3b; color: #fff; }
+
+.jo-dashboard-quick-actions { gap: .65rem; min-height: 58px; padding: .85rem 1rem; }
+.jo-dashboard-quick-label { color: #858796; font-size: .64rem; font-weight: 700; }
+.jo-dashboard-quick-actions .btn { border-radius: .45rem; font-size: .64rem; font-weight: 700; padding: .48rem .75rem; }
+
+@media (max-width: 767.98px) {
+    .jo-dashboard { padding: 1rem; }
+    .jo-dashboard-monitor-row { gap: .5rem; grid-template-columns: 1fr; padding: .65rem 0; }
+    .jo-dashboard-monitor-row .jo-dashboard-status-badge { justify-self: start; }
+}

@@ -1,5 +1,6 @@
 @attribute [Route(JORoutes.MockUp.TADashboard)]
 
+@* <div class="ta-dashboard-mockup"> *@
 <div class="ta-dashboard-mockup">
     <nav class="dashboard-tabs d-flex flex-wrap" aria-label="Dashboard sections">
         @foreach (var tab in Tabs)
@@ -136,7 +137,10 @@
         background: #f4f6fb;
         color: var(--page-text);
         font-family: Nunito, sans-serif;
-        margin: -1.5rem;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+        margin: 0;
         padding: 1.5rem 2rem;
     }
 
@@ -194,7 +198,7 @@
     .quick-actions .btn { border-radius: .45rem; font-size: .64rem; font-weight: 700; padding: .48rem .75rem; pointer-events: none; }
 
     @@media (max-width: 767.98px) {
-        .ta-dashboard-mockup { margin: -1rem; padding: 1rem; }
+        .ta-dashboard-mockup { padding: 1rem; }
         .monitor-row { gap: .5rem; grid-template-columns: 1fr; padding: .65rem 0; }
         .monitor-row .status-badge { justify-self: start; }
     }

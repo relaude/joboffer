@@ -60,7 +60,23 @@
             return;
         }
 
-        Navigation.NavigateTo("/", forceLoad: true);
+        var userRoles = await AccountService.GetUserRolesAsync(email);
+        var firstRole = userRoles.FirstOrDefault()?.RoleName;
+        var destination = firstRole switch
+        {
+            JOUserRole.TAPartner => JORoutes.TAPartner.Dashboard,
+            JOUserRole.TALead => JORoutes.TALead.Dashboard,
+            JOUserRole.PEHead => JORoutes.PEH.JOForReview,
+            JOUserRole.HRODHeadApprover => JORoutes.HRODHead.JOForApproval,
+            JOUserRole.DivisionHeadApproverL1 => JORoutes.DHL1.JOForApproval,
+            JOUserRole.DivisionHeadApproverL2 => JORoutes.DHL2.JOForApproval,
+            JOUserRole.President => JORoutes.President.JOForApproval,
+            JOUserRole.BusinessAdmin => JORoutes.BA.SalaryMatrices,
+            JOUserRole.Admin => JORoutes.Admin.Users,
+            _ => JORoutes.Public.Landing
+        };
+
+        Navigation.NavigateTo(destination, forceLoad: true);
     }
 
     private sealed class InputModel

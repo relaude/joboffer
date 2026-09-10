@@ -4,32 +4,23 @@
 <div class="card shadow mb-4 small">
     <div class="card-header py-3">
         <h6 class="jo-title mb-1">Search candidate responses</h6>
-        <small class="text-muted">Match validation status exactly; search any part of a DBoxID, candidate name, or email.</small>
+        <small class="text-muted">Search any part of a DBoxID, candidate name, or email.</small>
     </div>
     <div class="card-body">
         <form @onsubmit="SearchResponses" @onsubmit:preventDefault>
             <fieldset disabled="@(isLoading || isSyncing || loadError is not null)">
                 <div class="form-row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-4">
                         <label for="response-dbox-id">Candidate DBoxID</label>
                         <input id="response-dbox-id" class="form-control form-control-sm" @bind="candidateDBoxIdSearch" @bind:event="oninput" />
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-4">
                         <label for="response-name">Candidate name</label>
                         <input id="response-name" class="form-control form-control-sm" @bind="candidateNameSearch" @bind:event="oninput" />
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-4">
                         <label for="response-email">Email address</label>
                         <input id="response-email" type="text" class="form-control form-control-sm" @bind="emailSearch" @bind:event="oninput" />
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label for="response-validation">Validation status</label>
-                        <select id="response-validation" class="custom-select custom-select-sm" @bind="validationStatusSearch">
-                            <option value="">All statuses</option>
-                            <option value="needs-review">Needs review</option>
-                            <option value="valid">Valid</option>
-                            <option value="not-validated">Not validated</option>
-                        </select>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-sm mr-2">Search</button>
@@ -48,8 +39,11 @@
             </small>
         </div>
         <div class="mt-2 mt-md-0">
-            <button type="button" class="btn btn-primary" @onclick="SyncMSFormsAsync" disabled="@(isSyncing || isLoading)">
-                <i class="fas fa-sync-alt fa-fw mr-1" aria-hidden="true"></i>@(isSyncing ? "Syncing..." : "MS-Forms Sync")
+            <button type="button" class="btn btn-outline-primary mr-2" @onclick="OpenImportModal" disabled="@(isSyncing || isLoading || isValidatingImport)">
+                <i class="fas fa-file-excel fa-fw mr-1" aria-hidden="true"></i>Import from Excel
+            </button>
+            <button type="button" class="btn btn-primary" @onclick="SyncMSFormsAsync" disabled="@(isSyncing || isLoading || isValidatingImport)">
+                <i class="fas fa-sync-alt fa-fw mr-1" aria-hidden="true"></i>@(isSyncing ? "Syncing..." : "DBox Sync")
             </button>
         </div>
     </div>
@@ -71,26 +65,24 @@
                         <th scope="col">Position applied for</th>
                         <th scope="col">Employment status</th>
                         <th scope="col">Expected salary</th>
-                        <th scope="col">Validation status</th>
-                        <th scope="col">Validation errors</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (isLoading)
                     {
-                        <tr><td colspan="8" class="text-center text-muted py-4" role="status">Loading candidate responses...</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted py-4" role="status">Loading candidate responses...</td></tr>
                     }
                     else if (loadError is not null)
                     {
-                        <tr><td colspan="8" class="text-center text-muted py-4">Candidate responses could not be loaded.</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted py-4">Candidate responses could not be loaded.</td></tr>
                     }
                     else if (responses.Count == 0)
                     {
-                        <tr><td colspan="8" class="text-center text-muted py-4">No raw responses found. Sync MS-Forms responses to populate this list.</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted py-4">No raw responses found. Sync MS-Forms responses to populate this list.</td></tr>
                     }
                     else if (pagedResponses.TotalCount == 0)
                     {
-                        <tr><td colspan="8" class="text-center text-muted py-4" role="status">No responses match your search. Change or clear the filters.</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted py-4" role="status">No responses match your search. Change or clear the filters.</td></tr>
                     }
                     else
                     {
@@ -103,19 +95,13 @@
                                 <td>@DisplayValue(response.PositionAppliedFor)</td>
                                 <td>@DisplayValue(response.EmploymentStatus)</td>
                                 <td>@DisplayValue(response.ExpectedMonthlyBasicSalary)</td>
-                                <td>
-                                    <span class="badge @(response.InvalidResponse == true ? "badge-warning" : response.InvalidResponse == false ? "badge-success" : "badge-secondary")">
-                                        @(response.InvalidResponse == true ? "Needs review" : response.InvalidResponse == false ? "Valid" : "Not validated")
-                                    </span>
-                                </td>
-                                <td style="white-space: pre-line">@DisplayValue(response.ErrorMessage)</td>
                             </tr>
                         }
                     }
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="8">
+                        <td colspan="6">
                             <Pagination Result="@pagedResponses" PageChanged="ChangePage" PageSizeChanged="ChangePageSize" Disabled="@(isLoading || isSyncing || loadError is not null)" AriaLabel="Candidate response pages" />
                         </td>
                     </tr>
@@ -124,3 +110,16 @@
         </div>
     </div>
 </div>
+
+<JOModal @ref="importModal" Title="Import from Excel" ModalSize="modal-lg">
+    <ChildContent>
+        <div class="form-group mb-0">
+            <label for="response-excel-file">Excel file</label>
+            <InputFile id="response-excel-file" class="form-control-file" accept=".xlsx" OnChange="SelectImportFile" disabled="@isValidatingImport" />
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button type="button" class="btn btn-secondary btn-sm" @onclick="CloseImportModal" disabled="@isValidatingImport">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" @onclick="ImportExcelAsync" disabled="@isValidatingImport">@(isValidatingImport ? "Importing..." : "Import")</button>
+    </FooterTemplate>
+</JOModal>

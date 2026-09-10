@@ -25,14 +25,14 @@
         }
         else
         {
-            <div class="mb-3">
+            @* <div class="mb-3">
                 <strong>Validation status:</strong>
                 <span class="badge @ValidationBadge">@ValidationStatus</span>
             </div>
             <div class="mb-4">
                 <h3 class="h6 font-weight-bold text-gray-800">Validation errors</h3>
                 <div style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.ErrorMessage)</div>
-            </div>
+            </div> *@
             <div class="row">
                 <div class="col-lg-6 mb-4"><h3 class="h6 font-weight-bold text-gray-800 mb-2">Candidate Information</h3><div class="table-responsive"><table class="jo-table"><tbody>
                     <tr><th scope="row">Candidate DBoxID</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.CandidateDBoxID)</td></tr>

@@ -22,6 +22,25 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<bool> HasExcelDataRowsAsync(Stream source)
+        {
+            ArgumentNullException.ThrowIfNull(source);
+
+            using var stream = new MemoryStream();
+            await source.CopyToAsync(stream);
+            stream.Position = 0;
+
+            ExcelPackage.License.SetNonCommercialOrganization("JobOffer");
+            using var workbook = new ExcelPackage();
+            await workbook.LoadAsync(stream);
+
+            // Row 1 is the header; formatting alone does not count as a data row.
+            return workbook.Workbook.Worksheets.Any(sheet =>
+                sheet.Dimension is not null && sheet.Dimension.End.Row >= 2 &&
+                sheet.Cells[2, 1, sheet.Dimension.End.Row, sheet.Dimension.End.Column]
+                    .Any(cell => !string.IsNullOrWhiteSpace(cell.Value?.ToString())));
+        }
+
         public async Task<DateTime?> GetLatestDateTimeMSFormAsync()
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -30,12 +49,32 @@ namespace JO.Service.Services
 
         public async Task<List<CandidateResponseRawData>> SaveCandidateResponseRawData(int createdBy)
         {
+            var responseRawData = await GetCandidateResponses(createdBy);
+            return await SaveResponsesAsync(responseRawData);
+        }
+
+        public async Task<List<CandidateResponseRawData>> SaveCandidateResponseRawData(Stream source, int createdBy)
+        {
+            ArgumentNullException.ThrowIfNull(source);
+            using var stream = new MemoryStream();
+            await source.CopyToAsync(stream);
+            stream.Position = 0;
+            ExcelPackage.License.SetNonCommercialOrganization("JobOffer");
+            using var package = new ExcelPackage();
+            await package.LoadAsync(stream);
+            var responseRawData = ReadCandidateResponses(package, createdBy);
+            if (responseRawData.Count == 0)
+                throw new ValidationException("The first worksheet must contain at least one data row below the header.");
+
+            return await SaveResponsesAsync(responseRawData);
+        }
+
+        private async Task<List<CandidateResponseRawData>> SaveResponsesAsync(List<CandidateResponseRawData> responseRawData)
+        {
             await using var context = await _dbContext.CreateDbContextAsync();
 
-            var responseRawData = await GetCandidateResponses(createdBy);
             ResponseValidation(responseRawData);
             await context.CandidateResponseRawData.AddRangeAsync(responseRawData);
-            await context.SaveChangesAsync();
 
             MSFormSyncLogs syncLog = new MSFormSyncLogs
             {
@@ -62,6 +101,13 @@ namespace JO.Service.Services
             using var package = new ExcelPackage();
             await package.LoadAsync(new FileInfo(filePath));
 
+            return ReadCandidateResponses(package, createdBy);
+        }
+
+        private static List<CandidateResponseRawData> ReadCandidateResponses(ExcelPackage package, int createdBy)
+        {
+            List<CandidateResponseRawData> rawData = new();
+
             var worksheet = package.Workbook.Worksheets.FirstOrDefault();
             if (worksheet?.Dimension is null)
                 return rawData;
@@ -79,8 +125,8 @@ namespace JO.Service.Services
                 && !columns.ContainsKey(NormalizeHeader("CandidateDBoxID")))
             {
                 throw new ValidationException(
-                    "CandidateResponseSample.xlsx is missing the required 'Candidate DBoxID' column. " +
-                    "Update the source workbook (header in B1), populate the candidate IDs, and download it again before syncing.");
+                    "The workbook is missing the required 'Candidate DBoxID' column. " +
+                    "Add the column to the first worksheet's header and populate the candidate IDs.");
             }
 
             var createdAt = DateTime.Now;

@@ -3,6 +3,7 @@ using JO.Service.Extensions;
 using JO.DataModel.Entity;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
 {
@@ -19,9 +20,96 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
         private string candidateDBoxIdSearch = string.Empty;
         private string candidateNameSearch = string.Empty;
         private string emailSearch = string.Empty;
-        private string validationStatusSearch = string.Empty;
         private bool isLoading = true;
         private bool isSyncing;
+        private Shared.JOModal? importModal;
+
+        private IBrowserFile? importFile;
+        private bool isValidatingImport;
+        private const long MaxImportFileSize = 10 * 1024 * 1024;
+
+        private void OpenImportModal()
+        {
+            importFile = null;
+            importModal?.Show();
+        }
+
+        private void SelectImportFile(InputFileChangeEventArgs args) => importFile = args.File;
+
+        private async Task ImportExcelAsync()
+        {
+            if (isValidatingImport || isSyncing || isLoading)
+                return;
+
+            var file = importFile;
+            if (file is null)
+            {
+                await AlertService.Error("Please select an Excel file.");
+                return;
+            }
+
+            if (!string.Equals(Path.GetExtension(file.Name), ".xlsx", StringComparison.OrdinalIgnoreCase))
+            {
+                await AlertService.Error("Please select an Excel workbook (.xlsx). For older .xls files, save them as .xlsx first.");
+                return;
+            }
+
+            if (file.Size == 0 || file.Size > MaxImportFileSize)
+            {
+                await AlertService.Error("Please select a non-empty Excel file no larger than 10 MB.");
+                return;
+            }
+
+            isValidatingImport = true;
+            var validationPassed = false;
+            try
+            {
+                await using var source = file.OpenReadStream(MaxImportFileSize);
+                var hasDataRows = await MSFormSyncService.HasExcelDataRowsAsync(source);
+
+                if (!hasDataRows)
+                {
+                    await AlertService.Error("The Excel workbook must contain at least one data row below the header.");
+                    return;
+                }
+
+                validationPassed = true;
+                var userId = await AccountService.GetJobOfferUserId();
+                if (userId <= 0)
+                {
+                    await AlertService.Error("Unable to identify the current user. Please sign in again before importing.", "Import failed");
+                    return;
+                }
+
+                // Validation consumed the browser stream; open a fresh stream for saving.
+                await using var importSource = file.OpenReadStream(MaxImportFileSize);
+                var imported = await MSFormSyncService.SaveCandidateResponseRawData(importSource, userId);
+                CloseImportModal();
+                importFile = null;
+                await LoadResponsesAsync();
+                var invalidCount = imported.Count(response => response.InvalidResponse == true);
+                var message = $"Imported {imported.Count:N0} candidate responses.";
+                if (invalidCount > 0)
+                    message += $" {invalidCount:N0} records were saved with validation issues. Review their details and correct the source data.";
+                await AlertService.Success(message, invalidCount > 0 ? "Import completed with validation issues" : "Import complete");
+            }
+            catch (System.ComponentModel.DataAnnotations.ValidationException ex)
+            {
+                await AlertService.Error(ex.Message, "Workbook needs attention");
+            }
+            catch (Exception)
+            {
+                await AlertService.Error(validationPassed
+                    ? "Unable to import candidate responses. Check the workbook and database connection, then try again."
+                    : "Unable to read this file as an Excel workbook. Select a valid, unprotected .xlsx file and try again.", "Import failed");
+            }
+            finally
+            {
+                isValidatingImport = false;
+            }
+        }
+
+        private void CloseImportModal() => importModal?.Close();
         private string lastSyncDisplay = "Loading...";
         private string? loadError;
         private PagedResult<CandidateResponseRawData> pagedResponses = new() { Page = 1, PageSize = 10 };
@@ -41,21 +129,14 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
             filteredResponses = responses.Where(response =>
                 MatchesPartial(response.CandidateDBoxID, dboxId) &&
                 MatchesPartial(GetCandidateName(response), name) &&
-                MatchesPartial(response.EmailAddress, email) &&
-                (validationStatusSearch switch
-                {
-                    "needs-review" => response.InvalidResponse == true,
-                    "valid" => response.InvalidResponse == false,
-                    "not-validated" => response.InvalidResponse is null,
-                    _ => true
-                })).ToList();
+                MatchesPartial(response.EmailAddress, email)).ToList();
 
             ChangePage(1);
         }
 
         private void ClearSearch()
         {
-            candidateDBoxIdSearch = candidateNameSearch = emailSearch = validationStatusSearch = string.Empty;
+            candidateDBoxIdSearch = candidateNameSearch = emailSearch = string.Empty;
             SearchResponses();
         }
 
@@ -111,7 +192,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
 
         private async Task SyncMSFormsAsync()
         {
-            if (isSyncing || isLoading)
+            if (isSyncing || isLoading || isValidatingImport)
                 return;
 
             isSyncing = true;

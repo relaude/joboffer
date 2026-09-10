@@ -65,6 +65,7 @@ namespace JO.Service.Constants
 
         public static class TAPartner
         {
+            public const string Dashboard = PrefixTAPartner + "/dashboard";
             public const string Candidates = PrefixTAPartner + "/candidates";
             public const string Candidate = PrefixTAPartner + "/candidate";
             public const string Analysis = PrefixTAPartner + "/analysis";
@@ -79,6 +80,7 @@ namespace JO.Service.Constants
 
         public static class TALead
         {
+            public const string Dashboard = PrefixTALead + "/dashboard";
             public const string Candidates = PrefixTALead + "/candidates";
             public const string Candidate = PrefixTALead + "/candidate";
             public const string JOForReview = PrefixTALead + "/for-review";
@@ -134,6 +136,7 @@ namespace JO.Service.Constants
 
         public static class PEH
         {
+            public const string Dashboard = PrefixPEH + "/dashboard";
             public const string JOForApproval = PrefixPEH + "/for-approval";
             public const string JOForReview = PrefixPEH + "/for-review";
             public const string JobOfferDetails = PrefixPEH + "/joboffer-details";

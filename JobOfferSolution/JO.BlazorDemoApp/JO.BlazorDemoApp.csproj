@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <Folder Include="Components\Pages\Pagination\" />
+    <Folder Include="Components\Pages\TA\Dashboard\" />
     <Folder Include="wwwroot\excel\" />
   </ItemGroup>
 

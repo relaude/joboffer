@@ -1,0 +1,140 @@
+@attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Route(JORoutes.TAPartner.Dashboard)]
+
+<div class="jo-dashboard">
+    <section class="jo-dashboard-card jo-dashboard-quick-actions d-flex flex-wrap align-items-center mb-4">
+        <span class="jo-dashboard-quick-label">QUICK LINKS</span>
+        <button type="button" class="btn btn-primary" @onclick="GoToJobOffers">Job Offers</button>
+        <button type="button" class="btn btn-success" @onclick="GoToCandidates">Candidates</button>
+        <button type="button" class="btn btn-info" @onclick="GoToEmailTemplates">Email Templates</button>
+    </section>
+
+    <div class="row mb-4">
+        <div class="col-lg-7 mb-3 mb-lg-0">
+            <section class="jo-dashboard-card jo-dashboard-panel-card h-100">
+                <div class="mb-3">
+                    <h2>JobOffer Pending Actions</h2>
+                    <p class="jo-dashboard-panel-subtitle">Job offers for Discussion, Send Back or Negotiation</p>
+                </div>
+                <div class="table-responsive">
+                    <table class="table jo-dashboard-pending-table mb-0">
+                        <thead>
+                            <tr><th scope="col">Reference Number</th><th scope="col">Candidate</th><th scope="col">Status</th><th scope="col">Workflow Status</th></tr>
+                        </thead>
+                        <tbody>
+                            @if (isLoadingJobOffers)
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4" role="status">Loading pending job offers...</td></tr>
+                            }
+                            else if (pagedJobOffers.TotalCount == 0)
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4" role="status">No job offers for Discussion, Send Back or Negotiation.</td></tr>
+                            }
+                            @foreach (var jobOffer in pagedJobOffers.Data)
+                            {
+                                <tr @key="jobOffer.Id">
+                                    <td><a class="jo-dashboard-action-link" href="@SetJOlink(jobOffer)">@jobOffer.RefNum</a></td>
+                                    <td class="font-weight-bold text-gray-900">@jobOffer.CandidateName</td>
+                                    <td>@jobOffer.ActionByName</td>
+                                    <td>@jobOffer.FlowName</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">
+                                    <Pagination Result="@pagedJobOffers" PageChanged="ChangeJobOfferPage" PageSizeChanged="ChangeJobOfferPageSize" Disabled="@isLoadingJobOffers" AriaLabel="Pending job offer pages" />
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+        </div>
+        <div class="col-lg-5">
+            <section class="jo-dashboard-card jo-dashboard-panel-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>JobOffer Pipelines</h2>
+                    <span class="font-weight-bold text-gray-800">Total: @total</span>
+                </div>
+                @foreach (var stage in Pipeline)
+                {
+                    <div class="jo-dashboard-pipeline-item">
+                        <div class="d-flex justify-content-between">
+                            <span class="font-weight-bold text-gray-800">@stage.Label</span>
+                            <span class="font-weight-bold" style="color: @stage.Color">@stage.Count</span>
+                        </div>
+                        <div class="jo-dashboard-pipeline-track"><div class="jo-dashboard-pipeline-bar" style="width: @stage.Width%; background: @stage.Color"></div></div>
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-7 mb-3 mb-lg-0">
+            <section class="jo-dashboard-card jo-dashboard-panel-card h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h2>Candidate Pending Actions</h2>
+                        <p class="jo-dashboard-panel-subtitle">Candidates with Draft or For Creation status</p>
+                    </div>
+                    
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table jo-dashboard-pending-table mb-0">
+                        <thead><tr><th>ID</th><th>CANDIDATE</th><th>POSITION</th><th>STATUS</th></tr></thead>
+                        <tbody>
+                            @if (isLoadingCandidates)
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4" role="status">Loading pending candidates...</td></tr>
+                            }
+                            else if (pagedCandidates.TotalCount == 0)
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4" role="status">No candidates with Draft or For Creation status.</td></tr>
+                            }
+                            @foreach (var candidate in pagedCandidates.Data)
+                            {
+                                <tr @key="candidate.Id">
+                                    <td>@candidate.DboxRefNum</td>
+                                    <td class="font-weight-bold text-gray-900">
+                                        <button type="button" class="btn btn-link btn-sm p-0" role="link" @onclick="() => OpenCandidate(candidate)">@candidate.CandidateName</button>
+                                    </td>
+                                    <td class="text-gray-600">@candidate.JobPosition</td>
+                                    <td>@(string.IsNullOrWhiteSpace(candidate.StatusName) ? (candidate.StatusId == 2 ? "Draft" : "For Creation") : candidate.StatusName)</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">
+                                    <Pagination Result="@pagedCandidates" PageChanged="ChangeCandidatePage" PageSizeChanged="ChangeCandidatePageSize" Disabled="@isLoadingCandidates" AriaLabel="Pending candidate pages" />
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+        </div>
+        <div class="col-lg-5">
+            <section class="jo-dashboard-card jo-dashboard-panel-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Candidate Pipelines</h2>
+                    <span class="font-weight-bold text-gray-800">Total: @candidateTotal</span>
+                </div>
+                @foreach (var stage in CandidatePipeline)
+                {
+                    <div class="jo-dashboard-pipeline-item">
+                        <div class="d-flex justify-content-between">
+                            <span class="font-weight-bold text-gray-800">@stage.Label</span>
+                            <span class="font-weight-bold" style="color: @stage.Color">@stage.Count</span>
+                        </div>
+                        <div class="jo-dashboard-pipeline-track"><div class="jo-dashboard-pipeline-bar" style="width: @stage.Width%; background: @stage.Color"></div></div>
+                    </div>
+                }
+                <p class="jo-dashboard-panel-subtitle">Response counts and job offer statuses overlap.</p>
+            </section>
+        </div>
+    </div>
+</div>
