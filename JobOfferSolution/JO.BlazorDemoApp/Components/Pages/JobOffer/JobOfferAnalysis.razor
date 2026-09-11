@@ -79,14 +79,19 @@
                         </div>
                         <div class="form-group mb-0">
                             <label for="ulEquivalentTotalMonthsPay">Total Months Pay</label>
-                            <select id="ulEquivalentTotalMonthsPay"
+                            <input id="ulEquivalentTotalMonthsPay"
+                                   type="text"
+                                   class="form-control"
+                                   value="@ulEquivalentTotalMonthsPay"
+                                   readonly />
+                            @* <select id="ulEquivalentTotalMonthsPay"
                                     class="custom-select"
                                     @bind="ulEquivalentTotalMonthsPay">
                                 <option value="13">13</option>
                                 <option value="14">14</option>
                                 <option value="15">15</option>
                                 <option value="16">16</option>
-                            </select>
+                            </select> *@
                         </div>
 
                     </div>
@@ -124,10 +129,10 @@
                      @onclick="() => ClickOptionTab(compensation)">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="jo-analysis-option-title">Option @compensation.OptionNumber</span>
-                        <small class="text-muted text-right text-truncate ml-2"
+                        @* <small class="text-muted text-right text-truncate ml-2"
                                title="@GetCompanyCompensationName(compensation.CmpnyCmpnstnId)">
                             @GetCompanyCompensationName(compensation.CmpnyCmpnstnId)
-                        </small>
+                        </small> *@
                     </div>
 
                     <div>
@@ -173,7 +178,7 @@
                             <div class="border-top pt-2">
                                 <span class="badge @(compensation.OfferRangeId is 1 or 2
                                                                           ? "badge-success"
-                                                                          : compensation.OfferRangeId == 3
+                                                                          : compensation.OfferRangeId is 3 or 4
                                                                               ? "badge-danger"
                                                                               : "badge-info")">
                                     @if (compensation.OfferRangeId is 1 or 2)
@@ -204,21 +209,22 @@
         </div>
 
         <div class="table-responsive">
-            <!--MIRROR-->
+            
             <table class="jo-table">
                 <thead>
                     <tr>
-                        <th scope="col"></th>
-                        <th scope="colgroup" colspan="2">Current</th>
-                        <th scope="colgroup" colspan="3" class="is-highlighted">Option @selectedOptionNumber</th>
+                        <th scope="colgroup" colspan="4">Current</th>
+                        <th scope="colgroup" colspan="4" class="is-highlighted">Option @selectedOptionNumber</th>
                     </tr>
                     <tr>
                         <th scope="col">Compensation</th>
                         <th scope="col">Monthly</th>
                         <th scope="col">Annual</th>
+                        <th scope="col">Remarks</th>
                         <th scope="col" class="is-highlighted">Compensation</th>
                         <th scope="col" class="is-highlighted">Monthly</th>
                         <th scope="col" class="is-highlighted">Annual</th>
+                        <th scope="col" class="is-highlighted">Remarks</th>
                     </tr>
                 </thead>
                 
@@ -242,7 +248,7 @@
                         @if (categoryItems.Count > 0)
                         {
                             <tr>
-                                <td colspan="6" class="font-weight-bold text-primary">
+                                <td colspan="8" class="font-weight-bold text-primary">
                                     @category.CategoryName
                                 </td>
                             </tr>
@@ -268,6 +274,23 @@
                                     </td>
                                     <td class="text-right">@UtilitiesService.ToPeso(currentItem?.MonthlyAmount)</td>
                                     <td class="text-right">@UtilitiesService.ToPeso(currentItem?.AnnualAmount)</td>
+                                    <td>
+                                        @if (item.Id != 1
+                                            && item.Id != 2
+                                            && item.Id != 4
+                                            && item.Id != 5
+                                            && item.Id != 6
+                                            && item.Id != 8
+                                            && item.Id != 9
+                                            && item.Id != 10
+                                            && item.Id != 14)
+                                        {
+                                            <textarea rows="3" readonly
+                                                      class="form-control form-control-sm jo-options-remarks-input"
+                                                      aria-label="@($"Current remarks for {item.ItemName}")">@currentItem?.Remarks</textarea>
+                                        }
+
+                                    </td>
                                     <td class="is-highlighted">
                                         @if (item.Id != 3
                                             && item.Id != 7)
@@ -277,6 +300,11 @@
                                     </td>
                                     <td class="is-highlighted text-right">@UtilitiesService.ToPeso(selectedItem?.MonthlyAmount)</td>
                                     <td class="is-highlighted text-right">@UtilitiesService.ToPeso(selectedItem?.AnnualAmount)</td>
+                                    <td class="is-highlighted">
+                                        <textarea @key="selectedItem" rows="3" readonly
+                                                  class="form-control form-control-sm"
+                                                  aria-label="@($"Remarks for {item.ItemName}, option {selectedOptionNumber}")">@selectedItem?.Remarks</textarea>
+                                    </td>
                                 </tr>
                             }
                         }
@@ -295,6 +323,7 @@
                         <th class="text-right">
                             @UtilitiesService.ToPeso(currentItems.Sum(jo => jo.AnnualAmount.GetValueOrDefault()))
                         </th>
+                        <td></td>
                         <th class="is-highlighted" scope="row">Total</th>
                         @{
                             var selectedItems = joCompanyCompensationItems.Where(jo => jo.JOCmpnyCmpnstnId == selectedJOCmpnyCmpnstnId);
@@ -305,10 +334,11 @@
                         <th class="is-highlighted text-right">
                             @UtilitiesService.ToPeso(selectedItems.Sum(jo => jo.AnnualAmount.GetValueOrDefault()))
                         </th>
+                        <td class="is-highlighted"></td>
                     </tr>
                 </tfoot>
             </table>
-            <!--MIRROR-->
+            
         </div>
     </div>
 </div>
@@ -332,13 +362,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    @* <tr>
                         <th scope="row">Compensation</th>
                         @foreach (var compensation in ComparativeCompensations.Where(item => item.OptionNumber > 0))
                         {
                             <td class="text-center font-weight-bold">@GetCompanyCompensationName(compensation.CmpnyCmpnstnId)</td>
                         }
-                    </tr>
+                    </tr> *@
                     <tr>
                         <th scope="row">Amount</th>
                         @foreach (var compensation in ComparativeCompensations.Where(item => item.OptionNumber > 0))
@@ -443,13 +473,23 @@
     EmptyMessage="No activity has been recorded." />
 
 
-@if (ShowGoBackUrl)
+@if (ShowGoBackUrl || ShowAnalysisUrL)
 {
     <div class="jo-actions mb-4">
-        <a href="@GoBackUrl" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
-            Go Back
-        </a>
+        @if (ShowGoBackUrl)
+        {
+            <a href="@GoBackUrl" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+                Go Back
+            </a>
+        }
+        @if (ShowAnalysisUrL)
+        {
+            <a href="@AnalysisUrl" class="btn btn-primary">
+                <i class="fas fa-chart-bar mr-1" aria-hidden="true"></i>
+                Analysis
+            </a>
+        }
     </div>
 }
 

@@ -12,5 +12,6 @@ namespace JO.DataModel.Entity
         public decimal? AnnualAmount { get; set; }
         public bool? IsAnalysis { get; set; }
         public bool? IsEditable { get; set; }
+        public string? Remarks { get; set; }
     }
 }

@@ -205,6 +205,15 @@ namespace JO.Service.Services
                 candidate.NonMonthlyAllowanceAmount.GetValueOrDefault() +
                 candidate.MonthlyNonTaxableAllowanceAmount.GetValueOrDefault();
 
+            var monthlyAllowanceRemarks = string.Join(
+                Environment.NewLine,
+                new[]
+                {
+                    candidate.MonthlyAllowanceDescription,
+                    candidate.NonMonthlyAllowanceDescription,
+                    candidate.MonthlyNonTaxableAllowanceDescription
+                }.Where(value => !string.IsNullOrEmpty(value)));
+
             /*
             Id	ItemName
             1	Basic Pay
@@ -229,15 +238,16 @@ namespace JO.Service.Services
                 {
                     1 => new JOCompanyCompensationItems { MonthlyAmount = basicSalary, AnnualAmount = basicSalary * 12m },
                     2 => new JOCompanyCompensationItems { AnnualAmount = basicSalary },
-                    3 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualGuaranteedBonusAmount.GetValueOrDefault() },
+                    3 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualGuaranteedBonusAmount.GetValueOrDefault(), Remarks = candidate.AnnualGuaranteedBonusDescription },
                     7 => new JOCompanyCompensationItems
                     {
                         MonthlyAmount = monthlyAllowance,
-                        AnnualAmount = monthlyAllowance * 12m + candidate.AnnualNonTaxableAllowanceAmount.GetValueOrDefault()
+                        AnnualAmount = monthlyAllowance * 12m + candidate.AnnualNonTaxableAllowanceAmount.GetValueOrDefault(),
+                        Remarks = monthlyAllowanceRemarks
                     },
                     11 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualProfitSharingAmount.GetValueOrDefault() },
-                    12 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualIncentiveAmount.GetValueOrDefault() },
-                    13 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualVariablePayAmount.GetValueOrDefault() },
+                    12 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualIncentiveAmount.GetValueOrDefault(), Remarks = candidate.AnnualIncentiveDescription },
+                    13 => new JOCompanyCompensationItems { AnnualAmount = candidate.AnnualVariablePayAmount.GetValueOrDefault(), Remarks = candidate.AnnualVariablePayDescription },
                     _ => null
                 };
 
@@ -417,87 +427,162 @@ namespace JO.Service.Services
             return newJO.Id;
         }
 
-        /*
-        public async Task<PagedResult<VwCandidates>> SearchCandidatesAsync(
-                int statusId,
-                string? candidate,
-                int page,
-                int pageSize)
+        public async Task<List<VwDboxCandidates>> GetTAPartnerDboxCandidates()
         {
-            await using var context = await _contextFactory.CreateDbContextAsync();
+            List<VwDboxCandidates> dboxCandidate = new();
 
-            var query = context.VwCandidates
-                .AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(candidate))
-                query = query.Where(jo =>
-                    EF.Functions.Like(jo.LastName, $"%{candidate}%") ||
-                    EF.Functions.Like(jo.FirstName, $"%{candidate}%"));
-
-            return await query.ToPagedResultAsync(page, pageSize);
-        }
-
-        public async Task<PagedResult<VwCandidates>> CandidatesForJOCretionAsync(
-                string? candidate,
-                int page,
-                int pageSize)
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            
-            int[] validStatus = [
-                JOCandidateStatus.Creation,
-                JOCandidateStatus.InProgress,
-                JOCandidateStatus.Withdrawn];
-
-            var query = context.VwCandidates
-                .AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(candidate))
-                query = query.Where(jo =>
-                    EF.Functions.Like(jo.LastName, $"%{candidate}%") ||
-                    EF.Functions.Like(jo.FirstName, $"%{candidate}%"));
-
-            return await query.ToPagedResultAsync(page, pageSize);
-        }
-
-        public async Task<string> GetCandidateEmail(int id)
-        {
-            var candidate = await GetCandidate(id);
-            return candidate.Email;
-        }
-
-        public async Task<int> UpdatePersonalInfo(int id,
-            string firstName,
-            string lastName,
-            string email,
-            string contactNumber,
-            bool isHrod)
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-            var candidate = await context.Candidates.FindAsync(id);
-            candidate.FName = firstName;
-            candidate.LName = lastName;
-            candidate.Email = email;
-            candidate.Contact = contactNumber;
-
-            context.Candidates.Update(candidate);
-            return await context.SaveChangesAsync();
-        }
-
-        public async Task<VwCandidates> GetCandidate(int id)
-        {
-            await using var context = await _contextFactory.CreateDbContextAsync();
-
-            return await context.VwCandidates
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var taPartner = await context.VwTAPartnerDboxCandidates
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x=> x.Id == id);
+                .ToListAsync();
+
+            dboxCandidate = taPartner.Select(candidate => new VwDboxCandidates
+            {
+                Id = candidate.Id,
+                ResponseId = candidate.ResponseId,
+                DboxId = candidate.DboxId,
+                CompanyId = candidate.CompanyId,
+                DivisionId = candidate.DivisionId,
+                DepartmentId = candidate.DepartmentId,
+                CSGId = candidate.CSGId,
+                DboxRefNum = candidate.DboxRefNum,
+                CandidateName = candidate.CandidateName,
+                Company = candidate.Company,
+                Division = candidate.Division,
+                Department = candidate.Department,
+                CostCenter = candidate.CostCenter,
+                JobLevel = candidate.JobLevel,
+                JobPosition = candidate.JobPosition,
+                EmailAddress = candidate.EmailAddress,
+                ContactNumber = candidate.ContactNumber,
+                StatusId = candidate.StatusId,
+                StatusName = candidate.StatusName,
+                CompanyName = candidate.CompanyName,
+                GradeName = candidate.GradeName,
+                HasDataPrivacyConsent = candidate.HasDataPrivacyConsent,
+                CandidateFullName = candidate.CandidateFullName,
+                FormCompletedDate = candidate.FormCompletedDate,
+                PositionAppliedFor = candidate.PositionAppliedFor,
+                UnilabDivision = candidate.UnilabDivision,
+                ExpectedMonthlyBasicSalary = candidate.ExpectedMonthlyBasicSalary,
+                Age = candidate.Age,
+                EmploymentStatus = candidate.EmploymentStatus,
+                RelevantExperience = candidate.RelevantExperience,
+                CurrentEmployerName = candidate.CurrentEmployerName,
+                LastEmployerIndustry = candidate.LastEmployerIndustry,
+                LastPositionHeld = candidate.LastPositionHeld,
+                CurrentMonthlyBasicSalary = candidate.CurrentMonthlyBasicSalary,
+                GuaranteedMonthsPay = candidate.GuaranteedMonthsPay,
+                AnnualGuaranteedBonusDescription = candidate.AnnualGuaranteedBonusDescription,
+                AnnualGuaranteedBonusAmount = candidate.AnnualGuaranteedBonusAmount,
+                MonthlyAllowanceDescription = candidate.MonthlyAllowanceDescription,
+                MonthlyAllowanceAmount = candidate.MonthlyAllowanceAmount,
+                NonMonthlyAllowanceDescription = candidate.NonMonthlyAllowanceDescription,
+                NonMonthlyAllowanceAmount = candidate.NonMonthlyAllowanceAmount,
+                MonthlyNonTaxableAllowanceDescription = candidate.MonthlyNonTaxableAllowanceDescription,
+                MonthlyNonTaxableAllowanceAmount = candidate.MonthlyNonTaxableAllowanceAmount,
+                AnnualNonTaxableAllowanceDescription = candidate.AnnualNonTaxableAllowanceDescription,
+                AnnualNonTaxableAllowanceAmount = candidate.AnnualNonTaxableAllowanceAmount,
+                AnnualProfitSharingAmount = candidate.AnnualProfitSharingAmount,
+                AnnualIncentiveDescription = candidate.AnnualIncentiveDescription,
+                AnnualIncentiveAmount = candidate.AnnualIncentiveAmount,
+                AnnualVariablePayDescription = candidate.AnnualVariablePayDescription,
+                AnnualVariablePayAmount = candidate.AnnualVariablePayAmount,
+                EmployeeHmoBenefitLimit = candidate.EmployeeHmoBenefitLimit,
+                DependentHmoBenefitLimit = candidate.DependentHmoBenefitLimit,
+                DentalBenefit = candidate.DentalBenefit,
+                MedicineReimbursementBenefit = candidate.MedicineReimbursementBenefit,
+                OpticalBenefit = candidate.OpticalBenefit,
+                OtherHealthBenefits = candidate.OtherHealthBenefits,
+                VacationLeaveBenefit = candidate.VacationLeaveBenefit,
+                SickLeaveBenefit = candidate.SickLeaveBenefit,
+                OtherLeaveBenefits = candidate.OtherLeaveBenefits,
+                LifeInsuranceBenefit = candidate.LifeInsuranceBenefit,
+                OtherBenefits = candidate.OtherBenefits,
+                VehicleBenefit = candidate.VehicleBenefit,
+                MobilePhoneBenefit = candidate.MobilePhoneBenefit,
+            }).ToList();
+
+            return dboxCandidate;
         }
 
-        public async Task<IEnumerable<VwCandidates>> GetAllCandidates()
+        public async Task<List<VwDboxCandidates>> GetTALeadDboxCandidates()
         {
-            await using var context = await _contextFactory.CreateDbContextAsync();
+            List<VwDboxCandidates> dboxCandidate = new();
 
-            return await context.VwCandidates.AsNoTracking().ToListAsync();
-        }*/
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var taLead = await context.VwTALeadDboxCandidates
+                .AsNoTracking()
+                .ToListAsync();
+
+            dboxCandidate = taLead.Select(candidate => new VwDboxCandidates
+            {
+                Id = candidate.Id,
+                ResponseId = candidate.ResponseId,
+                DboxId = candidate.DboxId,
+                CompanyId = candidate.CompanyId,
+                DivisionId = candidate.DivisionId,
+                DepartmentId = candidate.DepartmentId,
+                CSGId = candidate.CSGId,
+                DboxRefNum = candidate.DboxRefNum,
+                CandidateName = candidate.CandidateName,
+                Company = candidate.Company,
+                Division = candidate.Division,
+                Department = candidate.Department,
+                CostCenter = candidate.CostCenter,
+                JobLevel = candidate.JobLevel,
+                JobPosition = candidate.JobPosition,
+                EmailAddress = candidate.EmailAddress,
+                ContactNumber = candidate.ContactNumber,
+                StatusId = candidate.StatusId,
+                StatusName = candidate.StatusName,
+                CompanyName = candidate.CompanyName,
+                GradeName = candidate.GradeName,
+                HasDataPrivacyConsent = candidate.HasDataPrivacyConsent,
+                CandidateFullName = candidate.CandidateFullName,
+                FormCompletedDate = candidate.FormCompletedDate,
+                PositionAppliedFor = candidate.PositionAppliedFor,
+                UnilabDivision = candidate.UnilabDivision,
+                ExpectedMonthlyBasicSalary = candidate.ExpectedMonthlyBasicSalary,
+                Age = candidate.Age,
+                EmploymentStatus = candidate.EmploymentStatus,
+                RelevantExperience = candidate.RelevantExperience,
+                CurrentEmployerName = candidate.CurrentEmployerName,
+                LastEmployerIndustry = candidate.LastEmployerIndustry,
+                LastPositionHeld = candidate.LastPositionHeld,
+                CurrentMonthlyBasicSalary = candidate.CurrentMonthlyBasicSalary,
+                GuaranteedMonthsPay = candidate.GuaranteedMonthsPay,
+                AnnualGuaranteedBonusDescription = candidate.AnnualGuaranteedBonusDescription,
+                AnnualGuaranteedBonusAmount = candidate.AnnualGuaranteedBonusAmount,
+                MonthlyAllowanceDescription = candidate.MonthlyAllowanceDescription,
+                MonthlyAllowanceAmount = candidate.MonthlyAllowanceAmount,
+                NonMonthlyAllowanceDescription = candidate.NonMonthlyAllowanceDescription,
+                NonMonthlyAllowanceAmount = candidate.NonMonthlyAllowanceAmount,
+                MonthlyNonTaxableAllowanceDescription = candidate.MonthlyNonTaxableAllowanceDescription,
+                MonthlyNonTaxableAllowanceAmount = candidate.MonthlyNonTaxableAllowanceAmount,
+                AnnualNonTaxableAllowanceDescription = candidate.AnnualNonTaxableAllowanceDescription,
+                AnnualNonTaxableAllowanceAmount = candidate.AnnualNonTaxableAllowanceAmount,
+                AnnualProfitSharingAmount = candidate.AnnualProfitSharingAmount,
+                AnnualIncentiveDescription = candidate.AnnualIncentiveDescription,
+                AnnualIncentiveAmount = candidate.AnnualIncentiveAmount,
+                AnnualVariablePayDescription = candidate.AnnualVariablePayDescription,
+                AnnualVariablePayAmount = candidate.AnnualVariablePayAmount,
+                EmployeeHmoBenefitLimit = candidate.EmployeeHmoBenefitLimit,
+                DependentHmoBenefitLimit = candidate.DependentHmoBenefitLimit,
+                DentalBenefit = candidate.DentalBenefit,
+                MedicineReimbursementBenefit = candidate.MedicineReimbursementBenefit,
+                OpticalBenefit = candidate.OpticalBenefit,
+                OtherHealthBenefits = candidate.OtherHealthBenefits,
+                VacationLeaveBenefit = candidate.VacationLeaveBenefit,
+                SickLeaveBenefit = candidate.SickLeaveBenefit,
+                OtherLeaveBenefits = candidate.OtherLeaveBenefits,
+                LifeInsuranceBenefit = candidate.LifeInsuranceBenefit,
+                OtherBenefits = candidate.OtherBenefits,
+                VehicleBenefit = candidate.VehicleBenefit,
+                MobilePhoneBenefit = candidate.MobilePhoneBenefit,
+            }).ToList();
+
+            return dboxCandidate;
+        }
     }
 }

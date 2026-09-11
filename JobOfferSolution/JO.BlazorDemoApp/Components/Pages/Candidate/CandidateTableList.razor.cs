@@ -30,6 +30,9 @@ namespace JO.BlazorDemoApp.Components.Pages.Candidate
         [Parameter]
         public string Title { get; set; } = "Candidates";
 
+        [Parameter]
+        public RenderFragment? FooterTemplate { get; set; }
+
         private async Task OpenCandidate(VwDboxCandidates candidate)
         {
             var candidateLink = !string.IsNullOrWhiteSpace(Url)

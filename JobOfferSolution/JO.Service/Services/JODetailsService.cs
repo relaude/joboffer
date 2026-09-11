@@ -1,4 +1,4 @@
-﻿using JO.DataModel.DTOs;
+using JO.DataModel.DTOs;
 using JO.DataModel.Entity;
 using JO.DataModel.View;
 using JO.Persistence.DataAccess;

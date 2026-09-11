@@ -1,4 +1,5 @@
 @using JO.BlazorDemoApp.Components.Pages.Candidate
+@using JO.BlazorDemoApp.Components.Pages.Pagination
 @attribute [Authorize(Roles = JOUserRole.TALead)]
 @attribute [Route(JORoutes.TALead.Candidates)]
 
@@ -10,5 +11,12 @@
                    ForCreationCount="@forJOCreation"
                    OnFilterChanged="FilterCandidates" />
 
-<CandidateTableList Candidates="@filteredCandidates"
-                    RoleId="@JOUserRole.TALead" />
+<CandidateTableList Candidates="@pagedCandidates.Data"
+                    RoleId="@JOUserRole.TALead">
+    <FooterTemplate>
+        <Pagination Result="@pagedCandidates"
+                    PageChanged="ChangePage"
+                    PageSizeChanged="ChangePageSize"
+                    AriaLabel="Candidate pages" />
+    </FooterTemplate>
+</CandidateTableList>

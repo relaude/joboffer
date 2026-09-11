@@ -3,6 +3,7 @@ using JO.DataModel.DTOs;
 using JO.DataModel.Entity;
 using JO.DataModel.View;
 using JO.Service.Constants;
+using JO.Service.Extensions;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -16,9 +17,10 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.Candidate
         [Inject] private IAlertService AlertService { get; set; } = default!;
         [Inject] private IAccountService AccountService { get; set; } = default!;
 
-        private List<VwDboxCandidates> candidates = new();
+        //private List<VwDboxCandidates> candidates = new();
         private List<VwDboxCandidates> eligibleCandidates = new();
         private List<VwDboxCandidates> filteredCandidates = new();
+        private PagedResult<VwDboxCandidates> pagedCandidates = new() { Page = 1, PageSize = 10 };
 
         private int?[] AMSG = { 1, 109 };
         private int total = 0; 
@@ -29,14 +31,14 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.Candidate
         private int forJOCreation = 0; 
         protected override async Task OnInitializedAsync()
         {
-            candidates = await CandidateService.GetVwDboxCandidates();
+            eligibleCandidates = await CandidateService.GetTALeadDboxCandidates();
 
-            eligibleCandidates = candidates
-                .Where(jo => AMSG.Contains(jo.CSGId)
-                    || jo.DivisionId == 3)
-                .ToList();
+            //eligibleCandidates = candidates
+            //    .Where(jo => AMSG.Contains(jo.CSGId)
+            //        || jo.DivisionId == 3)
+            //    .ToList();
 
-            filteredCandidates = eligibleCandidates.ToList();
+            FilterCandidates(null);
 
             SetKpiCount();
         }
@@ -70,7 +72,14 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.Candidate
                     .Where(candidate => candidate.StatusId == statusId)
                     .ToList()
             };
+            ChangePage(1);
         }
+
+        private void ChangePage(int page) =>
+            pagedCandidates = filteredCandidates.ToPagedResult(page, pagedCandidates.PageSize);
+
+        private void ChangePageSize(int pageSize) =>
+            pagedCandidates = filteredCandidates.ToPagedResult(1, pageSize);
 
     }
 }

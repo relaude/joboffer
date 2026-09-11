@@ -216,6 +216,17 @@ namespace JO.Service.Services
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId = 3 }, //PE Head
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId = 5 }, //Division Head Approver L1
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId =4 }, //HROD Head Approver
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId =6 } //Division Head Approver L2
+                );
+            }
+
+            if(jobOffer.OfferRangeId == 4)
+            {
+                newApprovalFlow.AddRange(
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 3, RoleId = 2 }, //TA Lead
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId = 3 }, //PE Head
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId = 5 }, //Division Head Approver L1
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId =4 }, //HROD Head Approver
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId =6 }, //Division Head Approver L2
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, ActionId = 4, RoleId =7 } //President
                 );
@@ -307,6 +318,17 @@ namespace JO.Service.Services
             }
 
             if(jobOffer.OfferRangeId == 3)
+            {
+                newApprovalFlow.AddRange(
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3, ActionId = 3 }, //PE Head, Reviewed
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 }, //Division Head Approver L1, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 6, ActionId = 4 } //Division Head Approver L2, Approved
+                );
+            }
+
+            if(jobOffer.OfferRangeId == 4)
             {
                 newApprovalFlow.AddRange(
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3, ActionId = 3 }, //PE Head, Reviewed

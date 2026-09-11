@@ -294,7 +294,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
                 if (!option.OfferRangeId.HasValue)
                 {
-                    errors.Add($"Option {optionNumber}: Proposed Salary is out of range.");
+                    errors.Add($"Option {optionNumber}: Proposed Salary is below minimum.");
                     continue;
                 }
 
@@ -390,9 +390,15 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 compensation.OfferRangeId = 3;
                 compensation.Escalate = true;
             }
-            else
+            else if (proposedSalary > compaRatio)
             {
                 compensation.BandStatus = "Beyond Salary Structure";
+                compensation.OfferRangeId = 4;
+                compensation.Escalate = true;
+            }
+            else if (proposedSalary < minimum)
+            {
+                compensation.BandStatus = "Below Minimum";
                 compensation.OfferRangeId = null;
                 compensation.Escalate = null;
             }

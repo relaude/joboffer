@@ -15,6 +15,8 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         [Parameter] public int jobOfferId { get; set; }
         [Parameter] public string GoBackUrl { get; set; } = "#";
         [Parameter] public bool ShowGoBackUrl { get; set; } = true;
+        [Parameter] public string AnalysisUrl { get; set; } = "#";
+        [Parameter] public bool ShowAnalysisUrL { get; set; }
 
         private int currentJOCmpnyCmpnstnId;
         private int selectedCmpnyCmpnstnId;

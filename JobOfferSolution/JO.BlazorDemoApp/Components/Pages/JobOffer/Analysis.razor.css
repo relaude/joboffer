@@ -1,0 +1,25 @@
+.jo-options-table {
+    width: 100%;
+    min-width: 1200px;
+    table-layout: fixed;
+}
+
+.jo-options-name { width: 16%; }
+.jo-options-amount { width: 10%; }
+.jo-options-remarks { width: 14%; }
+
+.jo-options-table th,
+.jo-options-table td {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    vertical-align: top;
+}
+
+.jo-options-remarks-text {
+    white-space: pre-wrap;
+}
+
+.jo-options-remarks-input {
+    width: 100%;
+    resize: vertical;
+}

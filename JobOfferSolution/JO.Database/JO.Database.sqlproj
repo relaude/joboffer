@@ -201,6 +201,7 @@
     <Build Include="dbo\Views\vw_EmailTemplate.sql" />
     <Build Include="dbo\Tables\CandidateResponseRawData.sql" />
     <Build Include="dbo\Tables\MSFormSyncLogs.sql" />
+    <Build Include="dbo\Tables\DboxCandidatesRawData.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

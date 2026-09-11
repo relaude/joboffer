@@ -1,117 +1,119 @@
 @attribute [Authorize(Roles = JOUserRole.Admin)]
 @attribute [Route(JORoutes.Admin.DboxCandidates)]
 
-<div class="row">
-    <div class="col-xl-4 col-md-4 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">@candidates.Count</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-users fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="jo-title mb-1">Search DBox candidates</h6>
+        <small class="text-muted">Search any part of a candidate ID, candidate name, or email.</small>
     </div>
-
-    <div class="col-xl-4 col-md-4 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">New</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+    <div class="card-body">
+        <form @onsubmit="SearchResponses" @onsubmit:preventDefault>
+            <fieldset disabled="@(isLoading || isImporting || loadError is not null)">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="dbox-candidate-id">Candidate ID</label>
+                        <input id="dbox-candidate-id" class="form-control form-control-sm" @bind="candidateDBoxIdSearch" @bind:event="oninput" />
                     </div>
-                    <div class="col-auto">
-                        <i class="fas fa-user-plus fa-2x text-gray-300"></i>
+                    <div class="form-group col-md-4">
+                        <label for="dbox-name">Candidate name</label>
+                        <input id="dbox-name" class="form-control form-control-sm" @bind="candidateNameSearch" @bind:event="oninput" />
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-4 col-md-4 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Update</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-user-edit fa-2x text-gray-300"></i>
+                    <div class="form-group col-md-4">
+                        <label for="dbox-email">Email address</label>
+                        <input id="dbox-email" type="text" class="form-control form-control-sm" @bind="emailSearch" @bind:event="oninput" />
                     </div>
                 </div>
-            </div>
-        </div>
+                <button type="submit" class="btn btn-primary btn-sm mr-2">Search</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ClearSearch">Clear</button>
+            </fieldset>
+        </form>
     </div>
 </div>
+
 <div class="card shadow mb-4 small">
     <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
         <div>
-            <h6 class="jo-title">Dbox Candidates</h6>
-            <small class="text-muted">
-                <i class="fas fa-clock fa-fw mr-1"></i>Last syncing: 20 Aug 2026
-            </small>
+            <h6 class="jo-title mb-1">DBox Candidate Raw Data</h6>
         </div>
         <div class="mt-2 mt-md-0">
-            <button type="button" class="btn btn-outline-success mr-2">
-                <i class="fas fa-file-excel fa-fw mr-1"></i>Import from Excel
-            </button>
-            <button type="button" class="btn btn-primary">
-                <i class="fas fa-sync-alt fa-fw mr-1"></i>API Sync
+            <button type="button" class="btn btn-outline-primary mr-2" @onclick="OpenImportModal" disabled="@(isImporting || isLoading)">
+                <i class="fas fa-file-excel fa-fw mr-1" aria-hidden="true"></i>Import from Excel
             </button>
         </div>
     </div>
-
     <div class="card-body">
-        <div class="table-responsive">
+        @if (loadError is not null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @loadError
+                <button type="button" class="btn btn-outline-danger btn-sm ml-2" @onclick="LoadResponsesAsync" disabled="@(isLoading || isImporting)">Try again</button>
+            </div>
+        }
+        <div class="table-responsive" aria-busy="@(isLoading ? "true" : "false")">
             <table class="jo-table">
                 <thead>
                     <tr>
-                        <th>Candidate ID</th>
-                        <th>Candidate</th>
-                        <th>Company</th>
-                        <th>Division</th>
-                        <th>Department</th>
-                        <th>Cost Center</th>
-                        <th>Job Level</th>
-                        <th>Position</th>
-                        <th>Email</th>
-                        <th>Contact Number</th>
+                        <th scope="col">Candidate ID</th>
+                        <th scope="col">Candidate</th>
+                        <th scope="col">Email address</th>
+                        <th scope="col">Job position</th>
+                        <th scope="col">Company code</th>
+                        <th scope="col">Division code</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (candidates.Count == 0)
+                    @if (isLoading)
                     {
-                        <tr>
-                            <td colspan="10" class="text-center text-muted py-4">No Dbox candidates found.</td>
-                        </tr>
+                        <tr><td colspan="6" class="text-center text-muted py-4" role="status">Loading DBox candidates...</td></tr>
+                    }
+                    else if (loadError is not null)
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4">DBox candidates could not be loaded.</td></tr>
+                    }
+                    else if (responses.Count == 0)
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4">No candidates found. Import an Excel workbook to populate this list.</td></tr>
+                    }
+                    else if (pagedResponses.TotalCount == 0)
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4" role="status">No candidates match your search. Change or clear the filters.</td></tr>
                     }
                     else
                     {
-                        @foreach (var candidate in candidates)
+                        @foreach (var response in pagedResponses.Data)
                         {
-                            <tr @key="candidate.Id">
-                                <td><strong>@(candidate.DboxRefNum ?? "-")</strong></td>
-                                <td>@(candidate.CandidateName ?? "-")</td>
-                                <td>@(candidate.Company ?? "-")</td>
-                                <td>@(candidate.Division ?? "-")</td>
-                                <td>@(candidate.Department ?? "-")</td>
-                                <td>@(candidate.CostCenter ?? "-")</td>
-                                <td>@(candidate.JobLevel ?? "-")</td>
-                                <td>@(candidate.JobPosition ?? "-")</td>
-                                <td>@(candidate.EmailAddress ?? "-")</td>
-                                <td>@(candidate.ContactNumber ?? "-")</td>
+                            <tr @key="response.Id">
+                                <td>@DisplayValue(response.CandidateId)</td>
+                                <td class="jo-title">@DisplayValue(response.CandidateName)</td>
+                                <td>@DisplayValue(response.EmailAddress)</td>
+                                <td>@DisplayValue(response.JobPosition)</td>
+                                <td>@DisplayValue(response.Company)</td>
+                                <td>@DisplayValue(response.Division)</td>
                             </tr>
                         }
                     }
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="6">
+                            <Pagination Result="@pagedResponses" PageChanged="ChangePage" PageSizeChanged="ChangePageSize" Disabled="@(isLoading || isImporting || loadError is not null)" AriaLabel="DBox candidate pages" />
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
 </div>
+
+<JOModal @ref="importModal" Title="Import from Excel" ModalSize="modal-lg">
+    <ChildContent>
+        <div class="form-group mb-0">
+            <label for="dbox-excel-file">Excel file</label>
+            <InputFile id="dbox-excel-file" class="form-control-file" accept=".xlsx" OnChange="SelectImportFile" disabled="@isImporting" />
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button type="button" class="btn btn-secondary btn-sm" @onclick="CloseImportModal" disabled="@isImporting">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" @onclick="ImportExcelAsync" disabled="@isImporting">@(isImporting ? "Importing..." : "Import")</button>
+    </FooterTemplate>
+</JOModal>

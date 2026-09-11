@@ -64,8 +64,8 @@
         var firstRole = userRoles.FirstOrDefault()?.RoleName;
         var destination = firstRole switch
         {
-            JOUserRole.TAPartner => JORoutes.TAPartner.Dashboard,
-            JOUserRole.TALead => JORoutes.TALead.Dashboard,
+            JOUserRole.TAPartner => JORoutes.TAPartner.JobOfferTracker,
+            JOUserRole.TALead => JORoutes.TALead.JOForReview,
             JOUserRole.PEHead => JORoutes.PEH.JOForReview,
             JOUserRole.HRODHeadApprover => JORoutes.HRODHead.JOForApproval,
             JOUserRole.DivisionHeadApproverL1 => JORoutes.DHL1.JOForApproval,

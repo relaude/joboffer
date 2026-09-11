@@ -1,8 +1,28 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TAPartner)]
 @attribute [Route(JORoutes.TAPartner.JobOfferDetails + "/{jobOfferId:int}")]
 
-<JobOfferAnalysis jobOfferId="jobOfferId" GoBackUrl="@JORoutes.TAPartner.JobOfferTracker" />
+<JobOfferAnalysis jobOfferId="jobOfferId"
+    GoBackUrl="@JORoutes.TAPartner.JobOfferTracker"
+    ShowAnalysisUrL="@showUrl"
+    AnalysisUrl="@($"{JORoutes.TAPartner.EditAnalysis}/{jobOfferId}")" />
 
 @code {
     [Parameter] public int jobOfferId { get; set; }
+    [Inject] private JO.Service.Services.Contracts.ICompensationService CompensationService { get; set; } = default!;
+
+    private int[] workFlowIds = [3,14,4,5,6,15,13,7,8,10,11];
+
+    private bool showUrl;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        showUrl = false;
+        var requestedJobOfferId = jobOfferId;
+        var jobOffer = await CompensationService.GetJobOffer(requestedJobOfferId);
+        if (requestedJobOfferId != jobOfferId)
+            return;
+
+        showUrl = jobOffer?.WorkFlowId is int workFlowId
+            && workFlowIds.Contains(workFlowId);
+    }
 }

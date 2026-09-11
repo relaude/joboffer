@@ -69,6 +69,7 @@ namespace JO.Service.Constants
             public const string Candidates = PrefixTAPartner + "/candidates";
             public const string Candidate = PrefixTAPartner + "/candidate";
             public const string Analysis = PrefixTAPartner + "/analysis";
+            public const string EditAnalysis = PrefixTAPartner + "/edit-analysis";
             public const string Discussion = PrefixTAPartner + "/discussion";
             public const string ForNegotiation = PrefixTAPartner + "/negotiation";
             public const string JobOfferTracker = PrefixTAPartner + "/joboffer-tracker";
@@ -87,6 +88,7 @@ namespace JO.Service.Constants
             public const string JobOfferTracker = PrefixTALead + "/joboffer-tracker";
             public const string JobOfferDetails = PrefixTALead + "/joboffer-details";
             public const string Analysis = PrefixTALead + "/analysis";
+            public const string EditAnalysis = PrefixTALead + "/edit-analysis";
             public const string AnalysisSendBack = PrefixTALead + "/analysis-sendback";
             public const string Discussion = PrefixTALead + "/discussion";
             public const string ForNegotiation = PrefixTALead + "/negotiation";

@@ -1,0 +1,17 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Route(JORoutes.TAPartner.EditAnalysis + "/{jobOfferId:int}")]
+
+<EditAnalysis @ref="analysis" jobOfferId="jobOfferId" />
+
+<div class="jo-actions mb-4">
+    <button class="btn btn-outline-secondary" @onclick="HandleGoBack">
+        <i class="fas fa-arrow-left mr-1" aria-hidden="true"></i>
+        Go Back
+    </button>
+
+    <button type="button" class="btn btn-primary" @onclick="SaveAnalysis">
+        <i class="fas fa-save mr-1" aria-hidden="true"></i>
+        Save
+    </button>
+</div>
+
