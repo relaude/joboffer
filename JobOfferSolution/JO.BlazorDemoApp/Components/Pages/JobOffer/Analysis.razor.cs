@@ -60,6 +60,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
             userId = await AccountService.GetJobOfferUserId();
             jobOffer = await CompensationService.GetJobOffer(jobOfferId);
             joAnalysis = await CompensationService.GetJOAnalysis(jobOfferId);
+            taPartnerRemarks = joAnalysis.ActivityRemarks ?? string.Empty;
             vwjobOffer = await CompensationService.GetVwJODboxCandidate(jobOfferId);
             candidate = await CandidateService.GetVwDboxCandidate(jobOffer.CandidateId.GetValueOrDefault());
             vwSalaryBand = await CompensationService.GetVwSalaryBand(jobOffer.CompanyId.GetValueOrDefault(), candidate.CSGId.GetValueOrDefault());
@@ -166,6 +167,11 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 errors.Add("Select a Package.");
             }
 
+            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
+            {
+                errors.Add("Remarks is required.");
+            }
+
             CollectJOCompanyCompensationErrors(errors);
 
             return errors;
@@ -195,7 +201,8 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 jobOffer,
                 selectedCmpnyCmpnstnId,
                 candidate.Id,
-                userId);
+                userId,
+                taPartnerRemarks);
 
             await AlertService.Success("Analysis successfully saved.");
         }
@@ -203,11 +210,6 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         public async Task SubmitForApproval(string returnUrl)
         {
             var errors = CollectErrors(new List<string>());
-
-            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
-            {
-                errors.Add("Remarks is required.");
-            }
 
             if (errors.Any())
             {
@@ -240,11 +242,6 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         public async Task TALeadSubmitForApproval(string returnUrl)
         {
             var errors = CollectErrors(new List<string>());
-
-            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
-            {
-                errors.Add("Remarks is required.");
-            }
 
             if (errors.Any())
             {

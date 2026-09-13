@@ -40,6 +40,8 @@ namespace JO.Service
             services.AddScoped<IOneDriveService, OneDriveService>();
             services.AddScoped<IMSFormSyncService, MSFormSyncService>();
             services.AddScoped<IDBoxAPISyncService, DBoxAPISyncService>();
+            services.AddScoped<IDBoxCandidateService, DBoxCandidateService>();
+            services.AddScoped<IDBoxCandidateService, DBoxCandidateService>();
 
             return services;
         }

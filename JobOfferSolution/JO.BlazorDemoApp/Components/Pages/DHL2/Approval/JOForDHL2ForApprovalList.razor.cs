@@ -26,7 +26,7 @@ namespace JO.BlazorDemoApp.Components.Pages.DHL2.Approval
         protected override async Task OnInitializedAsync()
         {
             userId = await AccountService.GetJobOfferUserId();
-            joDboxCandidates = await JODetailsService.GetDivHeadL2ForApprovalVwJODboxCandidates(userId);
+            joDboxCandidates = await JODetailsService.GetForApprovalReviewJODboxCandidates(userId, 13); //For Division Head L2 Approval
 
             eligibleJODboxCandidates = joDboxCandidates
                 .Where(jo => jo.WorkFlowId is int id

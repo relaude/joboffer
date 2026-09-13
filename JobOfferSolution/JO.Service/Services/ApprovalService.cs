@@ -132,7 +132,8 @@ namespace JO.Service.Services
             };
 
             JOApprovalFlow approvalFlow = await context.JOApprovalFlow
-                .FirstOrDefaultAsync(jo=>jo.JobOfferId==jobOfferId && jo.RoleId==roleId);
+                .FirstOrDefaultAsync(jo=>jo.JobOfferId==jobOfferId && jo.RoleId==roleId 
+                    && (jo.IsAproved == null || jo.IsAproved == false));
             approvalFlow.IsAproved = true;
 
             context.JobOffers.Update(jobOffer);

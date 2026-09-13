@@ -1,0 +1,58 @@
+﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.DboxCandidate + "/{dboxCandidateId:int}")]
+@using System.Globalization
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="jo-title">DBox Candidate Summary</h6>
+        <a href="@JORoutes.Admin.DboxCandidates" class="btn btn-outline-secondary">Back</a>
+    </div>
+    <div class="card-body small" aria-busy="@(isLoading ? "true" : "false")">
+        @if (isLoading)
+        {
+            <p class="text-muted mb-0" role="status">Loading DBox candidate...</p>
+        }
+        else if (loadError is not null)
+        {
+            <div class="alert alert-danger mb-0" role="alert">
+                @loadError
+                <button type="button" class="btn btn-outline-danger btn-sm ml-2" @onclick="LoadCandidateAsync">Try again</button>
+            </div>
+        }
+        else if (candidate is null)
+        {
+            <p class="text-muted mb-0" role="status">DBox candidate not found.</p>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <h3 class="h6 font-weight-bold text-gray-800 mb-2">Candidate Information</h3>
+                    <div class="table-responsive"><table class="jo-table"><tbody>
+                        <tr><th scope="row">Candidate ID</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(candidate.CandidateId)</td></tr>
+                        <tr><th scope="row">Candidate name</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(candidate.CandidateName)</td></tr>
+                        <tr><th scope="row">Email address</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(candidate.EmailAddress)</td></tr>
+                        <tr><th scope="row">Contact number</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(candidate.ContactNumber)</td></tr>
+                    </tbody></table></div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <h3 class="h6 font-weight-bold text-gray-800 mb-2">Job Information</h3>
+                    <div class="table-responsive"><table class="jo-table"><tbody>
+                        <tr><th scope="row">Job position</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(candidate.JobPosition)</td></tr>
+                        <tr><th scope="row">Job level</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(candidate.JobLevel)</td></tr>
+                        <tr><th scope="row">Company</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(candidate.Company)</td></tr>
+                        <tr><th scope="row">Division</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(candidate.Division)</td></tr>
+                        <tr><th scope="row">Department</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(candidate.Department)</td></tr>
+                        <tr><th scope="row">Cost center</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(candidate.CostCenter)</td></tr>
+                    </tbody></table></div>
+                </div>
+            </div>
+            <h3 class="h6 font-weight-bold text-gray-800 mb-2">Record Information</h3>
+            <div class="table-responsive"><table class="jo-table"><tbody>
+                <tr><th scope="row">Record ID</th><td class="font-weight-bold text-gray-800">@candidate.Id</td></tr>
+                <tr><th scope="row">Created at</th><td class="font-weight-bold text-gray-800">@DisplayValue(candidate.CreatedAt?.ToString("dd MMM yyyy, HH:mm:ss", CultureInfo.InvariantCulture))</td></tr>
+                <tr><th scope="row">Created by (user ID)</th><td class="font-weight-bold text-gray-800">@DisplayValue(candidate.CreatedBy?.ToString(CultureInfo.InvariantCulture))</td></tr>
+            </tbody></table></div>
+        }
+    </div>
+</div>

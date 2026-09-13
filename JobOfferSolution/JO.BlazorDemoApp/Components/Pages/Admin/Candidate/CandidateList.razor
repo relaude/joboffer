@@ -1,0 +1,109 @@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.Candidates)]
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="jo-title mb-1">Search candidates</h6>
+        <small class="text-muted">Search any part of a candidate ID, candidate name, job position, company, division, or department.</small>
+    </div>
+    <div class="card-body">
+        <form @onsubmit="SearchResponses" @onsubmit:preventDefault>
+            <fieldset disabled="@(isLoading || loadError is not null)">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="candidate-candidate-id">Candidate ID</label>
+                        <input id="candidate-candidate-id" class="form-control form-control-sm" @bind="candidateDBoxIdSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="candidate-name">Candidate name</label>
+                        <input id="candidate-name" class="form-control form-control-sm" @bind="candidateNameSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="candidate-job-position">Job Position</label>
+                        <input id="candidate-job-position" class="form-control form-control-sm" @bind="jobPositionSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="candidate-company">Company</label>
+                        <input id="candidate-company" class="form-control form-control-sm" @bind="companySearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="candidate-division">Division</label>
+                        <input id="candidate-division" class="form-control form-control-sm" @bind="divisionSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="candidate-department">Department</label>
+                        <input id="candidate-department" class="form-control form-control-sm" @bind="departmentSearch" @bind:event="oninput" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm mr-2">Search</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ClearSearch">Clear</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3"><h6 class="jo-title mb-1">Candidates</h6></div>
+    <div class="card-body">
+        @if (loadError is not null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @loadError
+                <button type="button" class="btn btn-outline-danger btn-sm ml-2" @onclick="LoadResponsesAsync" disabled="@(isLoading)">Try again</button>
+            </div>
+        }
+        <div class="table-responsive" aria-busy="@(isLoading ? "true" : "false")">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Candidate ID</th>
+                        <th scope="col">Candidate</th>
+                        <th scope="col">Email address</th>
+                        <th scope="col">Job position</th>
+                        <th scope="col">Company</th>
+                        <th scope="col">Division</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (isLoading)
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4" role="status">Loading candidates...</td></tr>
+                    }
+                    else if (loadError is not null)
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4">Candidates could not be loaded.</td></tr>
+                    }
+                    else if (responses.Count == 0)
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4">No candidates found.</td></tr>
+                    }
+                    else if (pagedResponses.TotalCount == 0)
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4" role="status">No candidates match your search. Change or clear the filters.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var response in pagedResponses.Data)
+                        {
+                            <tr @key="response.Id">
+                                <td>@DisplayValue(response.DboxRefNum)</td>
+                                <td class="jo-title"><a href="@(JORoutes.Admin.Candidate + "/" + response.Id)">@DisplayValue(response.CandidateName)</a></td>
+                                <td>@DisplayValue(response.EmailAddress)</td>
+                                <td>@DisplayValue(response.JobPosition)</td>
+                                <td>@DisplayValue(response.Company)</td>
+                                <td>@DisplayValue(response.Division)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="6">
+                            <Pagination Result="@pagedResponses" PageChanged="ChangePage" PageSizeChanged="ChangePageSize" Disabled="@(isLoading || loadError is not null)" AriaLabel="Candidate pages" />
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

@@ -191,7 +191,7 @@ namespace JO.Service.Services
                 ["#SalaryGrade"] = candidate.GradeName,
                 ["#Department"] = candidate.Department,
                 ["#Division"] = candidate.Division,
-                ["#CandidateRemarks"] = joAnalysis?.CandidateReamrks
+                ["#CandidateRemarks"] = joAnalysis?.CandidateRemarks
             };
 
             emailTemplate.EmailSubject = ReplaceTemplateTokens(emailTemplate.EmailSubject, replacements, false);

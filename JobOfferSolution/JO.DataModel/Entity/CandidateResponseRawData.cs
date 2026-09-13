@@ -62,5 +62,6 @@ namespace JO.DataModel.Entity
 
         public bool? InvalidResponse { get; set; }
         public string? ErrorMessage { get; set; }
+        public bool? IsCopied { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace JO.BlazorDemoApp.Components.Pages.PEHead.Review
         {
             userId = await AccountService.GetJobOfferUserId();
 
-            joDboxCandidates = await JODetailsService.GetPEHeadForReviewVwJODboxCandidates(userId);
+            joDboxCandidates = await JODetailsService.GetForApprovalReviewJODboxCandidates(userId, 14);//For PE Head Review
             eligibleJODboxCandidates = joDboxCandidates
                 .Where(jo => jo.WorkFlowId is int id
                         && (ForReviewWorkFlowIds.Contains(id)

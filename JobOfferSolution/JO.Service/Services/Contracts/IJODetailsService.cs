@@ -11,6 +11,7 @@ namespace JO.Service.Services.Contracts
         Task<List<VwDiscussions>> GetDiscussions(int jobOfferId);
         Task<List<VwJODboxCandidates>> GetDivHeadL1ForApprovalVwJODboxCandidates(int userId);
         Task<List<VwJODboxCandidates>> GetDivHeadL2ForApprovalVwJODboxCandidates(int userId);
+        Task<List<VwJODboxCandidates>> GetForApprovalReviewJODboxCandidates(int userId, int workFlowId);
         Task<List<VwJODboxCandidates>> GetHRODHeadForApprovalVwJODboxCandidates(int userId);
         Task<JobOffers> GetJobOffer(int id);
         Task<List<VwJobOffers>> GetJobOffers();

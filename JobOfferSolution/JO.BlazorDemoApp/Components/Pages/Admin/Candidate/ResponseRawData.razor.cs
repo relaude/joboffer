@@ -12,6 +12,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
         [Inject] private ICandidateService CandidateService { get; set; } = default!;
         [Inject] private IOneDriveService OneDriveService { get; set; } = default!;
         [Inject] private IMSFormSyncService MSFormSyncService { get; set; } = default!;
+        [Inject] private IDBoxCandidateService DBoxCandidateService { get; set; } = default!;
         [Inject] private IAlertService AlertService { get; set; } = default!;
         [Inject] private IAccountService AccountService { get; set; } = default!;
 
@@ -19,7 +20,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
         private List<CandidateResponseRawData> filteredResponses = new();
         private string candidateDBoxIdSearch = string.Empty;
         private string candidateNameSearch = string.Empty;
-        private string emailSearch = string.Empty;
+        private string positionAppliedForSearch = string.Empty;
         private bool isLoading = true;
         private bool isSyncing;
         private Shared.JOModal? importModal;
@@ -84,6 +85,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
                 // Validation consumed the browser stream; open a fresh stream for saving.
                 await using var importSource = file.OpenReadStream(MaxImportFileSize);
                 var imported = await MSFormSyncService.SaveCandidateResponseRawData(importSource, userId);
+                await DBoxCandidateService.MergeCandidateRawResponses();
                 CloseImportModal();
                 importFile = null;
                 await LoadResponsesAsync();
@@ -124,19 +126,19 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
         {
             var dboxId = candidateDBoxIdSearch.Trim();
             var name = candidateNameSearch.Trim();
-            var email = emailSearch.Trim();
+            var position = positionAppliedForSearch.Trim();
 
             filteredResponses = responses.Where(response =>
                 MatchesPartial(response.CandidateDBoxID, dboxId) &&
                 MatchesPartial(GetCandidateName(response), name) &&
-                MatchesPartial(response.EmailAddress, email)).ToList();
+                MatchesPartial(response.PositionAppliedFor, position)).ToList();
 
             ChangePage(1);
         }
 
         private void ClearSearch()
         {
-            candidateDBoxIdSearch = candidateNameSearch = emailSearch = string.Empty;
+            candidateDBoxIdSearch = candidateNameSearch = positionAppliedForSearch = string.Empty;
             SearchResponses();
         }
 

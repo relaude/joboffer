@@ -58,6 +58,9 @@ namespace JO.Service.Constants
             public const string MSFormResponse = PrefixAdmin + "/msform-response";
             public const string MSFormResponseRaw = PrefixAdmin + "/msform-response-raw";
             public const string DboxCandidates = PrefixAdmin + "/dbox/candidates";
+            public const string DboxCandidate = PrefixAdmin + "/dbox/candidate";
+            public const string Candidates = PrefixAdmin + "/candidates";
+            public const string Candidate = PrefixAdmin + "/candidate";
 
             public const string EmailTemplates = PrefixAdmin + "/email-templates";
             public const string EmailTemplate = PrefixAdmin + "/email-template";
@@ -69,6 +72,7 @@ namespace JO.Service.Constants
             public const string Candidates = PrefixTAPartner + "/candidates";
             public const string Candidate = PrefixTAPartner + "/candidate";
             public const string Analysis = PrefixTAPartner + "/analysis";
+            public const string SendBackAnalysis = PrefixTAPartner + "/sendback-analysis";
             public const string EditAnalysis = PrefixTAPartner + "/edit-analysis";
             public const string Discussion = PrefixTAPartner + "/discussion";
             public const string ForNegotiation = PrefixTAPartner + "/negotiation";
@@ -88,8 +92,8 @@ namespace JO.Service.Constants
             public const string JobOfferTracker = PrefixTALead + "/joboffer-tracker";
             public const string JobOfferDetails = PrefixTALead + "/joboffer-details";
             public const string Analysis = PrefixTALead + "/analysis";
+            public const string SendBackAnalysis = PrefixTALead + "/sendback-analysis";
             public const string EditAnalysis = PrefixTALead + "/edit-analysis";
-            public const string AnalysisSendBack = PrefixTALead + "/analysis-sendback";
             public const string Discussion = PrefixTALead + "/discussion";
             public const string ForNegotiation = PrefixTALead + "/negotiation";
             public const string JobOfferComplete = PrefixTALead + "/joboffer-complete";

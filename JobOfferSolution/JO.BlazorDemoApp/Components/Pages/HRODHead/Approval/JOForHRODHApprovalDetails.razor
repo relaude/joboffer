@@ -6,7 +6,7 @@
 @inject IAlertService AlertService
 @inject NavigationManager Navigation
 
-<JobOfferAnalysis @ref="analysis" jobOfferId="jobOfferId" ShowGoBackUrl="false" />
+<ApproverJOAnalysis @ref="analysis" jobOfferId="jobOfferId" ShowGoBackUrl="false" />
 
 <!--Remarks-->
 <div class="card shadow mb-4 small">
@@ -36,7 +36,7 @@
 @code {
     [Parameter] public int jobOfferId { get; set; }
     private string approverRemarks = string.Empty;
-    private JobOfferAnalysis? analysis;
+    private ApproverJOAnalysis? analysis;
 
     private async Task SendBackJobOffer()
     {
@@ -78,23 +78,25 @@
 
         int userId = await AccountService.GetJobOfferUserId();
         int workFlowId = 0;
+        var offer = analysis.JobOffer;
 
-        if (analysis.JobOffer.IsAM == true || analysis.JobOffer.IsHROD == true)
+        if (offer.IsHROD == true)
         {
-            if (analysis.JobOffer.OfferRangeId == 1 || analysis.JobOffer.OfferRangeId == 2)
+            int nextRoleId = await ApprovalService.GetNextApproverRoleId(jobOfferId, 4);
+            if (nextRoleId == 5)//Division Head Approver L1
             {
-                workFlowId = 8;//For Discussion
+                workFlowId = 5;//For Division Head Approval
             }
 
-            if (analysis.JobOffer.OfferRangeId == 3)
+            if (nextRoleId == 6)//Division Head Approver L2
             {
                 workFlowId = 13;//For Division Head L2 Approval
             }
         }
 
-        if (analysis.JobOffer.IsAM == false && analysis.JobOffer.IsHROD == false)
+        if (offer.IsHROD == false)
         {
-            workFlowId = analysis.JobOffer.OfferRangeId == 2 ? 8 : 13; //For Discussion : For Division Head L2 Approval
+            workFlowId = offer.OfferRangeId == 2 ? 8 : 13; //For Discussion : For Division Head L2 Approval
         }
 
         await ApprovalService.JobOfferActionFlowStatus(jobOfferId, workFlowId, 4, 4, userId, approverRemarks);

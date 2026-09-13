@@ -10,6 +10,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
     public partial class DboxCandidateList
     {
         [Inject] private IDBoxAPISyncService DBoxAPISyncService { get; set; } = default!;
+        [Inject] private IDBoxCandidateService DBoxCandidateService { get; set; } = default!;
         [Inject] private IAlertService AlertService { get; set; } = default!;
         [Inject] private IAccountService AccountService { get; set; } = default!;
 
@@ -18,10 +19,14 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
         private PagedResult<DboxCandidatesRawData> pagedResponses = new() { Page = 1, PageSize = 10 };
         private string candidateDBoxIdSearch = string.Empty;
         private string candidateNameSearch = string.Empty;
-        private string emailSearch = string.Empty;
+        private string jobPositionSearch = string.Empty;
+        private string companySearch = string.Empty;
+        private string divisionSearch = string.Empty;
+        private string departmentSearch = string.Empty;
         private bool isLoading = true;
         private bool isImporting;
         private string? loadError;
+        private string lastSyncDisplay = "Loading...";
         private Shared.JOModal? importModal;
         private IBrowserFile? importFile;
         private const long MaxImportFileSize = 10 * 1024 * 1024;
@@ -31,6 +36,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
         private async Task LoadResponsesAsync()
         {
             isLoading = true;
+            lastSyncDisplay = "Loading...";
             loadError = null;
             responses.Clear();
             filteredResponses.Clear();
@@ -46,7 +52,22 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
             }
             finally
             {
+                await LoadLastSyncAsync();
                 isLoading = false;
+            }
+        }
+
+        private async Task LoadLastSyncAsync()
+        {
+            try
+            {
+                var lastSync = await DBoxAPISyncService.GetLatestDateTimeDBoxAsync();
+                lastSyncDisplay = lastSync?.ToString("dd MMM yyyy, HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)
+                    ?? "Not synced yet";
+            }
+            catch (Exception)
+            {
+                lastSyncDisplay = "Unavailable";
             }
         }
 
@@ -60,20 +81,28 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
         {
             var id = candidateDBoxIdSearch.Trim();
             var name = candidateNameSearch.Trim();
-            var email = emailSearch.Trim();
+            var jobPosition = jobPositionSearch.Trim();
+            var company = companySearch.Trim();
+            var division = divisionSearch.Trim();
+            var department = departmentSearch.Trim();
             filteredResponses = responses.Where(candidate =>
                 MatchesPartial(candidate.CandidateId, id) &&
                 MatchesPartial(candidate.CandidateName, name) &&
-                MatchesPartial(candidate.EmailAddress, email)).ToList();
+                MatchesPartial(candidate.JobPosition, jobPosition) &&
+                MatchesPartial(candidate.Company, company) &&
+                MatchesPartial(candidate.Division, division) &&
+                MatchesPartial(candidate.Department, department)).ToList();
             ChangePage(1);
         }
 
         private void ClearSearch()
         {
-            candidateDBoxIdSearch = candidateNameSearch = emailSearch = string.Empty;
+            candidateDBoxIdSearch = candidateNameSearch = string.Empty;
+            jobPositionSearch = companySearch = divisionSearch = departmentSearch = string.Empty;
             SearchResponses();
         }
 
+        // In-memory equivalent of a case-insensitive SQL LIKE '%term%' search.
         private static bool MatchesPartial(string? value, string term) =>
             term.Length == 0 || (value?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false);
 
@@ -107,6 +136,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
                 var userId = await AccountService.GetJobOfferUserId();
                 await using var source = file.OpenReadStream(MaxImportFileSize);
                 var imported = await DBoxAPISyncService.SaveDboxCandidatesRawData(source, userId);
+                await DBoxCandidateService.MergeCandidateAndResponse();
                 CloseImportModal();
                 importFile = null;
                 await LoadResponsesAsync();

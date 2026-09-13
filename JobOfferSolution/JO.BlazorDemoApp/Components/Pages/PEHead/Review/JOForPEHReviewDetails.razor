@@ -6,7 +6,7 @@
 @inject IAlertService AlertService
 @inject NavigationManager Navigation
 
-<JobOfferAnalysis @ref="analysis" jobOfferId="jobOfferId" ShowGoBackUrl="false" />
+<ApproverJOAnalysis @ref="analysis" jobOfferId="jobOfferId" ShowGoBackUrl="false" />
 
 <!--Remarks-->
 <div class="card shadow mb-4 small">
@@ -36,7 +36,7 @@
 @code {
     [Parameter] public int jobOfferId { get; set; }
     private string approverRemarks = string.Empty;
-    private JobOfferAnalysis? analysis;
+    private ApproverJOAnalysis? analysis;
 
     private async Task SendBackJobOffer()
     {
@@ -77,18 +77,9 @@
         }
 
         int userId = await AccountService.GetJobOfferUserId();
-        //int nextRoleId = await ApprovalService.GetNextApproverRoleId(jobOfferId, 3);
-        int workFlowId = 0;
 
-        if (analysis.JobOffer.IsAM == true || analysis.JobOffer.IsHROD == true)
-        {
-            if (analysis.JobOffer.OfferRangeId == 2 || analysis.JobOffer.OfferRangeId == 3)
-            {
-                workFlowId = 6; //For HROD Head Approval
-            }
-        }
-
-        await ApprovalService.JobOfferActionFlowStatus(jobOfferId, workFlowId, 3, 3, userId, approverRemarks);
+        //For HROD Head Approval
+        await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 6, 3, 3, userId, approverRemarks);
         await AlertService.Success(
             message: "The job offer has been approved successfully.",
             title: "Approve Complete");

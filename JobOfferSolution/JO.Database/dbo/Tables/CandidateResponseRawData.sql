@@ -52,6 +52,7 @@
     [CreatedBy]                             INT            NULL,
     [InvalidResponse]                       BIT            NULL,
     [ErrorMessage]                          NVARCHAR (MAX) NULL,
+    [IsCopied]                              BIT            NULL,
     CONSTRAINT [PK_CandidateResponseRawData_1] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

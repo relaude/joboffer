@@ -1,5 +1,7 @@
+using JO.DataModel.DTOs;
 using JO.DataModel.View;
 using JO.Service.Constants;
+using JO.Service.Extensions;
 using Microsoft.AspNetCore.Components;
 
 namespace JO.BlazorDemoApp.Components.Pages.JobOffer
@@ -35,6 +37,23 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         [Parameter]
         public string Title { get; set; } = "Job Offers";
 
+        private PagedResult<VwJODboxCandidates> pagedJobOffers = new() { Page = 1, PageSize = 10 };
+        private int[] previousJobOfferIds = [];
+
+        protected override void OnParametersSet()
+        {
+            var jobOfferIds = JobOffers.Select(jobOffer => jobOffer.Id).ToArray();
+            var page = previousJobOfferIds.SequenceEqual(jobOfferIds) ? pagedJobOffers.Page : 1;
+            previousJobOfferIds = jobOfferIds;
+            ChangePage(page);
+        }
+
+        private void ChangePage(int page) =>
+            pagedJobOffers = JobOffers.ToPagedResult(page, pagedJobOffers.PageSize);
+
+        private void ChangePageSize(int pageSize) =>
+            pagedJobOffers = JobOffers.ToPagedResult(1, pageSize);
+
         private string SetJOlink(VwJODboxCandidates jobOffer)
         {
             string route;
@@ -57,7 +76,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                         2 => JORoutes.TAPartner.Analysis,
                         8 => JORoutes.TAPartner.Discussion,
                         9 or 12 => JORoutes.TAPartner.JobOfferComplete,
-                        10 => JORoutes.TAPartner.Analysis,
+                        10 => JORoutes.TAPartner.SendBackAnalysis,
                         11 => JORoutes.TAPartner.ForNegotiation,
                         _ => JORoutes.TAPartner.JobOfferDetails
                     },
@@ -66,7 +85,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                     {
                         3 => JORoutes.TALead.JOForReview,
                         8 => JORoutes.TALead.Discussion,
-                        10 => JORoutes.TALead.Analysis,
+                        10 => JORoutes.TALead.SendBackAnalysis,
                         11 => JORoutes.TALead.ForNegotiation,
                         9 or 12 => JORoutes.TALead.JobOfferComplete,
                         _ => JORoutes.TALead.JobOfferDetails
@@ -82,10 +101,6 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                     JOUserRole.DivisionHeadApproverL1 => jobOffer.WorkFlowId == 5
                         ? JORoutes.DHL1.JOForApproval
                         : JORoutes.DHL1.JobOfferDetails,
-
-                    //JOUserRole.HRODHeadApprover => jobOffer.WorkFlowId == 6
-                    //    ? JORoutes.HRODHead.JOForApproval
-                    //    : JORoutes.HRODHead.JobOfferDetails,
 
                     JOUserRole.HRODHeadApprover => jobOffer.WorkFlowId switch
                     {

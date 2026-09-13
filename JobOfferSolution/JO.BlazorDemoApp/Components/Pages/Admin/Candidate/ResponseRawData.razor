@@ -4,7 +4,7 @@
 <div class="card shadow mb-4 small">
     <div class="card-header py-3">
         <h6 class="jo-title mb-1">Search candidate responses</h6>
-        <small class="text-muted">Search any part of a DBoxID, candidate name, or email.</small>
+        <small class="text-muted">Search any part of a DBoxID, candidate name, or position applied for.</small>
     </div>
     <div class="card-body">
         <form @onsubmit="SearchResponses" @onsubmit:preventDefault>
@@ -19,8 +19,8 @@
                         <input id="response-name" class="form-control form-control-sm" @bind="candidateNameSearch" @bind:event="oninput" />
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="response-email">Email address</label>
-                        <input id="response-email" type="text" class="form-control form-control-sm" @bind="emailSearch" @bind:event="oninput" />
+                        <label for="response-position">Position Applied For</label>
+                        <input id="response-position" type="text" class="form-control form-control-sm" @bind="positionAppliedForSearch" @bind:event="oninput" />
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-sm mr-2">Search</button>

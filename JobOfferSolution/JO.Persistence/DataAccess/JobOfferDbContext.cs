@@ -23,6 +23,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<DboxCandidates> DboxCandidates { get; set; }
         public DbSet<DboxCandidatesRawData> DboxCandidatesRawData { get; set; }
         public DbSet<MSFormSyncLogs> MSFormSyncLogs { get; set; }
+        public DbSet<DBoxAsyncLogs> DBoxAsyncLogs { get; set; }
 
         //Job Offers
         public DbSet<Candidates> Candidates { get; set; }

@@ -12,6 +12,7 @@
     [ContactNumber] NVARCHAR (MAX) NULL,
     [CreatedAt]     DATETIME       NULL,
     [CreatedBy]     INT            NULL,
+    [IsCopied]      BIT            NULL,
     CONSTRAINT [PK_DboxCandidatesRawData] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

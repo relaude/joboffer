@@ -11,7 +11,7 @@ namespace JO.BlazorDemoApp.Components.Pages.HRODHead.Approval
 
         private static readonly int[] ForApprovalWorkFlowIds = [6, 15];
         private static readonly int[] SendBackWorkFlowIds = [10];
-        private static readonly int[] ApprovedWorkFlowIds = [5, 8, 9, 13];
+        private static readonly int[] ApprovedWorkFlowIds = [5, 7, 8, 9, 13];
 
         private List<VwJODboxCandidates> joDboxCandidates = new();
         private List<VwJODboxCandidates> eligibleJODboxCandidates = new();
@@ -27,7 +27,7 @@ namespace JO.BlazorDemoApp.Components.Pages.HRODHead.Approval
         {
             userId = await AccountService.GetJobOfferUserId();
 
-            joDboxCandidates = await JODetailsService.GetHRODHeadForApprovalVwJODboxCandidates(userId);
+            joDboxCandidates = await JODetailsService.GetForApprovalReviewJODboxCandidates(userId, 6);//For HROD Head Approval
             eligibleJODboxCandidates = joDboxCandidates
                 .Where(jo => jo.WorkFlowId is int id
                     && (ForApprovalWorkFlowIds.Contains(id)

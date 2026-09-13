@@ -19,6 +19,7 @@ namespace JO.Service.Services.Contracts
         Task<VwJODboxCandidates> GetVwJODboxCandidates(int jobOfferId);
         Task<VwSalaryBands> GetVwSalaryBand(int companyId, int csgId);
         Task<int> SaveAnalysis(List<JOCompanyCompensation> joCompanyCompensation, List<JOCompanyCompensationItems> joCompanyCompensationItems, JOAnalysis joAnalysis, JobOffers jobOffer, int selectedCmpnyCmpnstnId, int candidateId, int userId);
+        Task<int> SaveAnalysis(List<JOCompanyCompensation> joCompanyCompensation, List<JOCompanyCompensationItems> joCompanyCompensationItems, JOAnalysis joAnalysis, JobOffers jobOffer, int selectedCmpnyCmpnstnId, int candidateId, int userId, string taPartnerRemarks);
         Task<List<CompenItemCategoryDto>> SetUpCompenItemCategoryDto();
         Task<int> SubmitForApproval(JobOffers jobOffer, JOAnalysis joAnalysis, List<JOCompanyCompensation> joCompanyCompensation, List<JOCompanyCompensationItems> joCompanyCompensationItems, int selectedCmpnyCmpnstnId, int candidateId, int userId, string taPartnerRemarks);
         Task<int> SubmitForApprovalByTALead(JobOffers jobOffer, JOAnalysis joAnalysis, List<JOCompanyCompensation> joCompanyCompensation, List<JOCompanyCompensationItems> joCompanyCompensationItems, int selectedCmpnyCmpnstnId, int candidateId, int userId, string taPartnerRemarks);

@@ -162,6 +162,7 @@ namespace JO.Service.Services
             //JOAnalysis
             joAnalysis.ModifiedBy = userId;
             joAnalysis.ModifiedAt = DateTime.Now;
+            joAnalysis.ActivityRemarks = taPartnerRemarks;
 
             //JOActionLogs
             JOActionLogs newLog = new JOActionLogs
@@ -270,6 +271,7 @@ namespace JO.Service.Services
             //JOAnalysis
             joAnalysis.ModifiedBy = userId;
             joAnalysis.ModifiedAt = DateTime.Now;
+            joAnalysis.ActivityRemarks = taPartnerRemarks;
 
             //JOActionLogs
             JOActionLogs newLog = new JOActionLogs
@@ -313,7 +315,7 @@ namespace JO.Service.Services
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3, ActionId = 3 }, //PE Head, Reviewed
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 }, //Division Head Approver L1, Approved
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 } //HROD Head Approver, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 10 } //HROD Head Approver, 2nd Approved
                 );
             }
 
@@ -323,7 +325,7 @@ namespace JO.Service.Services
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3, ActionId = 3 }, //PE Head, Reviewed
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 }, //Division Head Approver L1, Approved
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 10 }, //HROD Head Approver, 2nd Approved
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 6, ActionId = 4 } //Division Head Approver L2, Approved
                 );
             }
@@ -334,7 +336,7 @@ namespace JO.Service.Services
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 3, ActionId = 3 }, //PE Head, Reviewed
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 5, ActionId = 4 }, //Division Head Approver L1, Approved
-                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 4 }, //HROD Head Approver, Approved
+                    new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 4, ActionId = 10 }, //HROD Head Approver, 2nd Approved
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 6, ActionId = 4 }, //Division Head Approver L2, Approved
                     new JOApprovalFlow { JobOfferId = jobOffer.Id, RoleId = 7, ActionId = 4 } //President, Approved
                 );
@@ -357,6 +359,22 @@ namespace JO.Service.Services
             }
 
             return jobOffer.Id;
+        }
+
+        public Task<int> SaveAnalysis(
+            List<JOCompanyCompensation> joCompanyCompensation,
+            List<JOCompanyCompensationItems> joCompanyCompensationItems,
+            JOAnalysis joAnalysis,
+            JobOffers jobOffer,
+            int selectedCmpnyCmpnstnId,
+            int candidateId,
+            int userId,
+            string taPartnerRemarks)
+        {
+            joAnalysis.ActivityRemarks = taPartnerRemarks;
+
+            return SaveAnalysis(joCompanyCompensation, joCompanyCompensationItems,
+                joAnalysis, jobOffer, selectedCmpnyCmpnstnId, candidateId, userId);
         }
 
         public async Task<int> SaveAnalysis(

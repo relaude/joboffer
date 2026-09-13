@@ -18,5 +18,6 @@ namespace JO.DataModel.Entity
         public string? ContactNumber { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
+        public bool? IsCopied { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 @typeparam TItem
 
 
-<nav class="d-flex align-items-center justify-content-end text-nowrap" aria-label="@AriaLabel">
+<nav class="d-flex align-items-center justify-content-center text-nowrap" aria-label="@AriaLabel">
     <span class="mr-2" aria-live="polite"><strong>@FirstRecord - @LastRecord</strong> of @Result.TotalCount</span>
     <select class="custom-select custom-select-sm w-auto mr-3" aria-label="Results per page" value="@Result.PageSize" @onchange="ChangePageSizeAsync" disabled="@IsDisabled">
         @foreach (var size in PageSizes.Append(Result.PageSize).Where(size => size > 0).Distinct().Order())

@@ -22,6 +22,19 @@ namespace JO.Service.Services
                 .OrderByDescending(candidate => candidate.Id).ToListAsync();
         }
 
+        public async Task<DboxCandidatesRawData?> GetDboxCandidatesRawData(int dboxCandidateId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.DboxCandidatesRawData.AsNoTracking()
+                .FirstOrDefaultAsync(candidate => candidate.Id == dboxCandidateId);
+        }
+
+        public async Task<DateTime?> GetLatestDateTimeDBoxAsync()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.DBoxAsyncLogs.MaxAsync(log => log.SyncDate);
+        }
+
         public async Task<List<DboxCandidatesRawData>> SaveDboxCandidatesRawData(Stream source, int createdBy)
         {
             ArgumentNullException.ThrowIfNull(source);
@@ -36,6 +49,11 @@ namespace JO.Service.Services
 
             await using var context = await _dbContext.CreateDbContextAsync();
             await context.DboxCandidatesRawData.AddRangeAsync(candidates);
+            await context.DBoxAsyncLogs.AddAsync(new DBoxAsyncLogs
+            {
+                SyncDate = DateTime.Now,
+                TotalRows = candidates.Count
+            });
             await context.SaveChangesAsync();
             return candidates;
         }

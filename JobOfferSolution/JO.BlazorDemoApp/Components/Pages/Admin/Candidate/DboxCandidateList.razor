@@ -4,7 +4,7 @@
 <div class="card shadow mb-4 small">
     <div class="card-header py-3">
         <h6 class="jo-title mb-1">Search DBox candidates</h6>
-        <small class="text-muted">Search any part of a candidate ID, candidate name, or email.</small>
+        <small class="text-muted">Search any part of a candidate ID, candidate name, job position, company, division, or department.</small>
     </div>
     <div class="card-body">
         <form @onsubmit="SearchResponses" @onsubmit:preventDefault>
@@ -19,8 +19,20 @@
                         <input id="dbox-name" class="form-control form-control-sm" @bind="candidateNameSearch" @bind:event="oninput" />
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="dbox-email">Email address</label>
-                        <input id="dbox-email" type="text" class="form-control form-control-sm" @bind="emailSearch" @bind:event="oninput" />
+                        <label for="dbox-job-position">Job Position</label>
+                        <input id="dbox-job-position" class="form-control form-control-sm" @bind="jobPositionSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="dbox-company">Company</label>
+                        <input id="dbox-company" class="form-control form-control-sm" @bind="companySearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="dbox-division">Division</label>
+                        <input id="dbox-division" class="form-control form-control-sm" @bind="divisionSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="dbox-department">Department</label>
+                        <input id="dbox-department" class="form-control form-control-sm" @bind="departmentSearch" @bind:event="oninput" />
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-sm mr-2">Search</button>
@@ -34,10 +46,16 @@
     <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
         <div>
             <h6 class="jo-title mb-1">DBox Candidate Raw Data</h6>
+            <small class="text-muted" aria-live="polite">
+                <i class="fas fa-clock fa-fw mr-1" aria-hidden="true"></i>Last sync: @lastSyncDisplay
+            </small>
         </div>
         <div class="mt-2 mt-md-0">
             <button type="button" class="btn btn-outline-primary mr-2" @onclick="OpenImportModal" disabled="@(isImporting || isLoading)">
                 <i class="fas fa-file-excel fa-fw mr-1" aria-hidden="true"></i>Import from Excel
+            </button>
+            <button type="button" class="btn btn-primary" disabled="@(isImporting || isLoading)">
+                <i class="fas fa-sync-alt fa-fw mr-1" aria-hidden="true"></i>DBox Sync
             </button>
         </div>
     </div>
@@ -84,7 +102,7 @@
                         {
                             <tr @key="response.Id">
                                 <td>@DisplayValue(response.CandidateId)</td>
-                                <td class="jo-title">@DisplayValue(response.CandidateName)</td>
+                                <td class="jo-title"><a href="@(JORoutes.Admin.DboxCandidate + "/" + response.Id)">@DisplayValue(response.CandidateName)</a></td>
                                 <td>@DisplayValue(response.EmailAddress)</td>
                                 <td>@DisplayValue(response.JobPosition)</td>
                                 <td>@DisplayValue(response.Company)</td>

@@ -86,10 +86,28 @@ namespace JO.Service.Services
                 .ToListAsync();
 
             var joIds = actionLogs.Select(jo => jo.JobOfferId).Distinct().ToList();
+            
             //3 = For TA Lead Review
             return await context.VwJODboxCandidates
                 .AsNoTracking()
-                .Where(jo=>jo.WorkFlowId == 3
+                .Where(jo=> jo.WorkFlowId == 3
+                    || joIds.Contains(jo.Id))
+                .ToListAsync();
+        }
+
+        public async Task<List<VwJODboxCandidates>> GetForApprovalReviewJODboxCandidates(int userId, int workFlowId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var actionLogs = await context.VwJOActionLogs.AsNoTracking()
+                .Where(jo => jo.ActionBy == userId)
+                .ToListAsync();
+
+            var joIds = actionLogs.Select(jo => jo.JobOfferId).Distinct().ToList();
+            
+            return await context.VwJODboxCandidates
+                .AsNoTracking()
+                .Where(jo=> jo.WorkFlowId == workFlowId
                     || joIds.Contains(jo.Id))
                 .ToListAsync();
         }

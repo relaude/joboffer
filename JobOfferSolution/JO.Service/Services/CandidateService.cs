@@ -429,13 +429,14 @@ namespace JO.Service.Services
 
         public async Task<List<VwDboxCandidates>> GetTAPartnerDboxCandidates()
         {
-            List<VwDboxCandidates> dboxCandidate = new();
+            //List<VwDboxCandidates> dboxCandidate = new();
 
             await using var context = await _dbContext.CreateDbContextAsync();
-            var taPartner = await context.VwTAPartnerDboxCandidates
+            var taPartner = await context.VwDboxCandidates
                 .AsNoTracking()
+                .Where(jo=>jo.DivisionId != 3)
                 .ToListAsync();
-
+            /*
             dboxCandidate = taPartner.Select(candidate => new VwDboxCandidates
             {
                 Id = candidate.Id,
@@ -501,9 +502,9 @@ namespace JO.Service.Services
                 OtherBenefits = candidate.OtherBenefits,
                 VehicleBenefit = candidate.VehicleBenefit,
                 MobilePhoneBenefit = candidate.MobilePhoneBenefit,
-            }).ToList();
+            }).ToList();*/
 
-            return dboxCandidate;
+            return taPartner;
         }
 
         public async Task<List<VwDboxCandidates>> GetTALeadDboxCandidates()

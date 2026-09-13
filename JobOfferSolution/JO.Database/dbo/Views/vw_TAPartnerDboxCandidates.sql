@@ -1,5 +1,4 @@
-﻿Create View vw_TAPartnerDboxCandidates
+﻿CREATE View [dbo].[vw_TAPartnerDboxCandidates]
 As
 Select vwdc.* From vw_DboxCandidates vwdc
-Where vwdc.DivisionId <> 3
-And CSGId Not In (select Id from CompanySalaryGrades where GradeId=1);
+Where vwdc.DivisionId <> 3;

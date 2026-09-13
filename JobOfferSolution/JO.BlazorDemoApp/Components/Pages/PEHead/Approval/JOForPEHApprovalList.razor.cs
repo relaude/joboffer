@@ -7,10 +7,11 @@ namespace JO.BlazorDemoApp.Components.Pages.PEHead.Approval
     public partial class JOForPEHApprovalList
     {
         [Inject] private IJODetailsService JODetailsService { get; set; } = default!;
+        [Inject] private IAccountService AccountService { get; set; } = default!;
 
         private static readonly int[] ForApprovalWorkFlowIds = [4];
         private static readonly int[] SendBackWorkFlowIds = [10];
-        private static readonly int[] ApprovedWorkFlowIds = [8, 9];
+        private static readonly int[] ApprovedWorkFlowIds = [5, 6, 7, 8, 9, 10, 12, 15, 13];
 
         private List<VwJODboxCandidates> joDboxCandidates = new();
         private List<VwJODboxCandidates> eligibleJODboxCandidates = new();
@@ -20,13 +21,16 @@ namespace JO.BlazorDemoApp.Components.Pages.PEHead.Approval
         private int countForApproval;
         private int countSendBack;
         private int countApproved;
+        private int userId;
 
         protected override async Task OnInitializedAsync()
         {
-            joDboxCandidates = await JODetailsService.GetVwJODboxCandidates();
+            userId = await AccountService.GetJobOfferUserId();
+
+            joDboxCandidates = await JODetailsService.GetForApprovalReviewJODboxCandidates(userId, 4); //For PE Head Approval
             eligibleJODboxCandidates = joDboxCandidates
                 .Where(jo => jo.WorkFlowId is int id
-                    && (((jo.OfferRangeId == 2 || jo.OfferRangeId == 3)
+                    && (((jo.OfferRangeId == 2 || jo.OfferRangeId == 3 || jo.OfferRangeId == 4)
                             && ForApprovalWorkFlowIds.Contains(id))
                         || SendBackWorkFlowIds.Contains(id)
                         || ApprovedWorkFlowIds.Contains(id)))

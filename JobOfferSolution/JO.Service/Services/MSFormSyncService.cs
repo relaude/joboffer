@@ -73,7 +73,7 @@ namespace JO.Service.Services
         {
             await using var context = await _dbContext.CreateDbContextAsync();
 
-            ResponseValidation(responseRawData);
+            //ResponseValidation(responseRawData);
             await context.CandidateResponseRawData.AddRangeAsync(responseRawData);
 
             MSFormSyncLogs syncLog = new MSFormSyncLogs

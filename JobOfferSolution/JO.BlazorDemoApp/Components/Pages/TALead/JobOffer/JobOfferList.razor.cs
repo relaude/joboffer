@@ -22,7 +22,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.JobOffer
         private static readonly int[] ForReviewWorkFlowIds = [14];
         private static readonly int[] ReviewedWorkFlowIds = [6];
         private static readonly int[] SendBackWorkFlowIds = [10];
-        private static readonly int[] ForApprovalWorkFlowIds = [5, 6, 7, 13];
+        private static readonly int[] ForApprovalWorkFlowIds = [5, 6, 7, 13, 15];
         private static readonly int[] ForDiscussionWorkFlowIds = [8];
         private static readonly int[] ApprovedWorkFlowIds = [0];
         private static readonly int[] AcceptedWorkFlowIds = [9];

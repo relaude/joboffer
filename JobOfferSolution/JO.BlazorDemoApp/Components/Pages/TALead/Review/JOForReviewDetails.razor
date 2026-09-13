@@ -86,7 +86,7 @@
             await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 5, 2, 3, userId, taLeadRemarks);
         }
 
-        if (offerRangeId == 2 || offerRangeId == 3)
+        if (offerRangeId == 2 || offerRangeId == 3 || offerRangeId == 4)
         {
             //For PE Head Approval,TA Lead, Reviewed
             await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 4, 2, 3, userId, taLeadRemarks);
