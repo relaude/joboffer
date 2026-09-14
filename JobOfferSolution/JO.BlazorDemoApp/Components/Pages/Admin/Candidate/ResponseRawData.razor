@@ -43,7 +43,7 @@
                 <i class="fas fa-file-excel fa-fw mr-1" aria-hidden="true"></i>Import from Excel
             </button>
             <button type="button" class="btn btn-primary" @onclick="SyncMSFormsAsync" disabled="@(isSyncing || isLoading || isValidatingImport)">
-                <i class="fas fa-sync-alt fa-fw mr-1" aria-hidden="true"></i>@(isSyncing ? "Syncing..." : "DBox Sync")
+                <i class="fas fa-sync-alt fa-fw mr-1" aria-hidden="true"></i>@(isSyncing ? "Syncing..." : "MSForm Sync")
             </button>
         </div>
     </div>

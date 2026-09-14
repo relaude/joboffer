@@ -143,6 +143,66 @@ namespace JO.Service.Services
             await context.SaveChangesAsync();
         }
 
+        public async Task ApproveViaEmail(int jobOfferId, 
+            int workFlowId, 
+            int roleId, 
+            int actionId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
+            jobOffer.WorkFlowId = workFlowId;
+
+            JOActionLogs newLog = new JOActionLogs
+            {
+                JobOfferId = jobOfferId,
+                RoleId = roleId,
+                ActionId = actionId,
+                ActionAt = DateTime.Now,
+                ActionBy = 0,
+                Remarks = "The Job Offer has been approved via email."
+            };
+
+            JOApprovalFlow approvalFlow = await context.JOApprovalFlow
+                .FirstOrDefaultAsync(jo=>jo.JobOfferId==jobOfferId && jo.RoleId==roleId 
+                    && (jo.IsAproved == null || jo.IsAproved == false));
+            approvalFlow.IsAproved = true;
+
+            context.JobOffers.Update(jobOffer);
+            context.JOApprovalFlow.Update(approvalFlow);
+            await context.JOActionLogs.AddAsync(newLog);
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task SendbackViaEmail(int jobOfferId, int roleId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var jobOffer = await context.JobOffers.FindAsync(jobOfferId);
+            jobOffer.WorkFlowId = 10;//Send Back
+
+            JOActionLogs newLog = new JOActionLogs
+            {
+                JobOfferId = jobOfferId,
+                RoleId = roleId,
+                ActionId = 5, //Send Back
+                ActionAt = DateTime.Now,
+                ActionBy = 0,
+                Remarks = "The Job Offer has been send back via email."
+            };
+
+            var removeApprovalFlow = await context.JOApprovalFlow
+                .Where(jo => jo.JobOfferId == jobOfferId)
+                .ToListAsync();
+
+            context.JobOffers.Update(jobOffer);
+            context.JOApprovalFlow.RemoveRange(removeApprovalFlow);
+            await context.JOActionLogs.AddAsync(newLog);
+
+            await context.SaveChangesAsync();
+        }
+
         public async Task<int> DHApprovals(List<ProposalDto> joProposal)
         {
             var dhApprovals = joProposal.Select(jo=> new JO.DataModel.Entity.Approvals { 

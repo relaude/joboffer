@@ -1,5 +1,6 @@
 using JO.DataModel.DTOs;
 using JO.DataModel.Entity;
+using JO.Persistence;
 using JO.Persistence.DataAccess;
 using JO.Service.Constants;
 using JO.Service.Services.Contracts;
@@ -16,9 +17,12 @@ namespace JO.Service.Services
     public class EmailService : IEmailService
     {
         private readonly IDbContextFactory<JobOfferDbContext> _dbContext;
-        public EmailService(IDbContextFactory<JobOfferDbContext> dbContext)
+        private readonly IAppSettings _appSettings;
+
+        public EmailService(IDbContextFactory<JobOfferDbContext> dbContext, IAppSettings appSettings)
         {
             _dbContext = dbContext;
+            _appSettings = appSettings;
         }
 
         public async Task TestMailAsync(string recipients)
@@ -144,6 +148,41 @@ namespace JO.Service.Services
             
         }
 
+        private string ComposeDivisionHeadL1ApprovalLink(JobOffers jobOffer)
+        {
+            int workFlowId = 0;
+
+            if (jobOffer.IsHROD == true)
+            {
+                workFlowId = 15; // For HROD Head 2nd Approval
+            }
+
+            if (jobOffer.IsHROD == false)
+            {
+                workFlowId = jobOffer.OfferRangeId == 1 ? 8 : 6; // For Discussion : For HROD Head Approval
+            }
+
+            return ComposeApproveViaEmailLink(jobOffer.Id, workFlowId, roleId: 5, actionId: 4);
+        }
+
+        private string ComposeApproveViaEmailLink(int jobOfferId, int workFlowId, int roleId, int actionId)
+        {
+            var baseUrl = _appSettings.GetBaseUrl().TrimEnd('/');
+            var url = $"{baseUrl}/api/Approval/ApproveViaEmail"
+                + $"?jobOfferId={jobOfferId}&workFlowId={workFlowId}&roleId={roleId}&actionId={actionId}";
+
+            return $"<a href='{WebUtility.HtmlEncode(url)}'>Approve</a>";
+        }
+
+        private string ComposeSendBackViaEmailLink(int jobOfferId, int roleId)
+        {
+            var baseUrl = _appSettings.GetBaseUrl().TrimEnd('/');
+            var url = $"{baseUrl}/api/Approval/SendbackViaEmail"
+                + $"?jobOfferId={jobOfferId}&roleId={roleId}";
+
+            return $"<a href='{WebUtility.HtmlEncode(url)}'>Send Back</a>";
+        }
+
         private void AddEmails(MailAddressCollection collection, string? emails)
         {
             if (string.IsNullOrWhiteSpace(emails))
@@ -194,9 +233,17 @@ namespace JO.Service.Services
                 ["#CandidateRemarks"] = joAnalysis?.CandidateRemarks
             };
 
+            string? approvalLink = null;
+            string? sendBackLink = null;
+            if (workFlowId == 5 && Regex.IsMatch(emailTemplate.EmailMessage ?? string.Empty, @"#(?:ApprovalLink|SendBack)\b"))
+            {
+                approvalLink = ComposeDivisionHeadL1ApprovalLink(jobOffer);
+                sendBackLink = ComposeSendBackViaEmailLink(jobOffer.Id, roleId: 5);
+            }
+
             emailTemplate.EmailSubject = ReplaceTemplateTokens(emailTemplate.EmailSubject, replacements, false);
             emailTemplate.EmailMessage = ReplaceTemplateTokens(
-                emailTemplate.EmailMessage, replacements, true, ComposeHtmlTable(compensations));
+                emailTemplate.EmailMessage, replacements, true, ComposeHtmlTable(compensations), approvalLink, sendBackLink);
             emailTemplate.EmailMessage = MinifyEmailMessage(emailTemplate.EmailMessage);
 
             return emailTemplate;
@@ -231,7 +278,8 @@ namespace JO.Service.Services
         }
 
         private static string ReplaceTemplateTokens(
-            string? template, IReadOnlyDictionary<string, string?> replacements, bool isHtml, string htmlTable = "")
+            string? template, IReadOnlyDictionary<string, string?> replacements, bool isHtml,
+            string htmlTable = "", string? approvalLink = null, string? sendBackLink = null)
         {
             var content = template ?? string.Empty;
             if (isHtml)
@@ -243,11 +291,17 @@ namespace JO.Service.Services
 
             // Replace in one pass so placeholder-like text in candidate data stays literal.
             return Regex.Replace(content,
-                @"#(?:CandidateName|Position|SalaryGrade|Department|Division|CandidateRemarks|HtmlTableOffers)\b",
+                @"#(?:CandidateName|Position|SalaryGrade|Department|Division|CandidateRemarks|HtmlTableOffers|ApprovalLink|SendBack)\b",
                 match =>
                 {
                     if (match.Value == "#HtmlTableOffers")
                         return isHtml ? htmlTable : string.Empty;
+
+                    if (match.Value == "#ApprovalLink")
+                        return isHtml && approvalLink != null ? approvalLink : match.Value;
+
+                    if (match.Value == "#SendBack")
+                        return isHtml && sendBackLink != null ? sendBackLink : match.Value;
 
                     var value = replacements.TryGetValue(match.Value, out var replacement)
                         ? replacement ?? string.Empty
@@ -258,44 +312,39 @@ namespace JO.Service.Services
 
         private string ComposeHtmlTable(List<JOCompanyCompensation> joCompanyCompensations)
         {
-            string htmlTable = "";
+            if (joCompanyCompensations.Count == 0)
+                return string.Empty;
 
-            foreach (var item in joCompanyCompensations)
+            var options = joCompanyCompensations.OrderBy(item => item.OptionNumber).ToList();
+            const string cellStyle = "border:1px solid #d1d5db;padding:8px;vertical-align:top;overflow-wrap:anywhere;";
+            var htmlTable = new StringBuilder();
+            htmlTable.Append("<table border='1' cellpadding='8' cellspacing='0' width='100%' style='width:100%;border-collapse:collapse;table-layout:fixed;'>");
+            htmlTable.Append($"<thead><tr><th scope='col' style='{cellStyle}text-align:left;'>Details</th>");
+
+            foreach (var item in options)
             {
-                htmlTable = htmlTable + $@"<table border='1'>
-                  <thead>
-                    <tr>
-                      <th colspan='2'>Option {item.OptionNumber}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Amount</td>
-                      <td>{item.ProposedSalary?.ToString("N2")}</td>
-                    </tr>
-                    <tr>
-                      <td>% Increase Monthly</td>
-                      <td>{item.DiffTotalMonthly}%</td>
-                    </tr>
-                    <tr>
-                      <td>% Increase Annual</td>
-                      <td>{item.DiffTotalAnnually}%</td>
-                    </tr>
-                    <tr>
-                      <td>Overtaken Incumbent</td>
-                      <td>{item.Incumbents}</td>
-                    </tr>
-                    <tr>
-                      <td colspan='2'>Remarks</td>
-                    </tr>
-                    <tr>
-                      <td colspan='2'>{WebUtility.HtmlEncode(item.Remarks)}</td>
-                    </tr>
-                  </tbody>
-                </table><br />";
+                htmlTable.Append($"<th scope='col' style='{cellStyle}text-align:center;'>Proposed Option {item.OptionNumber}</th>");
             }
 
-            return htmlTable;
+            htmlTable.Append("</tr></thead><tbody>");
+            AppendRow("Amount", item => item.ProposedSalary?.ToString("N2"));
+            AppendRow("% Increase Monthly", item => $"{item.DiffTotalMonthly}%");
+            AppendRow("% Increase Annual", item => $"{item.DiffTotalAnnually}%");
+            AppendRow("Overtaken Incumbent", item => $"{item.Incumbents}");
+            AppendRow("Remarks", item => item.Remarks, "left");
+            htmlTable.Append("</tbody></table>");
+
+            return htmlTable.ToString();
+
+            void AppendRow(string label, Func<JOCompanyCompensation, string?> getValue, string alignment = "right")
+            {
+                htmlTable.Append($"<tr><th scope='row' style='{cellStyle}text-align:left;'>{WebUtility.HtmlEncode(label)}</th>");
+                foreach (var item in options)
+                {
+                    htmlTable.Append($"<td style='{cellStyle}text-align:{alignment};'>{WebUtility.HtmlEncode(getValue(item))}</td>");
+                }
+                htmlTable.Append("</tr>");
+            }
         }
     }
 }

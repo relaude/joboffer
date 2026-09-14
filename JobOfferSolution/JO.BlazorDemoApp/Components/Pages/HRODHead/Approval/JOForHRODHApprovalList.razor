@@ -1,6 +1,8 @@
 @attribute [Authorize(Roles = JOUserRole.HRODHeadApprover)]
 @attribute [Route(JORoutes.HRODHead.JOForApproval)]
 
+<h1 class="h3 mb-4 text-gray-800">HROD Head Job Offers For Approval</h1>
+
 <ApproverKpiBoxes Total="@total"
     ForApprovalCount="@countForApproval"
     SendBackCount="@countSendBack"

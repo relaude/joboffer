@@ -32,6 +32,6 @@
 
 @if (!isLoading && loadError is null && candidate is not null)
 {
-    <CandidateCompensation Candidate="candidate" />
-    <CandidateBenefits Candidate="candidate" />
+    <CandidateCompensation Candidate="candidate" FormatAmounts="true" />
+    <CandidateBenefits Candidate="candidate" FormatAmounts="true" />
 }

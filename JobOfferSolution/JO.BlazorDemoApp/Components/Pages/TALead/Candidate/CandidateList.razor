@@ -3,6 +3,8 @@
 @attribute [Authorize(Roles = JOUserRole.TALead)]
 @attribute [Route(JORoutes.TALead.Candidates)]
 
+<h1 class="h3 mb-4 text-gray-800">TA Lead Candidates</h1>
+
 <CandidateKpiBoxes Total="@total"
                    WithResponseCount="@withResponse"
                    NoResponseCount="@withOutResponse"

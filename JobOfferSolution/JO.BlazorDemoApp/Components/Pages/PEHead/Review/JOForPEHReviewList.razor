@@ -1,6 +1,8 @@
 @attribute [Authorize(Roles = JOUserRole.PEHead)]
 @attribute [Route(JORoutes.PEH.JOForReview)]
 
+<h1 class="h3 mb-4 text-gray-800">PE Head Job Offers For Review</h1>
+
 <ReviewerKpiBoxes Total="@total"
     ForReviewCount="@countForReview"
     SendBackCount="@countSendBack"

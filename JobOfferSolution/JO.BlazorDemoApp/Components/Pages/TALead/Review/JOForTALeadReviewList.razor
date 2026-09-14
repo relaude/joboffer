@@ -1,6 +1,8 @@
 @attribute [Authorize(Roles = JOUserRole.TALead)]
 @attribute [Route(JORoutes.TALead.JOForReview)]
 
+<h1 class="h3 mb-4 text-gray-800">TA Lead Job Offers For Review</h1>
+
 <ReviewerKpiBoxes Total="@total"
     ForReviewCount="@countForReview"
     SendBackCount="@countSendBack"

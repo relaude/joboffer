@@ -10,12 +10,17 @@ namespace JO.Persistence
         private readonly IConfiguration _configuration;
         private readonly bool isProduction;
         private readonly bool isLocal;
+        private readonly string prodUrl;
+        private readonly string devUrl;
+
         public AppSettings(IConfiguration configuration)
         {
             _configuration = configuration;
 
             isProduction = _configuration.GetValue<bool>("Environment:production");
             isLocal = _configuration.GetValue<bool>("Environment:local");
+            prodUrl = _configuration.GetValue<string>("BaseUrl:prod");
+            devUrl = _configuration.GetValue<string>("BaseUrl:dev");
         }
 
         public bool IsProduction() { return isProduction; }
@@ -32,6 +37,11 @@ namespace JO.Persistence
             string prod = _configuration.GetValue<string>("OneDrive:prod");
             
             return isProduction ? prod : (isLocal ? local : dev);
+        }
+
+        public string GetBaseUrl()
+        {
+            return isProduction ? prodUrl : devUrl;
         }
     }
 }

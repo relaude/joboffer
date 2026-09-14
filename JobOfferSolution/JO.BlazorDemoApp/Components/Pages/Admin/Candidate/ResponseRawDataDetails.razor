@@ -1,3 +1,4 @@
+@using JO.BlazorDemoApp.Components.Pages.Candidate
 @attribute [Authorize(Roles = JOUserRole.Admin)]
 @attribute [Route(JORoutes.Admin.MSFormResponseRaw + "/{rawDataId:int}")]
 
@@ -60,42 +61,42 @@
     <div class="card shadow mb-4 small">
         <div class="card-header py-3"><h2 class="h6 jo-title mb-0">Compensation</h2></div>
         <div class="card-body"><div class="table-responsive"><table class="jo-table"><tbody>
-            <tr><th scope="row">Expected monthly basic salary</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.ExpectedMonthlyBasicSalary)</td></tr>
-            <tr><th scope="row">Current monthly basic salary</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.CurrentMonthlyBasicSalary)</td></tr>
+            <tr><th scope="row">Expected monthly basic salary</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.ExpectedMonthlyBasicSalary)</td></tr>
+            <tr><th scope="row">Current monthly basic salary</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.CurrentMonthlyBasicSalary)</td></tr>
             <tr><th scope="row">Guaranteed months pay</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.GuaranteedMonthsPay)</td></tr>
             <tr><th scope="row">Annual guaranteed bonus description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualGuaranteedBonusDescription)</td></tr>
-            <tr><th scope="row">Annual guaranteed bonus amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualGuaranteedBonusAmount)</td></tr>
+            <tr><th scope="row">Annual guaranteed bonus amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.AnnualGuaranteedBonusAmount)</td></tr>
             <tr><th scope="row">Monthly allowance description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MonthlyAllowanceDescription)</td></tr>
-            <tr><th scope="row">Monthly allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MonthlyAllowanceAmount)</td></tr>
+            <tr><th scope="row">Monthly allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.MonthlyAllowanceAmount)</td></tr>
             <tr><th scope="row">Non-monthly allowance description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.NonMonthlyAllowanceDescription)</td></tr>
-            <tr><th scope="row">Non-monthly allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.NonMonthlyAllowanceAmount)</td></tr>
+            <tr><th scope="row">Non-monthly allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.NonMonthlyAllowanceAmount)</td></tr>
             <tr><th scope="row">Monthly non-taxable allowance description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MonthlyNonTaxableAllowanceDescription)</td></tr>
-            <tr><th scope="row">Monthly non-taxable allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MonthlyNonTaxableAllowanceAmount)</td></tr>
+            <tr><th scope="row">Monthly non-taxable allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.MonthlyNonTaxableAllowanceAmount)</td></tr>
             <tr><th scope="row">Annual non-taxable allowance description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualNonTaxableAllowanceDescription)</td></tr>
-            <tr><th scope="row">Annual non-taxable allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualNonTaxableAllowanceAmount)</td></tr>
-            <tr><th scope="row">Annual profit sharing amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualProfitSharingAmount)</td></tr>
+            <tr><th scope="row">Annual non-taxable allowance amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.AnnualNonTaxableAllowanceAmount)</td></tr>
+            <tr><th scope="row">Annual profit sharing amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.AnnualProfitSharingAmount)</td></tr>
             <tr><th scope="row">Annual incentive description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualIncentiveDescription)</td></tr>
-            <tr><th scope="row">Annual incentive amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualIncentiveAmount)</td></tr>
+            <tr><th scope="row">Annual incentive amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.AnnualIncentiveAmount)</td></tr>
             <tr><th scope="row">Annual variable pay description</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualVariablePayDescription)</td></tr>
-            <tr><th scope="row">Annual variable pay amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.AnnualVariablePayAmount)</td></tr>
+            <tr><th scope="row">Annual variable pay amount</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.AnnualVariablePayAmount)</td></tr>
         </tbody></table></div></div>
     </div>
     <div class="card shadow mb-4 small">
         <div class="card-header py-3"><h2 class="h6 jo-title mb-0">Benefits</h2></div>
         <div class="card-body"><div class="table-responsive"><table class="jo-table"><tbody>
-            <tr><th scope="row">Employee HMO benefit limit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.EmployeeHmoBenefitLimit)</td></tr>
-            <tr><th scope="row">Dependent HMO benefit limit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.DependentHmoBenefitLimit)</td></tr>
-            <tr><th scope="row">Dental benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.DentalBenefit)</td></tr>
-            <tr><th scope="row">Medicine reimbursement benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MedicineReimbursementBenefit)</td></tr>
-            <tr><th scope="row">Optical benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.OpticalBenefit)</td></tr>
-            <tr><th scope="row">Other health benefits</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.OtherHealthBenefits)</td></tr>
+            <tr><th scope="row">Employee HMO benefit limit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.EmployeeHmoBenefitLimit)</td></tr>
+            <tr><th scope="row">Dependent HMO benefit limit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.DependentHmoBenefitLimit)</td></tr>
+            <tr><th scope="row">Dental benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.DentalBenefit)</td></tr>
+            <tr><th scope="row">Medicine reimbursement benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.MedicineReimbursementBenefit)</td></tr>
+            <tr><th scope="row">Optical benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.OpticalBenefit)</td></tr>
+            <tr><th scope="row">Other health benefits</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.OtherHealthBenefits)</td></tr>
             <tr><th scope="row">Vacation leave benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.VacationLeaveBenefit)</td></tr>
             <tr><th scope="row">Sick leave benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.SickLeaveBenefit)</td></tr>
             <tr><th scope="row">Other leave benefits</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.OtherLeaveBenefits)</td></tr>
-            <tr><th scope="row">Life insurance benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.LifeInsuranceBenefit)</td></tr>
-            <tr><th scope="row">Vehicle benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.VehicleBenefit)</td></tr>
-            <tr><th scope="row">Mobile phone benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.MobilePhoneBenefit)</td></tr>
-            <tr><th scope="row">Other benefits</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@DisplayValue(response.OtherBenefits)</td></tr>
+            <tr><th scope="row">Life insurance benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.LifeInsuranceBenefit)</td></tr>
+            <tr><th scope="row">Vehicle benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.VehicleBenefit)</td></tr>
+            <tr><th scope="row">Mobile phone benefit</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.MobilePhoneBenefit)</td></tr>
+            <tr><th scope="row">Other benefits</th><td class="font-weight-bold text-gray-800" style="white-space: pre-line; overflow-wrap: anywhere">@AmountDisplay.Format(response.OtherBenefits)</td></tr>
         </tbody></table></div></div>
     </div>
     <div class="card shadow mb-4 small">

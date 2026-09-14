@@ -1,6 +1,8 @@
 @attribute [Authorize(Roles = JOUserRole.TAPartner)]
 @attribute [Route(JORoutes.TAPartner.JobOfferTracker)]
 
+<h1 class="h3 mb-4 text-gray-800">TA Partner Job Offers</h1>
+
 <JobOfferKpiBoxes
                   Total="@total"
                   ForReviewCount="@countForReview"

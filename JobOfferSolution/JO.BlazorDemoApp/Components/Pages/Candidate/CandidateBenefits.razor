@@ -8,12 +8,12 @@
             <div class="table-responsive">
                 <table class="jo-table">
                     <tbody>
-                        <tr><td>Employee HMO</td><td class="font-weight-bold text-gray-800">@Candidate.EmployeeHmoBenefitLimit</td></tr>
-                        <tr><td>Dependent HMO</td><td class="font-weight-bold text-gray-800">@Candidate.DependentHmoBenefitLimit</td></tr>
-                        <tr><td>Dental</td><td class="font-weight-bold text-gray-800">@Candidate.DentalBenefit</td></tr>
-                        <tr><td>Medicine</td><td class="font-weight-bold text-gray-800">@Candidate.MedicineReimbursementBenefit</td></tr>
-                        <tr><td>Optical</td><td class="font-weight-bold text-gray-800">@Candidate.OpticalBenefit</td></tr>
-                        <tr><td>Other Health</td><td class="font-weight-bold text-gray-800">@Candidate.OtherHealthBenefits</td></tr>
+                        <tr><td>Employee HMO</td><td class="font-weight-bold text-gray-800">@(FormatAmounts ? AmountDisplay.Format(Candidate.EmployeeHmoBenefitLimit) : Candidate.EmployeeHmoBenefitLimit)</td></tr>
+                        <tr><td>Dependent HMO</td><td class="font-weight-bold text-gray-800">@(FormatAmounts ? AmountDisplay.Format(Candidate.DependentHmoBenefitLimit) : Candidate.DependentHmoBenefitLimit)</td></tr>
+                        <tr><td>Dental</td><td class="font-weight-bold text-gray-800">@(FormatAmounts ? AmountDisplay.Format(Candidate.DentalBenefit) : Candidate.DentalBenefit)</td></tr>
+                        <tr><td>Medicine</td><td class="font-weight-bold text-gray-800">@(FormatAmounts ? AmountDisplay.Format(Candidate.MedicineReimbursementBenefit) : Candidate.MedicineReimbursementBenefit)</td></tr>
+                        <tr><td>Optical</td><td class="font-weight-bold text-gray-800">@(FormatAmounts ? AmountDisplay.Format(Candidate.OpticalBenefit) : Candidate.OpticalBenefit)</td></tr>
+                        <tr><td>Other Health</td><td class="font-weight-bold text-gray-800">@(FormatAmounts ? AmountDisplay.Format(Candidate.OtherHealthBenefits) : Candidate.OtherHealthBenefits)</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -27,7 +27,7 @@
                         <tr><td>Vacation Leave</td><td class="font-weight-bold text-gray-800">@Candidate.VacationLeaveBenefit</td></tr>
                         <tr><td>Sick Leave</td><td class="font-weight-bold text-gray-800">@Candidate.SickLeaveBenefit</td></tr>
                         <tr><td>Other Leave</td><td class="font-weight-bold text-gray-800">@Candidate.OtherLeaveBenefits</td></tr>
-                        <tr><td>Life Insurance</td><td class="font-weight-bold text-gray-800">@Candidate.LifeInsuranceBenefit</td></tr>
+                        <tr><td>Life Insurance</td><td class="font-weight-bold text-gray-800">@(FormatAmounts ? AmountDisplay.Format(Candidate.LifeInsuranceBenefit) : Candidate.LifeInsuranceBenefit)</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -38,9 +38,9 @@
             <div class="table-responsive">
                 <table class="jo-table">
                     <tbody>
-                        <tr><td>Vehicle</td><td class="font-weight-bold text-gray-800">@Candidate.VehicleBenefit</td></tr>
-                        <tr><td>Mobile Phone</td><td class="font-weight-bold text-gray-800">@Candidate.MobilePhoneBenefit</td></tr>
-                        <tr><td>Additional Benefits</td><td class="font-weight-bold text-gray-800">@Candidate.OtherBenefits</td></tr>
+                        <tr><td>Vehicle</td><td class="font-weight-bold text-gray-800">@(FormatAmounts ? AmountDisplay.Format(Candidate.VehicleBenefit) : Candidate.VehicleBenefit)</td></tr>
+                        <tr><td>Mobile Phone</td><td class="font-weight-bold text-gray-800">@(FormatAmounts ? AmountDisplay.Format(Candidate.MobilePhoneBenefit) : Candidate.MobilePhoneBenefit)</td></tr>
+                        <tr><td>Additional Benefits</td><td class="font-weight-bold text-gray-800">@(FormatAmounts ? AmountDisplay.Format(Candidate.OtherBenefits) : Candidate.OtherBenefits)</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -49,5 +49,6 @@
 </div>
 
 @code {
+    [Parameter] public bool FormatAmounts { get; set; }
     [Parameter] public VwDboxCandidates Candidate { get; set; }
 }

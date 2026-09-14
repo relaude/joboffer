@@ -52,7 +52,7 @@
                      class="jo-analysis-option-tab @(selectedOptionNumber == compensation.OptionNumber ? "active" : null)"
                      @onclick="() => SelectOption(compensation)">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="jo-analysis-option-title">Option @compensation.OptionNumber</span>
+                        <span class="jo-analysis-option-title">Proposed Option @compensation.OptionNumber</span>
                         <small class="text-muted text-right text-truncate ml-2"
                                title="@GetCompanyName(compensation.CmpnyCmpnstnId)">
                             @GetCompanyName(compensation.CmpnyCmpnstnId)
@@ -142,7 +142,7 @@
                     <tr>
                         <th scope="col"></th>
                         <th scope="colgroup" colspan="2">Current</th>
-                        <th scope="colgroup" colspan="3" class="is-highlighted">Option @selectedOptionNumber</th>
+                        <th scope="colgroup" colspan="3" class="is-highlighted">Proposed Option @selectedOptionNumber</th>
                     </tr>
                     <tr>
                         <th scope="col">Compensation</th>
@@ -249,7 +249,7 @@
 <div class="card shadow mb-4 small">
     <a href="#@ComparativeViewId" class="card-header text-decoration-none" data-toggle="collapse" role="button" aria-controls="@ComparativeViewId">
         <div class="table-responsive"><table class="jo-table"><thead><tr><th>Details</th>
-            @foreach (var compensation in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <th class="text-center">Option @compensation.OptionNumber</th> }
+            @foreach (var compensation in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <th class="text-center">Proposed Option @compensation.OptionNumber</th> }
         </tr></thead><tbody>
             <tr><th>Compensation</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-center font-weight-bold">@GetCompanyName(x.CmpnyCmpnstnId)</td> }</tr>
             <tr><th>Amount</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@UtilitiesService.ToPeso(x.ProposedSalary)</td> }</tr>

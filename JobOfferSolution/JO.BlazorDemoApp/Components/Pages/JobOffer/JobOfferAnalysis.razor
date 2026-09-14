@@ -128,7 +128,7 @@
                      class="jo-analysis-option-tab @(selectedOptionNumber == compensation.OptionNumber ? "active" : null)"
                      @onclick="() => ClickOptionTab(compensation)">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="jo-analysis-option-title">Option @compensation.OptionNumber</span>
+                        <span class="jo-analysis-option-title">Proposed Option @compensation.OptionNumber</span>
                         @* <small class="text-muted text-right text-truncate ml-2"
                                title="@GetCompanyCompensationName(compensation.CmpnyCmpnstnId)">
                             @GetCompanyCompensationName(compensation.CmpnyCmpnstnId)
@@ -214,7 +214,7 @@
                 <thead>
                     <tr>
                         <th scope="colgroup" colspan="4">Current</th>
-                        <th scope="colgroup" colspan="4" class="is-highlighted">Option @selectedOptionNumber</th>
+                        <th scope="colgroup" colspan="4" class="is-highlighted">Proposed Option @selectedOptionNumber</th>
                     </tr>
                     <tr>
                         <th scope="col">Compensation</th>
@@ -357,7 +357,7 @@
                         <th scope="col">Details</th>
                         @foreach (var compensation in ComparativeCompensations.Where(item => item.OptionNumber > 0))
                         {
-                            <th scope="col" class="text-center">Option @compensation.OptionNumber</th>
+                            <th scope="col" class="text-center">Proposed Option @compensation.OptionNumber</th>
                         }
                     </tr>
                 </thead>

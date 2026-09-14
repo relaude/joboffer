@@ -2,6 +2,7 @@
 {
     public interface IAppSettings
     {
+        string GetBaseUrl();
         string GetConnectionStringName();
         string GetOneDriveLocation();
         bool IsProduction();

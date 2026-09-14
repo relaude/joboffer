@@ -74,7 +74,13 @@
                         <div class="jo-action-log-content">
                             <div class="jo-action-log-heading">
                                 <div>
-                                    <span class="jo-action-log-name">@DisplayValue(item.ActionName, "Unknown action") by @DisplayValue(item.ActionByName, "Unknown user")</span>
+                                    <span class="jo-action-log-name">
+                                        @DisplayValue(item.ActionName, "Unknown action")
+                                        @if (!string.IsNullOrWhiteSpace(item.ActionByName))
+                                        {
+                                            <text> by @DisplayValue(item.ActionByName)</text>
+                                        }
+                                    </span>
                                     <small class="d-block text-muted">@DisplayValue(item.RoleName, "Role unavailable")</small>
                                 </div>
                                 <time class="jo-action-log-date" datetime="@item.ActionAt?.ToString("O")">

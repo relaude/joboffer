@@ -82,6 +82,9 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
                     return;
                 }
 
+                if (!await AlertService.Confirm("Import candidate responses from the selected Excel workbook?", "Import"))
+                    return;
+
                 // Validation consumed the browser stream; open a fresh stream for saving.
                 await using var importSource = file.OpenReadStream(MaxImportFileSize);
                 var imported = await MSFormSyncService.SaveCandidateResponseRawData(importSource, userId);

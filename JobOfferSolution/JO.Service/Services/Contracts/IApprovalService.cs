@@ -5,6 +5,7 @@ namespace JO.Service.Services.Contracts
 {
     public interface IApprovalService
     {
+        Task ApproveViaEmail(int jobOfferId, int workFlowId, int roleId, int actionId);
         Task<int> DHApprovals(List<ProposalDto> joProposal);
         Task<int> GetNextApproverRoleId(int jobOfferId, int currentRoleId);
         Task<List<ProposalDto>> GetProposalDto(int jobOfferId);
@@ -15,5 +16,6 @@ namespace JO.Service.Services.Contracts
         Task JobOfferChangeStatus(int jobOfferId, int workFlowId);
         Task JobOfferChangeStatus(int jobOfferId, int statusId, int workFlowId);
         Task<int> PresApprovals(List<ProposalDto> joProposal);
+        Task SendbackViaEmail(int jobOfferId, int roleId);
     }
 }

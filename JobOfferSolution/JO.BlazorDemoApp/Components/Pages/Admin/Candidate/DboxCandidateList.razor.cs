@@ -133,6 +133,9 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.Candidate
             isImporting = true;
             try
             {
+                if (!await AlertService.Confirm("Import DBox candidates from the selected Excel workbook?", "Import"))
+                    return;
+
                 var userId = await AccountService.GetJobOfferUserId();
                 await using var source = file.OpenReadStream(MaxImportFileSize);
                 var imported = await DBoxAPISyncService.SaveDboxCandidatesRawData(source, userId);

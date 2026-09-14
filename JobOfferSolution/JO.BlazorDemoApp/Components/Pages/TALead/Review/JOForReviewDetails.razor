@@ -4,6 +4,7 @@
 @inject IApprovalService ApprovalService
 @inject IAccountService AccountService
 @inject IAlertService AlertService
+@inject IEmailService EmailService
 @inject NavigationManager Navigation
 
 <JobOfferAnalysis @ref="analysis" jobOfferId="jobOfferId" ShowGoBackUrl="false" />
@@ -84,6 +85,7 @@
         {
             //For Division Head Approval,TA Lead, Reviewed
             await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 5, 2, 3, userId, taLeadRemarks);
+            await EmailService.SendJOEmailNotification(jobOfferId, 5);
         }
 
         if (offerRangeId == 2 || offerRangeId == 3 || offerRangeId == 4)
