@@ -509,6 +509,11 @@ namespace JO.Service.Services
 
         public async Task<List<VwDboxCandidates>> GetTALeadDboxCandidates()
         {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwDboxCandidates
+                .AsNoTracking()
+                .ToListAsync();
+            /*
             List<VwDboxCandidates> dboxCandidate = new();
 
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -583,7 +588,7 @@ namespace JO.Service.Services
                 MobilePhoneBenefit = candidate.MobilePhoneBenefit,
             }).ToList();
 
-            return dboxCandidate;
+            return dboxCandidate;*/
         }
     }
 }

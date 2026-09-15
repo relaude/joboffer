@@ -108,14 +108,19 @@
                         </div>
                         <div class="form-group mb-0">
                             <label for="ulEquivalentTotalMonthsPay">Total Months Pay</label>
-                            <select id="ulEquivalentTotalMonthsPay"
+                            <input id="ulEquivalentTotalMonthsPay"
+                                   type="text"
+                                   class="form-control"
+                                   value="@ulEquivalentTotalMonthsPay"
+                                   readonly />
+                            @* <select id="ulEquivalentTotalMonthsPay"
                                     class="custom-select"
                                     @bind="ulEquivalentTotalMonthsPay">
                                 <option value="13">13</option>
                                 <option value="14">14</option>
                                 <option value="15">15</option>
                                 <option value="16">16</option>
-                            </select>
+                            </select> *@
                         </div>
                         
                     </div>
@@ -156,10 +161,10 @@
 
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="jo-analysis-option-title">Proposed Option @compensation.OptionNumber</span>
-                        <small class="text-muted text-right text-truncate ml-2"
+                        @* <small class="text-muted text-right text-truncate ml-2"
                                title="@GetCompanyCompensationName(compensation.CmpnyCmpnstnId)">
                             @GetCompanyCompensationName(compensation.CmpnyCmpnstnId)
-                        </small>
+                        </small> *@
                     </div>
 
                     <div>
@@ -377,7 +382,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    @* <tr>
                         <th scope="row">Compensation</th>
                         @foreach (var compensation in ComparativeCompensations.Where(jo => jo.OptionNumber > 0))
                         {
@@ -385,7 +390,7 @@
                                 @GetCompanyCompensationName(compensation.CmpnyCmpnstnId)
                             </td>
                         }
-                    </tr>
+                    </tr> *@
                     <tr>
                         <th scope="row">Amount</th>
                         @foreach (var compensation in ComparativeCompensations.Where(jo => jo.OptionNumber > 0))

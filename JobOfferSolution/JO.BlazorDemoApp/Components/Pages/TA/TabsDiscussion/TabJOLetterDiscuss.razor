@@ -1,4 +1,4 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Authorize(Roles = JOUserRole.TAPartner)]
 @attribute [Route(JORoutes.TAPartner.Discussion + "/{jobOfferId:int}")]
 
 <CardJOSummary JobOffer="@vwJODboxCandidates" />
@@ -56,6 +56,7 @@
             <div role="tabpanel">
                 <SharedJODiscussion
                     Discussion="@discussion"
+                    RequireDiscussionNotes="false"
                     Proposals="@filteredJOCompanyCompensation"
                     Discussions="@vwDiscussions"
                     Status="@discussionStatus"
@@ -102,24 +103,27 @@
         Go Back
     </a>
 
-    <button type="button" class="btn btn-outline-primary" 
-        @onclick="ForNegotiation"
-        disabled="@(!HasForNegotiation)">
-        <i class="fas fa-comments-dollar mr-1" aria-hidden="true"></i>
-        For Negotiation
-    </button>
+    @if (activeTab == TabName.Discussion)
+    {
+        <button type="button" class="btn btn-outline-primary"
+            @onclick="ForNegotiation"
+            disabled="@(!HasForNegotiation)">
+            <i class="fas fa-comments-dollar mr-1" aria-hidden="true"></i>
+            For Negotiation
+        </button>
 
-    <button type="button" class="btn btn-outline-primary" 
-        @onclick="Decline"
-        disabled="@(!HasDeclinedOffer)">
-        <i class="fas fa-comments-dollar mr-1" aria-hidden="true"></i>
-        Declined
-    </button>
+        <button type="button" class="btn btn-outline-primary"
+            @onclick="Decline"
+            disabled="@(!HasDeclinedOffer)">
+            <i class="fas fa-comments-dollar mr-1" aria-hidden="true"></i>
+            Declined
+        </button>
 
-    <button type="button" class="btn btn-success"
-            @onclick="AcceptAndComplete"
-            disabled="@(!HasAcceptedOffer)">
-        <i class="fas fa-comments-dollar mr-1" aria-hidden="true"></i>
-        Completed
-    </button>
+        <button type="button" class="btn btn-success"
+                @onclick="AcceptAndComplete"
+                disabled="@(!HasAcceptedOffer)">
+            <i class="fas fa-comments-dollar mr-1" aria-hidden="true"></i>
+            Completed
+        </button>
+    }
 </div>

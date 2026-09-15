@@ -134,10 +134,14 @@ namespace JO.Service.Services
             JOApprovalFlow approvalFlow = await context.JOApprovalFlow
                 .FirstOrDefaultAsync(jo=>jo.JobOfferId==jobOfferId && jo.RoleId==roleId 
                     && (jo.IsAproved == null || jo.IsAproved == false));
-            approvalFlow.IsAproved = true;
+
+            if(approvalFlow != null)
+            {
+                approvalFlow.IsAproved = true;
+                context.JOApprovalFlow.Update(approvalFlow);
+            }
 
             context.JobOffers.Update(jobOffer);
-            context.JOApprovalFlow.Update(approvalFlow);
             await context.JOActionLogs.AddAsync(newLog);
 
             await context.SaveChangesAsync();

@@ -135,39 +135,6 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.TabsDiscussion
 
         private async Task SaveDiscussion(DiscussionDto model)
         {
-            var errors = new List<string>();
-
-            if (!model.StatusId.HasValue)
-                errors.Add("Status is required.");
-
-            if (!model.ProposalId.HasValue)
-                errors.Add("Proposal is required.");
-
-            if (!model.DiscussAt.HasValue)
-                errors.Add("Discussion date is required.");
-
-            if (string.IsNullOrWhiteSpace(model.Comments))
-                errors.Add("Discussion Notes are required.");
-
-            if (string.IsNullOrWhiteSpace(model.FeedBack))
-                errors.Add("Feedback is required.");
-
-            if (model.StatusId == 4 && !model.DeclineReasonId.HasValue)
-                errors.Add("Decline reason is required for a declined offer.");
-
-            if (model.StatusId == 4
-                && model.DeclineReasonId == 5
-                && string.IsNullOrWhiteSpace(model.DeclineRemarks))
-            {
-                errors.Add("Decline remarks are required when the decline reason is Others.");
-            }
-
-            if (errors.Any())
-            {
-                await AlertService.Errors(errors, "Required Fields");
-                return;
-            }
-
             if (!await AlertService.Confirm("Save discussion details?"))
                 return;
 

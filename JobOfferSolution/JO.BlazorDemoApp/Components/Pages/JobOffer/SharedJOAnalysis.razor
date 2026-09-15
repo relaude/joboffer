@@ -24,9 +24,12 @@
                 <div class="card-header"><h6 class="jo-title">UL Equivalent</h6></div>
                 <div class="card-body">
                     <div class="form-group"><label>Monthly Basic</label><input class="form-control" value="@UtilitiesService.ToPeso(UlMonthlyBasic())" readonly /></div>
-                    <div class="form-group mb-0"><label>Total Months Pay</label><select class="custom-select" @bind="ulMonthsPay">
-                        <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
-                    </select></div>
+                    <div class="form-group mb-0"><label>Total Months Pay</label>
+                        <input class="form-control" value="@ulMonthsPay" readonly />
+                        @* <select class="custom-select" @bind="ulMonthsPay">
+                            <option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
+                        </select> *@
+                    </div>
                 </div>
             </div></div>
         </div>
@@ -53,10 +56,10 @@
                      @onclick="() => SelectOption(compensation)">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="jo-analysis-option-title">Proposed Option @compensation.OptionNumber</span>
-                        <small class="text-muted text-right text-truncate ml-2"
+                        @* <small class="text-muted text-right text-truncate ml-2"
                                title="@GetCompanyName(compensation.CmpnyCmpnstnId)">
                             @GetCompanyName(compensation.CmpnyCmpnstnId)
-                        </small>
+                        </small> *@
                     </div>
 
                     <div>
@@ -251,7 +254,7 @@
         <div class="table-responsive"><table class="jo-table"><thead><tr><th>Details</th>
             @foreach (var compensation in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <th class="text-center">Proposed Option @compensation.OptionNumber</th> }
         </tr></thead><tbody>
-            <tr><th>Compensation</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-center font-weight-bold">@GetCompanyName(x.CmpnyCmpnstnId)</td> }</tr>
+            @* <tr><th>Compensation</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-center font-weight-bold">@GetCompanyName(x.CmpnyCmpnstnId)</td> }</tr> *@
             <tr><th>Amount</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@UtilitiesService.ToPeso(x.ProposedSalary)</td> }</tr>
             @* <tr><th>Current Salary</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@UtilitiesService.ToPeso(x.CurrentSalary)</td> }</tr>
             <tr><th>Increase</th>@foreach (var x in ComparativeCompensations.Where(x => x.OptionNumber > 0)) { <td class="text-right">@Percent(x.Increase)</td> }</tr> *@

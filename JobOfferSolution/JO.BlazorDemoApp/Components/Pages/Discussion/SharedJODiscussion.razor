@@ -1,4 +1,4 @@
-﻿
+
 <div class="card shadow mb-4 small">
     <div class="card-header">
         <h6 class="jo-title">Discussion</h6>
@@ -31,9 +31,38 @@
                             </div>
                         </div> *@
 
-                        <div class="form-group">
-                            <label class="font-weight-bold text-gray-700 mb-1" for="@DiscussionDateId">Date</label>
-                            <input id="@DiscussionDateId" type="date" class="form-control" @bind="Discussion.DiscussAt" />
+                        <div class="d-flex flex-wrap align-items-end mx-n1">
+                            <div class="form-group px-1" style="flex: 1 1 10rem; min-width: 0;">
+                                <label class="font-weight-bold text-gray-700 mb-1" for="@DiscussionDateId">Date</label>
+                                <input id="@DiscussionDateId" type="date" class="form-control"
+                                       value="@DiscussionDate?.ToString("yyyy-MM-dd")"
+                                       @oninput="UpdateDiscussionDate" required />
+                            </div>
+                            <fieldset class="form-group px-1" style="flex: 2 1 16rem; min-width: 0;">
+                                <legend class="font-weight-bold text-gray-700 mb-1 small">Time</legend>
+                                <div class="form-row">
+                                    <div class="col-4">
+                                        <label for="@DiscussionHourId">Hour</label>
+                                        <input id="@DiscussionHourId" type="number" class="form-control"
+                                               min="1" max="12" step="1" placeholder="Hour" required
+                                               value="@DiscussionHour" @oninput="e => DiscussionHour = e.Value?.ToString()" />
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="@DiscussionMinuteId">Minute</label>
+                                        <input id="@DiscussionMinuteId" type="number" class="form-control"
+                                               min="0" max="59" step="1" placeholder="Minute" required
+                                               value="@DiscussionMinute" @oninput="e => DiscussionMinute = e.Value?.ToString()" />
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="@DiscussionPeriodId">AM/PM</label>
+                                        <select id="@DiscussionPeriodId" class="custom-select" @bind="DiscussionPeriod">
+                                            <option value="">AM/PM</option>
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
                         </div>
 
                         <div class="form-group">
@@ -85,12 +114,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="font-weight-bold text-gray-700 mb-1" for="@NotesId">Discussion Notes<span class="text-danger">*</span></label>
+                            <label class="font-weight-bold text-gray-700 mb-1" for="@NotesId">Notes</label>
                             <textarea id="@NotesId" class="form-control form-control-sm" rows="4" @bind="Discussion.Comments"></textarea>
                         </div>
 
                         <div class="form-group mb-0">
-                            <label class="font-weight-bold text-gray-700 mb-1" for="@FeedbackId">Candidate Feedback<span class="text-danger">*</span></label>
+                            <label class="font-weight-bold text-gray-700 mb-1" for="@FeedbackId">Dvision Head Remarks<span class="text-danger">*</span></label>
                             <textarea id="@FeedbackId" class="form-control form-control-sm" rows="4" @bind="Discussion.FeedBack"></textarea>
                         </div>
                     </div>
@@ -124,7 +153,6 @@
                         }
                         else
                         {
-                            <!--EDIT-->
                             <div class="pr-2"
                                  style="max-height: 650px; overflow-y: auto; overflow-x: hidden;"
                                  role="region"
@@ -140,7 +168,7 @@
                                                     <span class="badge badge-info px-3 mr-2">Option @item.OptionNumber</span>
                                                     <span class="font-weight-bold text-gray-900 py-2">@item.StatusName</span>
                                                 </div>
-                                                <small class="text-muted">@UtilitiesService.FormatDate(item.DiscussAt, CommonConstant.DefaultShortDateFormat)</small>
+                                                <small class="text-muted">@UtilitiesService.FormatDate(item.DiscussAt, CommonConstant.DefaultShortDateTimeFormat)</small>
                                             </div>
 
                                         @if (!string.IsNullOrWhiteSpace(item.Comments)
@@ -153,7 +181,7 @@
                                                 {
                                                     <div class="col-12 col-md-6 mb-3">
                                                         <div class="border rounded bg-light p-3 h-100">
-                                                            <div class="small font-weight-bold text-gray-700 text-uppercase mb-1">Discussion Notes</div>
+                                                            <div class="small font-weight-bold text-gray-700 text-uppercase mb-1">Notes</div>
                                                             <div class="text-gray-800 text-break">@item.Comments</div>
                                                         </div>
                                                     </div>
@@ -163,7 +191,7 @@
                                                 {
                                                     <div class="col-12 col-md-6 mb-3">
                                                         <div class="border rounded bg-light p-3 h-100">
-                                                            <div class="small font-weight-bold text-gray-700 text-uppercase mb-1">Candidate Feedback</div>
+                                                            <div class="small font-weight-bold text-gray-700 text-uppercase mb-1">Division Head Remarks</div>
                                                             <div class="text-gray-800 text-break">@item.FeedBack</div>
                                                         </div>
                                                     </div>
@@ -195,7 +223,6 @@
                                     </div>
                                 }
                             </div>
-                            <!--EDIT-->
                         }
                     </div>
                 </div>
