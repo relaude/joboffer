@@ -214,6 +214,7 @@ namespace JO.Service.Services
                 || !(joCompen.OptionNumber > 0) || joCompen.Declined == true)
                 throw new ArgumentException("The selected proposal is not available for this job offer.", nameof(dto));
 
+            var discussAt = dto.DiscussAt?.Date.Add(DateTime.Now.TimeOfDay);
             var newDiscussion = new Discussions
             {
                 JobOfferId = dto.JobOfferId,
@@ -223,7 +224,7 @@ namespace JO.Service.Services
                 DeclineRemarks = dto.DeclineRemarks,
                 Comments = dto.Comments,
                 FeedBack = dto.FeedBack,
-                DiscussAt = dto.DiscussAt,
+                DiscussAt = discussAt,
                 CreatedBy = dto.CreatedBy,
                 CreatedAt = DateTime.Now
             };

@@ -13,9 +13,11 @@ namespace JO.Service.Services
     public class ApprovalService : IApprovalService
     {
         private readonly IDbContextFactory<JobOfferDbContext> _dbContext;
-        public ApprovalService(IDbContextFactory<JobOfferDbContext> dbContext)
+        private readonly IEmailService _emailService;
+        public ApprovalService(IDbContextFactory<JobOfferDbContext> dbContext, IEmailService emailService)
         {
             _dbContext = dbContext;
+            _emailService = emailService;
         }
 
         public async Task<int> GetNextApproverRoleId(int jobOfferId, int currentRoleId)
@@ -108,6 +110,8 @@ namespace JO.Service.Services
             await context.JOActionLogs.AddAsync(newLog);
 
             await context.SaveChangesAsync();
+
+            await _emailService.SendJOEmailNotification(jobOfferId, 10);
         }
         public async Task JobOfferActionFlowStatus(int jobOfferId, 
             int workFlowId, 
@@ -145,6 +149,8 @@ namespace JO.Service.Services
             await context.JOActionLogs.AddAsync(newLog);
 
             await context.SaveChangesAsync();
+
+            await _emailService.SendJOEmailNotification(jobOfferId, workFlowId);
         }
 
         public async Task ApproveViaEmail(int jobOfferId, 

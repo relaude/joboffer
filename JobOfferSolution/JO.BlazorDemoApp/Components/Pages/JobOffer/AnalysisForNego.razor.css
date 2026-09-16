@@ -1,0 +1,33 @@
+.jo-options-table {
+    width: 100%;
+    min-width: 1080px;
+    table-layout: fixed;
+}
+
+.jo-options-name { width: 12%; }
+.jo-options-amount { width: 10%; }
+.jo-options-remarks { width: 18%; }
+
+.jo-options-table th,
+.jo-options-table td {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    vertical-align: top;
+}
+
+.jo-options-remarks-text {
+    white-space: pre-wrap;
+}
+
+.jo-options-remarks-input {
+    width: 100%;
+    resize: vertical;
+}
+
+@media (max-width: 1440px) {
+    .jo-options-table th,
+    .jo-options-table td {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}

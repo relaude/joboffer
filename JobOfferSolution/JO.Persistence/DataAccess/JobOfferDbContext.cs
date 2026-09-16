@@ -114,6 +114,7 @@ namespace JO.Persistence.DataAccess
         //Email Template
         public DbSet<EmailTemplate> EmailTemplate { get; set; }
         public DbSet<EmailTemplateRoles> EmailTemplateRoles { get; set; }
+        public DbSet<CandidateEmailTemplate> CandidateEmailTemplate { get; set; }
 
         //Views
         public DbSet<VwEmailTemplate> VwEmailTemplate { get; set; }

@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
     <PackageReference Include="Microsoft.Identity.Web" Version="4.14.2" />
+    <PackageReference Include="PuppeteerSharp" Version="25.11.0" />
   </ItemGroup>
 
   <ItemGroup>

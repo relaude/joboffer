@@ -81,6 +81,7 @@ namespace JO.Service.Constants
             public const string JobOfferComplete = PrefixTAPartner + "/joboffer-complete";
             public const string EmailTemplates = PrefixTAPartner + "/email-templates";
             public const string EmailTemplate = PrefixTAPartner + "/email-template";
+            public const string CandidateEmailTemplate = PrefixTAPartner + "/candidate/email-template";
         }
 
         public static class TALead

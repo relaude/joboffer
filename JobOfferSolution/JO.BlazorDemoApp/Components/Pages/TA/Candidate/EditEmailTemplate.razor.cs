@@ -1,17 +1,16 @@
 using JO.DataModel.Entity;
-using JO.DataModel.View;
 using JO.DataModel.DTOs;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components;
 using WYSIWYGTextEditor;
 
-namespace JO.BlazorDemoApp.Components.Pages.TA.TAEmailTemplate
+namespace JO.BlazorDemoApp.Components.Pages.TA.Candidate
 {
-    public partial class EditTemplate
+    public partial class EditEmailTemplate
     {
         [Inject] private IEmailTemplateService EmailTemplateService { get; set; } = default!;
         [Inject] private IEmailService EmailService { get; set; } = default!;
-        [Inject] private ILogger<EditTemplate> Logger { get; set; } = default!;
+        [Inject] private ILogger<EditEmailTemplate> Logger { get; set; } = default!;
         [Inject] private IAlertService AlertService { get; set; } = default!;
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private IAccountService AccountService { get; set; } = default!;
@@ -27,11 +26,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TAEmailTemplate
             set => emailTemplate.IsActive = value;
         }
 
-        private EmailTemplate emailTemplate = new();
+        private CandidateEmailTemplate emailTemplate = new();
         private TextEditor? messageEditor;
-        private List<JOWorkFlowStatus> workFlowStatuses = [];
-        private List<VwJOUserRoles> recipientRoles = [];
-        private readonly HashSet<int> selectedRecipientRoleIds = [];
         private bool isProcessingSave;
         private string testEmailRecipient = string.Empty;
         private bool isSendingTestMail;
@@ -41,19 +37,13 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TAEmailTemplate
         {
             isLoading = true;
             templateFound = false;
+            loadMessageContent = false;
             messageEditor = null;
-            selectedRecipientRoleIds.Clear();
             userId = await AccountService.GetJobOfferUserId();
-            workFlowStatuses = await EmailTemplateService.GetJOWorkFlowStatus();
-            recipientRoles = await EmailTemplateService.GetVwJOUserRoles();
-            var template = await EmailTemplateService.GetEmailTemplate(templateId);
+            var template = await EmailTemplateService.GetCandidateEmailTemplate(templateId);
             if (template is not null)
             {
                 emailTemplate = template;
-                var templateRoles = await EmailTemplateService.GetEmailTemplateRoles(templateId);
-                selectedRecipientRoleIds.UnionWith(templateRoles
-                    .Where(role => role.RoleId.HasValue)
-                    .Select(role => role.RoleId!.Value));
                 templateFound = true;
                 loadMessageContent = true;
             }
@@ -72,18 +62,6 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TAEmailTemplate
             await messageEditor.LoadHTMLContent(emailTemplate.EmailMessage ?? string.Empty);
             loadMessageContent = false;
             StateHasChanged();
-        }
-
-        private void UpdateRecipientRole(int roleId, bool isChecked)
-        {
-            if (isChecked)
-            {
-                selectedRecipientRoleIds.Add(roleId);
-            }
-            else
-            {
-                selectedRecipientRoleIds.Remove(roleId);
-            }
         }
 
         private async Task TestMailAsync()
@@ -163,12 +141,6 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TAEmailTemplate
                 var messageText = messageEditor is null ? string.Empty : await messageEditor.GetText();
                 var errors = new List<string>();
 
-                if (!emailTemplate.WorkFlowId.HasValue
-                    || !workFlowStatuses.Any(workflow => workflow.Id == emailTemplate.WorkFlowId.Value))
-                {
-                    errors.Add("Job Offer WorkFlow is required.");
-                }
-
                 if (string.IsNullOrWhiteSpace(emailTemplate.EmailSubject))
                 {
                     errors.Add("Email Subject is required.");
@@ -179,9 +151,9 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TAEmailTemplate
                     errors.Add("Email Message is required.");
                 }
 
-                if (selectedRecipientRoleIds.Count == 0 && string.IsNullOrWhiteSpace(emailTemplate.OtherRecipient))
+                if (string.IsNullOrWhiteSpace(emailTemplate.OtherRecipient))
                 {
-                    errors.Add("Select at least one recipient role or enter email addresses in Others.");
+                    errors.Add("Others TO Recipients is required.");
                 }
 
                 if (!string.IsNullOrWhiteSpace(emailTemplate.OtherRecipient)
@@ -208,7 +180,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.TAEmailTemplate
                 }
 
                 emailTemplate.ModifiedBy = userId;
-                await EmailTemplateService.UpdateEmailTemplate(emailTemplate, selectedRecipientRoleIds);
+                await EmailTemplateService.UpdateCandidateEmailTemplate(emailTemplate);
                 await AlertService.Success("Email template updated successfully.");
             }
             finally

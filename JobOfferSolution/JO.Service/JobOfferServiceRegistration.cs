@@ -42,6 +42,7 @@ namespace JO.Service
             services.AddScoped<IDBoxAPISyncService, DBoxAPISyncService>();
             services.AddScoped<IDBoxCandidateService, DBoxCandidateService>();
             services.AddScoped<IDBoxCandidateService, DBoxCandidateService>();
+            services.AddScoped<IHtmlToPDFServices, HtmlToPDFServices>();
 
             return services;
         }

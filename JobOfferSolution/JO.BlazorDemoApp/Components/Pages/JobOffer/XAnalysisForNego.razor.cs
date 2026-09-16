@@ -9,7 +9,7 @@ using System.Diagnostics.Contracts;
 
 namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 {
-    public partial class Analysis
+    public partial class XAnalysisForNego
     {
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private IAlertService AlertService { get; set; } = default!;
@@ -18,7 +18,6 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
         [Inject] private ICandidateService CandidateService { get; set; } = default!;
         [Inject] private ICompensationService CompensationService { get; set; } = default!;
-        [Inject] private IEmailService EmailService { get; set; } = default!;
 
         [Parameter] public int jobOfferId { get; set; }
         [Parameter] public string GoBackUrl { get; set; } = string.Empty;
@@ -211,6 +210,11 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         {
             var errors = CollectErrors(new List<string>());
 
+            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
+            {
+                errors.Add("Remarks is required.");
+            }
+
             if (errors.Any())
             {
                 await AlertService.Errors(errors);
@@ -234,8 +238,6 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 userId,
                 taPartnerRemarks);
 
-            await EmailService.SendJOEmailNotification(jobOfferId, 3);//For Review
-
             await AlertService.Success("Analysis successfully submitted for review.");
             
             Navigation.NavigateTo($"{returnUrl}/{submittedJobOfferId}");
@@ -244,6 +246,11 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         public async Task TALeadSubmitForApproval(string returnUrl)
         {
             var errors = CollectErrors(new List<string>());
+
+            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
+            {
+                errors.Add("Remarks is required.");
+            }
 
             if (errors.Any())
             {
@@ -293,7 +300,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
                 if (!option.OfferRangeId.HasValue)
                 {
-                    errors.Add($"Option {optionNumber}: Proposed Salary is below minimum.");
+                    errors.Add($"Option {optionNumber}: Proposed Salary is out of range.");
                     continue;
                 }
 
@@ -389,15 +396,9 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 compensation.OfferRangeId = 3;
                 compensation.Escalate = true;
             }
-            else if (proposedSalary > compaRatio)
+            else
             {
                 compensation.BandStatus = "Beyond Salary Structure";
-                compensation.OfferRangeId = 4;
-                compensation.Escalate = true;
-            }
-            else if (proposedSalary < minimum)
-            {
-                compensation.BandStatus = "Below Minimum";
                 compensation.OfferRangeId = null;
                 compensation.Escalate = null;
             }

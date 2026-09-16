@@ -120,6 +120,27 @@ namespace JO.Service.Services
                 .ToListAsync();
         }
 
+        public async Task<List<string>> GetUserEmailsByRoleNamesAsync(List<string> roleNames)
+        {
+            ArgumentNullException.ThrowIfNull(roleNames);
+
+            var emails = new List<string>();
+            var distinctRoleNames = roleNames
+                .Where(roleName => !string.IsNullOrWhiteSpace(roleName))
+                .Select(roleName => roleName.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var roleName in distinctRoleNames)
+            {
+                var users = await _userManager.GetUsersInRoleAsync(roleName);
+                emails.AddRange(users
+                    .Where(user => !string.IsNullOrWhiteSpace(user.Email))
+                    .Select(user => user.Email!.Trim()));
+            }
+
+            return emails.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
         private async Task<ClaimsPrincipal> GetUserAsync()
         {
             var authState = await _authStateProvider.GetAuthenticationStateAsync();

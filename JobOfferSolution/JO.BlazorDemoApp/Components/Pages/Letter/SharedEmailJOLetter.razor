@@ -125,6 +125,27 @@
     </div>
 
     <div class="card-footer jo-actions">
+        <button type="button" class="btn btn-outline-danger"
+                disabled="@(IsSending || isReadingAttachment || isConvertingPdf || !HasLetterContent)"
+                @onclick="ConvertToPdfAsync">
+            @if (isConvertingPdf)
+            {
+                <span class="spinner-border spinner-border-sm mr-1" aria-hidden="true"></span>
+                <span role="status">Converting...</span>
+            }
+            else
+            {
+                <i class="fas fa-file-pdf mr-1" aria-hidden="true"></i><span>Convert To PDF</span>
+            }
+        </button>
+        @if (pdfDownloadUrl is not null)
+        {
+            <a class="btn btn-outline-primary" href="@pdfDownloadUrl" download="JobOfferLetter.pdf">Download PDF</a>
+        }
+        @if (pdfError is not null)
+        {
+            <div class="alert alert-danger mb-0" role="alert">@pdfError</div>
+        }
         <button type="button" class="btn btn-outline-primary" disabled="@(IsSending || isReadingAttachment)" @onclick="SendTestEmailAsync">
             <i class="fas fa-envelope-open-text mr-1" aria-hidden="true"></i>Test Email
         </button>

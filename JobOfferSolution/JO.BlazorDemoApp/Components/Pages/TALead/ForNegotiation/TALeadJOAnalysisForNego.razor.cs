@@ -18,7 +18,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.ForNegotiation
         [Inject] private NavigationManager Navigation { get; set; } = default!;
 
         [Parameter] public int jobOfferId { get; set; }
-        private AnalysisForNego? analysis;
+        private XAnalysisForNego? analysis;
 
         private async Task HandleGoBack()
         {

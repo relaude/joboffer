@@ -18,6 +18,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
         [Inject] private ICandidateService CandidateService { get; set; } = default!;
         [Inject] private ICompensationService CompensationService { get; set; } = default!;
+        [Inject] private IEmailService EmailService { get; set; } = default!;
 
         [Parameter] public int jobOfferId { get; set; }
         [Parameter] public string GoBackUrl { get; set; } = string.Empty;
@@ -27,7 +28,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         private int selectedCmpnyCmpnstnId = 0;
         private int appliedCmpnyCmpnstnId = 0;
         private int selectedJOCmpnyCmpnstnId = 0;
-        private int selectedOptionNumber = 1;
+        private int selectedOptionNumber = 0;
         private int ulEquivalentTotalMonthsPay = 15;
         private string taPartnerRemarks = string.Empty;
 
@@ -59,6 +60,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
             userId = await AccountService.GetJobOfferUserId();
             jobOffer = await CompensationService.GetJobOffer(jobOfferId);
             joAnalysis = await CompensationService.GetJOAnalysis(jobOfferId);
+            taPartnerRemarks = joAnalysis.ActivityRemarks ?? string.Empty;
             vwjobOffer = await CompensationService.GetVwJODboxCandidate(jobOfferId);
             candidate = await CandidateService.GetVwDboxCandidate(jobOffer.CandidateId.GetValueOrDefault());
             vwSalaryBand = await CompensationService.GetVwSalaryBand(jobOffer.CompanyId.GetValueOrDefault(), candidate.CSGId.GetValueOrDefault());
@@ -79,6 +81,9 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
         private void SetIDdefaultValue()
         {
+            selectedOptionNumber = joCompanyCompensation
+                .FirstOrDefault(jo => jo.ForNegotiation == true)?.OptionNumber ?? 0;
+
             var selectedCompensation = joCompanyCompensation
                 .FirstOrDefault(jo => jo.OptionNumber == selectedOptionNumber);
 
@@ -165,6 +170,11 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 errors.Add("Select a Package.");
             }
 
+            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
+            {
+                errors.Add("Remarks is required.");
+            }
+
             CollectJOCompanyCompensationErrors(errors);
 
             return errors;
@@ -194,7 +204,8 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 jobOffer,
                 selectedCmpnyCmpnstnId,
                 candidate.Id,
-                userId);
+                userId,
+                taPartnerRemarks);
 
             await AlertService.Success("Analysis successfully saved.");
         }
@@ -202,11 +213,6 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
         public async Task SubmitForApproval(string returnUrl)
         {
             var errors = CollectErrors(new List<string>());
-
-            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
-            {
-                errors.Add("Remarks is required.");
-            }
 
             if (errors.Any())
             {
@@ -231,19 +237,16 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 userId,
                 taPartnerRemarks);
 
+            await EmailService.SendJOEmailNotification(jobOfferId, 3);//For Review
+
             await AlertService.Success("Analysis successfully submitted for review.");
-            
+
             Navigation.NavigateTo($"{returnUrl}/{submittedJobOfferId}");
         }
 
         public async Task TALeadSubmitForApproval(string returnUrl)
         {
             var errors = CollectErrors(new List<string>());
-
-            if (string.IsNullOrWhiteSpace(taPartnerRemarks))
-            {
-                errors.Add("Remarks is required.");
-            }
 
             if (errors.Any())
             {
@@ -293,7 +296,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
                 if (!option.OfferRangeId.HasValue)
                 {
-                    errors.Add($"Option {optionNumber}: Proposed Salary is out of range.");
+                    errors.Add($"Option {optionNumber}: Proposed Salary is below minimum.");
                     continue;
                 }
 
@@ -389,9 +392,15 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 compensation.OfferRangeId = 3;
                 compensation.Escalate = true;
             }
-            else
+            else if (proposedSalary > compaRatio)
             {
                 compensation.BandStatus = "Beyond Salary Structure";
+                compensation.OfferRangeId = 4;
+                compensation.Escalate = true;
+            }
+            else if (proposedSalary < minimum)
+            {
+                compensation.BandStatus = "Below Minimum";
                 compensation.OfferRangeId = null;
                 compensation.Escalate = null;
             }

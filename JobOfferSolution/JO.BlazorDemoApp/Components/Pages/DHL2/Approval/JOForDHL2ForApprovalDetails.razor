@@ -4,6 +4,7 @@
 @inject IApprovalService ApprovalService
 @inject IAccountService AccountService
 @inject IAlertService AlertService
+@inject IEmailService EmailService
 @inject NavigationManager Navigation
 
 <ApproverJOAnalysis @ref="analysis" jobOfferId="jobOfferId" ShowGoBackUrl="false" />
@@ -80,6 +81,7 @@
 
         //For President Approval
         await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 7, 6, 4, userId, approverRemarks);
+
         await AlertService.Success(
             message: "The job offer has been approved successfully.",
             title: "Approve Complete");

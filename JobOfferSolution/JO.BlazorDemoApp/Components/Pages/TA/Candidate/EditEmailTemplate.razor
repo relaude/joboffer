@@ -1,5 +1,5 @@
 @attribute [Authorize(Roles = JOUserRole.TAPartner)]
-@attribute [Route(JORoutes.TAPartner.EmailTemplate + "/{templateId:int}")]
+@attribute [Route(JORoutes.TAPartner.CandidateEmailTemplate + "/{templateId:int}")]
 
 @if (isLoading)
 {
@@ -15,8 +15,8 @@ else
     <div class="card shadow mb-4 small">
         <div class="card-header py-3 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between">
             <div class="mb-2 mb-sm-0">
-                <h6 class="jo-title mb-1"><i class="fas fa-envelope-open-text fa-fw text-primary mr-2"></i>Edit Email Template</h6>
-                <small class="text-muted">Update a reusable message for a job offer workflow.</small>
+                <h6 class="jo-title mb-1"><i class="fas fa-envelope-open-text fa-fw text-primary mr-2"></i>Edit Candidate Email Template</h6>
+                <small class="text-muted">Update a reusable message for candidates.</small>
             </div>
             <div>
                 <a class="btn btn-outline-secondary mr-2" href="@JORoutes.TAPartner.EmailTemplates">
@@ -29,17 +29,6 @@ else
         </div>
 
         <div class="card-body">
-            <div class="form-group mb-4">
-                <label class="font-weight-bold text-gray-700" for="template-workflow">Job Offer WorkFlow</label>
-                <select id="template-workflow" class="custom-select" @bind="emailTemplate.WorkFlowId" disabled>
-                    <option value="">Select a workflow</option>
-                    @foreach (var workflow in workFlowStatuses)
-                    {
-                        <option value="@workflow.Id">@workflow.FlowName</option>
-                    }
-                </select>
-            </div>
-
             <div class="form-group mb-4">
                 <label class="font-weight-bold text-gray-700" for="template-name">Email Subject</label>
                 <input id="template-name" type="text" class="form-control" @bind="emailTemplate.EmailSubject" placeholder="Enter a descriptive email subject" />
@@ -55,20 +44,10 @@ else
                     <div class="card h-100 border">
                         <div class="card-header bg-light py-3">
                             <h6 class="m-0 font-weight-bold text-gray-800">Recipients</h6>
-                            <small class="text-muted">Select one or more recipient roles.</small>
+                            <small class="text-muted">Enter recipient email addresses.</small>
                         </div>
                         <div class="card-body">
-                            @foreach (var role in recipientRoles)
-                            {
-                                <div class="custom-control custom-checkbox mb-2" @key="role.Id">
-                                    <input id="@($"recipient-role-{role.Id}")" type="checkbox" class="custom-control-input"
-                                           checked="@selectedRecipientRoleIds.Contains(role.Id)"
-                                           @onchange="args => UpdateRecipientRole(role.Id, args.Value is true)" />
-                                    <label class="custom-control-label" for="@($"recipient-role-{role.Id}")">@role.RoleName</label>
-                                </div>
-                            }
-
-                            <div class="form-group mb-0 pt-3 border-top">
+                            <div class="form-group mb-0">
                                 <label class="font-weight-bold text-gray-700" for="recipient-others">Others TO Recipients</label>
                                 <input id="recipient-others" type="text" class="form-control form-control-sm" @bind="emailTemplate.OtherRecipient" placeholder="Enter email addresses" />
                                 <small class="form-text text-muted">Separate multiple addresses with semicolons (;).</small>

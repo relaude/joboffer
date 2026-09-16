@@ -18,11 +18,14 @@ namespace JO.Service.Services
     {
         private readonly IDbContextFactory<JobOfferDbContext> _dbContext;
         private readonly IAppSettings _appSettings;
+        private readonly IAccountService _accountService;
 
-        public EmailService(IDbContextFactory<JobOfferDbContext> dbContext, IAppSettings appSettings)
+        public EmailService(IDbContextFactory<JobOfferDbContext> dbContext, IAppSettings appSettings,
+            IAccountService accountService)
         {
             _dbContext = dbContext;
             _appSettings = appSettings;
+            _accountService = accountService;
         }
 
         public async Task TestMailAsync(string recipients)
@@ -131,11 +134,17 @@ namespace JO.Service.Services
             EmailTemplate template = await EditedEmailTemplate(jobOfferId, workFlowId);
 
             if (string.IsNullOrEmpty(template.EmailSubject)) return;
-            
+
+            string requestTo = await GetTemplateRecipientEmailsAsync(template);
             EmailRequest request = new();
-            request.To = template.OtherRecipient;
+            request.To = requestTo;
             request.Subject = template.EmailSubject;
             request.Body = template.EmailMessage;
+
+            if(!string.IsNullOrEmpty(template.CCRecipient))
+            {
+                request.Cc=template.CCRecipient;
+            }
 
             try
             {
@@ -196,6 +205,38 @@ namespace JO.Service.Services
             }
         }
 
+        private async Task<string> GetTemplateRecipientEmailsAsync(EmailTemplate emailTemplate)
+        {
+            ArgumentNullException.ThrowIfNull(emailTemplate);
+
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var roleIds = await context.EmailTemplateRoles
+                .AsNoTracking()
+                .Where(role => role.EmailTemplateId == emailTemplate.Id && role.RoleId.HasValue)
+                .Select(role => role.RoleId!.Value)
+                .Distinct()
+                .ToListAsync();
+
+            var roleNames = await context.VwJOUserRoles
+                .AsNoTracking()
+                .Where(role => roleIds.Contains(role.Id) && role.RoleName != null)
+                .Select(role => role.RoleName!)
+                .Distinct()
+                .ToListAsync();
+
+            var emails = await _accountService.GetUserEmailsByRoleNamesAsync(roleNames);
+            if (!string.IsNullOrWhiteSpace(emailTemplate.OtherRecipient))
+            {
+                emails.AddRange(emailTemplate.OtherRecipient.Split(';',
+                    StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+            }
+
+            return string.Join(";", emails
+                .Where(email => !string.IsNullOrWhiteSpace(email))
+                .Select(email => email.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase));
+        }
+
         private async Task<EmailTemplate> EditedEmailTemplate(int jobOfferId, int workFlowId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -225,6 +266,7 @@ namespace JO.Service.Services
 
             var replacements = new Dictionary<string, string?>
             {
+                ["#JORefNum"] = jobOffer.RefNum,
                 ["#CandidateName"] = candidate.CandidateName,
                 ["#Position"] = candidate.JobPosition,
                 ["#SalaryGrade"] = candidate.GradeName,
@@ -291,7 +333,7 @@ namespace JO.Service.Services
 
             // Replace in one pass so placeholder-like text in candidate data stays literal.
             return Regex.Replace(content,
-                @"#(?:CandidateName|Position|SalaryGrade|Department|Division|CandidateRemarks|HtmlTableOffers|ApprovalLink|SendBack)\b",
+                @"#(?:JORefNum|CandidateName|Position|SalaryGrade|Department|Division|CandidateRemarks|HtmlTableOffers|ApprovalLink|SendBack)\b",
                 match =>
                 {
                     if (match.Value == "#HtmlTableOffers")

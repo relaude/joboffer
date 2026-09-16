@@ -17,6 +17,33 @@ namespace JO.Service.Services
             _dbContext = dbContext;
         }
 
+        public async Task<CandidateEmailTemplate?> GetCandidateEmailTemplate(int templateId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.CandidateEmailTemplate
+                .AsNoTracking()
+                .FirstOrDefaultAsync(template => template.Id == templateId);
+        }
+
+        public async Task UpdateCandidateEmailTemplate(CandidateEmailTemplate emailTemplate)
+        {
+            ArgumentNullException.ThrowIfNull(emailTemplate);
+
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var existingTemplate = await context.CandidateEmailTemplate.FindAsync(emailTemplate.Id)
+                ?? throw new InvalidOperationException("Candidate email template was not found.");
+
+            existingTemplate.EmailSubject = emailTemplate.EmailSubject;
+            existingTemplate.EmailMessage = emailTemplate.EmailMessage;
+            existingTemplate.OtherRecipient = emailTemplate.OtherRecipient;
+            existingTemplate.CCRecipient = emailTemplate.CCRecipient;
+            existingTemplate.IsActive = emailTemplate.IsActive;
+            existingTemplate.ModifiedBy = emailTemplate.ModifiedBy;
+            existingTemplate.ModifiedAt = DateTime.Now;
+
+            await context.SaveChangesAsync();
+        }
+
         public async Task<List<VwEmailTemplate>> GetVwEmailTemplate()
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -50,6 +77,7 @@ namespace JO.Service.Services
             existingTemplate.EmailSubject = emailTemplate.EmailSubject;
             existingTemplate.EmailMessage = emailTemplate.EmailMessage;
             existingTemplate.OtherRecipient = emailTemplate.OtherRecipient;
+            existingTemplate.CCRecipient = emailTemplate.CCRecipient;
             existingTemplate.IsActive = emailTemplate.IsActive;
             existingTemplate.ModifiedBy = emailTemplate.ModifiedBy;
             existingTemplate.ModifiedAt = DateTime.Now;

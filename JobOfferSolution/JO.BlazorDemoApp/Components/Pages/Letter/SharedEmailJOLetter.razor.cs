@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using WYSIWYGTextEditor;
 
-namespace JO.BlazorDemoApp.Components.Pages.TA.Letter
+namespace JO.BlazorDemoApp.Components.Pages.Letter
 {
     public partial class SharedEmailJOLetter
     {
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
+        [Inject] private IHtmlToPDFServices HtmlToPDFServices { get; set; } = default!;
+        [Inject] private ILogger<SharedEmailJOLetter> Logger { get; set; } = default!;
 
         [Parameter, EditorRequired] public VwDboxCandidates Candidate { get; set; } = new();
         [Parameter, EditorRequired] public IReadOnlyList<JOCompanyCompensation> CompensationOptions { get; set; } = [];
@@ -34,6 +36,9 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Letter
         private bool loadLetterBody;
         private bool initialized;
         private bool isReadingAttachment;
+        private bool isConvertingPdf;
+        private string? pdfDownloadUrl;
+        private string? pdfError;
         private FileStreamDto? attachment;
         private string attachmentContentType = string.Empty;
         private string attachmentError = string.Empty;
@@ -65,6 +70,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Letter
             {
                 loadedLetterBody = LetterBody;
                 loadLetterBody = HasLetterContent;
+                pdfDownloadUrl = null;
+                pdfError = null;
             }
         }
 
@@ -83,6 +90,33 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.Letter
         {
             selectedProposedSalary = proposedSalary;
             await OnCompensationOptionChanged.InvokeAsync(proposedSalary);
+        }
+
+        private async Task ConvertToPdfAsync()
+        {
+            if (isConvertingPdf || !HasLetterContent)
+                return;
+
+            isConvertingPdf = true;
+            pdfDownloadUrl = null;
+            pdfError = null;
+            var sourceLetterBody = LetterBody;
+
+            try
+            {
+                var pdfBytes = await HtmlToPDFServices.GeneratePdfAsync(LetterBody);
+                if (string.Equals(sourceLetterBody, LetterBody, StringComparison.Ordinal))
+                    pdfDownloadUrl = $"data:application/pdf;base64,{Convert.ToBase64String(pdfBytes)}";
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to convert the job offer letter to PDF.");
+                pdfError = "The letter could not be converted to PDF. Please try again.";
+            }
+            finally
+            {
+                isConvertingPdf = false;
+            }
         }
 
         private async Task SendTestEmailAsync()

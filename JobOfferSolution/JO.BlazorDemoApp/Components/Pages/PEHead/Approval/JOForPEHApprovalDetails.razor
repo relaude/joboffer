@@ -80,7 +80,6 @@
 
         //For Division Head Approval,PE Head, Approved
         await ApprovalService.JobOfferActionFlowStatus(jobOfferId, 5, 3, 4, userId, approverRemarks);
-        await EmailService.SendJOEmailNotification(jobOfferId, 5);
         
         await AlertService.Success(
             message: "The job offer has been approved successfully.",

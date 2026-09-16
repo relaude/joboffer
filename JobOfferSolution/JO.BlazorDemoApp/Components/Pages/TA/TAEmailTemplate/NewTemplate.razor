@@ -53,9 +53,19 @@
                         }
 
                         <div class="form-group mb-0 pt-3 border-top">
-                            <label class="font-weight-bold text-gray-700" for="recipient-others">Others</label>
+                            <label class="font-weight-bold text-gray-700" for="recipient-others">Others TO Recipients</label>
                             <input id="recipient-others" type="text" class="form-control form-control-sm" @bind="emailTemplate.OtherRecipient" placeholder="Enter email addresses" />
                             <small class="form-text text-muted">Separate multiple addresses with semicolons (;).</small>
+                        </div>
+
+                        <div class="form-group mb-0 mt-3 pt-3 border-top">
+                            <label class="font-weight-bold text-gray-700" for="recipient-cc">CC Recipients</label>
+                            <input id="recipient-cc" type="text" class="form-control form-control-sm"
+                                   @bind="emailTemplate.CCRecipient"
+                                   placeholder="Enter CC email addresses" aria-describedby="recipient-cc-help" />
+                            <small id="recipient-cc-help" class="form-text text-muted">
+                                Optional. Separate multiple addresses with semicolons (;).
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -76,9 +86,59 @@
                                         Placeholder="Write the email message here...">
                             </TextEditor>
                         </div>
+
+                        <fieldset class="border rounded p-3 mt-3 mb-0">
+                            <legend class="w-auto px-2 mb-2 h6 font-weight-bold text-gray-800">Replacements</legend>
+                            <p class="text-muted mb-2">Use these placeholders in the subject and message to include job offer and candidate details.</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <dl class="mb-0">
+                                        <dt><code>#JORefNum</code></dt>
+                                        <dd>JO Reference Number</dd>
+
+                                        <dt><code>#CandidateName</code></dt>
+                                        <dd>Candidate name</dd>
+
+                                        <dt><code>#Position</code></dt>
+                                        <dd>Job position</dd>
+
+                                        <dt><code>#SalaryGrade</code></dt>
+                                        <dd class="mb-md-0">Salary grade name</dd>
+                                    </dl>
+                                </div>
+                                <div class="col-md-6">
+                                    <dl class="mb-0">
+                                        <dt><code>#Department</code></dt>
+                                        <dd>Department</dd>
+
+                                        <dt><code>#Division</code></dt>
+                                        <dd>Division</dd>
+
+                                        <dt><code>#CandidateRemarks</code></dt>
+                                        <dd>Candidate remarks</dd>
+
+                                        <dt><code>#HtmlTableOffers</code></dt>
+                                        <dd class="mb-0">Job Offer Proposed Options</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </fieldset>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <label class="font-weight-bold text-gray-700" for="template-test-recipient">Test Recipient Email Address</label>
+        <div class="d-flex flex-column flex-sm-row align-items-sm-center">
+            <input id="template-test-recipient" type="email" class="form-control mr-sm-2 mb-2 mb-sm-0"
+                   style="width: 100%; max-width: 320px;"
+                   @bind="testEmailRecipient"
+                   placeholder="Enter test recipient email address" autocomplete="email" />
+            <button type="button" class="btn btn-outline-primary text-nowrap" disabled="@isSendingTestMail" @onclick="TestMailAsync">
+                <i class="fas fa-envelope-open-text fa-fw mr-1" aria-hidden="true"></i>Test Mail
+            </button>
         </div>
     </div>
 </div>

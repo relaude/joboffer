@@ -5,6 +5,8 @@ namespace JO.Service.Services.Contracts
 {
     public interface IEmailTemplateService
     {
+        Task<CandidateEmailTemplate?> GetCandidateEmailTemplate(int templateId);
+        Task UpdateCandidateEmailTemplate(CandidateEmailTemplate emailTemplate);
         Task UpdateEmailTemplate(EmailTemplate emailTemplate, HashSet<int> selectedRecipientRoleIds);
         Task<int> CreateEmailTemplate(EmailTemplate emailTemplate, HashSet<int> selectedRecipientRoleIds);
         Task<EmailTemplate> GetEmailTemplate(int templateId);
