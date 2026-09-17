@@ -11,5 +11,6 @@ namespace JO.DataModel.View
         public string? CreatedByName { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public string? ModifiedByName { get; set; }
+        public string? FlowName { get; set; }
     }
 }

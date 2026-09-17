@@ -204,6 +204,10 @@
     <Build Include="dbo\Tables\DBoxAsyncLogs.sql" />
     <Build Include="dbo\Tables\DboxCandidatesRawData.sql" />
     <Build Include="dbo\Stored Procedures\ResetJobOffer.sql" />
+    <Build Include="dbo\Tables\JOHasEmailStatus.sql" />
+    <Build Include="dbo\Tables\JobOfferHasEmail.sql" />
+    <Build Include="dbo\Tables\CandidateEmailTemplate.sql" />
+    <Build Include="dbo\Views\vw_JobOfferHasEmail.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\SeedHybridRbacAbacSampleData.sql" />

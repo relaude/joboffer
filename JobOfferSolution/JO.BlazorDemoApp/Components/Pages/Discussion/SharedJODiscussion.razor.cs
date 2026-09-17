@@ -84,11 +84,8 @@ namespace JO.BlazorDemoApp.Components.Pages.Discussion
                 && proposal.OptionNumber > 0 && proposal.Declined != true))
                 errors.Add("Select an available proposal before saving the discussion.");
 
-            //var validHour = int.TryParse(DiscussionHour, out var hour) && hour is >= 1 and <= 12;
-            //var validMinute = int.TryParse(DiscussionMinute, out var minute) && minute is >= 0 and <= 59;
-            //if (!DiscussionDate.HasValue || !validHour || !validMinute
-            //    || DiscussionPeriod is not ("AM" or "PM"))
-            //    errors.Add("Enter a valid date, an hour from 1 to 12, a minute from 0 to 59, and select AM/PM.");
+            if (!DiscussionDate.HasValue)
+                errors.Add("Enter a valid discussion date.");
 
             //if (RequireDiscussionNotes && string.IsNullOrWhiteSpace(Discussion.Comments))
             //    errors.Add("Discussion Notes are required.");
@@ -109,10 +106,9 @@ namespace JO.BlazorDemoApp.Components.Pages.Discussion
                 return;
             }
 
-            //Discussion.DiscussAt = DiscussionDate!.Value.Date
-            //    .AddHours(hour % 12 + (DiscussionPeriod == "PM" ? 12 : 0))
-            //    .AddMinutes(minute);
-            //boundDiscussAt = Discussion.DiscussAt;
+            // The active date-only input must be copied to the DTO before saving.
+            Discussion.DiscussAt = DiscussionDate!.Value.Date;
+            boundDiscussAt = Discussion.DiscussAt;
 
             await OnSave.InvokeAsync(Discussion);
         }

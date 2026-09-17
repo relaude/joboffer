@@ -1,0 +1,172 @@
+﻿@attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Route(JORoutes.TAPartner.JobOfferPdf)]
+
+<style>
+    .offer-preview {
+        padding: 24px;
+        background: #eef0f3;
+        color: #202936;
+    }
+
+    .offer-letter {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 210mm;
+        margin: 0 auto;
+        padding: 16mm;
+        background: #fff;
+        border: 1px solid #dce1e7;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11pt;
+        line-height: 1.5;
+    }
+
+    .offer-letter-header {
+        border-bottom: 2px solid #243c56;
+        padding-bottom: 18px;
+        margin-bottom: 24px;
+    }
+
+    .offer-letter h1 { margin: 0 0 8px; font-size: 21pt; color: #243c56; }
+    .offer-letter h2 { margin: 0 0 16px; font-size: 17pt; }
+    .offer-letter h3 { margin: 22px 0 10px; font-size: 12pt; color: #243c56; }
+    .offer-letter p { margin: 0 0 12px; }
+    .offer-letter address { margin: 0; font-style: normal; }
+    .offer-letter table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    .offer-letter th, .offer-letter td {
+        border: 1px solid #dce1e7;
+        padding: 8px 12px;
+        text-align: left;
+        vertical-align: top;
+        overflow-wrap: anywhere;
+    }
+    .offer-letter th { width: 36%; font-weight: 600; }
+    .offer-letter .offer-note { font-size: 10pt; color: #526071; }
+    .offer-letter-signatures { display: flex; gap: 32px; margin-top: 32px; }
+    .offer-letter-signatures > div { flex: 1; padding-top: 10px; border-top: 1px solid #778391; }
+    .offer-letter-footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid #dce1e7; }
+
+    @@media (max-width: 600px) {
+        .offer-preview { padding: 8px; }
+        .offer-letter { padding: 20px; }
+        .offer-letter-signatures { flex-direction: column; }
+    }
+
+    @@page { size: A4; margin: 15mm; }
+
+    @@media print {
+        .offer-pdf-actions,
+        body:has(.offer-preview) #accordionSidebar,
+        body:has(.offer-preview) .topbar { display: none !important; }
+        body:has(.offer-preview) #wrapper,
+        body:has(.offer-preview) #content-wrapper,
+        body:has(.offer-preview) #content {
+            display: block !important;
+            width: 100% !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+            background: #fff !important;
+        }
+        body:has(.offer-preview) #content > .container-fluid { padding: 0 !important; }
+        .offer-preview { padding: 0; background: #fff; }
+        .offer-letter { max-width: none; margin: 0; padding: 0; border: 0; font-size: 10pt; }
+        .offer-letter h2, .offer-letter h3 { break-after: avoid; }
+        .offer-letter-header, .offer-letter tr, .offer-letter-signatures { break-inside: avoid; }
+        .offer-letter-signatures { flex-direction: row; }
+        .offer-letter p { orphans: 3; widows: 3; }
+    }
+</style>
+
+<div class="offer-pdf-actions d-flex justify-content-end mb-3">
+    <button type="button" class="btn btn-primary" disabled="@isDownloadingPdf"
+            aria-busy="@(isDownloadingPdf ? "true" : "false")" @onclick="GenerateAndDownloadPdfAsync">
+        @if (isDownloadingPdf)
+        {
+            <span class="spinner-border spinner-border-sm mr-2" aria-hidden="true"></span>
+            <span role="status">Generating PDF...</span>
+        }
+        else
+        {
+            <i class="fas fa-file-pdf fa-fw mr-1" aria-hidden="true"></i><span>Download PDF</span>
+        }
+    </button>
+</div>
+
+@if (pdfDownloadError is not null)
+{
+    <div class="offer-pdf-actions alert alert-danger" role="alert">@pdfDownloadError</div>
+}
+
+<div class="offer-preview">
+    <article class="offer-letter" aria-labelledby="offer-letter-title">
+        @* <header class="offer-letter-header">
+            <h1>Northhaven Creative Solutions, Inc.</h1>
+            <address>
+                125 Sample Avenue, Northhaven Business Park<br />
+                Example City, Philippines 0000<br />
+                Contact number: +63 (0) 000 000 0000
+            </address>
+        </header> *@
+
+        <section aria-labelledby="offer-letter-title">
+            @* <h2 id="offer-letter-title">Job Offer Letter</h2>
+            <p><strong>Date:</strong> 17 September 2026</p>
+            <p>Dear Alex Morgan,</p> *@
+            <p>
+                We are pleased to offer you the position of Software Engineer at Northhaven Creative
+                Solutions, Inc. We look forward to welcoming you to our team. The proposed role and
+                compensation details are outlined below.
+            </p>
+        </section>
+
+        <section aria-labelledby="offer-details-title">
+            <h3 id="offer-details-title">Employment Details</h3>
+            <table aria-labelledby="offer-details-title">
+                <tbody>
+                    <tr><th scope="row">Candidate Name</th><td>Alex Morgan</td></tr>
+                    <tr><th scope="row">Job Position</th><td>Software Engineer</td></tr>
+                    <tr><th scope="row">Company</th><td>Northhaven Creative Solutions, Inc.</td></tr>
+                    <tr><th scope="row">Division</th><td>Technology and Innovation</td></tr>
+                    <tr><th scope="row">Department</th><td>Application Development</td></tr>
+                    <tr><th scope="row">Proposed Start Date</th><td>19 October 2026</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section aria-labelledby="offer-compensation-title">
+            <h3 id="offer-compensation-title">Salary, Allowances, and Incentives</h3>
+            <table aria-labelledby="offer-compensation-title">
+                <tbody>
+                    <tr><th scope="row">Basic Salary</th><td>PHP 65,000.00 per month (gross)</td></tr>
+                    <tr><th scope="row">Transportation Allowance</th><td>PHP 3,000.00 per month</td></tr>
+                    <tr><th scope="row">Meal Allowance</th><td>PHP 2,000.00 per month</td></tr>
+                    <tr><th scope="row">Communication Allowance</th><td>PHP 1,000.00 per month</td></tr>
+                    <tr><th scope="row">Total Monthly Package</th><td><strong>PHP 71,000.00</strong> (excluding incentives)</td></tr>
+                    <tr><th scope="row">Performance Incentive</th><td>Up to PHP 30,000.00 annually, subject to performance targets and company approval.</td></tr>
+                </tbody>
+            </table>
+            <p class="offer-note">Amounts are stated in Philippine pesos. Incentives are conditional and are not included in the fixed monthly package.</p>
+        </section>
+
+        @* <section aria-labelledby="offer-acceptance-title">
+            <h3 id="offer-acceptance-title">Acceptance</h3>
+            <p>Please indicate your acceptance of the details above by signing below. Our recruitment team will coordinate the next steps with you.</p>
+            <div class="offer-letter-signatures">
+                <div>
+                    <strong>Jordan Ellis</strong><br />
+                    Talent Acquisition Manager<br />
+                    Northhaven Creative Solutions, Inc.
+                </div>
+                <div>
+                    <strong>Alex Morgan</strong><br />
+                    Candidate Signature<br />
+                    Date: ____________________
+                </div>
+            </div>
+        </section> *@
+
+        @* <footer class="offer-letter-footer offer-note">
+            Preview only — all names, contact information, and offer details are fictitious.
+        </footer> *@
+    </article>
+</div>

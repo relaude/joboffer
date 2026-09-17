@@ -1,0 +1,68 @@
+﻿@* @attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Route(JORoutes.TAPartner.CandidateEmailPreview)] *@
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="jo-title mb-1">
+            <i class="fas fa-envelope fa-fw text-primary mr-2" aria-hidden="true"></i>Send Email Preview
+        </h6>
+        <small class="text-muted">Compose your email and review the attachments before sending.</small>
+    </div>
+
+    <div class="card-body">
+        <div class="form-group row align-items-center">
+            <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="email-preview-to">To</label>
+            <div class="col-sm-10">
+                <input id="email-preview-to" type="email" multiple class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group row align-items-center">
+            <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="email-preview-cc">CC</label>
+            <div class="col-sm-10">
+                <input id="email-preview-cc" type="email" multiple class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group row align-items-center border-bottom pb-4">
+            <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="email-preview-subject">Subject</label>
+            <div class="col-sm-10">
+                <input id="email-preview-subject" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group mb-4">
+            <label class="font-weight-bold text-gray-700" for="email-preview-message">Message</label>
+            <textarea id="email-preview-message" class="form-control" rows="12"></textarea>
+        </div>
+
+        <fieldset class="mb-0">
+            <legend class="small font-weight-bold text-gray-700 mb-3">
+                <i class="fas fa-paperclip fa-fw mr-1" aria-hidden="true"></i>Attachments
+            </legend>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="border rounded bg-light p-3 h-100">
+                        <label class="font-weight-bold text-gray-700 d-block" for="email-preview-attachment-1">Attachment 1</label>
+                        <input id="email-preview-attachment-1" type="file" class="form-control-file" />
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="border rounded bg-light p-3 h-100">
+                        <label class="font-weight-bold text-gray-700 d-block" for="email-preview-attachment-2">Attachment 2</label>
+                        <input id="email-preview-attachment-2" type="file" class="form-control-file" />
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="card-footer bg-white py-3 text-right">
+        <button type="button" class="btn btn-outline-secondary mr-2">
+            <i class="fas fa-save fa-fw mr-1" aria-hidden="true"></i>Save
+        </button>
+        <button type="button" class="btn btn-primary">
+            <i class="fas fa-paper-plane fa-fw mr-1" aria-hidden="true"></i>Submit for Approval
+        </button>
+    </div>
+</div>

@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Net;
+using System.Text.RegularExpressions;
 
 namespace JO.Service.Services
 {
@@ -20,10 +22,106 @@ namespace JO.Service.Services
             _UtilitiesService = UtilitiesService;
         }
 
+        public async Task<JobOfferHasEmail> GetJobOfferHasEmail(int emailId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JobOfferHasEmail.FindAsync(emailId);
+        }
+
+        public async Task<List<JOHasEmailStatus>> GetJOHasEmailStatus()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JOHasEmailStatus
+                .AsNoTracking()
+                .OrderBy(jo=>jo.DisplayOrder)
+                .ToListAsync();
+        }
+
+        public async Task<List<VwJobOfferHasEmail>> GetVwJobOfferHasEmail()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.VwJobOfferHasEmail.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<int> UpdateJobOfferHasEmail(JobOfferHasEmail jobOfferEmail)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            jobOfferEmail.ModifiedAt = DateTime.Now;
+
+            context.JobOfferHasEmail.Update(jobOfferEmail);
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> SaveDraftJobOfferHasEmail(JobOfferHasEmail jobOfferEmail)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            jobOfferEmail.StatusId = 1; // Draft
+            jobOfferEmail.CreatedAt = DateTime.Now;
+
+            await context.JobOfferHasEmail.AddAsync(jobOfferEmail);
+            await context.SaveChangesAsync();
+
+            return jobOfferEmail.Id;
+        }
+
         public async Task<JobOffers> GetJobOffer(int jobOfferId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.JobOffers.FindAsync(jobOfferId);
+        }
+
+        public async Task<CandidateEmailTemplate> EditedEmailTemplate(int jobOfferId, int templateId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var jobOffer = await context.JobOffers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(offer => offer.Id == jobOfferId);
+            if (jobOffer?.CandidateId is not int candidateId)
+                return new CandidateEmailTemplate();
+
+            var candidate = await context.VwDboxCandidates
+                .AsNoTracking()
+                .FirstOrDefaultAsync(candidate => candidate.Id == candidateId);
+            if (candidate is null)
+                return new CandidateEmailTemplate();
+
+            var template = await context.CandidateEmailTemplate
+                .AsNoTracking()
+                .FirstOrDefaultAsync(template => template.Id == templateId);
+
+            if (template is null)
+                return new CandidateEmailTemplate();
+
+            template.EmailSubject = ReplaceCandidateEmailTokens(template.EmailSubject, jobOffer, candidate, isHtml: false);
+            template.EmailMessage = ReplaceCandidateEmailTokens(template.EmailMessage, jobOffer, candidate, isHtml: true);
+            return template;
+        }
+
+        private static string ReplaceCandidateEmailTokens(string? message, JobOffers jobOffer,
+            VwDboxCandidates candidate, bool isHtml)
+        {
+            var replacements = new Dictionary<string, string?>
+            {
+                ["#JORefNum"] = jobOffer.RefNum,
+                ["#CandidateName"] = candidate.CandidateName,
+                ["#Position"] = candidate.JobPosition,
+                ["#SalaryGrade"] = candidate.GradeName,
+                ["#Company"] = candidate.Company,
+                ["#Department"] = candidate.Department,
+                ["#Division"] = candidate.Division
+            };
+
+            // Replace once so token-like candidate values remain literal, while preserving template HTML.
+            return Regex.Replace(message ?? string.Empty,
+                @"#(?:JORefNum|CandidateName|Position|SalaryGrade|Company|Department|Division)\b",
+                match =>
+                {
+                    var value = replacements[match.Value] ?? string.Empty;
+                    return isHtml ? WebUtility.HtmlEncode(value) : value;
+                });
         }
 
         public async Task<VwJODboxCandidates> GetVwJODboxCandidates(int jobOfferId)

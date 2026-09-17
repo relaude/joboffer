@@ -1,10 +1,12 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using JO.BlazorDemoApp.Components;
 using JO.BlazorDemoApp.Components.Account;
+using JO.BlazorDemoApp.Components.Pages.JobOfferPDF;
 using JO.BlazorDemoApp.Data;
 using JO.DataModel.Identity;
 using JO.Persistence;
 using JO.Service;
+using JO.Service.Constants;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -122,6 +124,10 @@ app.MapStaticAssets();
 
 // Map API controllers
 app.MapControllers();
+
+// Use a normal HTTP request so the PDF renderer receives the current session cookies.
+app.MapGet(JobOfferLetter.PdfDownloadRoute, JobOfferLetter.DownloadPdfAsync)
+    .RequireAuthorization(policy => policy.RequireRole(JOUserRole.TAPartner));
 
 // Map Blazor components with interactive server mode
 app.MapRazorComponents<App>()

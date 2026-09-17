@@ -23,7 +23,7 @@
                 <table class="jo-table">
                     <thead>
                         <tr>
-                            <th scope="col">Email Subject</th>
+                            <th scope="col">Workflow</th>
                             <th scope="col">Status</th>
                             <th scope="col">Created At</th>
                             <th scope="col">Created By</th>
@@ -37,7 +37,7 @@
                             <tr @key="template.Id">
                                 <td>
                                     <a href="@($"{JORoutes.TAPartner.EmailTemplate}/{template.Id}")">
-                                        @(string.IsNullOrWhiteSpace(template.EmailSubject) ? "(No subject)" : template.EmailSubject)
+                                        @(string.IsNullOrWhiteSpace(template.FlowName) ? "(No workflow)" : template.FlowName)
                                     </a>
                                 </td>
                                 <td>@(template.IsActive == true ? "Active" : "Inactive")</td>

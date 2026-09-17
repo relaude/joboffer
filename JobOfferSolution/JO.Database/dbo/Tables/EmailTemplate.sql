@@ -4,6 +4,7 @@
     [EmailSubject]   NVARCHAR (500) NULL,
     [EmailMessage]   NTEXT          NULL,
     [OtherRecipient] NVARCHAR (500) NULL,
+    [CCRecipient]    NVARCHAR (500) NULL,
     [IsActive]       BIT            NULL,
     [CreatedAt]      DATETIME       NULL,
     [CreatedBy]      INT            NULL,

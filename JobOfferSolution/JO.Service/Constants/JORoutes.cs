@@ -69,19 +69,30 @@ namespace JO.Service.Constants
         public static class TAPartner
         {
             public const string Dashboard = PrefixTAPartner + "/dashboard";
+
             public const string Candidates = PrefixTAPartner + "/candidates";
             public const string Candidate = PrefixTAPartner + "/candidate";
+
             public const string Analysis = PrefixTAPartner + "/analysis";
             public const string SendBackAnalysis = PrefixTAPartner + "/sendback-analysis";
             public const string EditAnalysis = PrefixTAPartner + "/edit-analysis";
+
             public const string Discussion = PrefixTAPartner + "/discussion";
             public const string ForNegotiation = PrefixTAPartner + "/negotiation";
+
             public const string JobOfferTracker = PrefixTAPartner + "/joboffer-tracker";
             public const string JobOfferDetails = PrefixTAPartner + "/joboffer-details";
             public const string JobOfferComplete = PrefixTAPartner + "/joboffer-complete";
+            
+            public const string JobOfferPdf = PrefixTAPartner + "/joboffer-pdf";
+            public const string JobOfferEmails = PrefixTAPartner + "/joboffer-emails";
+            public const string JobOfferEmail = PrefixTAPartner + "/joboffer-email";
+            public const string JobOfferNewEmail = PrefixTAPartner + "/joboffer-email/new";
+
             public const string EmailTemplates = PrefixTAPartner + "/email-templates";
             public const string EmailTemplate = PrefixTAPartner + "/email-template";
             public const string CandidateEmailTemplate = PrefixTAPartner + "/candidate/email-template";
+            public const string CandidateEmailPreview = PrefixTAPartner + "/candidate/email-preview";
         }
 
         public static class TALead

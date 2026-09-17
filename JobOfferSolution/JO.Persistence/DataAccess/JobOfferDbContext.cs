@@ -115,8 +115,11 @@ namespace JO.Persistence.DataAccess
         public DbSet<EmailTemplate> EmailTemplate { get; set; }
         public DbSet<EmailTemplateRoles> EmailTemplateRoles { get; set; }
         public DbSet<CandidateEmailTemplate> CandidateEmailTemplate { get; set; }
+        public DbSet<JobOfferHasEmail> JobOfferHasEmail { get; set; }
+        public DbSet<JOHasEmailStatus> JOHasEmailStatus { get; set; }
 
         //Views
+        public DbSet<VwJobOfferHasEmail> VwJobOfferHasEmail { get; set; }
         public DbSet<VwEmailTemplate> VwEmailTemplate { get; set; }
         public DbSet<VwJOApprovalFlow> VwJOApprovalFlow { get; set; }
         public DbSet<VwJOActionLogs> VwJOActionLogs { get; set; }
@@ -154,6 +157,7 @@ namespace JO.Persistence.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Views
+            modelBuilder.Entity<VwJobOfferHasEmail>().HasNoKey().ToView("vw_JobOfferHasEmail");
             modelBuilder.Entity<VwEmailTemplate>().HasNoKey().ToView("vw_EmailTemplate");
             modelBuilder.Entity<VwJOApprovalFlow>().HasNoKey().ToView("vw_JOApprovalFlow");
             modelBuilder.Entity<VwJOActionLogs>().HasNoKey().ToView("vw_JOActionLogs");
