@@ -1,8 +1,10 @@
 using JO.DataModel.Entity;
 using JO.DataModel.DTOs;
 using JO.Service.Services.Contracts;
+using JO.Service.Constants;
 using Microsoft.AspNetCore.Components;
 using WYSIWYGTextEditor;
+using Microsoft.JSInterop;
 
 namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
 {
@@ -14,8 +16,13 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private IEmailService EmailService { get; set; } = default!;
         [Inject] private ILogger<TAEditJOEmail> Logger { get; set; } = default!;
+        [Inject] private IWebHostEnvironment Environment { get; set; } = default!;
+        [Inject] private NavigationManager Navigation { get; set; } = default!;
+        [Inject] private IJSRuntime JS { get; set; } = default!;
 
         [Parameter] public int emailId { get; set; }
+
+        private void GoBack() => Navigation.NavigateTo(JORoutes.TAPartner.JobOfferEmails);
 
         private int userId;
         private JobOfferHasEmail jobOfferEmail = new();
@@ -28,6 +35,63 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
         private bool isSendingTestMail;
         private bool isSaving;
         private string? loadError;
+        private List<JOHasEmailAttach> attachments = new();
+        private bool isDownloadingAttachment;
+        private string? attachmentError;
+
+        private string GetAttachmentPath(JOHasEmailAttach attachment)
+        {
+            if (string.IsNullOrWhiteSpace(attachment.RelativePath) || Path.IsPathRooted(attachment.RelativePath))
+                throw new InvalidOperationException("The attachment path is invalid.");
+
+            var docsRoot = Path.GetFullPath(Path.Combine(Environment.WebRootPath, "docs")) + Path.DirectorySeparatorChar;
+            var path = Path.GetFullPath(Path.Combine(Environment.WebRootPath, attachment.RelativePath.Replace('/', Path.DirectorySeparatorChar)));
+            var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            if (!path.StartsWith(docsRoot, comparison))
+                throw new InvalidOperationException("The attachment must be stored in the docs directory.");
+            return path;
+        }
+
+        private async Task<List<FileStreamDto>> LoadAttachmentFilesAsync()
+        {
+            var files = new List<FileStreamDto>();
+            foreach (var attachment in attachments)
+            {
+                var content = await File.ReadAllBytesAsync(GetAttachmentPath(attachment));
+                files.Add(new FileStreamDto
+                {
+                    Name = attachment.FileName ?? Path.GetFileName(attachment.RelativePath)!,
+                    Content = content,
+                    SizeInKb = (content.Length / 1024d).ToString("N0")
+                });
+            }
+            return files;
+        }
+
+        private async Task DownloadAttachmentAsync(JOHasEmailAttach attachment)
+        {
+            if (isDownloadingAttachment)
+                return;
+            isDownloadingAttachment = true;
+            attachmentError = null;
+            try
+            {
+                await using var module = await JS.InvokeAsync<IJSObjectReference>("import",
+                    Navigation.ToAbsoluteUri("Components/Pages/TA/JobOfferEmail/TANewJOEmail.razor.js").AbsoluteUri);
+                await using var stream = File.OpenRead(GetAttachmentPath(attachment));
+                using var reference = new DotNetStreamReference(stream);
+                await module.InvokeVoidAsync("downloadAttachment", attachment.FileName ?? Path.GetFileName(stream.Name), reference);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to download email attachment {AttachmentId}.", attachment.Id);
+                attachmentError = "Unable to download the attachment. The file may be missing or unavailable.";
+            }
+            finally
+            {
+                isDownloadingAttachment = false;
+            }
+        }
         private bool IsActionDisabled => isLoadingMessage || !isMessageEditorReady || isValidating || isSendingTestMail || isSaving || loadError is not null;
 
         protected override async Task OnParametersSetAsync()
@@ -38,6 +102,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
             messageEditor = null;
             loadError = null;
             jobOfferEmail = new();
+            attachments.Clear();
+            attachmentError = null;
             try
             {
                 userId = await AccountService.GetJobOfferUserId();
@@ -49,6 +115,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
                 }
                 jobOfferEmail = email;
                 jobOfferEmail.ModifiedBy = userId;
+                attachments = await JOLetterService.GetJOHasEmailAttach(emailId);
                 loadMessageContent = true;
             }
             catch (Exception ex)
@@ -96,7 +163,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
 
         private async Task UpdateEmailAsync(int statusId)
         {
-            if (!await ValidateEmailAsync())
+            if (jobOfferEmail.StatusId == 2 || !await ValidateEmailAsync())
                 return;
 
             isSaving = true;
@@ -160,7 +227,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
                 {
                     To = testEmailRecipient.Trim(),
                     Subject = jobOfferEmail.Subject!.Trim(),
-                    Body = jobOfferEmail.EmailMessage ?? string.Empty
+                    Body = jobOfferEmail.EmailMessage ?? string.Empty,
+                    FileStreams = await LoadAttachmentFilesAsync()
                 };
 
                 await EmailService.SendAsync(request);
@@ -169,7 +237,7 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Failed to send the job offer test email.");
-                await AlertService.Error("The test email could not be sent. Please try again.", "Email Error");
+                await AlertService.Error("The test email could not be sent. Check that all attachment files are available and try again.", "Email Error");
             }
             finally
             {

@@ -1,9 +1,12 @@
-using JO.DataModel.Entity;
 using JO.DataModel.DTOs;
+using JO.DataModel.Entity;
 using JO.DataModel.View;
+using JO.Service.Constants;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Components;
 using WYSIWYGTextEditor;
+using Microsoft.JSInterop;
+using System.Globalization;
 
 namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
 {
@@ -14,7 +17,12 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
         [Inject] private IAlertService AlertService { get; set; } = default!;
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
         [Inject] private IEmailService EmailService { get; set; } = default!;
+        [Inject] private NavigationManager Navigation { get; set; } = default!;
         [Inject] private ILogger<TANewJOEmail> Logger { get; set; } = default!;
+        [Inject] private IWebHostEnvironment Environment { get; set; } = default!;
+        [Inject] private IJSRuntime JS { get; set; } = default!;
+        [Inject] private IHtmlToPDFServices HtmlToPDFServices { get; set; } = default!;
+        [Inject] private IJOFileService JOFileService { get; set; } = default!;
 
         [Parameter] public int jobOfferId { get; set; }
 
@@ -32,7 +40,57 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
         private bool isSendingTestMail;
         private bool isSaving;
         private bool hasSavedDraft;
-        private bool IsActionDisabled => isLoadingMessage || !isMessageEditorReady || isValidating || isSendingTestMail || isSaving;
+        private FileStreamDto? benefitsAttachment;
+        private bool isLoadingAttachment;
+        private string? attachmentError;
+        private Shared.JOModal? attachOptionModal;
+        private List<JOCompanyCompensation> compensationOptions = new();
+        private decimal? selectedProposedSalary;
+        private bool isLoadingOptions;
+        private string? optionsLoadError;
+        private ElementReference optionSelect;
+        private bool isAttachingOption;
+        private string? attachOptionError;
+        private readonly List<FileStreamDto> optionAttachments = new();
+        private bool isDownloadingAttachment;
+        private string? attachmentDownloadError;
+
+        private void RemoveOptionAttachment(FileStreamDto attachment)
+        {
+            if (isAttachingOption || isSendingTestMail || isSaving || isValidating)
+                return;
+
+            optionAttachments.Remove(attachment);
+            attachmentDownloadError = null;
+        }
+
+        private async Task DownloadOptionAttachmentAsync(FileStreamDto attachment)
+        {
+            if (isDownloadingAttachment)
+                return;
+
+            isDownloadingAttachment = true;
+            attachmentDownloadError = null;
+            try
+            {
+                await using var module = await JS.InvokeAsync<IJSObjectReference>("import",
+                    Navigation.ToAbsoluteUri("Components/Pages/TA/JobOfferEmail/TANewJOEmail.razor.js").AbsoluteUri);
+                using var stream = new MemoryStream(attachment.Content, writable: false);
+                using var streamReference = new DotNetStreamReference(stream);
+                await module.InvokeVoidAsync("downloadAttachment", attachment.Name, streamReference);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to download attachment {FileName}.", attachment.Name);
+                attachmentDownloadError = "Unable to download the attachment. Please try again.";
+            }
+            finally
+            {
+                isDownloadingAttachment = false;
+            }
+        }
+        private bool IsActionDisabled => isLoadingMessage || !isMessageEditorReady || isValidating || isSendingTestMail || isSaving
+            || isLoadingAttachment || benefitsAttachment is null || isAttachingOption;
 
         protected override async Task OnParametersSetAsync()
         {
@@ -44,9 +102,15 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
             candidate = null;
             jobOfferEmail = new() { JobOfferId = jobOfferId };
             hasSavedDraft = false;
+            attachOptionModal?.Close();
+            compensationOptions.Clear();
+            selectedProposedSalary = null;
+            optionAttachments.Clear();
+            attachmentDownloadError = null;
 
             try
             {
+                await LoadBenefitsAttachmentAsync();
                 userId = await AccountService.GetJobOfferUserId();
                 jobOfferEmail.CreatedBy = userId;
 
@@ -70,6 +134,106 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
             {
                 isLoadingMessage = false;
                 loadMessageContent = true;
+            }
+        }
+
+        private async Task ShowAttachOptionAsync()
+        {
+            if (isLoadingOptions || isAttachingOption)
+                return;
+
+            selectedProposedSalary = null;
+            compensationOptions.Clear();
+            optionsLoadError = null;
+            attachOptionError = null;
+            isLoadingOptions = true;
+            attachOptionModal?.Show();
+            var requestedJobOfferId = jobOfferId;
+            try
+            {
+                var options = await JOLetterService.GetJOCompanyCompensation(requestedJobOfferId);
+                if (requestedJobOfferId == jobOfferId)
+                    compensationOptions = options.Where(option => option.ProposedSalary.HasValue).ToList();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to load compensation options for job offer {JobOfferId}.", requestedJobOfferId);
+                if (requestedJobOfferId == jobOfferId)
+                    optionsLoadError = "Unable to load options. Please try again.";
+            }
+            finally
+            {
+                isLoadingOptions = false;
+            }
+        }
+
+        private async Task AttachOptionAsync()
+        {
+            if (isAttachingOption || isLoadingOptions || selectedProposedSalary is not decimal salary)
+                return;
+
+            isAttachingOption = true;
+            attachOptionError = null;
+            var requestedJobOfferId = jobOfferId;
+            try
+            {
+                await using var module = await JS.InvokeAsync<IJSObjectReference>("import",
+                    Navigation.ToAbsoluteUri("Components/Pages/TA/JobOfferEmail/TANewJOEmail.razor.js").AbsoluteUri);
+                // Read the selected row as well as its salary, since options can share the same salary.
+                var optionId = await module.InvokeAsync<int>("getSelectedOptionId", optionSelect);
+                var option = compensationOptions.First(item => item.Id == optionId && item.ProposedSalary == salary);
+                var url = Navigation.ToAbsoluteUri(JORoutes.TAPartner.JobOfferPdf.TrimStart('/')
+                    + $"/{requestedJobOfferId.ToString(CultureInfo.InvariantCulture)}/{salary.ToString(CultureInfo.InvariantCulture)}").AbsoluteUri;
+                var pdfBytes = await HtmlToPDFServices.GeneratePdfFromUrlAsync(
+                    url, baseUrl: Navigation.BaseUri, readySelector: ".offer-letter[data-ready='true']");
+                if (requestedJobOfferId != jobOfferId)
+                    return;
+
+                var fileName = $"ProposedOption{option.OptionNumber}.pdf";
+                optionAttachments.RemoveAll(file => file.Name == fileName);
+                optionAttachments.Add(new FileStreamDto
+                {
+                    Name = fileName,
+                    Content = pdfBytes,
+                    SizeInKb = (pdfBytes.Length / 1024d).ToString("N0")
+                });
+                attachOptionModal?.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to attach the option PDF for job offer {JobOfferId}.", requestedJobOfferId);
+                attachOptionError = "Unable to generate and attach the option PDF. Please try again.";
+            }
+            finally
+            {
+                isAttachingOption = false;
+            }
+        }
+
+        private async Task LoadBenefitsAttachmentAsync()
+        {
+            isLoadingAttachment = true;
+            attachmentError = null;
+            benefitsAttachment = null;
+            try
+            {
+                var path = Path.Combine(Environment.WebRootPath, "docs", "benefits.pdf");
+                var content = await File.ReadAllBytesAsync(path);
+                benefitsAttachment = new FileStreamDto
+                {
+                    Name = "benefits.pdf",
+                    SizeInKb = (content.Length / 1024d).ToString("N0"),
+                    Content = content
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to load the benefits attachment.");
+                attachmentError = "Unable to attach benefits.pdf. Please try again.";
+            }
+            finally
+            {
+                isLoadingAttachment = false;
             }
         }
 
@@ -104,6 +268,54 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
                 model.EmailMessage = html;
         }
 
+        private async Task SaveAttachmentsAsync()
+        {
+            if (jobOfferEmail.Id <= 0 || string.IsNullOrWhiteSpace(jobOffer?.RefNum))
+                throw new InvalidOperationException("A saved email and job offer reference number are required to save attachments.");
+
+            var attachments = new List<FileStreamDto>(optionAttachments);
+            if (benefitsAttachment is not null)
+                attachments.Insert(0, benefitsAttachment);
+
+            var records = new List<JOHasEmailAttach>();
+            var savedPaths = new List<string>();
+            try
+            {
+                foreach (var attachment in attachments)
+                {
+                    var storedName = $"{Guid.NewGuid():N}_{attachment.Name}";
+                    var path = await JOFileService.SaveJobOfferFileAsync(attachment.Content, jobOffer.RefNum, storedName);
+                    savedPaths.Add(path);
+                    records.Add(new JOHasEmailAttach
+                    {
+                        JOEmailId = jobOfferEmail.Id,
+                        JobOfferId = jobOfferId,
+                        FileName = attachment.Name,
+                        RelativePath = Path.GetRelativePath(Environment.WebRootPath, path).Replace('\\', '/')
+                    });
+                }
+
+                // Insert the batch only after every physical file has been saved.
+                await JOLetterService.AddRangeJOHasEmailAttach(records);
+            }
+            catch
+            {
+                // These paths belong only to this save attempt, never to an earlier draft.
+                foreach (var path in savedPaths)
+                {
+                    try
+                    {
+                        File.Delete(path);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWarning(ex, "Unable to clean up attachment {Path} after a failed save.", path);
+                    }
+                }
+                throw;
+            }
+        }
+
         private async Task SaveAsync()
         {
             if (hasSavedDraft || !await ValidateEmailAsync())
@@ -115,14 +327,21 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
                 if (!await AlertService.Confirm("Save this job offer email as a draft?", "Save Draft", "Cancel"))
                     return;
 
-                jobOfferEmail.Id = await JOLetterService.SaveDraftJobOfferHasEmail(jobOfferEmail);
+                if (jobOfferEmail.Id == 0)
+                    jobOfferEmail.Id = await JOLetterService.SaveDraftJobOfferHasEmail(jobOfferEmail);
+                else
+                    await JOLetterService.UpdateJobOfferHasEmail(jobOfferEmail);
+
+                await SaveAttachmentsAsync();
                 hasSavedDraft = true;
                 await AlertService.Success("Job offer email draft saved successfully.", "Draft Saved");
+
+                Navigation.NavigateTo($"{JORoutes.TAPartner.JobOfferEmail}/{jobOfferEmail.Id}");
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Failed to save the job offer email draft.");
-                await AlertService.Error("The draft could not be saved. Please try again.", "Save Error");
+                await AlertService.Error("The email and its attachments could not be fully saved. Please retry Save.", "Save Error");
             }
             finally
             {
@@ -163,7 +382,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOfferEmail
                 {
                     To = testEmailRecipient.Trim(),
                     Subject = jobOfferEmail.Subject!.Trim(),
-                    Body = jobOfferEmail.EmailMessage ?? string.Empty
+                    Body = jobOfferEmail.EmailMessage ?? string.Empty,
+                    FileStreams = benefitsAttachment is null ? [.. optionAttachments] : [benefitsAttachment, .. optionAttachments]
                 };
 
                 await EmailService.SendAsync(request);

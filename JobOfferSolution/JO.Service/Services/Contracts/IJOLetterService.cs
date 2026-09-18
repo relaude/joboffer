@@ -24,8 +24,13 @@ namespace JO.Service.Services.Contracts
         Task<VwJODboxCandidates> GetVwJODboxCandidates(int jobOfferId);
         void UpdateItemLetterPlaceHolder(List<JOItemLetter> joItemLetter, VwDboxCandidates candidate, decimal proposedSalary);
         Task<List<VwJobOfferHasEmail>> GetVwJobOfferHasEmail();
+        Task<List<VwJobOfferHasEmail>> GetApproverJobOfferHasEmail();
         Task<List<JOHasEmailStatus>> GetJOHasEmailStatus();
         Task<JobOfferHasEmail> GetJobOfferHasEmail(int emailId);
         Task<int> UpdateJobOfferHasEmail(JobOfferHasEmail jobOfferEmail);
+        Task<List<JobOffers>> GetJobOffersForDiscussion();
+        Task<int> AddRangeJOHasEmailAttach(List<JOHasEmailAttach> emailAttach);
+        Task<List<JOHasEmailAttach>> GetJOHasEmailAttach(int emailId);
+        Task AproveJobOfferHasEmail(int emailId);
     }
 }

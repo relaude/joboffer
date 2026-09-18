@@ -1,4 +1,4 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Authorize(Roles = JOUserRole.TAPartner)]
 @attribute [Route(JORoutes.TAPartner.JobOfferEmails)]
 
 <div class="card shadow mb-4 small">
@@ -38,7 +38,10 @@
 
 <div class="card shadow mb-4 small">
     <div class="card-header py-3">
-        <h6 class="jo-title mb-1">Job Offer Emails</h6>
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="jo-title mb-1">Job Offer Emails</h6>
+            <button type="button" class="btn btn-primary btn-sm" @onclick="ShowNewJOEmailAsync" disabled="@isLoadingJobOffers">New JO Email</button>
+        </div>
     </div>
     <div class="card-body">
         @if (loadError is not null)
@@ -83,7 +86,7 @@
                         @foreach (var email in pagedEmails.Data)
                         {
                             <tr @key="email.Id">
-                                <td><a href="@($"{JORoutes.TAPartner.JobOfferEmail}/{email.Id}")">@DisplayValue(email.JORefNum)</a></td>
+                                <td><a href="@GetEmailUrl(email)">@DisplayValue(email.JORefNum)</a></td>
                                 <td class="jo-title">@DisplayValue(email.CandidateName)</td>
                                 <td>@DisplayValue(email.StatusName)</td>
                                 <td>@DisplayValue(email.CreatedByName)</td>
@@ -106,3 +109,41 @@
         </div>
     </div>
 </div>
+
+<JOModal @ref="newJOEmailModal" Title="New JO Email">
+    <ChildContent>
+        @if (isLoadingJobOffers)
+        {
+            <p class="text-muted" role="status">Loading job offers for discussion...</p>
+        }
+        else if (jobOffersLoadError is not null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @jobOffersLoadError
+                <button type="button" class="btn btn-outline-danger btn-sm ml-2" @onclick="ShowNewJOEmailAsync">Try again</button>
+            </div>
+        }
+        else if (jobOffersForDiscussion.Count == 0)
+        {
+            <p class="text-muted" role="status">No job offers are available for discussion.</p>
+        }
+        else
+        {
+            <div class="form-group">
+                <label for="new-email-job-offer">Job offer for discussion</label>
+                <select id="new-email-job-offer" class="custom-select custom-select-sm" @bind="selectedJobOfferId">
+                    <option value="">Select a job offer</option>
+                    @foreach (var jobOffer in jobOffersForDiscussion)
+                    {
+                        <option value="@jobOffer.Id">@(string.IsNullOrWhiteSpace(jobOffer.RefNum) ? $"Job offer #{jobOffer.Id}" : jobOffer.RefNum)</option>
+                    }
+                </select>
+            </div>
+        }
+    </ChildContent>
+    <FooterTemplate>
+        <button type="button" class="btn btn-secondary btn-sm" @onclick="() => newJOEmailModal?.Close()">Close</button>
+        <button type="button" class="btn btn-primary btn-sm" @onclick="ContinueToNewJOEmail"
+                disabled="@(isLoadingJobOffers || jobOffersLoadError is not null || !selectedJobOfferId.HasValue)">Continue</button>
+    </FooterTemplate>
+</JOModal>

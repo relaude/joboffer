@@ -22,10 +22,43 @@ namespace JO.Service.Services
             _UtilitiesService = UtilitiesService;
         }
 
+        public async Task<List<JOHasEmailAttach>> GetJOHasEmailAttach(int emailId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JOHasEmailAttach
+                .AsNoTracking()
+                .Where(jo => jo.JOEmailId == emailId)
+                .OrderBy(jo => jo.Id)
+                .ToListAsync();
+        }
+
+        public async Task<int> AddRangeJOHasEmailAttach(List<JOHasEmailAttach> emailAttach)
+        {
+            ArgumentNullException.ThrowIfNull(emailAttach);
+            if (emailAttach.Count == 0)
+                return 0;
+
+            await using var context = await _dbContext.CreateDbContextAsync();
+            await context.JOHasEmailAttach.AddRangeAsync(emailAttach);
+            return await context.SaveChangesAsync();
+        }
+
         public async Task<JobOfferHasEmail> GetJobOfferHasEmail(int emailId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.JobOfferHasEmail.FindAsync(emailId);
+        }
+
+        public async Task AproveJobOfferHasEmail(int emailId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var updated = await context.JobOfferHasEmail
+                .Where(email => email.Id == emailId && email.StatusId == 2)
+                .ExecuteUpdateAsync(update => update
+                    .SetProperty(email => email.StatusId, 3)
+                    .SetProperty(email => email.ModifiedAt, DateTime.Now));
+            if (updated == 0)
+                throw new InvalidOperationException("The email was not found or is no longer awaiting approval.");
         }
 
         public async Task<List<JOHasEmailStatus>> GetJOHasEmailStatus()
@@ -37,10 +70,32 @@ namespace JO.Service.Services
                 .ToListAsync();
         }
 
+        public async Task<List<JobOffers>> GetJobOffersForDiscussion()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JobOffers
+                .AsNoTracking()
+                .Where(jo => jo.WorkFlowId == 8) // For Discussion
+                .OrderBy(jo => jo.RefNum)
+                .ThenBy(jo => jo.Id)
+                .ToListAsync();
+        }
+
         public async Task<List<VwJobOfferHasEmail>> GetVwJobOfferHasEmail()
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.VwJobOfferHasEmail.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<VwJobOfferHasEmail>> GetApproverJobOfferHasEmail()
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            int?[] statusIds = { 2, 3 };
+            return await context.VwJobOfferHasEmail
+                .AsNoTracking()
+                .Where(jo=> statusIds.Contains(jo.StatusId))
+                .ToListAsync();
         }
 
         public async Task<int> UpdateJobOfferHasEmail(JobOfferHasEmail jobOfferEmail)
@@ -147,7 +202,9 @@ namespace JO.Service.Services
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.JOCompanyCompensation
                 .AsNoTracking()
-                .Where(jo => jo.JobOfferId == jobOfferId)
+                .Where(jo => jo.JobOfferId == jobOfferId && jo.OptionNumber > 0)
+                .OrderBy(jo => jo.OptionNumber)
+                .ThenBy(jo => jo.Id)
                 .ToListAsync();
         }
 

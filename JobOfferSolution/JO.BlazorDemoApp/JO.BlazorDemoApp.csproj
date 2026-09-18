@@ -9,6 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\docs\**" />
+    <Compile Remove="wwwroot\excel\**" />
+    <Content Remove="wwwroot\docs\**" />
+    <Content Remove="wwwroot\excel\**" />
+    <EmbeddedResource Remove="wwwroot\docs\**" />
+    <EmbeddedResource Remove="wwwroot\excel\**" />
+    <None Remove="wwwroot\docs\**" />
+    <None Remove="wwwroot\excel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Data\ApplicationUser.cs" />
   </ItemGroup>
 
@@ -34,7 +45,6 @@
   <ItemGroup>
     <Folder Include="Components\Pages\Pagination\" />
     <Folder Include="Components\Pages\TA\Dashboard\" />
-    <Folder Include="wwwroot\excel\" />
   </ItemGroup>
 
 </Project>

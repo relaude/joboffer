@@ -117,6 +117,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<CandidateEmailTemplate> CandidateEmailTemplate { get; set; }
         public DbSet<JobOfferHasEmail> JobOfferHasEmail { get; set; }
         public DbSet<JOHasEmailStatus> JOHasEmailStatus { get; set; }
+        public DbSet<JOHasEmailAttach> JOHasEmailAttach { get; set; }
 
         //Views
         public DbSet<VwJobOfferHasEmail> VwJobOfferHasEmail { get; set; }

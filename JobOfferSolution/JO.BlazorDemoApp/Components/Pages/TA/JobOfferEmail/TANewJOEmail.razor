@@ -1,4 +1,4 @@
-﻿@attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Authorize(Roles = JOUserRole.TAPartner)]
 @attribute [Route(JORoutes.TAPartner.JobOfferNewEmail + "/{jobOfferId:int}")]
 
 <div class="card shadow mb-4 small">
@@ -52,25 +52,50 @@
             }
         </div>
 
-        @* <fieldset class="mb-0">
+        <fieldset class="mb-0">
             <legend class="small font-weight-bold text-gray-700 mb-3">
                 <i class="fas fa-paperclip fa-fw mr-1" aria-hidden="true"></i>Attachments
             </legend>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <div class="border rounded bg-light p-3 h-100">
-                        <label class="font-weight-bold text-gray-700 d-block" for="email-preview-attachment-1">Attachment 1</label>
-                        <input id="email-preview-attachment-1" type="file" class="form-control-file" />
-                    </div>
+            <button type="button" class="btn btn-outline-primary btn-sm mb-3" @onclick="ShowAttachOptionAsync"
+                    disabled="@(isLoadingMessage || isLoadingOptions || isSaving || isSendingTestMail || isAttachingOption)">Attach Option</button>
+            @if (isLoadingAttachment)
+            {
+                <p class="text-muted" role="status">Loading benefits.pdf...</p>
+            }
+            else if (attachmentError is not null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @attachmentError
+                    <button type="button" class="btn btn-outline-danger btn-sm ml-2" @onclick="LoadBenefitsAttachmentAsync">Try again</button>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <div class="border rounded bg-light p-3 h-100">
-                        <label class="font-weight-bold text-gray-700 d-block" for="email-preview-attachment-2">Attachment 2</label>
-                        <input id="email-preview-attachment-2" type="file" class="form-control-file" />
-                    </div>
+            }
+            else if (benefitsAttachment is not null)
+            {
+                <div class="border rounded bg-light p-3">
+                    <i class="fas fa-file-pdf text-danger mr-2" aria-hidden="true"></i>
+                    <a href="jofiles/benefits.pdf" target="_blank" rel="noopener noreferrer">@benefitsAttachment.Name</a>
+                    <span class="text-muted ml-2">(@benefitsAttachment.SizeInKb KB)</span>
+                    <span class="text-muted ml-2">Automatically attached</span>
                 </div>
-            </div>
-        </fieldset> *@
+            }
+            @foreach (var attachment in optionAttachments)
+            {
+                <div class="border rounded bg-light p-3 mt-2" @key="attachment.Name">
+                    <i class="fas fa-file-pdf text-danger mr-2" aria-hidden="true"></i>
+                    <button type="button" class="btn btn-link p-0 align-baseline" disabled="@isDownloadingAttachment"
+                            @onclick="() => DownloadOptionAttachmentAsync(attachment)" title="Download PDF for review">@attachment.Name</button>
+                    <span class="text-muted ml-2">(@attachment.SizeInKb KB)</span>
+                    <button type="button" class="btn btn-outline-danger btn-sm ml-2"
+                            disabled="@(isAttachingOption || isSendingTestMail || isSaving || isValidating)"
+                            aria-label="@($"Remove {attachment.Name}")"
+                            @onclick="() => RemoveOptionAttachment(attachment)">Remove</button>
+                </div>
+            }
+            @if (attachmentDownloadError is not null)
+            {
+                <div class="alert alert-danger mt-2" role="alert">@attachmentDownloadError</div>
+            }
+        </fieldset>
     </div>
 
     <div class="card-footer bg-white py-3">
@@ -95,16 +120,61 @@
                 @if (isSaving)
                 {
                     <span class="spinner-border spinner-border-sm mr-1" aria-hidden="true"></span>
-                    <span role="status">Saving...</span>
+                    <span role="status">Saving email and attachments...</span>
                 }
                 else
                 {
                     <i class="fas fa-save fa-fw mr-1" aria-hidden="true"></i><span>@(hasSavedDraft ? "Draft Saved" : "Save")</span>
                 }
             </button>
-            <button type="button" class="btn btn-primary text-nowrap" disabled="@IsActionDisabled" @onclick="SubmitForApprovalAsync">
+            @* <button type="button" class="btn btn-primary text-nowrap" disabled="@IsActionDisabled" @onclick="SubmitForApprovalAsync">
                 <i class="fas fa-paper-plane fa-fw mr-1" aria-hidden="true"></i>Submit for Approval
-            </button>
+            </button> *@
         </div>
     </div>
 </div>
+
+<JOModal @ref="attachOptionModal" Title="Attach Option">
+    <ChildContent>
+    @if (isLoadingOptions)
+    {
+        <p class="text-muted" role="status">Loading options...</p>
+    }
+    else if (optionsLoadError is not null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @optionsLoadError
+            <button type="button" class="btn btn-outline-danger btn-sm ml-2" @onclick="ShowAttachOptionAsync">Try again</button>
+        </div>
+    }
+    else if (compensationOptions.Count == 0)
+    {
+        <p class="text-muted" role="status">No options are available for this job offer.</p>
+    }
+    else
+    {
+        <div class="form-group">
+            <label for="email-attachment-option">Option</label>
+            <select id="email-attachment-option" class="custom-select custom-select-sm" @ref="optionSelect"
+                    @bind="selectedProposedSalary" disabled="@isAttachingOption">
+                <option value="">Select an option</option>
+                @foreach (var option in compensationOptions)
+                {
+                    <option value="@option.ProposedSalary" data-option-id="@option.Id">Option @option.OptionNumber - @UtilitiesService.ToPeso(option.ProposedSalary)</option>
+                }
+            </select>
+        </div>
+    }
+    @if (attachOptionError is not null)
+    {
+        <div class="alert alert-danger" role="alert">@attachOptionError</div>
+    }
+    </ChildContent>
+    <FooterTemplate>
+        <button type="button" class="btn btn-secondary btn-sm" @onclick="() => attachOptionModal?.Close()">Close</button>
+        <button type="button" class="btn btn-primary btn-sm" @onclick="AttachOptionAsync"
+                disabled="@(isAttachingOption || isLoadingOptions || optionsLoadError is not null || !selectedProposedSalary.HasValue)">
+            @(isAttachingOption ? "Generating PDF..." : "Attach")
+        </button>
+    </FooterTemplate>
+</JOModal>

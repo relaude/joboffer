@@ -1,5 +1,5 @@
 ﻿@attribute [Authorize(Roles = JOUserRole.TAPartner)]
-@attribute [Route(JORoutes.TAPartner.JobOfferPdf)]
+@attribute [Route(JORoutes.TAPartner.JobOfferPdf + "/{jobOfferId:int}/{proposedSalary:decimal}")]
 
 <style>
     .offer-preview {
@@ -78,7 +78,7 @@
 </style>
 
 <div class="offer-pdf-actions d-flex justify-content-end mb-3">
-    <button type="button" class="btn btn-primary" disabled="@isDownloadingPdf"
+    <button type="button" class="btn btn-primary" disabled="@(isDownloadingPdf || isLoadingLetter || letterLoadError is not null || string.IsNullOrWhiteSpace(letterBody))"
             aria-busy="@(isDownloadingPdf ? "true" : "false")" @onclick="GenerateAndDownloadPdfAsync">
         @if (isDownloadingPdf)
         {
@@ -98,7 +98,7 @@
 }
 
 <div class="offer-preview">
-    <article class="offer-letter" aria-labelledby="offer-letter-title">
+    <article class="offer-letter" aria-label="Job offer letter" data-ready="@(!isLoadingLetter && letterLoadError is null && !string.IsNullOrWhiteSpace(letterBody) ? "true" : "false")">
         @* <header class="offer-letter-header">
             <h1>Northhaven Creative Solutions, Inc.</h1>
             <address>
@@ -108,45 +108,26 @@
             </address>
         </header> *@
 
-        <section aria-labelledby="offer-letter-title">
-            @* <h2 id="offer-letter-title">Job Offer Letter</h2>
-            <p><strong>Date:</strong> 17 September 2026</p>
-            <p>Dear Alex Morgan,</p> *@
-            <p>
-                We are pleased to offer you the position of Software Engineer at Northhaven Creative
-                Solutions, Inc. We look forward to welcoming you to our team. The proposed role and
-                compensation details are outlined below.
-            </p>
-        </section>
-
         <section aria-labelledby="offer-details-title">
-            <h3 id="offer-details-title">Employment Details</h3>
-            <table aria-labelledby="offer-details-title">
-                <tbody>
-                    <tr><th scope="row">Candidate Name</th><td>Alex Morgan</td></tr>
-                    <tr><th scope="row">Job Position</th><td>Software Engineer</td></tr>
-                    <tr><th scope="row">Company</th><td>Northhaven Creative Solutions, Inc.</td></tr>
-                    <tr><th scope="row">Division</th><td>Technology and Innovation</td></tr>
-                    <tr><th scope="row">Department</th><td>Application Development</td></tr>
-                    <tr><th scope="row">Proposed Start Date</th><td>19 October 2026</td></tr>
-                </tbody>
-            </table>
+            <h2 id="offer-details-title" class="sr-only">Offer details</h2>
+            @if (isLoadingLetter)
+            {
+                <p role="status">Loading job offer letter...</p>
+            }
+            else if (letterLoadError is not null)
+            {
+                <p role="alert">@letterLoadError</p>
+            }
+            else if (string.IsNullOrWhiteSpace(letterBody))
+            {
+                <p role="status">No letter content is available for this job offer.</p>
+            }
+            else
+            {
+                @((MarkupString)letterBody)
+            }
         </section>
 
-        <section aria-labelledby="offer-compensation-title">
-            <h3 id="offer-compensation-title">Salary, Allowances, and Incentives</h3>
-            <table aria-labelledby="offer-compensation-title">
-                <tbody>
-                    <tr><th scope="row">Basic Salary</th><td>PHP 65,000.00 per month (gross)</td></tr>
-                    <tr><th scope="row">Transportation Allowance</th><td>PHP 3,000.00 per month</td></tr>
-                    <tr><th scope="row">Meal Allowance</th><td>PHP 2,000.00 per month</td></tr>
-                    <tr><th scope="row">Communication Allowance</th><td>PHP 1,000.00 per month</td></tr>
-                    <tr><th scope="row">Total Monthly Package</th><td><strong>PHP 71,000.00</strong> (excluding incentives)</td></tr>
-                    <tr><th scope="row">Performance Incentive</th><td>Up to PHP 30,000.00 annually, subject to performance targets and company approval.</td></tr>
-                </tbody>
-            </table>
-            <p class="offer-note">Amounts are stated in Philippine pesos. Incentives are conditional and are not included in the fixed monthly package.</p>
-        </section>
 
         @* <section aria-labelledby="offer-acceptance-title">
             <h3 id="offer-acceptance-title">Acceptance</h3>

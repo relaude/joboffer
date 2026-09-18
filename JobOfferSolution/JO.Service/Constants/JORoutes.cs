@@ -88,6 +88,7 @@ namespace JO.Service.Constants
             public const string JobOfferEmails = PrefixTAPartner + "/joboffer-emails";
             public const string JobOfferEmail = PrefixTAPartner + "/joboffer-email";
             public const string JobOfferNewEmail = PrefixTAPartner + "/joboffer-email/new";
+            public const string JobOfferSendEmail = PrefixTAPartner + "/joboffer-email/send";
 
             public const string EmailTemplates = PrefixTAPartner + "/email-templates";
             public const string EmailTemplate = PrefixTAPartner + "/email-template";
@@ -109,6 +110,8 @@ namespace JO.Service.Constants
             public const string Discussion = PrefixTALead + "/discussion";
             public const string ForNegotiation = PrefixTALead + "/negotiation";
             public const string JobOfferComplete = PrefixTALead + "/joboffer-complete";
+            public const string JobOfferEmails = PrefixTALead + "/joboffer-emails";
+            public const string JobOfferEmail = PrefixTALead + "/joboffer-email";
         }
 
         public static class HROD

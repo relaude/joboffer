@@ -19,6 +19,7 @@ namespace JO.Service
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ICandidateService, CandidateService>();
             services.AddScoped<IFileUploadService, FileUploadService>();
+            services.AddScoped<IJOFileService, JOFileService>();
             services.AddScoped<IDropDownListService, DropDownListService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ISingleSignOnService, SingleSignOnService>();

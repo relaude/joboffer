@@ -1,0 +1,109 @@
+@attribute [Authorize(Roles = JOUserRole.TALead)]
+@attribute [Route(JORoutes.TALead.JobOfferEmails)]
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="jo-title mb-1">Search job offer emails</h6>
+        <small class="text-muted">Filter by status or search any part of a JO reference number or candidate name.</small>
+    </div>
+    <div class="card-body">
+        <form @onsubmit="SearchEmails" @onsubmit:preventDefault>
+            <fieldset disabled="@(isLoading || loadError is not null)">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="email-status">Status</label>
+                        <select id="email-status" class="custom-select custom-select-sm" @bind="statusId">
+                            @foreach (var status in statuses)
+                            {
+                                <option value="@status.Id">@status.StatusName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="email-jo-reference">JO reference number</label>
+                        <input id="email-jo-reference" class="form-control form-control-sm" @bind="joRefNumSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="email-candidate-name">Candidate name</label>
+                        <input id="email-candidate-name" class="form-control form-control-sm" @bind="candidateNameSearch" @bind:event="oninput" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm mr-2">Search</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ClearSearch">Clear</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="jo-title mb-1">Job Offer Emails for Approval</h6>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (loadError is not null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @loadError
+                <button type="button" class="btn btn-outline-danger btn-sm ml-2" @onclick="LoadEmailsAsync" disabled="@isLoading">Try again</button>
+            </div>
+        }
+        <div class="table-responsive" aria-busy="@(isLoading ? "true" : "false")">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th scope="col">JO reference number</th>
+                        <th scope="col">Candidate</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Created by</th>
+                        <th scope="col">Created at</th>
+                        <th scope="col">Modified by</th>
+                        <th scope="col">Modified at</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (isLoading)
+                    {
+                        <tr><td colspan="7" class="text-center text-muted py-4" role="status">Loading job offer emails...</td></tr>
+                    }
+                    else if (loadError is not null)
+                    {
+                        <tr><td colspan="7" class="text-center text-muted py-4">Job offer emails could not be loaded.</td></tr>
+                    }
+                    else if (emails.Count == 0)
+                    {
+                        <tr><td colspan="7" class="text-center text-muted py-4" role="status">No job offer emails found.</td></tr>
+                    }
+                    else if (pagedEmails.TotalCount == 0)
+                    {
+                        <tr><td colspan="7" class="text-center text-muted py-4" role="status">No emails match your search. Change or clear the filters.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var email in pagedEmails.Data)
+                        {
+                            <tr @key="email.Id">
+                                <td><a href="@GetEmailUrl(email)">@DisplayValue(email.JORefNum)</a></td>
+                                <td class="jo-title">@DisplayValue(email.CandidateName)</td>
+                                <td>@DisplayValue(email.StatusName)</td>
+                                <td>@DisplayValue(email.CreatedByName)</td>
+                                <td>@DisplayDate(email.CreatedAt)</td>
+                                <td>@DisplayValue(email.ModifiedByName)</td>
+                                <td>@DisplayDate(email.ModifiedAt)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7">
+                            <Pagination Result="@pagedEmails" PageChanged="ChangePage" PageSizeChanged="ChangePageSize"
+                                        Disabled="@(isLoading || loadError is not null)" AriaLabel="Job offer email pages" />
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
