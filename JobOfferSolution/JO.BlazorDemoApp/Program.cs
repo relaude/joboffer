@@ -1,4 +1,5 @@
 using CurrieTechnologies.Razor.SweetAlert2;
+using Hangfire;
 using JO.BlazorDemoApp.Components;
 using JO.BlazorDemoApp.Components.Account;
 using JO.BlazorDemoApp.Components.Pages.JobOfferPDF;
@@ -88,6 +89,25 @@ builder.Services.AddJobOfferServices(builder.Configuration);
 
 
 #region ====================== THIRD-PARTY SERVICES ======================
+
+// Store background jobs in the same environment-specific SQL Server database.
+builder.Services.AddHangfire((sp, options) =>
+{
+    var appSettings = sp.GetRequiredService<IAppSettings>();
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var connectionStringName = appSettings.GetConnectionStringName();
+    var connectionString = configuration.GetConnectionString(connectionStringName)
+        ?? throw new InvalidOperationException(
+            $"Connection string '{connectionStringName}' not found.");
+
+    options.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseSqlServerStorage(connectionString);
+});
+
+// Run the background job processor as a hosted service.
+builder.Services.AddHangfireServer();
 
 // SweetAlert2 for Blazor
 builder.Services.AddSweetAlert2();

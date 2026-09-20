@@ -1,4 +1,5 @@
 ﻿using JO.DataModel.DTOs;
+using Hangfire;
 using JO.DataModel.Entity;
 using JO.Persistence.DataAccess;
 using JO.Service.Constants;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using JO.Service.Enum;
 
 namespace JO.Service.Services
 {
@@ -14,10 +16,14 @@ namespace JO.Service.Services
     {
         private readonly IDbContextFactory<JobOfferDbContext> _dbContext;
         private readonly IEmailService _emailService;
-        public ApprovalService(IDbContextFactory<JobOfferDbContext> dbContext, IEmailService emailService)
+        private readonly IBackgroundJobClient _backgroundJobClient;
+        public ApprovalService(IDbContextFactory<JobOfferDbContext> dbContext,
+            IEmailService emailService,
+            IBackgroundJobClient backgroundJobClient)
         {
             _dbContext = dbContext;
             _emailService = emailService;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<int> GetNextApproverRoleId(int jobOfferId, int currentRoleId)
@@ -111,7 +117,8 @@ namespace JO.Service.Services
 
             await context.SaveChangesAsync();
 
-            await _emailService.SendJOEmailNotification(jobOfferId, 10);
+            _backgroundJobClient.Enqueue<IEmailService>(
+                emailService => emailService.SendJOEmailNotification(jobOfferId, 10));
         }
         public async Task JobOfferActionFlowStatus(int jobOfferId, 
             int workFlowId, 
@@ -150,7 +157,14 @@ namespace JO.Service.Services
 
             await context.SaveChangesAsync();
 
-            await _emailService.SendJOEmailNotification(jobOfferId, workFlowId);
+            _backgroundJobClient.Enqueue<IEmailService>(
+                emailService => emailService.SendJOEmailNotification(jobOfferId, workFlowId));
+
+            if(workFlowId == (int)EnumJOStatus.ForDiscussion)
+            {
+                _backgroundJobClient.Enqueue<IJobOfferDocumentService>(
+                    documentService => documentService.SaveJobOfferEmailAsync(jobOfferId));
+            }
         }
 
         public async Task ApproveViaEmail(int jobOfferId, 

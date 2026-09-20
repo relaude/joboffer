@@ -402,6 +402,8 @@ FodyWeavers.xsd
 
 # Others
 JobOfferSolution/JO.BlazorApp/wwwroot/documents
+JobOfferSolution/JO.BlazorDemoApp/wwwroot/docs
+JobOfferSolution/JO.BlazorDemoApp/wwwroot/excel
 JobOfferSolution/.dotnet
 .codex-tmp
 .codex-temp

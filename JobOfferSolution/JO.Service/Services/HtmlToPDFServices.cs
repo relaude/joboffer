@@ -1,3 +1,4 @@
+using JO.Service.Enum;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Http;
 using PuppeteerSharp;

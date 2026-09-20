@@ -43,8 +43,10 @@ namespace JO.Service
             services.AddScoped<IDBoxAPISyncService, DBoxAPISyncService>();
             services.AddScoped<IDBoxCandidateService, DBoxCandidateService>();
             services.AddScoped<IDBoxCandidateService, DBoxCandidateService>();
-            services.AddHttpContextAccessor();
             services.AddScoped<IHtmlToPDFServices, HtmlToPDFServices>();
+            services.AddScoped<IJobOfferDocumentService, JobOfferDocumentService>();
+
+            services.AddHttpContextAccessor();
 
             return services;
         }
