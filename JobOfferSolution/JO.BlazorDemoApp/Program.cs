@@ -112,6 +112,9 @@ builder.Services.AddHangfireServer();
 // SweetAlert2 for Blazor
 builder.Services.AddSweetAlert2();
 
+//PDF Viewer
+builder.Services.AddBlazorPdfViewer();
+
 #endregion
 
 

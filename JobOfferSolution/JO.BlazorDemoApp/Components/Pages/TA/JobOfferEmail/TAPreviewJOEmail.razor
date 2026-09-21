@@ -1,0 +1,61 @@
+@attribute [Authorize(Roles = JOUserRole.TAPartner)]
+@attribute [Route(JORoutes.TAPartner.CandidateEmailPreview + "/{emailId:int}")]
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="jo-title mb-1">
+            <i class="fas fa-envelope fa-fw text-primary mr-2" aria-hidden="true"></i>Preview Job Offer Email
+        </h6>
+        <small class="text-muted">View the email and its attachments.</small>
+    </div>
+    <div class="card-body">
+        @if (isLoading)
+        {
+            <p class="text-muted" role="status">Loading job offer email...</p>
+        }
+        else if (loadError is not null)
+        {
+            <div class="alert alert-danger" role="alert">@loadError</div>
+        }
+        else
+        {
+            <div class="form-group row align-items-center">
+                <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="preview-email-to">To</label>
+                <div class="col-sm-10"><input id="preview-email-to" class="form-control" value="@jobOfferEmail.ToRecipient" readonly /></div>
+            </div>
+            <div class="form-group row align-items-center">
+                <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="preview-email-cc">CC</label>
+                <div class="col-sm-10"><input id="preview-email-cc" class="form-control" value="@jobOfferEmail.CCRecipient" readonly /></div>
+            </div>
+            <div class="form-group row align-items-center border-bottom pb-4">
+                <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="preview-email-subject">Subject</label>
+                <div class="col-sm-10"><input id="preview-email-subject" class="form-control" value="@jobOfferEmail.Subject" readonly /></div>
+            </div>
+            <section class="form-group mb-4" aria-labelledby="preview-message-label">
+                <div id="preview-message-label" class="font-weight-bold text-gray-700 mb-2">Message</div>
+                <div class="border rounded p-3" style="overflow-wrap: anywhere; overflow-x: auto;">@((MarkupString)(jobOfferEmail.EmailMessage ?? string.Empty))</div>
+            </section>
+            <fieldset class="mb-0">
+                <legend class="small font-weight-bold text-gray-700 mb-3">
+                    <i class="fas fa-paperclip fa-fw mr-1" aria-hidden="true"></i>Attachments
+                </legend>
+                @if (attachments.Count == 0)
+                {
+                    <p class="text-muted">No attachments.</p>
+                }
+                @foreach (var attachment in attachments)
+                {
+                    <div class="border rounded bg-light p-3 mb-2" @key="attachment.Id">
+                        <i class="fas fa-paperclip mr-2" aria-hidden="true"></i>
+                        <a href="#" @onclick="() => DownloadAttachmentAsync(attachment)" @onclick:preventDefault
+                           aria-disabled="@(isDownloadingAttachment ? "true" : "false")" title="Download attachment">@attachment.FileName</a>
+                    </div>
+                }
+                @if (attachmentError is not null)
+                {
+                    <div class="alert alert-danger" role="alert">@attachmentError</div>
+                }
+            </fieldset>
+        }
+    </div>
+</div>

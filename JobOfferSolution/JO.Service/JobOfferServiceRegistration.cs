@@ -45,6 +45,7 @@ namespace JO.Service
             services.AddScoped<IDBoxCandidateService, DBoxCandidateService>();
             services.AddScoped<IHtmlToPDFServices, HtmlToPDFServices>();
             services.AddScoped<IJobOfferDocumentService, JobOfferDocumentService>();
+            services.AddScoped<IProtectPDFService, ProtectPDFService>();
 
             services.AddHttpContextAccessor();
 

@@ -31,6 +31,9 @@ namespace JO.Service.Services.Contracts
         Task<List<JobOffers>> GetJobOffersForDiscussion();
         Task<int> AddRangeJOHasEmailAttach(List<JOHasEmailAttach> emailAttach);
         Task<List<JOHasEmailAttach>> GetJOHasEmailAttach(int emailId);
+        Task<int> RemoveOptionAttachment(int emailId, int attachmentId);
         Task AproveJobOfferHasEmail(int emailId);
+        Task<List<JobOfferDocuments>> GetJobOfferDocuments(int jobOfferId);
+        Task<JobOfferHasEmail> GetJobOfferHasEmailViaJobOfferId(int jobOfferId);
     }
 }

@@ -22,6 +22,16 @@ namespace JO.Service.Services
             _UtilitiesService = UtilitiesService;
         }
 
+        public async Task<List<JobOfferDocuments>> GetJobOfferDocuments(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JobOfferDocuments
+                .AsNoTracking()
+                .Where(jo => jo.JobOfferId == jobOfferId)
+                .OrderBy(jo => jo.Id)
+                .ToListAsync();
+        }
+
         public async Task<List<JOHasEmailAttach>> GetJOHasEmailAttach(int emailId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
@@ -30,6 +40,24 @@ namespace JO.Service.Services
                 .Where(jo => jo.JOEmailId == emailId)
                 .OrderBy(jo => jo.Id)
                 .ToListAsync();
+        }
+
+        public async Task<int> RemoveOptionAttachment(int emailId, int attachmentId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            // Delete only the email association, preserving the reusable PDF and benefits attachments.
+            return await context.JOHasEmailAttach
+                .Where(attachment => attachment.Id == attachmentId && attachment.JOEmailId == emailId
+                    && attachment.RelativePath != null
+                    && context.JobOfferHasEmail.Any(email => email.Id == emailId
+                        && email.JobOfferId == attachment.JobOfferId && email.StatusId != 2)
+                    && context.JobOfferDocuments.Any(document => document.JobOfferId == attachment.JobOfferId
+                        && document.DocumentType == 1 && document.RelativeFilePath != null
+                        && document.RelativeFilePath.Replace("\\", "/") == attachment.RelativePath.Replace("\\", "/"))
+                    && !context.JobOfferDocuments.Any(document => document.JobOfferId == attachment.JobOfferId
+                        && document.DocumentType == 2 && document.RelativeFilePath != null
+                        && document.RelativeFilePath.Replace("\\", "/") == attachment.RelativePath.Replace("\\", "/")))
+                .ExecuteDeleteAsync();
         }
 
         public async Task<int> AddRangeJOHasEmailAttach(List<JOHasEmailAttach> emailAttach)
@@ -47,6 +75,12 @@ namespace JO.Service.Services
         {
             await using var context = await _dbContext.CreateDbContextAsync();
             return await context.JobOfferHasEmail.FindAsync(emailId);
+        }
+
+        public async Task<JobOfferHasEmail> GetJobOfferHasEmailViaJobOfferId(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JobOfferHasEmail.FirstOrDefaultAsync(jo => jo.JobOfferId == jobOfferId);
         }
 
         public async Task AproveJobOfferHasEmail(int emailId)

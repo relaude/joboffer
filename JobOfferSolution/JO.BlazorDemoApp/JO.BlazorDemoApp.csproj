@@ -25,8 +25,11 @@
 
   <ItemGroup>
     <PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.6.0" />
+    <PackageReference Include="Gotho.BlazorPdf" Version="2.2.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.25" />
+    <PackageReference Include="itext" Version="9.7.0" />
+    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.10" />
@@ -45,6 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\Pages\JOPdfViewer\" />
     <Folder Include="Components\Pages\Pagination\" />
     <Folder Include="Components\Pages\TA\Dashboard\" />
   </ItemGroup>

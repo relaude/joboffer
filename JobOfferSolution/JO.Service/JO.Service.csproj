@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="itext" Version="9.7.0" />
+    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.7.0" />
     <PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.6.0" />
     <PackageReference Include="EPPlus" Version="8.6.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />

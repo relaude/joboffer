@@ -17,6 +17,7 @@ namespace JO.Service.Services
         private readonly IJOLetterService _joLetterService;
         private readonly IJOFileService _joFileService;
         private readonly IHtmlToPDFServices _htmlToPdfServices;
+        private readonly IProtectPDFService _protectPdfService;
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger<JobOfferDocumentService> _logger;
 
@@ -24,6 +25,7 @@ namespace JO.Service.Services
             IJOLetterService joLetterService,
             IJOFileService joFileService,
             IHtmlToPDFServices htmlToPdfServices,
+            IProtectPDFService protectPdfService,
             IWebHostEnvironment environment,
             ILogger<JobOfferDocumentService> logger)
         {
@@ -31,6 +33,7 @@ namespace JO.Service.Services
             _joLetterService = joLetterService;
             _joFileService = joFileService;
             _htmlToPdfServices = htmlToPdfServices;
+            _protectPdfService = protectPdfService;
             _environment = environment;
             _logger = logger;
         }
@@ -99,6 +102,7 @@ namespace JO.Service.Services
                     throw new InvalidOperationException($"No letter content is available for option {option.OptionNumber}.");
 
                 attachments.Add((fileName, await _htmlToPdfServices.GeneratePdfAsync(CreateLetterHtml(letterBody)), 1, option.Id));
+                attachments[^1] = (fileName, _protectPdfService.ProtectPdf(attachments[^1].Content), 1, option.Id);
             }
 
             jobOfferEmail.CandidateId = candidateId;

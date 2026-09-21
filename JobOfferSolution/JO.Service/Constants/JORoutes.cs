@@ -20,6 +20,7 @@ namespace JO.Service.Constants
         private const string PrefixHRODHead = "/hrod-head";
         private const string PrefixPres = "/president";
         private const string PrefixMock = "/mock";
+        private const string PrefixPrototype = "/prototype";
 
         public static class Public
         {
@@ -206,6 +207,11 @@ namespace JO.Service.Constants
             public const string Users = PrefixMock + "/users";
             public const string NewUser = PrefixMock + "/new-user";
             public const string ARBAC = PrefixMock + "/arbac";
+        }
+
+        public static class Prototype
+        {
+            public const string JOLetter = PrefixPrototype + "/letter";
         }
     }
 }
