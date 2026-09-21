@@ -32,6 +32,7 @@ namespace JO.Service.Constants
         public static class Private
         {
             public const string Home = "/home";
+            public const string ViewJOEmailAttachPdf = "/attach-pdf";
         }
 
         public static class Transaction

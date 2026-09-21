@@ -47,8 +47,16 @@
                 {
                     <div class="border rounded bg-light p-3 mb-2" @key="attachment.Id">
                         <i class="fas fa-paperclip mr-2" aria-hidden="true"></i>
-                        <a href="#" @onclick="() => DownloadAttachmentAsync(attachment)" @onclick:preventDefault
-                           aria-disabled="@(isDownloadingAttachment ? "true" : "false")" title="Download attachment">@attachment.FileName</a>
+                        @if (string.Equals(System.IO.Path.GetExtension(attachment.RelativePath), ".pdf", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <a href="@(JORoutes.Private.ViewJOEmailAttachPdf + "/" + attachment.Id)"
+                               target="_blank" rel="noopener noreferrer" title="View PDF in a new tab">@attachment.FileName</a>
+                        }
+                        else
+                        {
+                            <a href="#" @onclick="() => DownloadAttachmentAsync(attachment)" @onclick:preventDefault
+                               aria-disabled="@(isDownloadingAttachment ? "true" : "false")" title="Download attachment">@attachment.FileName</a>
+                        }
                     </div>
                 }
                 @if (attachmentError is not null)

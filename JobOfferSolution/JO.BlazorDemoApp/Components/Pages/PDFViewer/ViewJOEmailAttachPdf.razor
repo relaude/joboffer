@@ -1,0 +1,24 @@
+@attribute [Authorize]
+@attribute [Route(JORoutes.Private.ViewJOEmailAttachPdf + "/{Id:int}")]
+
+<PageTitle>PDF Attachment</PageTitle>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h1 class="h6 jo-title mb-0">@(fileName ?? "PDF Attachment")</h1>
+    </div>
+    <div class="card-body">
+        @if (isLoading)
+        {
+            <p role="status">Loading PDF attachment...</p>
+        }
+        else if (loadError is not null)
+        {
+            <div class="alert alert-danger" role="alert">@loadError</div>
+        }
+        else if (pdfContent is not null)
+        {
+            <PdfViewer @key="pdfContent" Url="@pdfContent" Filename="@fileName" Height="80vh" ScrollMode="true" />
+        }
+    </div>
+</div>

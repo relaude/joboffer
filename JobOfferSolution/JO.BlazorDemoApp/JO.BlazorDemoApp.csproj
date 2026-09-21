@@ -9,12 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Components\Pages\JOPdfViewer\**" />
     <Compile Remove="wwwroot\docs\**" />
     <Compile Remove="wwwroot\excel\**" />
+    <Content Remove="Components\Pages\JOPdfViewer\**" />
     <Content Remove="wwwroot\docs\**" />
     <Content Remove="wwwroot\excel\**" />
+    <EmbeddedResource Remove="Components\Pages\JOPdfViewer\**" />
     <EmbeddedResource Remove="wwwroot\docs\**" />
     <EmbeddedResource Remove="wwwroot\excel\**" />
+    <None Remove="Components\Pages\JOPdfViewer\**" />
     <None Remove="wwwroot\docs\**" />
     <None Remove="wwwroot\excel\**" />
   </ItemGroup>
@@ -48,7 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Pages\JOPdfViewer\" />
+    <Folder Include="Components\Pages\PDFViewer\" />
     <Folder Include="Components\Pages\Pagination\" />
     <Folder Include="Components\Pages\TA\Dashboard\" />
   </ItemGroup>

@@ -42,6 +42,14 @@ namespace JO.Service.Services
                 .ToListAsync();
         }
 
+        public async Task<JOHasEmailAttach?> GetJOHasEmailAttachById(int attachmentId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JOHasEmailAttach
+                .AsNoTracking()
+                .FirstOrDefaultAsync(attachment => attachment.Id == attachmentId);
+        }
+
         public async Task<int> RemoveOptionAttachment(int emailId, int attachmentId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
