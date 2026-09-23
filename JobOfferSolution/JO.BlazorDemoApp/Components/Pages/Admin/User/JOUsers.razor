@@ -2,6 +2,40 @@
 @attribute [Route(JORoutes.Admin.Users)]
 
 <div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="jo-title mb-1">Search job offer users</h6>
+        <small class="text-muted">Filter by status or search any part of a name or email.</small>
+    </div>
+
+    <div class="card-body">
+        <form @onsubmit="SearchUsers" @onsubmit:preventDefault>
+            <fieldset disabled="@isLoading">
+                <div class="form-row align-items-end">
+                    <div class="form-group col-md-4">
+                        <label for="user-name-search">Name</label>
+                        <input id="user-name-search" class="form-control form-control-sm" @bind="nameSearch" @bind:event="oninput" placeholder="Search by name" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="user-email-search">Email</label>
+                        <input id="user-email-search" class="form-control form-control-sm" @bind="emailSearch" @bind:event="oninput" placeholder="Search by email" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="user-status-filter">Status</label>
+                        <select id="user-status-filter" class="custom-select custom-select-sm" @bind="statusFilter">
+                            <option value="">All</option>
+                            <option value="Active">Active</option>
+                            <option value="InActive">InActive</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm mr-2">Search</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ClearSearch">Clear</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
     <div class="card-header py-3 d-flex align-items-center justify-content-between">
         <h6 class="jo-title">Job Offer Users</h6>
 
@@ -9,8 +43,11 @@
             <i class="fas fa-user-plus fa-fw mr-1"></i>New User
         </a>
     </div>
-
     <div class="card-body">
+        @if (loadError is not null)
+        {
+            <div class="alert alert-danger" role="alert">@loadError</div>
+        }
         <div class="table-responsive">
             <table class="jo-table">
                 <thead>
@@ -25,9 +62,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (jobOfferUsers.Count > 0)
+                    @if (isLoading)
                     {
-                        @foreach (var user in jobOfferUsers)
+                        <tr><td colspan="7" class="text-center text-muted py-3" role="status">Loading users...</td></tr>
+                    }
+                    else if (pagedUsers.Data.Count > 0)
+                    {
+                        @foreach (var user in pagedUsers.Data)
                         {
                             <tr @key="user.Id">
                                 <td><strong>@(string.IsNullOrWhiteSpace(user.Name) ? "-" : user.Name)</strong></td>
@@ -71,10 +112,10 @@
                                                 Edit
                                             </a>
 
-                                            <a class="dropdown-item"
+                                            @* <a class="dropdown-item"
                                                href="@($"{JORoutes.Admin.UserDivisionAccess}/{user.Id}")">
                                                 Access
-                                            </a>
+                                            </a> *@
 
                                             <a class="dropdown-item"
                                                href="@($"{JORoutes.Admin.UserDetails}/{user.Id}")">
@@ -86,7 +127,7 @@
                             </tr>
                         }
                     }
-                    else
+                    else if (loadError is null)
                     {
                         <tr>
                             <td colspan="7" class="text-center text-muted py-3">No users found.</td>
@@ -94,6 +135,10 @@
                     }
                 </tbody>
             </table>
+        </div>
+        <div class="mt-3">
+            <Pagination Result="@pagedUsers" PageChanged="ChangePage" PageSizeChanged="ChangePageSize"
+                        Disabled="@(isLoading || loadError is not null)" AriaLabel="User pages" />
         </div>
     </div>
 </div>

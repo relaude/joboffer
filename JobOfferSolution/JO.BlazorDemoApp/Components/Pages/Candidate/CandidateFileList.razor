@@ -1,0 +1,67 @@
+@using JO.BlazorDemoApp.Components.Pages.Shared
+
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="jo-title">Documents</h6>
+        <button type="button" class="btn btn-primary" disabled="@(isLoading || isSaving || candidate is null)" @onclick="OpenUpload">
+            <i class="fas fa-upload fa-fw mr-1" aria-hidden="true"></i>Upload
+        </button>
+    </div>
+    <div class="card-body">
+        @if (isLoading)
+        {
+            <p role="status">Loading documents...</p>
+        }
+        else if (loadError is not null)
+        {
+            <p class="text-danger" role="alert">@loadError</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="jo-table">
+                    <thead><tr><th>Document</th><th>File Name</th><th>File Type</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        @foreach (var file in files)
+                        {
+                            <tr @key="file.Id">
+                                <td><i class="fas fa-file-alt fa-fw text-primary mr-2" aria-hidden="true"></i>@(documentTypes.FirstOrDefault(t => t.Id == file.TypeId)?.TypeName ?? "Document")</td>
+                                <td>@file.FileName</td>
+                                <td>@(string.IsNullOrEmpty(System.IO.Path.GetExtension(file.FileName)) ? "File" : System.IO.Path.GetExtension(file.FileName)!.TrimStart('.').ToUpperInvariant())</td>
+                                <td><a class="btn btn-sm btn-outline-primary" href="@($"candidate-files/{CandidateId}/{file.Id}/download")" download="@file.FileName"><i class="fas fa-download fa-fw mr-1" aria-hidden="true"></i>Download</a></td>
+                            </tr>
+                        }
+                        @if (files.Count == 0)
+                        {
+                            <tr><td colspan="5" class="text-center text-muted">No documents uploaded.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<JOModal @ref="uploadModal" Title="Upload candidate document" ModalSize="modal-lg">
+    <ChildContent>
+        <div class="form-group">
+            <label for="@(inputId + "-type")">Document type</label>
+            <select id="@(inputId + "-type")" class="form-control" @bind="selectedTypeId" disabled="@isSaving">
+                <option value="0">Select document type</option>
+                @foreach (var type in documentTypes)
+                {
+                    <option value="@type.Id">@type.TypeName</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="@inputId">File</label>
+            <InputFile @key="fileInputKey" id="@inputId" class="form-control-file" OnChange="SelectFile" disabled="@isSaving" />
+            <small class="form-text text-muted">All file types accepted. Maximum size: 3 MB.</small>
+        </div>
+    </ChildContent>
+    <FooterTemplate>
+        <button type="button" class="btn btn-secondary" disabled="@isSaving" @onclick="() => uploadModal?.Close()">Cancel</button>
+        <button type="button" class="btn btn-primary" disabled="@isSaving" @onclick="Upload">@(isSaving ? "Uploading..." : "Upload")</button>
+    </FooterTemplate>
+</JOModal>

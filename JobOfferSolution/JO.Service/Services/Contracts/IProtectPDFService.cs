@@ -6,7 +6,7 @@ namespace JO.Service.Services.Contracts
         /// Returns an AES-256 password-protected copy of the PDF content.
         /// </summary>
         byte[] ProtectPdf(byte[] pdfContent, string userPassword = "candidate123",
-            string ownerPassword = "jobOfffer123");
+            string ownerPassword = "hrjoboffertool");
 
         /// <summary>
         /// Password-protects an existing, unencrypted PDF in place using AES-256.
@@ -15,6 +15,6 @@ namespace JO.Service.Services.Contracts
         /// Pass the absolute path returned by IJOFileService.SaveJobOfferFileAsync.
         /// </summary>
         void ProtectPdf(string pdfFilePath, string userPassword = "candidate123",
-            string ownerPassword = "jobOfffer123");
+            string ownerPassword = "hrjoboffertool");
     }
 }

@@ -7,7 +7,7 @@ namespace JO.Service.Services
     public class ProtectPDFService : IProtectPDFService
     {
         public byte[] ProtectPdf(byte[] pdfContent, string userPassword = "candidate123",
-            string ownerPassword = "joboffer123")
+            string ownerPassword = "hrjoboffertool")
         {
             ArgumentNullException.ThrowIfNull(pdfContent);
             ArgumentException.ThrowIfNullOrWhiteSpace(userPassword);
@@ -30,7 +30,7 @@ namespace JO.Service.Services
         }
 
         public void ProtectPdf(string pdfFilePath, string userPassword = "candidate123",
-            string ownerPassword = "joboffer123")
+            string ownerPassword = "hrjoboffertool")
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(pdfFilePath);
             ArgumentException.ThrowIfNullOrWhiteSpace(userPassword);

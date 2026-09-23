@@ -174,9 +174,16 @@ namespace JO.Service.Services
             await context.SaveChangesAsync();
 
             //JOAnalysis
+            decimal currentBasic = candidate.CurrentMonthlyBasicSalary.GetValueOrDefault();
+            int currentTotalMonth = MonthPayToInt(candidate.GuaranteedMonthsPay);
+            decimal? ulBasic = ComputeUlEquivalentMonthlyBasic(currentTotalMonth, currentBasic);
             JOAnalysis newAnalysis = new JOAnalysis
             {
                 JobOfferId = newJO.Id,
+                CurrentBasic = currentBasic,
+                CurrentTotalMonth = currentTotalMonth,
+                ULBasic = ulBasic,
+                ULTotalMonth = 15,
                 CreatedAt = DateTime.Now,
                 CreatedBy = createdBy
             };
@@ -316,6 +323,24 @@ namespace JO.Service.Services
             await context.SaveChangesAsync();
 
             return newJO.Id;
+        }
+
+        private int MonthPayToInt(string guaranteedMonthsPay)
+        {
+            return guaranteedMonthsPay switch
+            {
+                "13th Month Pay" => 13,
+                "14th Month Pay" => 14,
+                "15th Month Pay" => 15,
+                "16th Month Pay" => 16,
+                _ => 0
+            };
+        }
+
+        private decimal? ComputeUlEquivalentMonthlyBasic(int currentMonth, decimal currentMonthlyBasicSalary)
+        {
+            decimal ulEquivalentMonthlybasic = (currentMonthlyBasicSalary * currentMonth) / 15;
+            return ulEquivalentMonthlybasic;
         }
 
         public async Task<int> CreateJobOffer(int candidateId, int createdBy)

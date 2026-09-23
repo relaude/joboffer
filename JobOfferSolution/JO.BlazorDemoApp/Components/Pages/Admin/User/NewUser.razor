@@ -1,4 +1,4 @@
-﻿@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Authorize(Roles = JOUserRole.Admin)]
 @attribute [Route(JORoutes.Admin.UserDetails)]
 
 <div class="card shadow mb-4 small">
@@ -9,7 +9,7 @@
             <a class="btn btn-outline-secondary mr-2" href="@JORoutes.Admin.Users">
                 <i class="fas fa-times fa-fw mr-1"></i>Cancel
             </a>
-            <button type="button" class="btn btn-primary" @onclick="SaveUser">
+            <button type="button" class="btn btn-primary" disabled="@isSaving" @onclick="SaveUser">
                 <i class="fas fa-save fa-fw mr-1"></i>Save
             </button>
         </div>
@@ -76,6 +76,81 @@
                     {
                         <tr>
                             <td colspan="3" class="text-center text-muted py-3">No roles found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
+    <div class="card-header">
+        <h6 class="jo-title">Division Access</h6>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">
+            @(IsDivisionAccessRequired
+                ? "Select at least one division for the Division Head Approver L1 or Division Head Approver L2 role."
+                : "Optional. Select the divisions this user can access.")
+        </p>
+        <p class="text-muted">Selected divisions across all companies: @selectedDivisionIds.Count</p>
+        <div class="form-group row mb-4">
+            <div class="col-sm-10 col-md-6">
+                <label for="company" class="font-weight-bold text-gray-700">Company</label>
+                <select id="company"
+                        class="custom-select"
+                        value="@selectedCompanyId"
+                        @onchange="OnCompanyChanged">
+                    <option value="">Select company</option>
+                    @foreach (var company in companies)
+                    {
+                        <option value="@company.Id">
+                            @(string.IsNullOrWhiteSpace(company.CompanyName) ? company.CompanyCode : company.CompanyName)
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="jo-table">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 90px;">
+                            <input type="checkbox"
+                                   checked="@AreAllDivisionsSelected"
+                                   disabled="@(!divisions.Any())"
+                                   @onchange="ToggleAllDivisions"
+                                   aria-label="Select all divisions" />
+                        </th>
+                        <th>Division Code</th>
+                        <th>Division Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (divisions.Any())
+                    {
+                        @foreach (var division in divisions)
+                        {
+                            <tr @key="division.Id">
+                                <td class="text-center">
+                                    <input type="checkbox"
+                                           checked="@selectedDivisionIds.Contains(division.Id)"
+                                           @onchange="eventArgs => ToggleDivision(division.Id, eventArgs)"
+                                           aria-label="Select @division.DivisionName" />
+                                </td>
+                                <td>@(string.IsNullOrWhiteSpace(division.DivisionCode) ? "-" : division.DivisionCode)</td>
+                                <td><strong>@(string.IsNullOrWhiteSpace(division.DivisionName) ? "-" : division.DivisionName)</strong></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-3">
+                                @(selectedCompanyId.HasValue ? "No divisions found." : "Select a company to display its divisions.")
+                            </td>
                         </tr>
                     }
                 </tbody>

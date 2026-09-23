@@ -18,6 +18,7 @@ namespace JO.DataModel.View
         public int? OfferRangeId { get; set; }
         public string? RangeName { get; set; }
         public string? CreatedByName { get; set; }
+        public string? CreatedByEmail { get; set; }
         public string? ModifiedByName { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }

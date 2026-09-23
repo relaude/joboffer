@@ -1,0 +1,72 @@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.CompanyEdit + "/{companyId:int}")]
+
+@if (isLoading)
+{
+    <div class="card shadow mb-4 small"><div class="card-body" role="status">Loading company...</div></div>
+}
+else if (loadError is not null)
+{
+    <div class="card shadow mb-4 small">
+        <div class="card-body">
+            <div class="alert alert-danger" role="alert">@loadError</div>
+            <button type="button" class="btn btn-outline-primary btn-sm mr-2" @onclick="LoadCompany">Try again</button>
+            <a class="btn btn-outline-secondary btn-sm" href="@JORoutes.Admin.Companies">Back to companies</a>
+        </div>
+    </div>
+}
+else if (company is not null)
+{
+    <form @onsubmit="SaveCompany" @onsubmit:preventDefault aria-busy="@(isSaving ? "true" : "false")">
+        <fieldset disabled="@isSaving">
+            <div class="card shadow mb-4 small">
+                <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                    <h6 class="jo-title mb-0">Edit Company</h6>
+                    <div>
+                        <button type="button" class="btn btn-outline-secondary mr-2" @onclick="Cancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary">@(isSaving ? "Saving..." : "Save Changes")</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (saveError is not null)
+                    {
+                        <div class="alert alert-danger" role="alert">@saveError</div>
+                    }
+                    <p class="text-muted">Update the company and division names. Codes are read-only. All names are required.</p>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="edit-company-code">Company code</label>
+                            <input id="edit-company-code" class="form-control form-control-sm" value="@company.CompanyCode" readonly />
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label for="edit-company-name">Company name</label>
+                            <input id="edit-company-name" class="form-control form-control-sm" @bind="company.CompanyName" @bind:event="oninput" required />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow mb-4 small">
+                <div class="card-header py-3"><h6 class="jo-title mb-0">Divisions (@divisions.Count)</h6></div>
+                <div class="card-body">
+                    @if (divisions.Count == 0)
+                    {
+                        <p class="text-muted mb-0">This company has no divisions.</p>
+                    }
+                    @foreach (var division in divisions)
+                    {
+                        <div class="form-row" @key="division.Id">
+                            <div class="form-group col-md-4">
+                                <label for="@($"edit-division-code-{division.Id}")">Division code</label>
+                                <input id="@($"edit-division-code-{division.Id}")" class="form-control form-control-sm" value="@division.DivisionCode" readonly />
+                            </div>
+                            <div class="form-group col-md-8">
+                                <label for="@($"edit-division-name-{division.Id}")">Division name</label>
+                                <input id="@($"edit-division-name-{division.Id}")" class="form-control form-control-sm" @bind="division.DivisionName" @bind:event="oninput" required />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </fieldset>
+    </form>
+}

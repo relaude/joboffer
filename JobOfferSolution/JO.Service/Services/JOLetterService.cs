@@ -53,17 +53,14 @@ namespace JO.Service.Services
         public async Task<int> RemoveOptionAttachment(int emailId, int attachmentId)
         {
             await using var context = await _dbContext.CreateDbContextAsync();
-            // Delete only the email association, preserving the reusable PDF and benefits attachments.
+            // Delete only the email association, preserving the reusable PDF.
             return await context.JOHasEmailAttach
                 .Where(attachment => attachment.Id == attachmentId && attachment.JOEmailId == emailId
                     && attachment.RelativePath != null
                     && context.JobOfferHasEmail.Any(email => email.Id == emailId
                         && email.JobOfferId == attachment.JobOfferId && email.StatusId != 2)
                     && context.JobOfferDocuments.Any(document => document.JobOfferId == attachment.JobOfferId
-                        && document.DocumentType == 1 && document.RelativeFilePath != null
-                        && document.RelativeFilePath.Replace("\\", "/") == attachment.RelativePath.Replace("\\", "/"))
-                    && !context.JobOfferDocuments.Any(document => document.JobOfferId == attachment.JobOfferId
-                        && document.DocumentType == 2 && document.RelativeFilePath != null
+                        && (document.DocumentType == 1 || document.DocumentType == 2) && document.RelativeFilePath != null
                         && document.RelativeFilePath.Replace("\\", "/") == attachment.RelativePath.Replace("\\", "/")))
                 .ExecuteDeleteAsync();
         }
@@ -285,12 +282,35 @@ namespace JO.Service.Services
 
             (string PlaceHolder, string Value)[] replacements =
             {
-                ("[COMPANY]", company),
-                ("[POSITION]", position),
-                ("[DIVISION]", division),
-                ("[BASICPAY]", basicPay)
+                ("#COMPANY", company),
+                ("#POSITION", position),
+                ("#DIVISION", division),
+                ("#BASICPAY", basicPay)
             };
 
+            ReplaceItemLetterPlaceHolders(joItemLetter, replacements);
+        }
+
+        public void UpdateItemLetterPlaceHolder(List<JOItemLetter> joItemLetter,
+            VwDboxCandidates candidate,
+            decimal proposedSalary,
+            decimal monthlyRiceAllowanace,
+            decimal dailyTranspoAllowance)
+        {
+            UpdateItemLetterPlaceHolder(joItemLetter, candidate, proposedSalary);
+
+            (string PlaceHolder, string Value)[] replacements =
+            {
+                ("#RICEMONTHLY", _UtilitiesService.ToPeso(monthlyRiceAllowanace)),
+                ("#TRANSPODAILY", _UtilitiesService.ToPeso(dailyTranspoAllowance))
+            };
+
+            ReplaceItemLetterPlaceHolders(joItemLetter, replacements);
+        }
+
+        private static void ReplaceItemLetterPlaceHolders(List<JOItemLetter> joItemLetter,
+            (string PlaceHolder, string Value)[] replacements)
+        {
             foreach (var itemLetter in joItemLetter)
             {
                 if (string.IsNullOrEmpty(itemLetter.MessageBody))

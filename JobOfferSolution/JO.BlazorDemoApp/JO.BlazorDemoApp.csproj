@@ -57,4 +57,8 @@
     <Folder Include="Components\Pages\TA\Dashboard\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\docs\benefits.pdf" />
+  </ItemGroup>
+
 </Project>

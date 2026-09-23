@@ -51,12 +51,12 @@
                         <div class="form-group">
                             <label for="currentMonthlyBasic">Monthly Basic</label>
                             <input id="currentMonthlyBasic" type="text" class="form-control"
-                                   value="@(UtilitiesService.ToPeso(candidate.CurrentMonthlyBasicSalary))" readonly />
+                                   value="@(UtilitiesService.ToPeso(joAnalysis.CurrentBasic))" readonly />
                         </div>
                         <div class="form-group mb-0">
                             <label for="currentTotalMonthsPay">Total Months Pay</label>
                             <input id="currentTotalMonthsPay" type="text" class="form-control"
-                                   value="@MonthPayToInt()" readonly />
+                                   value="@joAnalysis.CurrentTotalMonth" readonly />
                         </div>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                             <input id="ulEquivalentMonthlyBasic"
                                    type="text"
                                    class="form-control"
-                                   value="@UtilitiesService.ToPeso(ComputeUlEquivalentMonthlyBasic())"
+                                   value="@(UtilitiesService.ToPeso(joAnalysis.ULBasic))"
                                    readonly />
                         </div>
                         <div class="form-group mb-0">
@@ -82,7 +82,7 @@
                             <input id="ulEquivalentTotalMonthsPay"
                                    type="text"
                                    class="form-control"
-                                   value="@ulEquivalentTotalMonthsPay"
+                                   value="@joAnalysis.ULTotalMonth"
                                    readonly />
                             @* <select id="ulEquivalentTotalMonthsPay"
                                     class="custom-select"

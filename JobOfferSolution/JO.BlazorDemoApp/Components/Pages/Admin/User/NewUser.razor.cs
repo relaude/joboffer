@@ -9,6 +9,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.User
 {
     public partial class NewUser
     {
+        [Inject] private IDivisionAccessService DivisionAccessService { get; set; } = default!;
         [Inject] private IManageUsersService ManageUsersService { get; set; } = default!;
         [Inject] private IAccountService AccountService { get; set; } = default!;
         [Inject] private IUtilitiesService UtilitiesService { get; set; } = default!;
@@ -18,11 +19,24 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.User
         private List<VwJOUserAspNetRoles> roles = new();
         private List<string> roleNames = new();
         private JobOfferUsers newUser = new();
-        private int userId = 0;
+        private List<Companies> companies = new();
+        private List<Divisions> divisions = new();
+        private List<int> selectedDivisionIds = new();
+        private int? selectedCompanyId = 1;
+        private bool isSaving;
+
+        private bool IsDivisionAccessRequired =>
+            roleNames.Contains(JOUserRole.DivisionHeadApproverL1)
+            || roleNames.Contains(JOUserRole.DivisionHeadApproverL2);
+
+        private bool AreAllDivisionsSelected =>
+            divisions.Any() && divisions.All(division => selectedDivisionIds.Contains(division.Id));
 
         protected override async Task OnInitializedAsync()
         {
             roles = await ManageUsersService.GetVwJOUserAspNetRoles();
+            companies = await DivisionAccessService.GetCompanies();
+            await OnCompanyChanged(new ChangeEventArgs { Value = selectedCompanyId });
 
             newUser.IsActive = true;
             newUser.CreatedBy = await AccountService.GetJobOfferUserId();
@@ -30,18 +44,34 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.User
 
         private async Task SaveUser()
         {
-            var errors = await CollectErrors();
-
-            if (errors.Count > 0)
-            {
-                await AlertService.Errors(errors);
+            if (isSaving)
                 return;
+
+            isSaving = true;
+
+            try
+            {
+                var errors = await CollectErrors();
+
+                if (errors.Count > 0)
+                {
+                    await AlertService.Errors(errors);
+                    return;
+                }
+
+                if (!await AlertService.Confirm("Save this user?", "Save"))
+                    return;
+
+                var joUserId = await ManageUsersService.CreateJobOfferUser(newUser, roleNames);
+                if (selectedDivisionIds.Any())
+                    await DivisionAccessService.UpdateUserDivisionAccess(selectedDivisionIds, joUserId);
+
+                Navigation.NavigateTo($"{JORoutes.Admin.UserDetails}/{joUserId}");
             }
-
-            await AlertService.Confirm("Save this user?", "Save");
-
-            var joUserId = await ManageUsersService.CreateJobOfferUser(newUser, roleNames);
-            Navigation.NavigateTo($"{JORoutes.Admin.UserDetails}/{joUserId}");
+            finally
+            {
+                isSaving = false;
+            }
         }
 
         private async Task<List<string>> CollectErrors()
@@ -62,7 +92,55 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.User
             if (roleNames.Count == 0)
                 errors.Add("Please select at least one role.");
 
+            if (IsDivisionAccessRequired && !selectedDivisionIds.Any())
+                errors.Add("Please select at least one division for the Division Head Approver L1 or Division Head Approver L2 role.");
+
             return errors;
+        }
+
+        private async Task OnCompanyChanged(ChangeEventArgs eventArgs)
+        {
+            selectedCompanyId = int.TryParse(eventArgs.Value?.ToString(), out var companyId)
+                ? companyId
+                : null;
+
+            divisions.Clear();
+
+            if (selectedCompanyId.HasValue)
+                divisions = await DivisionAccessService.GetDivisions(selectedCompanyId.Value);
+        }
+
+        private void ToggleDivision(int divisionId, ChangeEventArgs eventArgs)
+        {
+            var isSelected = eventArgs.Value is bool value && value;
+
+            if (isSelected)
+            {
+                if (!selectedDivisionIds.Contains(divisionId))
+                    selectedDivisionIds.Add(divisionId);
+            }
+            else
+            {
+                selectedDivisionIds.Remove(divisionId);
+            }
+        }
+
+        private void ToggleAllDivisions(ChangeEventArgs eventArgs)
+        {
+            var isSelected = eventArgs.Value is bool value && value;
+
+            foreach (var division in divisions)
+            {
+                if (isSelected)
+                {
+                    if (!selectedDivisionIds.Contains(division.Id))
+                        selectedDivisionIds.Add(division.Id);
+                }
+                else
+                {
+                    selectedDivisionIds.Remove(division.Id);
+                }
+            }
         }
 
         private bool AreAllRolesSelected

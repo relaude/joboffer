@@ -20,6 +20,7 @@ namespace JO.Service.Services.Contracts
         Task<List<VwDivisions>> GetVwDivisionsByIds(List<int> divisionIds);
         Task<List<VwDivisions>> GetVwDivisionsByUserId(int userId);
         Task<List<VwJobOfferUsers>> GetVwJobOfferUsers();
+        Task<PagedResult<VwJobOfferUsers>> GetPagedJobOfferUsers(string name, string email, bool? isActive, int page, int pageSize);
         Task<List<VwRolePermissions>> GetVwRolePermissions();
         Task<List<VwJOUserAspNetRoles>> GetVwJOUserAspNetRoles();
         Task<bool> IsUserExists(string email, int userId = 0);

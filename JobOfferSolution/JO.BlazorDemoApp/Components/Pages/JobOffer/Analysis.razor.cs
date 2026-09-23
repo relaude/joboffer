@@ -1,3 +1,4 @@
+using Hangfire;
 using JO.DataModel.DTOs;
 using JO.DataModel.Entity;
 using JO.DataModel.View;
@@ -18,7 +19,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
         [Inject] private ICandidateService CandidateService { get; set; } = default!;
         [Inject] private ICompensationService CompensationService { get; set; } = default!;
-        [Inject] private IEmailService EmailService { get; set; } = default!;
+        [Inject] private IBackgroundJobClient BackgroundJobClient { get; set; } = default!;
 
         [Parameter] public int jobOfferId { get; set; }
         [Parameter] public string GoBackUrl { get; set; } = string.Empty;
@@ -234,7 +235,8 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 userId,
                 taPartnerRemarks);
 
-            await EmailService.SendJOEmailNotification(jobOfferId, 3);//For Review
+            BackgroundJobClient.Enqueue<IEmailService>(
+                emailService => emailService.SendJOEmailNotification(jobOfferId, 3)); // For Review
 
             await AlertService.Success("Analysis successfully submitted for review.");
             
@@ -453,6 +455,20 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                 {
                     performanceBonusItem.AnnualAmount = proposedSalary * 2m;
                 }
+            }
+        }
+
+        private void UpdateAnnualAmount(JOCompanyCompensationItems? item)
+        {
+            if (item is null)
+                return;
+
+            item.AnnualAmount = item.MonthlyAmount * 12m;
+
+            foreach (var matchingItem in joCompanyCompensationItems.Where(jo => jo.ItemId == item.ItemId))
+            {
+                matchingItem.MonthlyAmount = item.MonthlyAmount;
+                matchingItem.AnnualAmount = item.AnnualAmount;
             }
         }
 

@@ -89,12 +89,17 @@ namespace JO.Service.Services
                     throw new InvalidOperationException($"Compensation option {option.OptionNumber} has no proposed salary.");
 
                 var fileName = $"{candidateFileName}-Option-{option.OptionNumber}.pdf";
-                if (existingDocuments.Any(document => document.DocumentType == (int)EnumJODocumentType.JobOfferLetter && document.SalaryOptionId == option.Id))
+                if (existingDocuments.Any(document => document.DocumentType == (int)EnumJODocumentType.JOLetter && document.SalaryOptionId == option.Id))
                     continue;
 
                 // Load fresh items for each option because placeholder replacement mutates them.
                 var letterItems = await _joLetterService.GetJOItemLetter(jobOffer.CmpnyCmpnstnId.GetValueOrDefault());
-                _joLetterService.UpdateItemLetterPlaceHolder(letterItems, candidate, salary);
+
+                decimal monthlyRiceAllowanace = await GetMonthlyRiceAllowance(jobOfferId);
+                decimal dailyTranspoAllowance = await GetDailyTranspoAllowance(jobOfferId);
+
+                _joLetterService.UpdateItemLetterPlaceHolder(letterItems, candidate, salary, monthlyRiceAllowanace, dailyTranspoAllowance);
+
                 var letterBody = string.Concat(letterItems
                     .Where(item => !string.IsNullOrWhiteSpace(item.MessageBody))
                     .Select(item => item.MessageBody));
@@ -102,7 +107,15 @@ namespace JO.Service.Services
                     throw new InvalidOperationException($"No letter content is available for option {option.OptionNumber}.");
 
                 attachments.Add((fileName, await _htmlToPdfServices.GeneratePdfAsync(CreateLetterHtml(letterBody)), 1, option.Id));
-                attachments[^1] = (fileName, _protectPdfService.ProtectPdf(attachments[^1].Content), 1, option.Id);
+                if (string.IsNullOrWhiteSpace(candidate.DboxRefNum)
+                    || string.IsNullOrWhiteSpace(candidate.CandidateName))
+                    throw new InvalidOperationException("The candidate reference number and name are required for the PDF password.");
+
+                // CandidateName uses given names followed by the last name.
+                var lastName = candidate.CandidateName.Split((char[]?)null,
+                    StringSplitOptions.RemoveEmptyEntries)[^1];
+                var userPassword = candidate.DboxRefNum.Trim() + lastName;
+                attachments[^1] = (fileName, _protectPdfService.ProtectPdf(attachments[^1].Content, userPassword: userPassword), 1, option.Id);
             }
 
             jobOfferEmail.CandidateId = candidateId;
@@ -158,6 +171,24 @@ namespace JO.Service.Services
                 }
                 throw;
             }
+        }
+
+        private async Task<decimal> GetMonthlyRiceAllowance(int jobofferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var compenItem = await context.JOCompanyCompensationItems
+                .FirstOrDefaultAsync(jo => jo.JobOfferId == jobofferId && jo.ItemId == 8);
+
+            return compenItem.MonthlyAmount.GetValueOrDefault();
+        }
+
+        private async Task<decimal> GetDailyTranspoAllowance(int jobofferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var compenItem = await context.JOCompanyCompensationItems
+                .FirstOrDefaultAsync(jo => jo.JobOfferId == jobofferId && jo.ItemId == 9);
+
+            return compenItem.MonthlyAmount.GetValueOrDefault() / 23;
         }
 
         private static string CreateLetterHtml(string letterBody) => $$"""

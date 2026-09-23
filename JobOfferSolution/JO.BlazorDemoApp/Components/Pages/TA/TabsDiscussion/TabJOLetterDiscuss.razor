@@ -70,21 +70,6 @@
         case TabName.Letter:
             <div role="tabpanel">
                 <CandidateJOLetter jobOfferId="@jobOfferId" />
-
-                @* <SharedEmailJOLetter
-                    Candidate="@candidate"
-                    CompensationOptions="@joCompanyCompensation"
-                    InitialSelectedProposedSalary="@selectedProposedSalary"
-                    LetterBody="@letterBody"
-                    InitialEmailSubject="@emailSubject"
-                    InitialTestEmailRecipient="@testEmailRecipient"
-                    OnCompensationOptionChanged="@ChangeLetterCompensationOption"
-                    OnSendTestEmail="@SendTestMail"
-                    OnSendEmail="@SendEmail"
-                    IsSending="@isSending"
-                    AcceptedFileTypes=".pdf,.doc,.docx"
-                    MaxAttachmentSize="@(3L * 1024 * 1024)"
-                    ComponentId="job-offer-email-letter" /> *@
             </div>
             break;
 

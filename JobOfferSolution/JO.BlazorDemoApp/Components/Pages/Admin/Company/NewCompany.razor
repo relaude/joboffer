@@ -1,0 +1,60 @@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.CompanyNew)]
+
+<form @onsubmit="SaveCompany" @onsubmit:preventDefault aria-busy="@(isSaving ? "true" : "false")">
+    <fieldset disabled="@isSaving">
+        <div class="card shadow mb-4 small">
+            <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                <h6 class="jo-title mb-0">New Company</h6>
+                <div>
+                    <button type="button" class="btn btn-outline-secondary mr-2" @onclick="Cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">@(isSaving ? "Saving..." : "Save Company")</button>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (saveError is not null)
+                {
+                    <div class="alert alert-danger" role="alert">@saveError</div>
+                }
+                <p class="text-muted">Enter the company details and add its divisions. All fields are required.</p>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="new-company-code">Company code</label>
+                        <input id="new-company-code" class="form-control form-control-sm" @bind="company.CompanyCode" @bind:event="oninput" required />
+                    </div>
+                    <div class="form-group col-md-8">
+                        <label for="new-company-name">Company name</label>
+                        <input id="new-company-name" class="form-control form-control-sm" @bind="company.CompanyName" @bind:event="oninput" required />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow mb-4 small">
+            <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                <h6 class="jo-title mb-0">Divisions (@divisions.Count)</h6>
+                <button type="button" class="btn btn-outline-primary btn-sm" @onclick="AddDivision">Add Division</button>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Add at least one division. Each division must have a unique code within this company.</p>
+                @for (var index = 0; index < divisions.Count; index++)
+                {
+                    var division = divisions[index];
+                    var rowNumber = index + 1;
+                    <div class="form-row align-items-end" @key="division">
+                        <div class="form-group col-md-4">
+                            <label for="@($"division-code-{rowNumber}")">Division @rowNumber code</label>
+                            <input id="@($"division-code-{rowNumber}")" class="form-control form-control-sm" @bind="division.DivisionCode" @bind:event="oninput" required />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="@($"division-name-{rowNumber}")">Division @rowNumber name</label>
+                            <input id="@($"division-name-{rowNumber}")" class="form-control form-control-sm" @bind="division.DivisionName" @bind:event="oninput" required />
+                        </div>
+                        <div class="form-group col-md-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm" @onclick="() => RemoveDivision(division)" disabled="@(divisions.Count == 1)" aria-label="Remove division @rowNumber">Remove</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </fieldset>
+</form>

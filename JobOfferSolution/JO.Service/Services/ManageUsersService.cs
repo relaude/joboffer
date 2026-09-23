@@ -180,6 +180,36 @@ namespace JO.Service.Services
                 .ToListAsync();
         }
 
+        public async Task<PagedResult<VwJobOfferUsers>> GetPagedJobOfferUsers(
+            string name, string email, bool? isActive, int page, int pageSize)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(pageSize);
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            var query = context.VwJobOfferUsers.AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(name))
+                query = query.Where(user => EF.Functions.Like(user.Name ?? "", $"%{name.Trim()}%"));
+
+            if (!string.IsNullOrWhiteSpace(email))
+                query = query.Where(user => EF.Functions.Like(user.Email ?? "", $"%{email.Trim()}%"));
+
+            if (isActive.HasValue)
+                query = query.Where(user => (user.IsActive ?? false) == isActive.Value);
+
+            var totalCount = await query.CountAsync();
+            var totalPages = totalCount == 0 ? 1 : (totalCount - 1) / pageSize + 1;
+            page = Math.Clamp(page, 1, totalPages);
+
+            return new PagedResult<VwJobOfferUsers>
+            {
+                Data = await query.OrderBy(user => user.Name).ThenBy(user => user.Id)
+                    .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
+        }
+
         public async Task<List<VwJOUserAspNetRoles>> GetVwJOUserAspNetRoles()
         {
             await using var context = await _contextFactory.CreateDbContextAsync();

@@ -12,7 +12,7 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
 
         [Parameter, EditorRequired] public VwDboxCandidates Candidate { get; set; } = new();
         [Parameter, EditorRequired] public VwSalaryBands SalaryBand { get; set; } = new();
-        [Parameter, EditorRequired] public JO.DataModel.Entity.JOAnalysis Analysis { get; set; } = new();
+        [Parameter, EditorRequired] public JOAnalysis Analysis { get; set; } = new();
         [Parameter, EditorRequired] public IReadOnlyList<CompanyCompensation> CompanyCompensations { get; set; } = [];
         [Parameter, EditorRequired] public IReadOnlyList<JOCompanyCompensation> JOCompanyCompensations { get; set; } = [];
         [Parameter, EditorRequired] public IReadOnlyList<JOCompanyCompensationItems> JOCompanyCompensationItems { get; set; } = [];

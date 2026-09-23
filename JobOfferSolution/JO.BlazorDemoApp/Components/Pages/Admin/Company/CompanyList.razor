@@ -2,25 +2,66 @@
 @attribute [Route(JORoutes.Admin.Companies)]
 
 <div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="jo-title mb-1">Search companies</h6>
+        <small class="text-muted">Search any part of a company name or code.</small>
+    </div>
+    <div class="card-body">
+        <form @onsubmit="SearchCompanies" @onsubmit:preventDefault>
+            <fieldset disabled="@isLoading">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="company-name">Company name</label>
+                        <input id="company-name" class="form-control form-control-sm" @bind="companyNameSearch" @bind:event="oninput" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="company-code">Company code</label>
+                        <input id="company-code" class="form-control form-control-sm" @bind="companyCodeSearch" @bind:event="oninput" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm mr-2">Search</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ClearSearch">Clear</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mb-4 small">
     <div class="card-header py-3 d-flex align-items-center justify-content-between">
         <h6 class="jo-title">Companies</h6>
+        <a class="btn btn-primary btn-sm" href="@JORoutes.Admin.CompanyNew">New Company</a>
     </div>
 
     <div class="card-body">
-        <div class="table-responsive">
+        @if (loadError is not null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @loadError
+                <button type="button" class="btn btn-outline-danger btn-sm ml-2" @onclick="LoadCompaniesAsync" disabled="@isLoading">Try again</button>
+            </div>
+        }
+        <div class="table-responsive" aria-busy="@(isLoading ? "true" : "false")">
             <table class="jo-table">
                 <thead>
                     <tr>
-                        <th>Company Code</th>
-                        <th>Company Name</th>
-                        <th class="text-center">Divisions</th>
-                        <th class="text-right">Action</th>
+                        <th scope="col">Company Code</th>
+                        <th scope="col">Company Name</th>
+                        <th scope="col" class="text-center">Divisions</th>
+                        <th scope="col" class="text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (companies.Count > 0)
+                    @if (isLoading)
                     {
-                        @foreach (var company in companies)
+                        <tr><td colspan="4" class="text-center text-muted py-4" role="status">Loading companies...</td></tr>
+                    }
+                    else if (loadError is not null)
+                    {
+                        <tr><td colspan="4" class="text-center text-muted py-4">Companies could not be loaded.</td></tr>
+                    }
+                    else if (pagedCompanies.TotalCount > 0)
+                    {
+                        @foreach (var company in pagedCompanies.Data)
                         {
                             <tr @key="company.Id">
                                 <td>@(string.IsNullOrWhiteSpace(company.CompanyCode) ? "-" : company.CompanyCode)</td>
@@ -41,6 +82,7 @@
                                                href="@($"{JORoutes.Admin.CompanyDetails}/{company.Id}")">
                                                 View Details
                                             </a>
+                                            <a class="dropdown-item" href="@($"{JORoutes.Admin.CompanyEdit}/{company.Id}")">Edit</a>
                                         </div>
                                     </div>
                                 </td>
@@ -50,10 +92,17 @@
                     else
                     {
                         <tr>
-                            <td colspan="4" class="text-center text-muted py-3">No companies found.</td>
+                            <td colspan="4" class="text-center text-muted py-4" role="status">@(appliedName.Length > 0 || appliedCode.Length > 0 ? "No companies match your search. Change or clear the filters." : "No companies found.")</td>
                         </tr>
                     }
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4">
+                            <Pagination Result="@pagedCompanies" PageChanged="ChangePage" PageSizeChanged="ChangePageSize" Disabled="@(isLoading || loadError is not null)" AriaLabel="Company pages" />
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>

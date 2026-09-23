@@ -31,7 +31,8 @@ namespace JO.Service.Enum
 
     public enum EnumJODocumentType
     {
-        JobOfferLetter = 1,
-        Benefits = 2
+        JOLetter = 1,
+        Benefits = 2,
+        MaskedJOLetter = 3
     }
 }

@@ -50,6 +50,8 @@ namespace JO.Service.Constants
 
             public const string Companies = PrefixAdmin + "/companies";
             public const string CompanyDetails = PrefixAdmin + "/company";
+            public const string CompanyNew = PrefixAdmin + "/company-new";
+            public const string CompanyEdit = PrefixAdmin + "/company-edit";
             
             public const string ToggleActive = PrefixAdmin + "/toggle-user";
             public const string SalaryMatrix = PrefixAdmin + "/salary-matrix";

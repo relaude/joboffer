@@ -80,12 +80,12 @@
                         <div class="form-group">
                             <label for="currentMonthlyBasic">Monthly Basic</label>
                             <input id="currentMonthlyBasic" type="text" class="form-control" 
-                                value="@(UtilitiesService.ToPeso(candidate.CurrentMonthlyBasicSalary))" readonly />
+                                   value="@joAnalysis.CurrentBasic" readonly />
                         </div>
                         <div class="form-group mb-0">
                             <label for="currentTotalMonthsPay">Total Months Pay</label>
                             <input id="currentTotalMonthsPay" type="text" class="form-control"
-                                value="@MonthPayToInt()" readonly />
+                                   value="@joAnalysis.CurrentTotalMonth" readonly />
                         </div>
                     </div>
                 </div>
@@ -103,13 +103,13 @@
                             <input id="ulEquivalentMonthlyBasic"
                                    type="text"
                                    class="form-control"
-                                   value="@UtilitiesService.ToPeso(ComputeUlEquivalentMonthlyBasic())"
+                                   value="@joAnalysis.ULBasic"
                                    readonly />
                         </div>
                         <div class="form-group mb-0">
                             <label for="ulEquivalentTotalMonthsPay">Total Months Pay</label>
                             <input id="currentTotalMonthsPay" type="text" class="form-control"
-                                   value="@ulEquivalentTotalMonthsPay" readonly />
+                                   value="@joAnalysis.ULTotalMonth" readonly />
                             @* <select id="ulEquivalentTotalMonthsPay"
                                     class="custom-select"
                                     @bind="ulEquivalentTotalMonthsPay">
@@ -169,6 +169,7 @@
                                for="amount-@compensation.OptionNumber">
                             Amount
                         </label>
+                        
                         <PesoInput TValue="decimal?"
                                    @bind-Value="compensation.ProposedSalary"
                                    @bind-Value:after="() => ComputeIncrease(compensation)"
@@ -337,14 +338,18 @@
                                             <PesoInput TValue="decimal?"
                                                 class="text-right"
                                                 @bind-Value="selectedItem.MonthlyAmount"
+                                                @bind-Value:after="() => UpdateAnnualAmount(selectedItem)"
                                                 aria-label="@($"Monthly amount for {item.ItemName}")" />
+                                        
+
                                         </td>
-                                        <td class="is-highlighted">
+                                        @* <td class="is-highlighted">
                                             <PesoInput TValue="decimal?"
                                                 class="text-right"
                                                 @bind-Value="selectedItem.AnnualAmount"
                                                 aria-label="@($"Annual amount for {item.ItemName}")" />
-                                        </td>
+                                        </td> *@
+                                        <td class="is-highlighted text-right">@UtilitiesService.ToPeso(selectedItem?.AnnualAmount)</td>
                                     }
                                     else
                                     {

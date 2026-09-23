@@ -78,7 +78,8 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
 
         private async Task RemoveOptionAttachmentAsync(JOHasEmailAttach attachment)
         {
-            if (IsAttachOptionDisabled || !attachments.Contains(attachment) || !IsOptionAttachment(attachment))
+            if (IsAttachOptionDisabled || !attachments.Contains(attachment)
+                || !(IsOptionAttachment(attachment) || IsPdfAttachmentOfType(attachment, 2)))
                 return;
 
             var email = jobOfferEmail;
@@ -93,13 +94,13 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
                 if (removed > 0)
                     attachments.Remove(attachment);
                 else
-                    attachmentError = "The option could not be removed. Reload the page to check its current status.";
+                    attachmentError = "The attachment could not be removed. Reload the page to check its current status.";
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Failed to remove attachment {AttachmentId} from email {EmailId}.", attachment.Id, email.Id);
                 if (ReferenceEquals(email, jobOfferEmail))
-                    attachmentError = "Unable to remove the option attachment. Please try again.";
+                    attachmentError = "Unable to remove the attachment. Please try again.";
             }
             finally
             {
@@ -125,7 +126,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
                 if (ReferenceEquals(email, jobOfferEmail))
                 {
                     jobOfferDocuments = documents;
-                    optionDocuments = documents.Where(document => document.DocumentType == 1
+                    optionDocuments = documents.Where(document => (document.DocumentType == 1 || document.DocumentType == 2)
                         && !string.IsNullOrWhiteSpace(document.RelativeFilePath)).ToList();
                 }
             }
@@ -133,7 +134,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
             {
                 Logger.LogError(ex, "Failed to load option PDFs for job offer {JobOfferId}.", jobOfferId);
                 if (ReferenceEquals(email, jobOfferEmail))
-                    optionsLoadError = "Unable to load option PDFs. Please try again.";
+                    optionsLoadError = "Unable to load PDFs. Please try again.";
             }
             finally
             {
@@ -160,14 +161,20 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
                 if (!ReferenceEquals(email, jobOfferEmail))
                     return;
                 attachments = currentAttachments;
-                if (attachments.Any(IsOptionAttachment))
+                if (document.DocumentType == 1 && attachments.Any(IsOptionAttachment))
                 {
                     attachOptionError = "Only one option PDF is allowed. Remove the existing option before attaching another.";
                     return;
                 }
                 if (IsOptionAttached(document))
                 {
-                    attachOptionError = "This option PDF is already attached.";
+                    attachOptionError = "This PDF is already attached.";
+                    return;
+                }
+
+                if (document.DocumentType == 2 && attachments.Any(attachment => IsPdfAttachmentOfType(attachment, 2)))
+                {
+                    attachOptionError = "Only one benefits PDF is allowed. Remove the existing benefits PDF before attaching another.";
                     return;
                 }
 
@@ -191,7 +198,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
             {
                 Logger.LogError(ex, "Failed to attach option document {DocumentId} to email {EmailId}.", documentId, email.Id);
                 if (ReferenceEquals(email, jobOfferEmail))
-                    attachOptionError = "Unable to attach the option PDF. Check that the file is available and try again.";
+                    attachOptionError = "Unable to attach the PDF. Check that the file is available and try again.";
             }
             finally
             {
@@ -211,6 +218,9 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
                 throw new InvalidOperationException("The attachment must be stored in the docs directory.");
             return path;
         }
+
+        private static bool IsPdfAttachment(JOHasEmailAttach attachment) =>
+            string.Equals(Path.GetExtension(attachment.RelativePath), ".pdf", StringComparison.OrdinalIgnoreCase);
 
         private async Task DownloadAttachmentAsync(JOHasEmailAttach attachment)
         {
@@ -274,23 +284,6 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
                 if (email.JobOfferId is int emailJobOfferId)
                 {
                     jobOfferDocuments = await JOLetterService.GetJobOfferDocuments(emailJobOfferId);
-                    var benefitsAttachments = jobOfferDocuments
-                        .Where(_ => attachments.Count == 0)
-                        .Where(document => document.DocumentType == 2)
-                        .Select(document => new JOHasEmailAttach
-                        {
-                            JOEmailId = email.Id,
-                            JobOfferId = emailJobOfferId,
-                            FileName = document.FileName,
-                            RelativePath = document.RelativeFilePath
-                        })
-                        .ToList();
-
-                    if (!IsReadOnly && benefitsAttachments.Count > 0)
-                    {
-                        await JOLetterService.AddRangeJOHasEmailAttach(benefitsAttachments);
-                        attachments = await JOLetterService.GetJOHasEmailAttach(email.Id);
-                    }
                 }
                 loadMessageContent = true;
             }
@@ -550,8 +543,9 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
                 var optionPdfCount = attachments.Count(attachment =>
                     IsPdfAttachmentOfType(attachment, 1));
 
-                if (attachments.Count != 2 || benefitsPdfCount != 1 || optionPdfCount != 1)
-                    errors.Add("Exactly two attachments are required: one benefits PDF and one option PDF. Multiple option attachments are not allowed.");
+                if (optionPdfCount != 1 || benefitsPdfCount > 1
+                    || attachments.Count != optionPdfCount + benefitsPdfCount)
+                    errors.Add("Exactly one option PDF is required. One benefits PDF may also be attached; benefits are optional.");
 
                 if (errors.Count > 0)
                 {

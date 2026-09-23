@@ -132,6 +132,7 @@ namespace JO.Service.Services
         public async Task SendJOEmailNotification(int jobOfferId, int workFlowId)
         {
             EmailTemplate template = await EditedEmailTemplate(jobOfferId, workFlowId);
+            string? creatorEmail = await GetJobOfferCreatorEmailAsync(jobOfferId);
 
             if (string.IsNullOrEmpty(template.EmailSubject)) return;
 
@@ -144,6 +145,22 @@ namespace JO.Service.Services
             if(!string.IsNullOrEmpty(template.CCRecipient))
             {
                 request.Cc=template.CCRecipient;
+            }
+
+            if (!string.IsNullOrWhiteSpace(creatorEmail))
+            {
+                creatorEmail = creatorEmail.Trim();
+                var toRecipients = requestTo.Split(';',
+                    StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var ccRecipients = (request.Cc ?? string.Empty).Split(';',
+                    StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+
+                if (!toRecipients.Contains(creatorEmail, StringComparer.OrdinalIgnoreCase)
+                    && !ccRecipients.Contains(creatorEmail, StringComparer.OrdinalIgnoreCase))
+                {
+                    ccRecipients.Add(creatorEmail);
+                    request.Cc = string.Join(";", ccRecipients);
+                }
             }
 
             try
@@ -203,6 +220,14 @@ namespace JO.Service.Services
             {
                 collection.Add(new MailAddress(email.Trim()));
             }
+        }
+
+        private async Task<string?> GetJobOfferCreatorEmailAsync(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var jobOffer = await context.VwJODboxCandidates.FirstOrDefaultAsync(jo=>jo.Id == jobOfferId);
+            return jobOffer.CreatedByEmail;
         }
 
         private async Task<string> GetTemplateRecipientEmailsAsync(EmailTemplate emailTemplate)
@@ -272,7 +297,8 @@ namespace JO.Service.Services
                 ["#SalaryGrade"] = candidate.GradeName,
                 ["#Department"] = candidate.Department,
                 ["#Division"] = candidate.Division,
-                ["#CandidateRemarks"] = joAnalysis?.CandidateRemarks
+                ["#CandidateRemarks"] = joAnalysis?.CandidateRemarks,
+                ["#ULEquivalent"] = joAnalysis is null ? string.Empty : ComposeHtmlTable(joAnalysis)
             };
 
             string? approvalLink = null;
@@ -327,13 +353,13 @@ namespace JO.Service.Services
             if (isHtml)
             {
                 // A table cannot be nested in the paragraph produced by the rich-text editor.
-                content = Regex.Replace(content, @"<p\b[^>]*>\s*#HtmlTableOffers\s*</p>",
-                    "#HtmlTableOffers", RegexOptions.IgnoreCase);
+                content = Regex.Replace(content, @"<p\b[^>]*>\s*(#(?:HtmlTableOffers|ULEquivalent))\s*</p>",
+                    "$1", RegexOptions.IgnoreCase);
             }
 
             // Replace in one pass so placeholder-like text in candidate data stays literal.
             return Regex.Replace(content,
-                @"#(?:JORefNum|CandidateName|Position|SalaryGrade|Department|Division|CandidateRemarks|HtmlTableOffers|ApprovalLink|SendBack)\b",
+                @"#(?:JORefNum|CandidateName|Position|SalaryGrade|Department|Division|CandidateRemarks|HtmlTableOffers|ULEquivalent|ApprovalLink|SendBack)\b",
                 match =>
                 {
                     if (match.Value == "#HtmlTableOffers")
@@ -348,8 +374,36 @@ namespace JO.Service.Services
                     var value = replacements.TryGetValue(match.Value, out var replacement)
                         ? replacement ?? string.Empty
                         : string.Empty;
+                    if (match.Value == "#ULEquivalent")
+                        return isHtml ? value : string.Empty;
+
                     return isHtml ? WebUtility.HtmlEncode(value) : value;
                 });
+        }
+
+        private string ComposeHtmlTable(JOAnalysis joAnalysis)
+        {
+            ArgumentNullException.ThrowIfNull(joAnalysis);
+
+            const string cellStyle = "border:1px solid #d1d5db;padding:8px;vertical-align:top;overflow-wrap:anywhere;";
+            var htmlTable = new StringBuilder();
+            htmlTable.Append("<table border='1' cellpadding='8' cellspacing='0' width='100%' style='width:100%;border-collapse:collapse;table-layout:fixed;'>");
+            htmlTable.Append($"<thead><tr><th scope='col' style='{cellStyle}text-align:left;'></th>");
+            htmlTable.Append($"<th scope='col' style='{cellStyle}text-align:center;'>Monthly Basic</th>");
+            htmlTable.Append($"<th scope='col' style='{cellStyle}text-align:center;'>Total Months Pay</th></tr></thead><tbody>");
+
+            AppendRow("Current", joAnalysis.CurrentBasic, joAnalysis.CurrentTotalMonth);
+            AppendRow("UL Equivalent", joAnalysis.ULBasic, joAnalysis.ULTotalMonth);
+            htmlTable.Append("</tbody></table>");
+
+            return htmlTable.ToString();
+
+            void AppendRow(string label, decimal? monthlyBasic, int? totalMonthsPay)
+            {
+                htmlTable.Append($"<tr><th scope='row' style='{cellStyle}text-align:left;'>{WebUtility.HtmlEncode(label)}</th>");
+                htmlTable.Append($"<td style='{cellStyle}text-align:right;'>{WebUtility.HtmlEncode(monthlyBasic?.ToString("N2"))}</td>");
+                htmlTable.Append($"<td style='{cellStyle}text-align:right;'>{WebUtility.HtmlEncode(totalMonthsPay?.ToString())}</td></tr>");
+            }
         }
 
         private string ComposeHtmlTable(List<JOCompanyCompensation> joCompanyCompensations)

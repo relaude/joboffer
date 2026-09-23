@@ -8,10 +8,14 @@ namespace JO.DataModel.Entity
         [Key] public int Id { get; set; }
         public int? JobOfferId { get; set; }
         public string? CandidateRemarks { get; set; }
+        public string? ActivityRemarks { get; set; }
+        public decimal? CurrentBasic { get; set; }
+        public int? CurrentTotalMonth { get; set; }
+        public decimal? ULBasic { get; set; }
+        public int? ULTotalMonth { get; set; }
         public DateTime? CreatedAt { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public int? ModifiedBy { get; set; }
-        public string? ActivityRemarks { get; set; }
     }
 }

@@ -65,10 +65,9 @@
             @if (!IsReadOnly)
             {
             <button type="button" class="btn btn-outline-primary btn-sm mb-3" @onclick="ShowAttachOptionAsync"
-                    disabled="@IsAttachOptionDisabled">Attach Option</button>
+                    disabled="@IsAttachOptionDisabled">Attach File</button>
             }
-            <p class="text-muted">Benefits PDFs are attached automatically when the email has no attachments and cannot be removed.</p>
-            <p class="text-muted">Saving requires exactly one benefits PDF and one option PDF. Remove the current option before attaching another.</p>
+            <p class="text-muted">Saving requires exactly one option PDF. A benefits PDF is optional and can be added or removed. Remove the current option before attaching another.</p>
             @if (isLoadingMessage)
             {
                 <p class="text-muted" role="status">Loading attachments...</p>
@@ -87,9 +86,17 @@
                 {
                     <div class="border rounded bg-light p-3 mb-2" @key="attachment.Id">
                         <i class="fas fa-paperclip mr-2" aria-hidden="true"></i>
-                        <button type="button" class="btn btn-link p-0 align-baseline" disabled="@isDownloadingAttachment"
-                                @onclick="() => DownloadAttachmentAsync(attachment)" title="Download attachment for review">@attachment.FileName</button>
-                        @if (!IsReadOnly && IsOptionAttachment(attachment))
+                        @if (IsPdfAttachment(attachment))
+                        {
+                            <a href="@(JORoutes.Private.ViewJOEmailAttachPdf + "/" + attachment.Id)"
+                               target="_blank" rel="noopener noreferrer" title="View PDF in a new tab">@attachment.FileName</a>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-link p-0 align-baseline" disabled="@isDownloadingAttachment"
+                                    @onclick="() => DownloadAttachmentAsync(attachment)" title="Download attachment for review">@attachment.FileName</button>
+                        }
+                        @if (!IsReadOnly && (IsOptionAttachment(attachment) || IsPdfAttachmentOfType(attachment, 2)))
                         {
                             <button type="button" class="btn btn-outline-danger btn-sm ml-2"
                                     disabled="@IsAttachOptionDisabled"
@@ -168,11 +175,11 @@
     </div>
 </div>
 
-<JOModal @ref="attachOptionModal" Title="Attach Option">
+<JOModal @ref="attachOptionModal" Title="Attach File">
     <ChildContent>
         @if (isLoadingOptions)
         {
-            <p class="text-muted" role="status">Loading options...</p>
+            <p class="text-muted" role="status">Loading files...</p>
         }
         else if (optionsLoadError is not null)
         {
@@ -183,15 +190,15 @@
         }
         else if (optionDocuments.Count == 0)
         {
-            <p class="text-muted" role="status">No proposed option PDFs are available for this job offer.</p>
+            <p class="text-muted" role="status">No option or benefits PDFs are available for this job offer.</p>
         }
         else
         {
             <div class="form-group">
-                <label for="@ElementId("email-attachment-option")">Option PDF</label>
+                <label for="@ElementId("email-attachment-option")">File</label>
                 <select id="@ElementId("email-attachment-option")" class="custom-select custom-select-sm"
                         @bind="selectedOptionDocumentId" disabled="@isAttachingOption">
-                    <option value="">Select an option</option>
+                    <option value="">Select a file</option>
                     @foreach (var document in optionDocuments)
                     {
                         <option value="@document.Id" disabled="@IsOptionAttached(document)">@document.FileName@(IsOptionAttached(document) ? " (Already attached)" : "")</option>
