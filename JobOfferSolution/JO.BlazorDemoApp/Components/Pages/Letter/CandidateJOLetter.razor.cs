@@ -23,6 +23,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
         [Inject] private IJSRuntime JS { get; set; } = default!;
 
         [Parameter] public int jobOfferId { get; set; }
+        [Parameter] public int RoleId { get; set; }
 
         private readonly string componentId = $"candidate-jo-letter-{Guid.NewGuid():N}";
         private string ElementId(string suffix) => $"{componentId}-{suffix}";
@@ -432,13 +433,16 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
                     Body = jobOfferEmail.EmailMessage!,
                     FileStreams = await LoadAttachmentFilesAsync()
                 };
+
                 await EmailService.SendAsync(request);
                 isSent = true;
                 email.StatusId = (int)EnumJOEmailStatus.Draft;
                 email.ModifiedBy = userId;
+                email.ModifiedAt = DateTime.Now;
+                
                 try
                 {
-                    await JOLetterService.UpdateJobOfferHasEmail(email);
+                    await JOLetterService.UpdateJobOfferHasEmail(email, RoleId, 14, userId, email.Subject);
                 }
                 catch
                 {
@@ -490,7 +494,20 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
 
                 jobOfferEmail.StatusId = statusId;
                 jobOfferEmail.ModifiedBy = userId;
+
+                var actionLog = new JOActionLogs
+                {
+                    JobOfferId = jobOfferId,
+                    RoleId = 1, //TA Partner
+                    ActionId = 11, //Email Approval Submitted
+                    ActionAt = DateTime.Now,
+                    ActionBy = userId,
+                    Remarks = jobOfferEmail.Subject
+                };
+
                 await JOLetterService.UpdateJobOfferHasEmail(jobOfferEmail);
+                await JOLetterService.CreateJOActionLogs(actionLog);
+                
                 if (statusId == (int)EnumJOEmailStatus.ForApproval)
                     isSent = false;
                 await AlertService.Success(

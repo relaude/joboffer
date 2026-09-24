@@ -1,0 +1,89 @@
+<div class="card shadow mb-4 small">
+    <div class="card-header py-3">
+        <h6 class="jo-title mb-1">
+            <i class="fas fa-envelope fa-fw text-primary mr-2" aria-hidden="true"></i>Approve Job Offer Email
+        </h6>
+        <small class="text-muted">Review the email and its attachments before approving.</small>
+    </div>
+    <div class="card-body">
+        @if (isLoading)
+        {
+            <p class="text-muted" role="status">Loading job offer email...</p>
+        }
+        else if (loadError is not null)
+        {
+            <div class="alert alert-danger" role="alert">@loadError</div>
+        }
+        else
+        {
+            @if (jobOfferEmail.StatusId == 3)
+            {
+                <div class="alert alert-success" role="status">This email has already been approved.</div>
+            }
+            else if (jobOfferEmail.StatusId == 1)
+            {
+                <div class="alert alert-info" role="status">This email has been sent back for revision.</div>
+            }
+            <div class="form-group row align-items-center">
+                <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="approval-email-to">To</label>
+                <div class="col-sm-10"><input id="approval-email-to" class="form-control" value="@jobOfferEmail.ToRecipient" readonly /></div>
+            </div>
+            <div class="form-group row align-items-center">
+                <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="approval-email-cc">CC</label>
+                <div class="col-sm-10"><input id="approval-email-cc" class="form-control" value="@jobOfferEmail.CCRecipient" readonly /></div>
+            </div>
+            <div class="form-group row align-items-center border-bottom pb-4">
+                <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="approval-email-subject">Subject</label>
+                <div class="col-sm-10"><input id="approval-email-subject" class="form-control" value="@jobOfferEmail.Subject" readonly /></div>
+            </div>
+            <section class="form-group mb-4" aria-labelledby="approval-message-label">
+                <div id="approval-message-label" class="font-weight-bold text-gray-700 mb-2">Message</div>
+                <div class="border rounded p-3" style="overflow-wrap: anywhere; overflow-x: auto;">@((MarkupString)(jobOfferEmail.EmailMessage ?? string.Empty))</div>
+            </section>
+            <fieldset class="mb-0">
+                <legend class="small font-weight-bold text-gray-700 mb-3">
+                    <i class="fas fa-paperclip fa-fw mr-1" aria-hidden="true"></i>Attachments
+                </legend>
+                @if (attachments.Count == 0)
+                {
+                    <p class="text-muted">No attachments.</p>
+                }
+                @foreach (var attachment in attachments)
+                {
+                    <div class="border rounded bg-light p-3 mb-2" @key="attachment.Id">
+                        <i class="fas fa-paperclip mr-2" aria-hidden="true"></i>
+                        <a href="@(JORoutes.Private.ViewJOEmailAttachPdf + "/" + attachment.Id)"
+                           target="_blank" rel="noopener noreferrer" title="View PDF attachment in a new tab">@attachment.FileName</a>
+                    </div>
+                }
+            </fieldset>
+        }
+    </div>
+    @if (jobOfferEmail.StatusId == 2)
+    {
+        <div class="card-footer bg-white py-3">
+            <button type="button" class="btn btn-primary" disabled="@(!CanApprove)" @onclick="ApproveAsync">
+                @if (isApproving)
+                {
+                    <span class="spinner-border spinner-border-sm mr-1" aria-hidden="true"></span>
+                    <span role="status">Approving...</span>
+                }
+                else
+                {
+                    <span>Approve</span>
+                }
+            </button>
+            <button type="button" class="btn btn-outline-danger ml-2" disabled="@(!CanApprove)" @onclick="SendBackAsync">
+                @if (isSendingBack)
+                {
+                    <span class="spinner-border spinner-border-sm mr-1" aria-hidden="true"></span>
+                    <span role="status">Sending back...</span>
+                }
+                else
+                {
+                    <span>Send Back</span>
+                }
+            </button>
+        </div>
+    }
+</div>

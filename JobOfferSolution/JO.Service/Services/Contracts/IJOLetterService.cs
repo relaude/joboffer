@@ -38,5 +38,8 @@ namespace JO.Service.Services.Contracts
         Task AproveJobOfferHasEmail(int emailId);
         Task<List<JobOfferDocuments>> GetJobOfferDocuments(int jobOfferId);
         Task<JobOfferHasEmail> GetJobOfferHasEmailViaJobOfferId(int jobOfferId);
+        Task<int> CreateJOActionLogs(JOActionLogs actionLog);
+        Task UpdateJobOfferHasEmail(JobOfferHasEmail jobOfferEmail, int roleId, int actionId, int userId, string remarks);
+        Task<List<JOItemLetterMask>> GetJOItemLetterMask(int compensationId);
     }
 }

@@ -5,6 +5,7 @@ namespace JO.DataModel.View
     public class VwJobOfferHasEmail
     {
         public int Id { get; set; }
+        public int? JobOfferId { get; set; }
         public int? StatusId { get; set; }
         public string? Subject { get; set; }
         public string? StatusName { get; set; }

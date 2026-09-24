@@ -96,6 +96,38 @@ namespace JO.Service.Services
                 .ExecuteUpdateAsync(update => update
                     .SetProperty(email => email.StatusId, 3)
                     .SetProperty(email => email.ModifiedAt, DateTime.Now));
+
+            if (updated == 0)
+                throw new InvalidOperationException("The email was not found or is no longer awaiting approval.");
+        }
+
+        public async Task UpdateJobOfferHasEmail(JobOfferHasEmail jobOfferEmail, int roleId, int actionId, int userId, string remarks)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var actionLog = new JOActionLogs
+            {
+                JobOfferId = jobOfferEmail.JobOfferId,
+                RoleId = roleId,
+                ActionId = actionId,
+                ActionAt = DateTime.Now,
+                ActionBy = userId,
+                Remarks = remarks
+            };
+
+            context.JobOfferHasEmail.Update(jobOfferEmail);
+            await context.JOActionLogs.AddAsync(actionLog);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task SendBackOfferHasEmail(int emailId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            var updated = await context.JobOfferHasEmail
+                .Where(email => email.Id == emailId && email.StatusId == 2)
+                .ExecuteUpdateAsync(update => update
+                    .SetProperty(email => email.StatusId, 1)
+                    .SetProperty(email => email.ModifiedAt, DateTime.Now));
             if (updated == 0)
                 throw new InvalidOperationException("The email was not found or is no longer awaiting approval.");
         }
@@ -145,6 +177,15 @@ namespace JO.Service.Services
 
             context.JobOfferHasEmail.Update(jobOfferEmail);
             return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> CreateJOActionLogs(JOActionLogs actionLog)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            await context.JOActionLogs.AddAsync(actionLog);
+            await context.SaveChangesAsync();
+            return actionLog.Id;
         }
 
         public async Task<int> SaveDraftJobOfferHasEmail(JobOfferHasEmail jobOfferEmail)
@@ -261,6 +302,21 @@ namespace JO.Service.Services
             await using var context = await _dbContext.CreateDbContextAsync();
 
             return await context.JOItemLetter
+                .AsNoTracking()
+                .Where(letter =>
+                    letter.ItemId == 0 ||
+                    context.CompanyCompensationItems.Any(item =>
+                        item.CmpnyCmpnstnId == compensationId &&
+                        item.ItemId == letter.ItemId))
+                .OrderBy(letter => letter.DisplayOrder)
+                .ToListAsync();
+        }
+
+        public async Task<List<JOItemLetterMask>> GetJOItemLetterMask(int compensationId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            return await context.JOItemLetterMask
                 .AsNoTracking()
                 .Where(letter =>
                     letter.ItemId == 0 ||

@@ -84,7 +84,7 @@
                         @foreach (var email in pagedEmails.Data)
                         {
                             <tr @key="email.Id">
-                                <td><a href="@GetEmailUrl(email)">@DisplayValue(email.JORefNum)</a></td>
+                                <td><a href="@($"{JORoutes.TALead.JobOfferEmail}/{email.JobOfferId}/{email.Id}")">@DisplayValue(email.JORefNum)</a></td>
                                 <td class="jo-title">@DisplayValue(email.CandidateName)</td>
                                 <td>@DisplayValue(email.StatusName)</td>
                                 <td>@DisplayValue(email.CreatedByName)</td>

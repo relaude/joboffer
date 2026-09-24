@@ -38,6 +38,7 @@ namespace JO.Persistence.DataAccess
         public DbSet<JOApprovalFlow> JOApprovalFlow { get; set; }
         public DbSet<JOWorkFlowStatus> JOWorkFlowStatus { get; set; }
         public DbSet<JOItemLetter> JOItemLetter { get; set; }
+        public DbSet<JOItemLetterMask> JOItemLetterMask { get; set; }
         public DbSet<JOActionLogs> JOActionLogs { get; set; }
         public DbSet<JORoleActionStatus> JORoleActionStatus { get; set; }
         public DbSet<JOUserRoles> JOUserRoles { get; set; }

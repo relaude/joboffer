@@ -42,22 +42,27 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
             7 => "fa-flag-checkered",
             8 => "fa-comments-dollar",
             9 => "fa-times-circle",
+            10 => "fa-check-circle",
+            11 => "fa-envelope",
+            12 => "fa-check-circle",
+            13 => "fa-undo-alt",
+            14 => "fa-paper-plane",
             _ => "fa-history"
         };
 
         private static string GetMarkerClass(int? actionId) => actionId switch
         {
-            1 or 2 => "is-blue",
+            1 or 2 or 11 => "is-blue",
             3 => "is-purple",
-            4 or 6 or 7 => "is-green",
-            5 or 9 => "is-red",
+            4 or 6 or 7 or 10 or 12 or 14 => "is-green",
+            5 or 9 or 13 => "is-red",
             8 => "is-amber",
             _ => "is-gray"
         };
 
         private static string GetBadgeClass(int? actionId) => actionId switch
         {
-            4 or 6 or 7 => "badge-success",
+            4 or 6 or 7 or 14 => "badge-success",
             5 or 9 => "badge-danger",
             8 => "badge-warning",
             3 => "badge-info",
@@ -75,6 +80,11 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
             7 => "Completed",
             8 => "For Negotiation",
             9 => "Declined",
+            10 => "2nd Approved",
+            11 => "Email for Approval ",
+            12 => "Email Approved",
+            13 => "Email Send Back",
+            14 => "Email Sent",
             _ => "Activity"
         };
 

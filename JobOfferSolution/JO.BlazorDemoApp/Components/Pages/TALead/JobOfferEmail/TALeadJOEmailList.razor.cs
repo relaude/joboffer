@@ -70,9 +70,6 @@ namespace JO.BlazorDemoApp.Components.Pages.TALead.JobOfferEmail
             SearchEmails();
         }
 
-        private static string GetEmailUrl(VwJobOfferHasEmail email) =>
-            $"{(email.StatusId == 3 ? JORoutes.TAPartner.JobOfferSendEmail : JORoutes.TALead.JobOfferEmail)}/{email.Id}";
-
         private void ChangePage(int page) =>
             pagedEmails = filteredEmails.ToPagedResult(page, pagedEmails.PageSize);
 
