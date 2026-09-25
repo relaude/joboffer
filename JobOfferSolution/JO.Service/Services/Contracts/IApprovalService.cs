@@ -17,5 +17,6 @@ namespace JO.Service.Services.Contracts
         Task JobOfferChangeStatus(int jobOfferId, int statusId, int workFlowId);
         Task<int> PresApprovals(List<ProposalDto> joProposal);
         Task SendbackViaEmail(int jobOfferId, int roleId);
+        Task OnboardingEmail(JobOffers jobOffer, int workFlowId, int candidateId);
     }
 }

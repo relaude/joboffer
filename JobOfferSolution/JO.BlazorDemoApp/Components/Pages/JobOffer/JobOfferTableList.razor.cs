@@ -116,6 +116,8 @@ namespace JO.BlazorDemoApp.Components.Pages.JobOffer
                         ? JORoutes.President.JOForApproval
                         : JORoutes.President.JobOfferDetails,
 
+                    JOUserRole.Admin => JORoutes.Admin.JobOfferComplete,
+
                     _ => throw new InvalidOperationException(
                         "Supply a supported Role or configure Routes and DefaultRoute for JobOfferTableList.")
                 };

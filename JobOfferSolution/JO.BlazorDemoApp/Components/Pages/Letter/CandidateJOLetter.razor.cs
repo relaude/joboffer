@@ -36,6 +36,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
         private string? loadError;
         private int userId;
         private bool isSaving;
+        private bool isSubmitting;
         private bool isSending;
         private bool isSent;
         private bool IsReadOnly => jobOfferEmail.StatusId == (int)EnumJOEmailStatus.ForApproval
@@ -249,7 +250,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
         }
 
 
-        private bool IsActionDisabled => IsReadOnly || isSending || isLoadingMessage || !isMessageEditorReady || isValidating || isSaving || isSendingTestMail || isAttachingOption || removingAttachmentId.HasValue || loadError is not null;
+        private bool IsActionDisabled => IsReadOnly || isSending || isLoadingMessage || !isMessageEditorReady || isValidating || isSaving || isSubmitting || isSendingTestMail || isAttachingOption || removingAttachmentId.HasValue || loadError is not null;
 
         protected override async Task OnParametersSetAsync()
         {
@@ -473,59 +474,74 @@ namespace JO.BlazorDemoApp.Components.Pages.Letter
             await AlertService.Success("Job offer email sent successfully. It is now a draft for further updates and approval.", "Sent");
         }
 
-        private Task SaveAsync() => UpdateEmailAsync(1);
-
-        private Task SubmitForApprovalAsync() => UpdateEmailAsync(2);
-
-        private async Task UpdateEmailAsync(int statusId)
+        private async Task SaveAsync()
         {
-            if (IsReadOnly || !await ValidateEmailAsync())
+            if (!await ValidateEmailAsync())
                 return;
 
             isSaving = true;
             var previousStatus = jobOfferEmail.StatusId;
             try
             {
-                var submit = statusId == 2;
-                if (!await AlertService.Confirm(
-                    submit ? "Submit this job offer email for approval?" : "Save changes to this job offer email as a draft?",
-                    submit ? "Submit for Approval" : "Save Draft", "Cancel"))
+                if (!await AlertService.Confirm("Save changes to this job offer email as a draft?", "Save Draft", "Cancel"))
                     return;
 
-                jobOfferEmail.StatusId = statusId;
+                jobOfferEmail.StatusId = (int)EnumJOEmailStatus.Draft;
                 jobOfferEmail.ModifiedBy = userId;
-
-                var actionLog = new JOActionLogs
-                {
-                    JobOfferId = jobOfferId,
-                    RoleId = 1, //TA Partner
-                    ActionId = 11, //Email Approval Submitted
-                    ActionAt = DateTime.Now,
-                    ActionBy = userId,
-                    Remarks = jobOfferEmail.Subject
-                };
-
+                // Attachment additions and removals are already persisted by their handlers.
                 await JOLetterService.UpdateJobOfferHasEmail(jobOfferEmail);
-                await JOLetterService.CreateJOActionLogs(actionLog);
-                
-                if (statusId == (int)EnumJOEmailStatus.ForApproval)
-                    isSent = false;
-                await AlertService.Success(
-                    submit ? "Job offer email submitted for approval." : "Job offer email draft updated successfully.",
-                    submit ? "Submitted for Approval" : "Draft Saved");
             }
             catch (Exception ex)
             {
                 jobOfferEmail.StatusId = previousStatus;
-                Logger.LogError(ex, "Failed to update job offer email {EmailId}.", jobOfferEmail.Id);
-                await AlertService.Error("The email could not be updated. Please try again.", "Update Error");
+                Logger.LogError(ex, "Failed to save job offer email {EmailId} as a draft.", jobOfferEmail.Id);
+                await AlertService.Error("The email could not be saved. Please try again.", "Save Error");
+                return;
             }
             finally
             {
                 isSaving = false;
             }
+
+            await AlertService.Success("Job offer email draft updated successfully.", "Draft Saved");
         }
 
+        private async Task SubmitForApprovalAsync()
+        {
+            if (!await ValidateEmailAsync())
+                return;
+
+            isSubmitting = true;
+            var previousStatus = jobOfferEmail.StatusId;
+            try
+            {
+                if (!await AlertService.Confirm("Submit this job offer email for approval?", "Submit for Approval", "Cancel"))
+                    return;
+
+                jobOfferEmail.StatusId = (int)EnumJOEmailStatus.ForApproval;
+                jobOfferEmail.ModifiedBy = userId;
+                jobOfferEmail.ModifiedAt = DateTime.Now;
+                // Attachments are already persisted; save the email and submission log together.
+                await JOLetterService.UpdateJobOfferHasEmail(
+                    jobOfferEmail, RoleId, 11, userId, jobOfferEmail.Subject ?? string.Empty);
+
+
+                isSent = false;
+            }
+            catch (Exception ex)
+            {
+                jobOfferEmail.StatusId = previousStatus;
+                Logger.LogError(ex, "Failed to submit job offer email {EmailId} for approval.", jobOfferEmail.Id);
+                await AlertService.Error("The email could not be submitted. Please try again.", "Submission Error");
+                return;
+            }
+            finally
+            {
+                isSubmitting = false;
+            }
+
+            await AlertService.Success("Job offer email submitted for approval.", "Submitted for Approval");
+        }
         private async Task<bool> ValidateEmailAsync()
         {
             if (IsActionDisabled || messageEditor is null)

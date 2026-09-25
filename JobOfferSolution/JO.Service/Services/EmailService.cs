@@ -131,6 +131,11 @@ namespace JO.Service.Services
 
         public async Task SendJOEmailNotification(int jobOfferId, int workFlowId)
         {
+            await SendJOEmailNotification(jobOfferId, workFlowId, null);
+        }
+
+        public async Task SendJOEmailNotification(int jobOfferId, int workFlowId, List<FileStreamDto>? FileStreams)
+        {
             EmailTemplate template = await EditedEmailTemplate(jobOfferId, workFlowId);
             string? creatorEmail = await GetJobOfferCreatorEmailAsync(jobOfferId);
 
@@ -141,6 +146,7 @@ namespace JO.Service.Services
             request.To = requestTo;
             request.Subject = template.EmailSubject;
             request.Body = template.EmailMessage;
+            request.FileStreams = FileStreams;
 
             if(!string.IsNullOrEmpty(template.CCRecipient))
             {

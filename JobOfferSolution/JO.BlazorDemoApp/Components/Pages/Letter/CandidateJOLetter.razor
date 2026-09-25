@@ -15,7 +15,7 @@
             <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="@ElementId("email-preview-to")">To</label>
             <div class="col-sm-10">
                 <input id="@ElementId("email-preview-to")" type="text" inputmode="email" class="form-control"
-                       @bind="jobOfferEmail.ToRecipient" @bind:event="oninput" readonly="@IsReadOnly" disabled="@(isLoadingMessage || loadError is not null || isSaving || isSendingTestMail)" />
+                       @bind="jobOfferEmail.ToRecipient" @bind:event="oninput" readonly="@IsReadOnly" disabled="@(isLoadingMessage || loadError is not null || isSaving || isSubmitting || isSendingTestMail)" />
             </div>
         </div>
 
@@ -23,7 +23,7 @@
             <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="@ElementId("email-preview-cc")">CC</label>
             <div class="col-sm-10">
                 <input id="@ElementId("email-preview-cc")" type="text" inputmode="email" class="form-control"
-                       @bind="jobOfferEmail.CCRecipient" @bind:event="oninput" readonly="@IsReadOnly" disabled="@(isLoadingMessage || loadError is not null || isSaving || isSendingTestMail)" />
+                       @bind="jobOfferEmail.CCRecipient" @bind:event="oninput" readonly="@IsReadOnly" disabled="@(isLoadingMessage || loadError is not null || isSaving || isSubmitting || isSendingTestMail)" />
             </div>
         </div>
 
@@ -31,7 +31,7 @@
             <label class="col-sm-2 col-form-label font-weight-bold text-gray-700" for="@ElementId("email-preview-subject")">Subject</label>
             <div class="col-sm-10">
                 <input id="@ElementId("email-preview-subject")" type="text" class="form-control"
-                       @bind="jobOfferEmail.Subject" @bind:event="oninput" readonly="@IsReadOnly" disabled="@(isLoadingMessage || loadError is not null || isSaving || isSendingTestMail)" />
+                       @bind="jobOfferEmail.Subject" @bind:event="oninput" readonly="@IsReadOnly" disabled="@(isLoadingMessage || loadError is not null || isSaving || isSubmitting || isSendingTestMail)" />
             </div>
         </div>
 
@@ -154,7 +154,15 @@
                     }
                 </button>
                 <button type="button" class="btn btn-primary text-nowrap" disabled="@IsActionDisabled" @onclick="SubmitForApprovalAsync">
-                    <i class="fas fa-paper-plane fa-fw mr-1" aria-hidden="true"></i>Submit for Approval
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1" aria-hidden="true"></span>
+                        <span role="status">Submitting...</span>
+                    }
+                    else
+                    {
+                        <i class="fas fa-paper-plane fa-fw mr-1" aria-hidden="true"></i><span>Submit for Approval</span>
+                    }
                 </button>
             }
             @if (IsReadOnly && jobOfferEmail.StatusId == (int)EnumJOEmailStatus.Approved)

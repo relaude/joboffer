@@ -1,4 +1,6 @@
-﻿using JO.DataModel.Entity;
+﻿using JO.DataModel.DTOs;
+using JO.DataModel.Entity;
+using JO.DataModel.View;
 using JO.Persistence.DataAccess;
 using JO.Service.Enum;
 using JO.Service.Services.Contracts;
@@ -36,6 +38,75 @@ namespace JO.Service.Services
             _protectPdfService = protectPdfService;
             _environment = environment;
             _logger = logger;
+        }
+
+        public async Task<FileStreamDto> GetFileStreamMaskedJOLetter(int compensationId, int candidateId)
+        {
+            var fileStreamDto = new FileStreamDto
+            {
+                Name = "JobOfferSheet.pdf"
+            };
+
+            await using var context = await _dbContext.CreateDbContextAsync();
+
+            var letterItems = await context.JOItemLetterMask
+                .AsNoTracking()
+                .Where(letter =>
+                    letter.ItemId == 0 ||
+                    context.CompanyCompensationItems.Any(item =>
+                        item.CmpnyCmpnstnId == compensationId &&
+                        item.ItemId == letter.ItemId))
+                .OrderBy(letter => letter.DisplayOrder)
+                .ToListAsync();
+
+            VwDboxCandidates candidate = await context.VwDboxCandidates.FirstOrDefaultAsync(jo => jo.Id == candidateId);
+
+            UpdateItemLetterPlaceHolder(letterItems, candidate);
+
+            var letterBody = string.Concat(letterItems
+                    .Where(item => !string.IsNullOrWhiteSpace(item.MessageBody))
+                    .Select(item => item.MessageBody));
+
+            fileStreamDto.Content = await _htmlToPdfServices.GeneratePdfAsync(CreateLetterHtml(letterBody));
+            fileStreamDto.SizeInKb = (fileStreamDto.Content.Length / 1024d).ToString("N0");
+
+            return fileStreamDto;
+        }
+        private void UpdateItemLetterPlaceHolder(List<JOItemLetterMask> joItemLetter,VwDboxCandidates candidate)
+        {
+            string company = candidate.Company ?? string.Empty;
+            string position = candidate.JobPosition ?? string.Empty;
+            string division = candidate.Division ?? string.Empty;
+
+            (string PlaceHolder, string Value)[] replacements =
+            {
+                ("#COMPANY", company),
+                ("#POSITION", position),
+                ("#DIVISION", division)
+            };
+
+            ReplaceItemLetterPlaceHolders(joItemLetter, replacements);
+        }
+
+
+        private static void ReplaceItemLetterPlaceHolders(List<JOItemLetterMask> joItemLetter,
+            (string PlaceHolder, string Value)[] replacements)
+        {
+            foreach (var itemLetter in joItemLetter)
+            {
+                if (string.IsNullOrEmpty(itemLetter.MessageBody))
+                {
+                    continue;
+                }
+
+                foreach (var replacement in replacements)
+                {
+                    itemLetter.MessageBody = itemLetter.MessageBody.Replace(
+                        replacement.PlaceHolder,
+                        replacement.Value,
+                        StringComparison.OrdinalIgnoreCase);
+                }
+            }
         }
 
         public async Task SaveJobOfferEmailAsync(int jobOfferId)
@@ -82,7 +153,8 @@ namespace JO.Service.Services
                 attachments.Add(($"{candidateFileName}-Benefits.pdf", await File.ReadAllBytesAsync(
                     Path.Combine(_environment.WebRootPath, "docs", "benefits.pdf")), 2, 0));
 
-            var options = await _joLetterService.GetJOCompanyCompensation(jobOfferId);
+            var options = await GetJOCompanyCompensation(jobOfferId);
+
             foreach (var option in options)
             {
                 if (option.ProposedSalary is not decimal salary)
@@ -171,6 +243,18 @@ namespace JO.Service.Services
                 }
                 throw;
             }
+        }
+
+        private async Task<List<JOCompanyCompensation>> GetJOCompanyCompensation(int jobOfferId)
+        {
+            await using var context = await _dbContext.CreateDbContextAsync();
+            return await context.JOCompanyCompensation
+                .AsNoTracking()
+                .Where(jo => jo.JobOfferId == jobOfferId && jo.OptionNumber > 0)
+                .Where(jo => !context.JobOfferDocuments.Any(document => document.SalaryOptionId == jo.Id))
+                .OrderBy(jo => jo.OptionNumber)
+                .ThenBy(jo => jo.Id)
+                .ToListAsync();
         }
 
         private async Task<decimal> GetMonthlyRiceAllowance(int jobofferId)

@@ -58,7 +58,7 @@
                         <th class="text-center">Status</th>
                         <th>Created</th>
                         <th>Modified</th>
-                        <th class="text-right">Action</th>
+                        @* <th class="text-right">Action</th> *@
                     </tr>
                 </thead>
                 <tbody>
@@ -71,7 +71,11 @@
                         @foreach (var user in pagedUsers.Data)
                         {
                             <tr @key="user.Id">
-                                <td><strong>@(string.IsNullOrWhiteSpace(user.Name) ? "-" : user.Name)</strong></td>
+                                <td>
+                                    <a href="@($"{JORoutes.Admin.EditUser}/{user.Id}")">
+                                        <strong>@(string.IsNullOrWhiteSpace(user.Name) ? "-" : user.Name)</strong>
+                                    </a>
+                                </td>
                                 <td>@(string.IsNullOrWhiteSpace(user.Email) ? "-" : user.Email)</td>
                                 <td class="text-center">@user.CountRoles</td>
                                 <td class="text-center">
@@ -96,7 +100,7 @@
                                     <div>@(string.IsNullOrWhiteSpace(user.ModifiedByName) ? "-" : user.ModifiedByName)</div>
                                     <small class="text-muted">@(user.ModifiedAt?.ToString("dd MMM yyyy, HH:mm") ?? "-")</small>
                                 </td>
-                                <td class="text-right">
+                                @* <td class="text-right">
                                     <div class="dropdown">
                                         <button type="button"
                                                 class="btn btn-link text-dark font-weight-bold"
@@ -112,10 +116,10 @@
                                                 Edit
                                             </a>
 
-                                            @* <a class="dropdown-item"
+                                            <a class="dropdown-item"
                                                href="@($"{JORoutes.Admin.UserDivisionAccess}/{user.Id}")">
                                                 Access
-                                            </a> *@
+                                            </a>
 
                                             <a class="dropdown-item"
                                                href="@($"{JORoutes.Admin.UserDetails}/{user.Id}")">
@@ -123,7 +127,7 @@
                                             </a>
                                         </div>
                                     </div>
-                                </td>
+                                </td> *@
                             </tr>
                         }
                     }

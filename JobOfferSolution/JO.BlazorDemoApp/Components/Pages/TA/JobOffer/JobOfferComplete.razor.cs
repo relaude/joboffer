@@ -10,10 +10,13 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
     {
         [Inject] private IDiscussionService DiscussionService { get; set; } = default!;
         [Inject] private ICompensationService CompensationService { get; set; } = default!;
+        [Inject] private IJOLetterService JOLetterService { get; set; } = default!;
 
         [Parameter] public int jobOfferId { get; set; }
 
         private TabName activeTab = TabName.JODetails;
+        private int? emailId;
+        private bool isLoadingEmail = true;
         private JobOffers jobOffer = new();
         private VwJODboxCandidates vwJODboxCandidates = new();
         private VwDboxCandidates candidate = new();
@@ -28,6 +31,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
 
         protected override async Task OnParametersSetAsync()
         {
+            emailId = null;
+            isLoadingEmail = true;
             jobOffer = await DiscussionService.GetJobOffer(jobOfferId);
             vwJODboxCandidates = await DiscussionService.GetVwJODboxCandidates(jobOfferId);
             candidate = await DiscussionService.GetVwDboxCandidate(jobOffer.CandidateId.GetValueOrDefault());
@@ -42,6 +47,9 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
             joCompanyCompensationItems = await CompensationService.GetJOCmpnyCompensationItems(jobOfferId);
             compenItemCategoryDto = await CompensationService.SetUpCompenItemCategoryDto();
             vwDiscussions = await DiscussionService.GetDiscussions(jobOfferId);
+            var email = await JOLetterService.GetJobOfferHasEmailViaJobOfferId(jobOfferId);
+            emailId = email?.Id;
+            isLoadingEmail = false;
         }
 
         private void SelectTab(TabName tab)
@@ -53,7 +61,8 @@ namespace JO.BlazorDemoApp.Components.Pages.TA.JobOffer
         {
             JODetails,
             Discussion,
-            ActionLogs
+            ActionLogs,
+            Email
         }
     }
 }

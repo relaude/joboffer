@@ -17,13 +17,16 @@ namespace JO.Service.Services
         private readonly IDbContextFactory<JobOfferDbContext> _dbContext;
         private readonly IEmailService _emailService;
         private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly IJobOfferDocumentService _jobOfferDocumentService;
         public ApprovalService(IDbContextFactory<JobOfferDbContext> dbContext,
             IEmailService emailService,
-            IBackgroundJobClient backgroundJobClient)
+            IBackgroundJobClient backgroundJobClient,
+            IJobOfferDocumentService jobOfferDocumentService)
         {
             _dbContext = dbContext;
             _emailService = emailService;
             _backgroundJobClient = backgroundJobClient;
+            _jobOfferDocumentService = jobOfferDocumentService;
         }
 
         public async Task<int> GetNextApproverRoleId(int jobOfferId, int currentRoleId)
@@ -157,14 +160,34 @@ namespace JO.Service.Services
 
             await context.SaveChangesAsync();
 
-            _backgroundJobClient.Enqueue<IEmailService>(
-                emailService => emailService.SendJOEmailNotification(jobOfferId, workFlowId));
+            if (workFlowId == (int)EnumJOStatus.AcceptedAndCompleted)
+            {
+                _backgroundJobClient.Enqueue<IApprovalService>(
+                    approvalService => approvalService.OnboardingEmail(jobOffer, workFlowId, jobOffer.CandidateId.GetValueOrDefault()));
+            }
+            else
+            {
+                _backgroundJobClient.Enqueue<IEmailService>(
+                    emailService => emailService.SendJOEmailNotification(jobOfferId, workFlowId));
+            }
 
             if(workFlowId == (int)EnumJOStatus.ForDiscussion)
             {
                 _backgroundJobClient.Enqueue<IJobOfferDocumentService>(
                     documentService => documentService.SaveJobOfferEmailAsync(jobOfferId));
             }
+        }
+
+        public async Task OnboardingEmail(JobOffers jobOffer, int workFlowId, int candidateId)
+        {
+            if (jobOffer.CmpnyCmpnstnId is not int compensationId)
+                throw new InvalidOperationException($"Job offer {jobOffer.Id} has no compensation ID.");
+
+            List<FileStreamDto> attachments = new();
+            var attachment = await _jobOfferDocumentService.GetFileStreamMaskedJOLetter(compensationId, candidateId);
+            attachments.Add(attachment);
+
+            await _emailService.SendJOEmailNotification(jobOffer.Id, workFlowId, attachments);
         }
 
         public async Task ApproveViaEmail(int jobOfferId, 

@@ -3,6 +3,7 @@ using JO.DataModel.Entity;
 using JO.DataModel.View;
 using JO.Persistence.DataAccess;
 using JO.Service.Constants;
+using JO.Service.Enum;
 using JO.Service.Services.Contracts;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,7 @@ namespace JO.Service.Services
             int cmpnyCmpnstnId = joCompanyCompensation.FirstOrDefault().CmpnyCmpnstnId.GetValueOrDefault();
 
             //update status
-            jobOffer.WorkFlowId = 11;//For Negotiation
+            jobOffer.WorkFlowId = (int)EnumJOStatus.ForNegotiation;//For Negotiation
             jobOffer.ModifiedAt = DateTime.Now;
             jobOffer.ModifiedBy = createdBy;
 
@@ -96,6 +97,11 @@ namespace JO.Service.Services
                 .Where(jo => jo.JobOfferId == jobOffer.Id)
                 .ToListAsync();
             context.JOApprovalFlow.RemoveRange(approvalFlow);
+            await context.SaveChangesAsync();
+
+            //email set to draft
+            var joHasEmail = await context.JobOfferHasEmail.FirstOrDefaultAsync(jo=>jo.JobOfferId== jobOffer.Id);
+            joHasEmail.StatusId = (int)EnumJOEmailStatus.Draft;
             await context.SaveChangesAsync();
         }
 

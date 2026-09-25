@@ -1,0 +1,29 @@
+@attribute [Authorize(Roles = JOUserRole.Admin)]
+@attribute [Route(JORoutes.Admin.JobOfferTracker)]
+
+<h1 class="h3 mb-4 text-gray-800">Admin Job Offers</h1>
+
+<JobOfferKpiBoxes
+                  Total="@total"
+                  ForReviewCount="@countForReview"
+                  ReviewedCount="@countReviewed"
+                  SendBackCount="@countSendBack"
+                  ForApprovalCount="@countForApproval"
+                  ForDiscussionCount="@countForDiscussion"
+                  ApprovedCount="@countApproved"
+                  AcceptedCount="@countAcccepted"
+                  ForNegotiationCount="@countForNegotiation"
+                  DeclinedCount="@countDeclined"
+                  ForReviewWorkFlowIds="@ForReviewWorkFlowIds"
+                  ReviewedWorkFlowIds="@ReviewedWorkFlowIds"
+                  SendBackWorkFlowIds="@SendBackWorkFlowIds"
+                  ForApprovalWorkFlowIds="@ForApprovalWorkFlowIds"
+                  ForDiscussionWorkFlowIds="@ForDiscussionWorkFlowIds"
+                  ApprovedWorkFlowIds="@ApprovedWorkFlowIds"
+                  AcceptedWorkFlowIds="@AcceptedWorkFlowIds"
+                  ForNegotiationWorkFlowIds="@ForNegotiationWorkFlowIds"
+                  DeclinedWorkFlowIds="@DeclinedWorkFlowIds"
+                  OnFilterChanged="FilterByWorkFlow" />
+
+<JobOfferTableList JobOffers="@filteredJODboxCandidates"
+                   Role="@JOUserRole.Admin" />

@@ -69,7 +69,7 @@ namespace JO.BlazorDemoApp.Components.Pages.Admin.User
                 var updatedUserId = await ManageUsersService.UpdateJobOfferUser(jobOfferUser, roleNames);
                 await DivisionAccessService.UpdateUserDivisionAccess(selectedDivisionIds, updatedUserId);
 
-                Navigation.NavigateTo($"{JORoutes.Admin.UserDetails}/{updatedUserId}");
+                Navigation.NavigateTo(JORoutes.Admin.Users);
             }
             finally
             {

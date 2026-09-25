@@ -23,11 +23,34 @@
             <i class="fas fa-history fa-fw mr-1" aria-hidden="true"></i>Activities
         </button>
     </li>
+    <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link px-4 @(activeTab == TabName.Email ? "active" : string.Empty)"
+                role="tab" aria-selected="@(activeTab == TabName.Email)" @onclick="() => SelectTab(TabName.Email)">
+            <i class="fas fa-envelope fa-fw mr-1" aria-hidden="true"></i>Email
+        </button>
+    </li>
 </ul>
 
 <div class="tab-content">
     @switch (activeTab)
     {
+        case TabName.Email:
+            <div role="tabpanel">
+                @if (isLoadingEmail)
+                {
+                    <p class="text-muted" role="status">Loading job offer email...</p>
+                }
+                else if (emailId is int id)
+                {
+                    <JOEmailDetails EmailId="@id" />
+                }
+                else
+                {
+                    <p class="text-muted" role="status">No email is available for this job offer.</p>
+                }
+            </div>
+            break;
+
         case TabName.JODetails:
             <div role="tabpanel">
                 <fieldset disabled class="border-0 p-0 m-0 w-100">

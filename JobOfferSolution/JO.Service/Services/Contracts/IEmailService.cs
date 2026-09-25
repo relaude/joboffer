@@ -7,6 +7,7 @@ namespace JO.Service.Services.Contracts
         Task SendAsync(EmailRequest request);
         Task<int> SendAsync(string recipients, string subject, string body);
         Task SendJOEmailNotification(int jobOfferId, int workFlowId);
+        Task SendJOEmailNotification(int jobOfferId, int workFlowId, List<FileStreamDto>? FileStreams);
         Task TestMailAsync(string recipients);
     }
 }

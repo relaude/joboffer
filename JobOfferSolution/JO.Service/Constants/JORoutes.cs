@@ -68,6 +68,9 @@ namespace JO.Service.Constants
 
             public const string EmailTemplates = PrefixAdmin + "/email-templates";
             public const string EmailTemplate = PrefixAdmin + "/email-template";
+
+            public const string JobOfferTracker = PrefixAdmin + "/joboffer-tracker";
+            public const string JobOfferComplete = PrefixAdmin + "/joboffer-complete";
         }
 
         public static class TAPartner
